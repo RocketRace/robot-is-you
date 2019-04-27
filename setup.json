@@ -1,9 +1,0 @@
-{ 
-    "token":"NDgwMjI3NjYzMDQ3Mjk0OTg3.XLfp5Q.oDwx48qwwAGsZyl-vPDzDXCqbVU",
-    "activity":"ROBOT IS HELP",
-    "cogs": [
-        "cogs.owner",
-        "cogs.surrealmemes",
-        "cogs.global"
-    ]
-}
