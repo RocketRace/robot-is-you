@@ -3,3 +3,6 @@ sprites/
 setup.json
 log.txt
 .vscode/
+colored/
+animated/
+testing.py
