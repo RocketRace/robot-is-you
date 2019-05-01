@@ -1,9 +1,9 @@
-cogs/__pycache__/
 sprites/
-setup.json
-log.txt
-.vscode/
 colored/
 animated/
 testing.py
+setup.json
+log.txt
 .DS_Store
+.vscode/
+cogs/__pycache__/
