@@ -3,7 +3,7 @@ import imageio
 import json
 import numpy     as np
 
-from os          import listdir, mkdir
+from os          import listdir, mkdir, stat
 from PIL         import Image
 from discord.ext import commands
 
@@ -30,15 +30,13 @@ class ownerCog(commands.Cog):
         self.tileColors = {}
         self.alternateTiles = {}
         # Loads the tile colors, if it exists
-        colorsFile = open("tilecolors.json")
-        if colorsFile.read() != "":
-            self.tileColors = json.load(colorsFile)
-        colorsFile.close()
+        colorsFile = "tilecolors.json"
+        if stat(colorsFile).st_size != 0:
+            self.tileColors = json.load(open(colorsFile))
         # Loads the alternate tiles if possible
-        altFile = open("alternatetiles.json")
-        if altFile.read() != "":
-            self.alternateTiles = json.load(altFile)
-        altFile.close()
+        altFile = "alternatetiles.json"
+        if stat(altFile).st_size != 0:
+            self.alternateTiles = json.load(open(altFile))
 
     # Evaluates input if you're the owner of the bot (me)
     # TODO: sandbox it
