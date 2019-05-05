@@ -207,17 +207,17 @@ class ownerCog(commands.Cog):
 
     @commands.command()
     @commands.is_owner()
-    async def loadpalette(self, ctx, message: str):
+    async def loadpalette(self, ctx, arg):
 
         # Tests for a supplied palette
-        if message not in [str[:-4] for str in listdir("palettes")]:
+        if arg not in [str[:-4] for str in listdir("palettes")]:
             # await ctx.send("Supply a palette to load.")
             print("boo hoo")
         else: 
             # The palette name
-            palette = message
+            palette = arg
             # The palette image 
-            paletteImg = Image.open("palettes/%s.png" % palette)
+            paletteImg = Image.open("palettes/%s.png" % palette).convert("RGB")
             # The RGB values of the palette
             paletteColors = [[(paletteImg.getpixel((x,y))) for y in range(5)] for x in range(7)]
 
@@ -240,15 +240,31 @@ class ownerCog(commands.Cog):
                 # Only uses the first variation of the sprite ("_0_")
                 files = ["sprites/%s_0_%s.png" % (sprite, i + 1) for i in range(3)]
                 # Changes the color of each image
-                framesColor = [multiplyColor(file, paletteColors[x][y]) for file in files]
+                framesColor = [multiplyColor(fp, paletteColors[x][y]) for fp in files]
                 # Saves the colored images to /color/[palette]/
                 [framesColor[i].save("color/%s/%s-%s-.png" % (palette, name, i), format="PNG") for i in range(len(framesColor))]
 
-                # Converts the files into numpy arrays
-                images = [imageio.imread("color/%s/%s-%s-.png" % (palette, name, i), format="PNG") for i in range(len(framesColor))]
+    @commands.command()
+    @commands.is_owner()
+    async def loadall(self, ctx):
+        msg = await ctx.send("Loading themes...")
+        await ctx.invoke(self.bot.get_command("loadthemes"))
+        await msg.edit(content="Loading themes... Done.")
+        await msg.edit(content="Loading themes... Done.\nLoading colors...")
+        await ctx.invoke(self.bot.get_command("loadcolors"))
+        await msg.edit(content="Loading themes... Done.\nLoading colors... Done.")
+        
 
-                # Merges the images into an animated gif and saves it to /animated/[palette]/
-                imageio.mimwrite("animated/%s/%s.png" % (palette, name), images, format="GIF", fps=6)
+        palettes = listdir("palettes")
+        total = len(palettes)
+
+        await msg.edit(content="Loading themes... Done.\nLoading colors... Done.\nLoading palettes... (0/%s)" % total)
+        i = 0
+        for palette in [fp[:-4] for fp in palettes]:
+            await ctx.invoke(self.bot.get_command("loadpalette"), palette)
+            i += 1
+            await msg.edit(content="Loading themes... Done.\nLoading colors... Done.\nLoading palettes... (%s/%s)" % (i, total))
+        await msg.edit(content="Loading themes... Done.\nLoading colors... Done.\nLoading palettes... Done.")
 
 def setup(bot):
     bot.add_cog(ownerCog(bot))
