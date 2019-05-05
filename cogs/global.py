@@ -69,12 +69,13 @@ class globalCog(commands.Cog):
             for i in range(height):
                 for j in range(width):
                     img = Image.open(pathGrid[i][j])
-                    frame.paste(img, (48 * j, 48 * i, 48 * j + 48, 48 * i + 48))
-        f0 = genFrame("render0.png")
-        f1 = genFrame("render1.png")
-        f2 = genFrame("render2.png")
-        f0.save("render.gif", save_all=True, append_images=[f1, f2], duration=200, loop=0, disposal=2)
-        await ctx.send(content=ctx.author.mention, file=discord.File("render.gif"))
+                    frame.paste(img.resize((48,48)), (48 * j, 48 * i, 48 * j + 48, 48 * i + 48))
+                    frame.save("renders/frame%s.png" % f)
+        f0 = genFrame("renders/frame0.png")
+        f1 = genFrame("renders/frame1.png")
+        f2 = genFrame("renders/frame2.png")
+        f0.save("renders/render.gif", save_all=True, append_images=[f1, f2], duration=200, loop=0, disposal=2)
+        await ctx.send(content=ctx.author.mention, file=discord.File("render/render.gif"))
 
 def setup(bot):
     bot.add_cog(globalCog(bot))
