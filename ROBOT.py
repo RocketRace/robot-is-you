@@ -1,8 +1,8 @@
 import discord
-from discord.ext import commands
 import logging
-from json import load
-import imageio
+
+from json        import load
+from discord.ext import commands
 
 # Sets up logging 
 logging.basicConfig(filename="log.txt", level=20, format="%(asctime)s - %(levelname)s - %(message)s") 

@@ -1,15 +1,13 @@
 import discord
+from json        import load
 from discord.ext import commands
-from json import load
-
-emoteFile = open("emotecache.json")
-emoteCache = load(emoteFile)
-emoteFile.close()
-
 
 class globalCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        emoteFile = open("emotecache.json")
+        self.emoteCache = load(emoteFile)
+        emoteFile.close()
 
     # The rule command only uses text tiles, saving some convenience from the user but gating some emotes away
     # If you want the bot to return other tiles, use the tile command
@@ -30,7 +28,7 @@ class globalCog(commands.Cog):
                 # Each word
                 for word in row:
                     # Checks for the word in the cache
-                    emote = emoteCache.get("text_" + word)
+                    emote = self.emoteCache.get("text_" + word)
                     # If not present, fails...
                     if emote == None:
                         failedWord = word

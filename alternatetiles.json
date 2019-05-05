@@ -1,0 +1,593 @@
+{
+   "object055": [
+      {
+         "name": "bat",
+         "sprite": "bat",
+         "color": [
+            "3",
+            "1"
+         ]
+      },
+      {
+         "name": "stump",
+         "sprite": "stumble",
+         "color": [
+            "6",
+            "1"
+         ]
+      },
+      {
+         "name": "sun",
+         "sprite": "sun",
+         "color": [
+            "2",
+            "4"
+         ]
+      },
+      {
+         "name": "dot",
+         "sprite": "dot",
+         "color": [
+            "2",
+            "3"
+         ]
+      },
+      {
+         "name": "bubble",
+         "sprite": "bubble",
+         "color": [
+            "1",
+            "4"
+         ]
+      }
+   ],
+   "object043": [
+      {
+         "name": "text_bat",
+         "sprite": "text_bat",
+         "color": [
+            "3",
+            "0"
+         ]
+      },
+      {
+         "name": "text_stump",
+         "sprite": "text_stumble",
+         "color": [
+            "6",
+            "0"
+         ]
+      },
+      {
+         "name": "text_sun",
+         "sprite": "text_sun",
+         "color": [
+            "2",
+            "3"
+         ]
+      },
+      {
+         "name": "text_dot",
+         "sprite": "text_dot",
+         "color": [
+            "2",
+            "2"
+         ]
+      },
+      {
+         "name": "text_bubble",
+         "sprite": "text_bubble",
+         "color": [
+            "1",
+            "3"
+         ]
+      }
+   ],
+   "object067": [
+      {
+         "name": "text_fire",
+         "sprite": "text_fire",
+         "color": [
+            "2",
+            "0"
+         ]
+      },
+      {
+         "name": "text_rocket",
+         "sprite": "text_rocket",
+         "color": [
+            "0",
+            "0"
+         ]
+      },
+      {
+         "name": "text_algae",
+         "sprite": "text_algae",
+         "color": [
+            "1",
+            "4"
+         ]
+      }
+   ],
+   "object101": [
+      {
+         "name": "cliff",
+         "sprite": "cliff",
+         "color": [
+            "6",
+            "1"
+         ]
+      },
+      {
+         "name": "pipe",
+         "sprite": "pipe",
+         "color": [
+            "1",
+            "1"
+         ]
+      }
+   ],
+   "object102": [
+      {
+         "name": "text_cliff",
+         "sprite": "text_cliff",
+         "color": [
+            "6",
+            "0"
+         ]
+      },
+      {
+         "name": "text_pipe",
+         "sprite": "text_pipe",
+         "color": [
+            "1",
+            "1"
+         ]
+      }
+   ],
+   "object099": [
+      {
+         "name": "text_bug",
+         "sprite": "text_bug",
+         "color": [
+            "6",
+            "0"
+         ]
+      },
+      {
+         "name": "text_bird",
+         "sprite": "text_bird",
+         "color": [
+            "2",
+            "2"
+         ]
+      }
+   ],
+   "object010": [
+      {
+         "name": "bog",
+         "sprite": "",
+         "color": [
+            "5",
+            "1"
+         ]
+      },
+      {
+         "name": "bog",
+         "sprite": "",
+         "color": [
+            "5",
+            "2"
+         ]
+      },
+      {
+         "name": "bog",
+         "sprite": "",
+         "color": [
+            "5",
+            "1"
+         ]
+      }
+   ],
+   "object033": [
+      {
+         "name": "text_bog",
+         "sprite": "text_bog",
+         "color": [
+            "5",
+            "1"
+         ]
+      },
+      {
+         "name": "text_bog",
+         "sprite": "text_bog",
+         "color": [
+            "5",
+            "1"
+         ]
+      },
+      {
+         "name": "text_bog",
+         "sprite": "text_bog",
+         "color": [
+            "5",
+            "1"
+         ]
+      }
+   ],
+   "object041": [
+      {
+         "name": "reed",
+         "sprite": "reed",
+         "color": [
+            "6",
+            "2"
+         ]
+      },
+      {
+         "name": "husk",
+         "sprite": "husk",
+         "color": [
+            "6",
+            "1"
+         ]
+      },
+      {
+         "name": "",
+         "sprite": "seastar",
+         "color": [
+            "2",
+            "3"
+         ]
+      },
+      {
+         "name": "cog",
+         "sprite": "cog",
+         "color": [
+            "0",
+            "1"
+         ]
+      }
+   ],
+   "object053": [
+      {
+         "name": "text_reed",
+         "sprite": "text_reed",
+         "color": [
+            "6",
+            "1"
+         ]
+      },
+      {
+         "name": "text_husk",
+         "sprite": "text_husk",
+         "color": [
+            "5",
+            "1"
+         ]
+      },
+      {
+         "name": "",
+         "sprite": "",
+         "color": [
+            "2",
+            "2"
+         ]
+      },
+      {
+         "name": "text_cog",
+         "sprite": "text_cog",
+         "color": [
+            "0",
+            "1"
+         ]
+      }
+   ],
+   "object107": [
+      {
+         "name": "text_spike",
+         "sprite": "text_spike",
+         "color": [
+            "1",
+            "1"
+         ]
+      },
+      {
+         "name": "text_leaf",
+         "sprite": "text_leaf",
+         "color": []
+      }
+   ],
+   "object104": [
+      {
+         "name": "text_husk",
+         "sprite": "text_husk",
+         "color": [
+            "5",
+            "1"
+         ]
+      }
+   ],
+   "object030": [
+      {
+         "name": "",
+         "sprite": "",
+         "color": [
+            "0",
+            "2"
+         ]
+      }
+   ],
+   "object012": [
+      {
+         "name": "",
+         "sprite": "",
+         "color": [
+            "6",
+            "0"
+         ]
+      }
+   ],
+   "object105": [
+      {
+         "name": "husk",
+         "sprite": "husk",
+         "color": [
+            "5",
+            "1"
+         ]
+      }
+   ],
+   "object115": [
+      {
+         "name": "",
+         "sprite": "",
+         "color": [
+            "0",
+            "2"
+         ]
+      },
+      {
+         "name": "foliage",
+         "sprite": "foliage",
+         "color": [
+            "6",
+            "0"
+         ]
+      },
+      {
+         "name": "robot",
+         "sprite": "robot",
+         "color": [
+            "5",
+            "1"
+         ]
+      }
+   ],
+   "object018": [
+      {
+         "name": "",
+         "sprite": "",
+         "color": [
+            "0",
+            "2"
+         ]
+      }
+   ],
+   "object034": [
+      {
+         "name": "",
+         "sprite": "",
+         "color": [
+            "6",
+            "0"
+         ]
+      }
+   ],
+   "object114": [
+      {
+         "name": "",
+         "sprite": "",
+         "color": [
+            "0",
+            "2"
+         ]
+      },
+      {
+         "name": "text_robot",
+         "sprite": "text_robot",
+         "color": [
+            "0",
+            "1"
+         ]
+      }
+   ],
+   "object051": [
+      {
+         "name": "rubble",
+         "sprite": "rubble",
+         "color": [
+            "6",
+            "1"
+         ]
+      },
+      {
+         "name": "crab",
+         "sprite": "crab",
+         "color": [
+            "2",
+            "2"
+         ]
+      },
+      {
+         "name": "bolt",
+         "sprite": "bolt",
+         "color": [
+            "2",
+            "4"
+         ]
+      }
+   ],
+   "object085": [
+      {
+         "name": "spike",
+         "sprite": "spike",
+         "color": [
+            "1",
+            "1"
+         ]
+      }
+   ],
+   "object068": [
+      {
+         "name": "bird",
+         "sprite": "bird",
+         "color": [
+            "2",
+            "3"
+         ]
+      }
+   ],
+   "object086": [
+      {
+         "name": "",
+         "sprite": "text_spike",
+         "color": [
+            "1",
+            "1"
+         ]
+      }
+   ],
+   "object032": [
+      {
+         "name": "",
+         "sprite": "",
+         "color": [
+            "1",
+            "2"
+         ]
+      }
+   ],
+   "object002": [
+      {
+         "name": "",
+         "sprite": "",
+         "color": [
+            "1",
+            "4"
+         ]
+      }
+   ],
+   "object031": [
+      {
+         "name": "cliff",
+         "sprite": "cliff",
+         "color": [
+            "3",
+            "2"
+         ]
+      },
+      {
+         "name": "ufo",
+         "sprite": "ufo",
+         "color": [
+            "4",
+            "2"
+         ]
+      },
+      {
+         "name": "jelly",
+         "sprite": "jelly",
+         "color": [
+            "1",
+            "4"
+         ]
+      }
+   ],
+   "object019": [
+      {
+         "name": "text_cliff",
+         "sprite": "text_cliff",
+         "color": [
+            "1",
+            "1"
+         ]
+      },
+      {
+         "name": "text_ufo",
+         "sprite": "text_ufo",
+         "color": [
+            "4",
+            "1"
+         ]
+      },
+      {
+         "name": "text_jelly",
+         "sprite": "text_jelly",
+         "color": [
+            "1",
+            "3"
+         ]
+      }
+   ],
+   "object090": [
+      {
+         "name": "",
+         "sprite": "",
+         "color": [
+            "5",
+            "2"
+         ]
+      }
+   ],
+   "object066": [
+      {
+         "name": "",
+         "sprite": "",
+         "color": [
+            "5",
+            "1"
+         ]
+      }
+   ],
+   "object065": [
+      {
+         "name": "reed",
+         "sprite": "reed",
+         "color": [
+            "6",
+            "2"
+         ]
+      }
+   ],
+   "object077": [
+      {
+         "name": "text_reed",
+         "sprite": "text_reed",
+         "color": [
+            "6",
+            "0"
+         ]
+      }
+   ],
+   "object098": [
+      {
+         "name": "leaf",
+         "sprite": "leaf",
+         "color": [
+            "6",
+            "0"
+         ]
+      }
+   ],
+   "object079": [
+      {
+         "name": "algae",
+         "sprite": "algae",
+         "color": [
+            "2",
+            "2"
+         ]
+      }
+   ]
+}
