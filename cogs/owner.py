@@ -2,9 +2,9 @@ import discord
 import json
 import numpy     as np
 
+from discord.ext import commands
 from os          import listdir, mkdir, stat
 from PIL         import Image
-from discord.ext import commands
 
 def multiplyColor(fp, RGB):
     newR, newG, newB = RGB
@@ -210,8 +210,7 @@ class ownerCog(commands.Cog):
 
         # Tests for a supplied palette
         if arg not in [str[:-4] for str in listdir("palettes")]:
-            # await ctx.send("Supply a palette to load.")
-            print("boo hoo")
+            await ctx.send("Supply a palette to load.")
         else: 
             # The palette name
             palette = arg
@@ -223,7 +222,6 @@ class ownerCog(commands.Cog):
             # Creates the directories for the palettes if they don't exist
             try:
                 mkdir("color/%s" % palette)
-                mkdir("animated/%s" % palette)
             except FileExistsError:
                 pass
             
