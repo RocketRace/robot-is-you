@@ -1,6 +1,8 @@
 sprites/
-colored/
+color/
 animated/
+palettes/
+themes/
 testing.py
 setup.json
 log.txt

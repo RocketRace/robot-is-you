@@ -1,12 +1,11 @@
 import discord
 import imageio
-import numpy as np
-from discord.ext import commands
-from os import listdir
-from PIL import Image
-from io import BytesIO
+import json
+import numpy     as np
 
-spriteColors = {}
+from os          import listdir, mkdir
+from PIL         import Image
+from discord.ext import commands
 
 def multiplyColor(fp, RGB):
     newR, newG, newB = RGB
@@ -28,7 +27,21 @@ def multiplyColor(fp, RGB):
 class ownerCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.tileColors = {}
+        self.alternateTiles = {}
+        # Loads the tile colors, if it exists
+        colorsFile = open("tilecolors.json")
+        if colorsFile.read() != "":
+            self.tileColors = json.load(colorsFile)
+        colorsFile.close()
+        # Loads the alternate tiles if possible
+        altFile = open("alternatetiles.json")
+        if altFile.read() != "":
+            self.alternateTiles = json.load(altFile)
+        altFile.close()
 
+    # Evaluates input if you're the owner of the bot (me)
+    # TODO: sandbox it
     @commands.command(name="eval")
     @commands.is_owner()
     async def eval(self, ctx, *, content: str):
@@ -44,78 +57,202 @@ class ownerCog(commands.Cog):
         else:
             await ctx.send(f"```\n🚫 An exception occurred:\n{result}\n```")
 
-    @commands.command(name="reloadpalette")
+    @commands.command()
     @commands.is_owner()
-    async def reloadpalette(self, ctx, message):
-        pass
+    async def loadthemes(self, ctx):
+        # Loads the sprites, names and colors for each "alternate object", that is, an object with data NOT in values.lua
 
-    @commands.command(name="refillemotes",)
+        # Clears existing data
+        altFile = open("alternatetiles.json", "wt")
+        altFile.seek(0)
+        altFile.truncate()
+        altFile.close()
+
+        # Finds each theme
+        themes = listdir("themes")
+        for theme in themes:
+            # Reads each line of the theme file
+            fp = open("themes/%s" % theme)
+            lines = fp.readlines()
+            fp.close()
+
+            # The ID, name and sprite of the changed object
+            ID = name = sprite = ""
+            # The color of the changed object
+            colorRaw = ""
+            color = []
+
+            # Loop through the lines
+            for line in lines:
+                # Only considers lines starting with objectXYZ
+                if line.startswith("object"):
+                    # Tests if a new object is being manipulated, unless it's the very first one
+                    if line[:9] != ID and bool(ID):
+                        # Adds the data to the alternateTiles dict
+                        # Creates a new key if the dict doesn't already have one
+                        if self.alternateTiles.get(ID) == None:
+                            # Note that if any of the variables is an empty string, that data is saved
+                            # The alternate tile checker will consider an empty string "no change".
+                            self.alternateTiles[ID] = [{"name":name, "sprite":sprite, "color":color}]
+                        else:
+                            # Each ID has a list of alternative versions - each new one is appended
+                            self.alternateTiles[ID].append({"name":name, "sprite":sprite, "color":color})
+                        # Resets the values
+                        ID = name = sprite = ""
+                    ID = line[:9]
+                    # If the line matches "objectZYX_name="
+                    # Sets the changed name
+                    if line.startswith("name=", 10):
+                        # Magic numbers used to grab only the name of the sprite
+                        # Same is used below for sprites/colors
+                        name = line[15:-1]
+                    # Sets the changed sprite
+                    elif line.startswith("image=", 10):
+                        sprite = line[16:-1]
+                    # Sets the changed color (all tiles)
+                    elif line.startswith("colour=", 10):
+                        colorRaw = line[17:-1]
+                        # Splits the color into a list 
+                        # "a,b" -> [a,b]
+                        color = colorRaw.split(",")
+                    # Sets the changed color (active text only)
+                    elif line.startswith("activecolour=", 10):
+                        colorRaw = line[23:-1]
+                        # Splits the color into a list 
+                        # "a,b" -> [a,b]
+                        color = colorRaw.split(",")
+
+        # Saves the data of ALL the themes to the json file
+        alternateFile = open("alternatetiles.json", "wt")
+        json.dump(self.alternateTiles, alternateFile, indent=3)
+        alternateFile.close()
+
+    @commands.command()
     @commands.is_owner()
-    async def refillemotecache(self, ctx):
-        # Files within sprites/
-        spriteNames = listdir("sprites") # Outputs are sadly not in order
-        
-        # Establishes the dict keys and fills them with Numpy arrays (for the associated texture files)
-        for sprite in spriteNames:
-            segments = sprite.split("_")
+    async def loadcolors(self, ctx):
+        # Reads values.lua and scrapes the tile data from there
+        # values.lua contains the data about which color (on the palette) is associated with each tile.
+        colorvalues = open("values.lua")
+        lines = colorvalues.readlines()
+        # Skips the parts we don't need
+        tileslist = False
+        # The name, ID and sprite of the currently handled tile
+        name = ID = sprite = ""
+        # The color of the currently handled tile
+        colorRaw = ""
+        color = []
+        # Reads each line
+        for line in lines:
+            if tileslist:
+                # Only consider certain lines ("objectXYZ =", "name = x", "sprite = y", "colour = {a,b}", "active = {a,b}")
+                if line.startswith("\tobject"):
+                    ID = line[1:10]
+                if line.startswith("\t\tname = "):
+                    # Grabs only the name of the object
+                    name = line[10:-3] # Magic numbers used to grab the perfect substring
+                # This line has the format "\t\tsprite = \"name\"\n".
+                elif line.startswith("\t\tsprite = "):
+                    # Grabs only the name of the sprite
+                    sprite = line[12:-3]
+                # These lines have the format "\t\t[active or colour] = {a,b}\n" where a,b are int.
+                # "active = {a,b}" lines always come after "colour = {a,b}" so this check overwrites the color to "active".
+                # The "active" line only exists for text tiles.
+                # We prefer the active color of the text.
+                # If you want the inactive colors, just remove the second condition check.
+                elif line.startswith("\t\tcolour = ") or line.startswith("\t\tactive = "):
+                    colorRaw = line[12:-3]
+                    # Converts the string to a list 
+                    # "{a,b}" --> [a,b]
+                    seg = colorRaw.split(",")
+                    color = [seg[i].strip() for i in range(2)]
+                # Signifies that the data for the current tile is over
+                elif line == "\t},\n":
+                    # Makes sure no fields are empty
+                    # bool("") == False, but True for any other string
+                    if bool(name) and bool(sprite) and bool(colorRaw):
+                        # Alternate tile data (initialized with the original)
+                        alts = [{"name":name, "sprite":sprite, "color":color}]
+                        # Looks for object replacements in the alternateTiles dict
+                        if self.alternateTiles.get(ID) != None:
+                            # Each replacement for the object ID:
+                            for obj in self.alternateTiles[ID]:
+                                # Sets fields to the alternate fields, if specified
+                                altName = name
+                                altSprite = sprite
+                                altColor = color
+                                if obj.get("name") != "":
+                                    altName = obj.get("name")
+                                if obj.get("sprite") != "":
+                                    altSprite = obj.get("sprite")
+                                if obj.get("color") != []: # This shouldn't ever be false
+                                    altColor = obj.get("color")
+                                # Adds the change to the alts
+                                alts.append({"name":altName, "sprite":altSprite, "color":altColor})
+                        # Removes duplicate objects in alts
+                        uniqueAlts = list({alt["name"] : alt for alt in alts}.values())
+                        # Adds each unique name-color pairs to the tileColors dict
+                        for obj in uniqueAlts:
+                            self.tileColors[obj["name"]] = [obj["sprite"], obj["color"]]               
+                    # Resets the fields
+                    name = sprite = colorRaw = ""
+                    color = []
+            # Only begins checking for these lines once a certain point in the file has been passed
+            elif line == "tileslist =\n":
+                tileslist = True
+        # Dumps the gathered data to tilecolors.json and tilesprites.json
+        emotefile = open("tilecolors.json", "wt")
+        # Clears the file first
+        emotefile.seek(0)
+        emotefile.truncate()
+        json.dump(self.tileColors, emotefile, indent=3)
+        emotefile.close()
 
-            # Only considers filenames that             
-            if len(segments) >= 2:
+    @commands.command()
+    @commands.is_owner()
+    async def loadpalette(self, ctx, message: str):
 
-                # Only considers the 0th sprite type for each text tile (there should only be a 0th type)
-                if segments[-2] == "0":
+        # Tests for a supplied palette
+        if message not in [str[:-4] for str in listdir("palettes")]:
+            # await ctx.send("Supply a palette to load.")
+            print("boo hoo")
+        else: 
+            # The palette name
+            palette = message
+            # The palette image 
+            paletteImg = Image.open("palettes/%s.png" % palette)
+            # The RGB values of the palette
+            paletteColors = [[(paletteImg.getpixel((x,y))) for y in range(5)] for x in range(7)]
 
-                    # Joins the parts of the filename that form the object name
-                    name = "_".join(segments[:-2])
-                    
-                    # Takes the last segment (e.g. "3.png") and saves one less than its first character's integer value.
-                    animationFrame = segments.pop()[0]
-
-                    # The corresponding sprite file
-                    defaultImage = "sprites/" + sprite
-                    
-                    # Tests if the sprite has an associated color. 
-                    # If true, changes the sprite color.
-                    # If not, keeps the white sprite.
-                    if spriteColors.get(name) == None:
-                        image = Image.open(defaultImage)
-                    else:
-                        image = multiplyColor(defaultImage, spriteColors[name])
-                    # Names are in the format "name_of_sprite-frame-.png" for further parsing
-                    # This is different from the original format 
-                    image.save("colored/" + name + "-" + animationFrame + "-.png", format="PNG")
-
-        # Dict to put the ordered colored sprites in
-        # Grouped according to tile name (=key)
-        spriteFrames = {}
-
-        # Newly created files within colored/
-        coloredSprites = listdir("colored/")
-        for sprite in coloredSprites:
-
-            # Gets the necessary information from the filenames
-            # Parses the aforementioned format like a piece of cake
-            segments = sprite.split("-")
-            name = segments[0]
-            animationFrame = segments[1]
-            if spriteFrames.get(name) == None:                
-                # Puts in a dict because there's not necessarily 3 animation frames and the files are unordered
-                # A list would probably be more efficient
-                spriteFrames[name] = {}
-            image = imageio.imread("colored/" + sprite, format="PNG")
-            spriteFrames[name][animationFrame] = image
-
-        # Loops over each set of animation frames and creates gifs from them.
-        for name in spriteFrames:
-            framesOrdered = []
-            # Loops over each frame
-            # These are sorted because of the string hashing? I think?
-            for frame in spriteFrames[name]:
-                framesOrdered.append(spriteFrames[name][frame])
-            imageio.mimwrite("animated/" + name + ".gif", framesOrdered, format="GIF", fps=8)
+            # Creates the directories for the palettes if they don't exist
+            try:
+                mkdir("color/%s" % palette)
+                mkdir("animated/%s" % palette)
+            except FileExistsError:
+                pass
             
+            # Goes through each tile object in the tileColors dict
+            for name in self.tileColors:
+                # Fetches the tile data
+                sprite = self.tileColors[name][0]
+                color = self.tileColors[name][1]
+                # For convenience
+                x,y = [int(n) for n in color]
+            
+                # Opens the three associated sprites from sprites/
+                # Only uses the first variation of the sprite ("_0_")
+                files = ["sprites/%s_0_%s.png" % (sprite, i + 1) for i in range(3)]
+                # Changes the color of each image
+                framesColor = [multiplyColor(file, paletteColors[x][y]) for file in files]
+                # Saves the colored images to /color/[palette]/
+                [framesColor[i].save("color/%s/%s-%s-.png" % (palette, name, i), format="PNG") for i in range(len(framesColor))]
 
-     
+                # Converts the files into numpy arrays
+                images = [imageio.imread("color/%s/%s-%s-.png" % (palette, name, i), format="PNG") for i in range(len(framesColor))]
+
+                # Merges the images into an animated gif and saves it to /animated/[palette]/
+                imageio.mimwrite("animated/%s/%s.png" % (palette, name), images, format="GIF", fps=6)
 
 def setup(bot):
     bot.add_cog(ownerCog(bot))
+
+
