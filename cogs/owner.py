@@ -1,5 +1,4 @@
 import discord
-import imageio
 import json
 import numpy     as np
 
