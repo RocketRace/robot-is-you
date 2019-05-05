@@ -6,6 +6,10 @@ themes/
 testing.py
 setup.json
 log.txt
+render.gif
+render0.png
+render1.png
+render2.png
 .DS_Store
 .vscode/
 cogs/__pycache__/
