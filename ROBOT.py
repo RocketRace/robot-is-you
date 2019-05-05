@@ -1,8 +1,8 @@
 import discord
 import logging
 
-from json        import load
 from discord.ext import commands
+from json        import load
 
 # Sets up logging 
 logging.basicConfig(filename="log.txt", level=20, format="%(asctime)s - %(levelname)s - %(message)s") 

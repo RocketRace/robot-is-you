@@ -1,12 +1,31 @@
 import discord
-import imageio
-import os
 import numpy     as np
-from PIL         import Image
-from json        import load
-from discord.ext import commands
 
-emoteCache = {}
+from discord.ext import commands
+from json        import load
+from PIL         import Image
+
+def genFrame(fp):
+    im = Image.open(fp)
+    # Gets the alpha from the images
+    alpha = im.getchannel("A")
+
+    # Converts to 256 color, but only uses 255
+    # Not sure if this acatually does anything
+    im = im.convert("RGB").convert("P", palette=Image.ADAPTIVE, colors=255)
+    mask = Image.eval(alpha, lambda a: 255 if a == 0 else 0)
+
+    # Gets the color value of the 0,0 pixel
+    # This will be the transparency value in the .gif
+    c = im.getpixel((0,0))
+
+    # Pastes the transparency value to every spot on the picture that has alpha dictated by the mask above
+    im.paste(c, mask)
+
+    # Sets the transparency value to the pixel color
+    im.info["transparency"] = c
+
+    return im
 
 class globalCog(commands.Cog):
     def __init__(self, bot):
@@ -46,32 +65,16 @@ class globalCog(commands.Cog):
             await ctx.send("⚠️ Could not find a tile for \"%s\"." % failedWord)
         for f in range(3):
             pathGrid = [["empty.png" if word == "-" else "color/%s/%s-%s-.png" % ("default", word, f) for word in row] for row in wordGrid]
-            frame = Image.new("RGBA", size=(24 * width, 24 * height))
+            frame = Image.new("RGBA", size=(48 * width, 48 * height))
             for i in range(height):
                 for j in range(width):
                     img = Image.open(pathGrid[i][j])
-                    frame.paste(img, (24 * j, 24 * i, 24 * j + 24, 24 * i + 24))
-            frame.save("render%s.png" % f)
+                    frame.paste(img, (48 * j, 48 * i, 48 * j + 48, 48 * i + 48))
         f0 = genFrame("render0.png")
         f1 = genFrame("render1.png")
         f2 = genFrame("render2.png")
         f0.save("render.gif", save_all=True, append_images=[f1, f2], duration=200, loop=0, disposal=2)
         await ctx.send(content=ctx.author.mention, file=discord.File("render.gif"))
-        
-def genFrame(fp):
-    im = Image.open(fp)
-    alpha = im.getchannel("A")
-
-    im = im.convert("RGB").convert("P", palette=Image.ADAPTIVE, colors=255)
-    mask = Image.eval(alpha, lambda a: 255 if a == 0 else 0)
-
-    c = im.getpixel((0,0))
-
-    im.paste(c, mask)
-
-    im.info["transparency"] = c
-
-    return im
 
 def setup(bot):
     bot.add_cog(globalCog(bot))
