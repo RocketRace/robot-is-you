@@ -53,9 +53,9 @@ class ownerCog(commands.Cog):
             result = e
             success = False
         if success:
-            await ctx.send(f"```\n✅ Evaluated successfully:\n{result}\n```")
+            await ctx.send("Evaluated successfully:\n%s" % result)
         else:
-            await ctx.send(f"```\n🚫 An exception occurred:\n{result}\n```")
+            await ctx.send("An exception occurred%s" % result)
 
     @commands.command()
     @commands.is_owner()
