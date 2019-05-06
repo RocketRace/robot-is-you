@@ -1,0 +1,1070 @@
+2019-05-05 16:01:28,465 - INFO - logging in using static token
+2019-05-05 16:01:29,893 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 16:01:29,906 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 16:01:30,151 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-vt0h, discord-sessions-prd-1-23 (Session ID: 8d6d3405e4701646cc91867ab14e8ff3).
+2019-05-05 16:01:30,158 - INFO - Connected to Discord.
+2019-05-05 16:01:34,676 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 16:01:34,820 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 16:01:35,001 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 16:01:35,004 - INFO - Client caches filled. Ready.
+2019-05-05 16:02:50,121 - INFO - Cleaning up event loop.
+2019-05-05 16:02:50,264 - INFO - Cleaning up after 5 tasks.
+2019-05-05 16:17:52,404 - INFO - logging in using static token
+2019-05-05 16:17:53,860 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 16:17:53,869 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 16:17:54,131 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-gdbh, discord-sessions-prd-1-2 (Session ID: 99328fac818b81ca2fc011c479dbc163).
+2019-05-05 16:17:54,133 - INFO - Connected to Discord.
+2019-05-05 16:17:58,495 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 16:17:58,556 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 16:17:58,654 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 16:17:58,655 - INFO - Client caches filled. Ready.
+2019-05-05 16:18:23,559 - INFO - Cleaning up event loop.
+2019-05-05 16:18:23,699 - INFO - Cleaning up after 5 tasks.
+2019-05-05 16:19:19,643 - INFO - logging in using static token
+2019-05-05 16:19:21,319 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 16:19:21,327 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 16:19:22,316 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-2sw1, discord-sessions-prd-1-19 (Session ID: d134e6b1e815b449302fdb7acb486e1b).
+2019-05-05 16:19:22,323 - INFO - Connected to Discord.
+2019-05-05 16:19:26,839 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 16:19:27,094 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 16:19:27,157 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 16:19:27,159 - INFO - Client caches filled. Ready.
+2019-05-05 16:19:48,117 - INFO - Cleaning up event loop.
+2019-05-05 16:19:48,256 - INFO - Cleaning up after 5 tasks.
+2019-05-05 16:22:01,820 - INFO - logging in using static token
+2019-05-05 16:22:03,305 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 16:22:03,313 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 16:22:03,571 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-8cw8, discord-sessions-prd-1-28 (Session ID: 7ebeeaa517d9f63146718053f51cb81f).
+2019-05-05 16:22:03,573 - INFO - Connected to Discord.
+2019-05-05 16:22:08,079 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 16:22:08,394 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 16:22:08,552 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 16:22:08,553 - INFO - Client caches filled. Ready.
+2019-05-05 16:23:38,153 - INFO - Cleaning up event loop.
+2019-05-05 16:23:38,289 - INFO - Cleaning up after 5 tasks.
+2019-05-05 16:24:56,099 - INFO - logging in using static token
+2019-05-05 16:24:57,391 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 16:24:57,399 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 16:24:57,667 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-pghz, discord-sessions-prd-1-7 (Session ID: 38c39a4c06b526ba1eaf7cc9bf261c9b).
+2019-05-05 16:24:57,673 - INFO - Connected to Discord.
+2019-05-05 16:25:02,281 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 16:25:02,428 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 16:25:02,588 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 16:25:02,590 - INFO - Client caches filled. Ready.
+2019-05-05 16:25:43,656 - WARNING - Heartbeat blocked for more than 5 seconds.
+2019-05-05 16:25:48,661 - WARNING - Heartbeat blocked for more than 10 seconds.
+2019-05-05 16:25:53,662 - WARNING - Heartbeat blocked for more than 15 seconds.
+2019-05-05 16:25:58,666 - WARNING - Heartbeat blocked for more than 20 seconds.
+2019-05-05 16:26:03,677 - WARNING - Heartbeat blocked for more than 25 seconds.
+2019-05-05 16:26:07,762 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-05 16:26:07,762 - ERROR - Attempting a reconnect in 1.38s
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-05 16:26:10,006 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 16:26:10,012 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 16:26:10,292 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-ww7z, discord-sessions-prd-1-10 (Session ID: 4a3a7534491b8fe0331f6d85d85c80c0).
+2019-05-05 16:26:10,297 - INFO - Connected to Discord.
+2019-05-05 16:26:14,674 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 16:26:14,753 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 16:26:14,813 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 16:26:14,815 - INFO - Client caches filled. Ready.
+2019-05-05 16:26:18,480 - INFO - Cleaning up event loop.
+2019-05-05 16:26:18,617 - INFO - Cleaning up after 5 tasks.
+2019-05-05 16:28:24,332 - INFO - logging in using static token
+2019-05-05 16:28:25,773 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 16:28:25,778 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 16:28:26,026 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-r81d, discord-sessions-prd-1-29 (Session ID: e74eb2caf86332629430a3a668d3b05f).
+2019-05-05 16:28:26,031 - INFO - Connected to Discord.
+2019-05-05 16:28:30,398 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 16:28:30,462 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 16:28:30,538 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 16:28:30,540 - INFO - Client caches filled. Ready.
+2019-05-05 17:50:46,176 - INFO - Cleaning up event loop.
+2019-05-05 17:50:46,320 - INFO - Cleaning up after 5 tasks.
+2019-05-05 19:57:08,854 - INFO - logging in using static token
+2019-05-05 19:57:10,602 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 19:57:10,612 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 19:57:10,884 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-fgf7, discord-sessions-prd-1-4 (Session ID: 395a845eb01256b080d2ae10e9a08c4f).
+2019-05-05 19:57:10,888 - INFO - Connected to Discord.
+2019-05-05 19:57:15,400 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 19:57:15,559 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 19:57:15,724 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 19:57:15,725 - INFO - Client caches filled. Ready.
+2019-05-05 19:58:04,407 - INFO - Cleaning up event loop.
+2019-05-05 19:58:04,546 - INFO - Cleaning up after 5 tasks.
+2019-05-05 19:58:14,733 - INFO - logging in using static token
+2019-05-05 19:58:16,035 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 19:58:16,045 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 19:58:16,299 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-njxv, discord-sessions-prd-1-28 (Session ID: 09d1ff29423b3208d04c5d0dc09dd6d6).
+2019-05-05 19:58:16,306 - INFO - Connected to Discord.
+2019-05-05 19:58:20,668 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 19:58:20,845 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 19:58:20,995 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 19:58:20,997 - INFO - Client caches filled. Ready.
+2019-05-05 19:59:28,521 - INFO - Cleaning up event loop.
+2019-05-05 19:59:28,667 - INFO - Cleaning up after 5 tasks.
+2019-05-05 19:59:33,044 - INFO - logging in using static token
+2019-05-05 19:59:34,375 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 19:59:34,382 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 19:59:34,633 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-3llm, discord-sessions-prd-1-14 (Session ID: 1e70d8afe9418de2db460b8052041103).
+2019-05-05 19:59:34,636 - INFO - Connected to Discord.
+2019-05-05 19:59:39,020 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 19:59:39,102 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 19:59:39,181 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 19:59:39,183 - INFO - Client caches filled. Ready.
+2019-05-05 20:00:28,342 - INFO - Cleaning up event loop.
+2019-05-05 20:00:28,491 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:00:32,336 - INFO - logging in using static token
+2019-05-05 20:00:33,666 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:00:33,672 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:00:33,957 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-lw5f, discord-sessions-prd-1-29 (Session ID: a8cb99c7a816b81bc9a2c7c801c88cad).
+2019-05-05 20:00:33,963 - INFO - Connected to Discord.
+2019-05-05 20:00:38,346 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:00:38,493 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:00:38,561 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:00:38,562 - INFO - Client caches filled. Ready.
+2019-05-05 20:01:02,396 - INFO - Cleaning up event loop.
+2019-05-05 20:01:02,541 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:01:06,760 - INFO - logging in using static token
+2019-05-05 20:01:08,385 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:01:08,394 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:01:08,649 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-029q, discord-sessions-prd-1-15 (Session ID: de5896c543d9d8a69e0298124b70f3b4).
+2019-05-05 20:01:08,656 - INFO - Connected to Discord.
+2019-05-05 20:01:13,057 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:01:13,123 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:01:13,183 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:01:13,248 - INFO - Client caches filled. Ready.
+2019-05-05 20:01:21,727 - INFO - Cleaning up event loop.
+2019-05-05 20:01:21,872 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:01:30,595 - INFO - logging in using static token
+2019-05-05 20:01:32,029 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:01:32,034 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:01:32,281 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-bm08, discord-sessions-prd-1-26 (Session ID: 7899772c52a17568ddf431c1e05d8112).
+2019-05-05 20:01:32,282 - INFO - Connected to Discord.
+2019-05-05 20:01:36,665 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:01:36,788 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:01:36,847 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:01:36,849 - INFO - Client caches filled. Ready.
+2019-05-05 20:01:40,579 - INFO - Cleaning up event loop.
+2019-05-05 20:01:40,713 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:02:07,620 - INFO - logging in using static token
+2019-05-05 20:02:08,893 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:02:08,899 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:02:09,165 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-1lwq, discord-sessions-prd-1-1 (Session ID: a27efc257d300579ee84aa10c68d9cce).
+2019-05-05 20:02:09,168 - INFO - Connected to Discord.
+2019-05-05 20:02:13,569 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:02:13,645 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:02:13,711 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:02:13,721 - INFO - Client caches filled. Ready.
+2019-05-05 20:03:09,115 - INFO - Cleaning up event loop.
+2019-05-05 20:03:09,251 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:03:41,976 - INFO - logging in using static token
+2019-05-05 20:03:43,821 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:03:43,839 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:03:44,286 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-xp0j, discord-sessions-prd-1-6 (Session ID: 2b41cc2043878f5bc7114fd1e4c5062b).
+2019-05-05 20:03:44,289 - INFO - Connected to Discord.
+2019-05-05 20:03:48,662 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:03:48,820 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:03:48,964 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:03:48,966 - INFO - Client caches filled. Ready.
+2019-05-05 20:04:34,013 - INFO - Cleaning up event loop.
+2019-05-05 20:04:34,152 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:04:37,955 - INFO - logging in using static token
+2019-05-05 20:04:39,191 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:04:39,196 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:04:39,472 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-mdp4, discord-sessions-prd-1-5 (Session ID: b78bb9e8d9d9b43c2443ec2c88f5701f).
+2019-05-05 20:04:39,475 - INFO - Connected to Discord.
+2019-05-05 20:04:44,062 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:04:44,296 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:04:44,462 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:04:44,464 - INFO - Client caches filled. Ready.
+2019-05-05 20:05:30,670 - INFO - Cleaning up event loop.
+2019-05-05 20:05:30,811 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:05:35,219 - INFO - logging in using static token
+2019-05-05 20:05:36,563 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:05:36,569 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:05:36,844 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-nzxs, discord-sessions-prd-1-25 (Session ID: 22a61f39903eb5d3a8c570ed7bd9f595).
+2019-05-05 20:05:36,847 - INFO - Connected to Discord.
+2019-05-05 20:05:41,358 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:05:41,539 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:05:41,690 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:05:41,692 - INFO - Client caches filled. Ready.
+2019-05-05 20:05:44,345 - INFO - Cleaning up event loop.
+2019-05-05 20:05:44,484 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:06:14,521 - INFO - logging in using static token
+2019-05-05 20:06:15,886 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:06:15,893 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:06:17,190 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-x4t5, discord-sessions-prd-1-7 (Session ID: 69943b4cb8aeda30af0222e02cde0770).
+2019-05-05 20:06:17,195 - INFO - Connected to Discord.
+2019-05-05 20:06:17,875 - WARNING - Unknown event PRESENCES_REPLACE.
+2019-05-05 20:06:21,571 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:06:21,711 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:06:21,793 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:06:21,794 - INFO - Client caches filled. Ready.
+2019-05-05 20:07:01,466 - INFO - Cleaning up event loop.
+2019-05-05 20:07:01,606 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:07:13,535 - INFO - logging in using static token
+2019-05-05 20:07:14,875 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:07:14,891 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:07:15,135 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-10mv, discord-sessions-prd-1-10 (Session ID: 36b3a776addfb0cee9ceee098cc999e4).
+2019-05-05 20:07:15,141 - INFO - Connected to Discord.
+2019-05-05 20:07:19,497 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:07:19,659 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:07:19,719 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:07:19,722 - INFO - Client caches filled. Ready.
+2019-05-05 20:08:03,037 - INFO - Cleaning up event loop.
+2019-05-05 20:08:03,177 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:19:45,873 - INFO - logging in using static token
+2019-05-05 20:19:47,518 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:19:47,526 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:19:47,807 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-cwbf, discord-sessions-prd-1-9 (Session ID: 32165f9b3c3f0a28e3aba5edefdc1685).
+2019-05-05 20:19:47,814 - INFO - Connected to Discord.
+2019-05-05 20:19:52,639 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:19:53,084 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:19:53,498 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:19:53,511 - INFO - Client caches filled. Ready.
+2019-05-05 20:20:23,482 - INFO - Cleaning up event loop.
+2019-05-05 20:20:23,660 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:21:01,717 - INFO - logging in using static token
+2019-05-05 20:21:03,090 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:21:03,100 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:21:03,347 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-8cw8, discord-sessions-prd-1-20 (Session ID: 909156b4018ea7a0799949a66688c9fd).
+2019-05-05 20:21:03,350 - INFO - Connected to Discord.
+2019-05-05 20:21:07,961 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:21:08,421 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:21:08,885 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:21:08,891 - INFO - Client caches filled. Ready.
+2019-05-05 20:21:26,953 - INFO - Cleaning up event loop.
+2019-05-05 20:21:27,127 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:21:35,339 - INFO - logging in using static token
+2019-05-05 20:21:36,880 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:21:36,889 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:21:37,174 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-01vm, discord-sessions-prd-1-15 (Session ID: 598a05de13415572a9e245f742991960).
+2019-05-05 20:21:37,182 - INFO - Connected to Discord.
+2019-05-05 20:21:41,711 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:21:41,866 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:21:42,015 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:21:42,017 - INFO - Client caches filled. Ready.
+2019-05-05 20:22:48,783 - INFO - Cleaning up event loop.
+2019-05-05 20:22:48,962 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:22:56,694 - INFO - logging in using static token
+2019-05-05 20:22:58,289 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:22:58,299 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:22:58,906 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-l1kq, discord-sessions-prd-1-11 (Session ID: 5f9b8b0cbca6c389f8d7e1567c73106a).
+2019-05-05 20:22:58,910 - INFO - Connected to Discord.
+2019-05-05 20:23:03,740 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:23:04,324 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:23:04,808 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:23:04,811 - INFO - Client caches filled. Ready.
+2019-05-05 20:23:55,352 - INFO - Cleaning up event loop.
+2019-05-05 20:23:55,527 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:24:04,769 - INFO - logging in using static token
+2019-05-05 20:24:06,181 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:24:06,194 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:24:06,433 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-3ghj, discord-sessions-prd-1-2 (Session ID: 841396a0ba30352208efd608a8ddc0e2).
+2019-05-05 20:24:06,442 - INFO - Connected to Discord.
+2019-05-05 20:24:11,290 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:24:11,750 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:24:12,010 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:24:12,012 - INFO - Client caches filled. Ready.
+2019-05-05 20:25:31,426 - INFO - Cleaning up event loop.
+2019-05-05 20:25:31,602 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:25:48,626 - INFO - logging in using static token
+2019-05-05 20:25:49,967 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:25:49,977 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:25:50,285 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-5lgk, discord-sessions-prd-1-4 (Session ID: 94d60b30d6ce09b25d84f9396a90a356).
+2019-05-05 20:25:50,288 - INFO - Connected to Discord.
+2019-05-05 20:25:54,740 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:25:55,022 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:25:55,199 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:25:55,208 - INFO - Client caches filled. Ready.
+2019-05-05 20:26:35,613 - INFO - Cleaning up event loop.
+2019-05-05 20:26:35,801 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:26:43,798 - INFO - logging in using static token
+2019-05-05 20:26:45,326 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:26:45,335 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:26:45,764 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-9h15, discord-sessions-prd-1-12 (Session ID: d45ce85ba6303b2ca25ecaaa6fd6f7e6).
+2019-05-05 20:26:45,769 - INFO - Connected to Discord.
+2019-05-05 20:26:50,283 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:26:50,500 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:26:50,822 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:26:50,829 - INFO - Client caches filled. Ready.
+2019-05-05 20:27:20,750 - INFO - Cleaning up event loop.
+2019-05-05 20:27:20,936 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:28:23,545 - INFO - logging in using static token
+2019-05-05 20:28:25,155 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:28:25,167 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:28:25,416 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-rwdh, discord-sessions-prd-1-3 (Session ID: 40a46c82d6cb9d79c60ecd72abb589ae).
+2019-05-05 20:28:25,423 - INFO - Connected to Discord.
+2019-05-05 20:28:29,994 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:28:30,259 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:28:30,517 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:28:30,524 - INFO - Client caches filled. Ready.
+2019-05-05 20:29:15,811 - INFO - Cleaning up event loop.
+2019-05-05 20:29:15,992 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:29:48,446 - INFO - logging in using static token
+2019-05-05 20:29:49,943 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:29:49,951 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:29:50,198 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-bvj9, discord-sessions-prd-1-26 (Session ID: acfa27bb1f20fc5d337cbcdd427e0d5a).
+2019-05-05 20:29:50,204 - INFO - Connected to Discord.
+2019-05-05 20:29:54,876 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:29:55,069 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:29:55,202 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:29:55,204 - INFO - Client caches filled. Ready.
+2019-05-05 20:30:33,238 - INFO - Cleaning up event loop.
+2019-05-05 20:30:33,372 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:30:38,013 - INFO - logging in using static token
+2019-05-05 20:30:39,403 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:30:39,411 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:30:39,907 - INFO - Cleaning up event loop.
+2019-05-05 20:30:40,020 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-4br4, discord-sessions-prd-1-19 (Session ID: 379137caaeb689d0f5f735a3d006b4a2).
+2019-05-05 20:30:40,025 - INFO - Connected to Discord.
+2019-05-05 20:30:40,053 - INFO - Cleaning up after 6 tasks.
+2019-05-05 20:30:54,827 - INFO - logging in using static token
+2019-05-05 20:30:56,299 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:30:56,310 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:30:56,563 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-z0zz, discord-sessions-prd-1-10 (Session ID: 1fa36d1b443018950983b6b5c9e62464).
+2019-05-05 20:30:56,567 - INFO - Connected to Discord.
+2019-05-05 20:31:01,019 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:31:01,219 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:31:01,336 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:31:01,338 - INFO - Client caches filled. Ready.
+2019-05-05 20:31:24,574 - INFO - Cleaning up event loop.
+2019-05-05 20:31:24,714 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:31:28,693 - INFO - logging in using static token
+2019-05-05 20:31:30,092 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:31:30,102 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:31:30,363 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-z3p2, discord-sessions-prd-1-1 (Session ID: 3c1d7f27a5b99ae65aeb8019e7865965).
+2019-05-05 20:31:30,367 - INFO - Connected to Discord.
+2019-05-05 20:31:34,724 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:31:34,789 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:31:34,897 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:31:34,900 - INFO - Client caches filled. Ready.
+2019-05-05 20:32:08,794 - INFO - Cleaning up event loop.
+2019-05-05 20:32:08,932 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:32:29,560 - INFO - logging in using static token
+2019-05-05 20:32:30,915 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:32:30,925 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:32:31,184 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-4x4m, discord-sessions-prd-1-17 (Session ID: d38925290751bb358f7d217f659993fc).
+2019-05-05 20:32:31,187 - INFO - Connected to Discord.
+2019-05-05 20:32:35,557 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:32:35,621 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:32:35,699 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:32:35,700 - INFO - Client caches filled. Ready.
+2019-05-05 20:33:04,587 - INFO - Cleaning up event loop.
+2019-05-05 20:33:04,720 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:35:28,141 - INFO - logging in using static token
+2019-05-05 20:35:29,709 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:35:29,717 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:35:29,965 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-hq1t, discord-sessions-prd-1-19 (Session ID: 31bc8e681206190531b5083f4d1f68c5).
+2019-05-05 20:35:29,967 - INFO - Connected to Discord.
+2019-05-05 20:35:34,477 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:35:34,653 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:35:34,797 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:35:34,798 - INFO - Client caches filled. Ready.
+2019-05-05 20:36:03,808 - INFO - Cleaning up event loop.
+2019-05-05 20:36:03,952 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:36:23,598 - INFO - logging in using static token
+2019-05-05 20:36:25,004 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:36:25,009 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:36:25,254 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-zs49, discord-sessions-prd-1-8 (Session ID: 907b2ccd1b3e788ec2f4979526a1d0a0).
+2019-05-05 20:36:25,257 - INFO - Connected to Discord.
+2019-05-05 20:36:29,622 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:36:29,772 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:36:29,913 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:36:29,915 - INFO - Client caches filled. Ready.
+2019-05-05 20:37:31,126 - INFO - Cleaning up event loop.
+2019-05-05 20:37:31,262 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:37:35,721 - INFO - logging in using static token
+2019-05-05 20:37:37,197 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:37:37,204 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:37:37,455 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-2kp3, discord-sessions-prd-1-6 (Session ID: 7037331ad26ab91099ef780fdfdbab83).
+2019-05-05 20:37:37,459 - INFO - Connected to Discord.
+2019-05-05 20:37:41,982 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:37:42,158 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:37:42,291 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:37:42,293 - INFO - Client caches filled. Ready.
+2019-05-05 20:38:15,161 - INFO - Cleaning up event loop.
+2019-05-05 20:38:15,292 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:39:43,642 - INFO - logging in using static token
+2019-05-05 20:39:44,906 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:39:44,918 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:39:45,163 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-p4lk, discord-sessions-prd-1-7 (Session ID: ac8b62c7f68df09efdd110d368033335).
+2019-05-05 20:39:45,166 - INFO - Connected to Discord.
+2019-05-05 20:39:49,672 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:39:50,000 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:39:50,308 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:39:50,310 - INFO - Client caches filled. Ready.
+2019-05-05 20:47:05,919 - INFO - Cleaning up event loop.
+2019-05-05 20:47:06,065 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:47:52,994 - INFO - logging in using static token
+2019-05-05 20:47:54,411 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:47:54,424 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:47:55,232 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-z0zz, discord-sessions-prd-1-29 (Session ID: 7397ec98468710803fdd60942a317229).
+2019-05-05 20:47:55,236 - INFO - Connected to Discord.
+2019-05-05 20:47:59,763 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:47:59,937 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:48:00,087 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:48:00,089 - INFO - Client caches filled. Ready.
+2019-05-05 20:48:21,388 - INFO - Cleaning up event loop.
+2019-05-05 20:48:21,533 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:48:26,009 - INFO - logging in using static token
+2019-05-05 20:48:27,238 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:48:27,246 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:48:27,513 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-3ghj, discord-sessions-prd-1-22 (Session ID: 840cb9832c8a2e65e6c2ca7161db7a2b).
+2019-05-05 20:48:27,517 - INFO - Connected to Discord.
+2019-05-05 20:48:31,886 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:48:31,953 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:48:32,013 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:48:32,016 - INFO - Client caches filled. Ready.
+2019-05-05 20:49:42,918 - INFO - Cleaning up event loop.
+2019-05-05 20:49:43,069 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:50:05,434 - INFO - logging in using static token
+2019-05-05 20:50:06,888 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:50:06,900 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:50:07,166 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-dz6b, discord-sessions-prd-1-20 (Session ID: 77eb5ac228540edb8fc4266014717819).
+2019-05-05 20:50:07,169 - INFO - Connected to Discord.
+2019-05-05 20:50:11,535 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:50:11,616 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:50:11,687 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:50:11,690 - INFO - Client caches filled. Ready.
+2019-05-05 20:52:42,382 - INFO - Cleaning up event loop.
+2019-05-05 20:52:42,523 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:52:47,140 - INFO - logging in using static token
+2019-05-05 20:52:48,699 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:52:48,709 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:52:48,954 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-s47l, discord-sessions-prd-1-24 (Session ID: 2ac9957fe561e67331a021ed4660756d).
+2019-05-05 20:52:48,958 - INFO - Connected to Discord.
+2019-05-05 20:52:53,650 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:52:54,128 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:52:54,445 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:52:54,448 - INFO - Client caches filled. Ready.
+2019-05-05 20:53:35,222 - INFO - Cleaning up event loop.
+2019-05-05 20:53:35,366 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:53:39,781 - INFO - logging in using static token
+2019-05-05 20:53:41,233 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:53:41,240 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:53:41,500 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-xsd1, discord-sessions-prd-1-14 (Session ID: 7fb0ed103bdfdc6b13fb704764f801f2).
+2019-05-05 20:53:41,504 - INFO - Connected to Discord.
+2019-05-05 20:53:46,013 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:53:46,180 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:53:46,343 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:53:46,346 - INFO - Client caches filled. Ready.
+2019-05-05 20:54:03,286 - INFO - Cleaning up event loop.
+2019-05-05 20:54:03,419 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:54:26,336 - INFO - logging in using static token
+2019-05-05 20:54:27,927 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:54:27,939 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:54:28,187 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-98g6, discord-sessions-prd-1-19 (Session ID: e624ecd4f91436e128b119064fe5197e).
+2019-05-05 20:54:28,192 - INFO - Connected to Discord.
+2019-05-05 20:54:32,593 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:54:32,723 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:54:32,856 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:54:32,858 - INFO - Client caches filled. Ready.
+2019-05-05 20:54:53,467 - INFO - Cleaning up event loop.
+2019-05-05 20:54:53,615 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:55:50,492 - INFO - logging in using static token
+2019-05-05 20:55:51,745 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:55:51,753 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:55:52,012 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-890b, discord-sessions-prd-1-3 (Session ID: 066143212c55f0b4b8d1094b9b6bae1e).
+2019-05-05 20:55:52,017 - INFO - Connected to Discord.
+2019-05-05 20:55:56,689 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:55:57,168 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:55:57,489 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:55:57,492 - INFO - Client caches filled. Ready.
+2019-05-05 20:56:44,024 - INFO - Cleaning up event loop.
+2019-05-05 20:56:44,169 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:56:47,689 - INFO - logging in using static token
+2019-05-05 20:56:48,931 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:56:48,937 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:56:49,201 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-nzxs, discord-sessions-prd-1-29 (Session ID: 5678f2f41e8ad0cc60f200ed70d6fee0).
+2019-05-05 20:56:49,203 - INFO - Connected to Discord.
+2019-05-05 20:56:53,579 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:56:53,641 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:56:53,726 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:56:53,727 - INFO - Client caches filled. Ready.
+2019-05-05 20:57:13,522 - INFO - Cleaning up event loop.
+2019-05-05 20:57:13,658 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:57:34,656 - INFO - logging in using static token
+2019-05-05 20:57:36,255 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:57:36,263 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:57:36,513 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-mh1k, discord-sessions-prd-1-9 (Session ID: 2e9ec9bf0f9a28e1a3f3e99942962989).
+2019-05-05 20:57:36,516 - INFO - Connected to Discord.
+2019-05-05 20:57:40,899 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:57:40,968 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:57:41,027 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:57:41,029 - INFO - Client caches filled. Ready.
+2019-05-05 20:57:52,500 - INFO - Cleaning up event loop.
+2019-05-05 20:57:52,638 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:57:56,458 - INFO - logging in using static token
+2019-05-05 20:57:57,744 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:57:57,749 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:57:57,996 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-26sm, discord-sessions-prd-1-4 (Session ID: a2b58c4a67bba79a0138f4c2cc5f0fe8).
+2019-05-05 20:57:57,999 - INFO - Connected to Discord.
+2019-05-05 20:58:02,527 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:58:02,841 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:58:03,153 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:58:03,156 - INFO - Client caches filled. Ready.
+2019-05-05 20:58:23,484 - INFO - Cleaning up event loop.
+2019-05-05 20:58:23,630 - INFO - Cleaning up after 5 tasks.
+2019-05-05 20:58:27,516 - INFO - logging in using static token
+2019-05-05 20:58:29,080 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:58:29,085 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:58:30,002 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-v9s6, discord-sessions-prd-1-25 (Session ID: 478d5576f020978d879e1e8f9f5b39be).
+2019-05-05 20:58:30,013 - INFO - Connected to Discord.
+2019-05-05 20:58:34,404 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:58:34,485 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:58:34,548 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 20:58:34,549 - INFO - Client caches filled. Ready.
+2019-05-05 20:58:45,207 - INFO - Cleaning up event loop.
+2019-05-05 20:58:45,345 - INFO - Cleaning up after 5 tasks.
+2019-05-05 21:00:13,338 - INFO - logging in using static token
+2019-05-05 21:00:15,690 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 21:00:15,702 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 21:00:16,303 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-klbv, discord-sessions-prd-1-20 (Session ID: efc4add00ff28dd54aa12daafde37cf3).
+2019-05-05 21:00:16,306 - INFO - Connected to Discord.
+2019-05-05 21:00:20,744 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:00:20,856 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:00:20,923 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 21:00:20,924 - INFO - Client caches filled. Ready.
+2019-05-05 21:01:03,076 - INFO - Cleaning up event loop.
+2019-05-05 21:01:03,215 - INFO - Cleaning up after 5 tasks.
+2019-05-05 21:01:11,744 - INFO - logging in using static token
+2019-05-05 21:01:13,051 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 21:01:13,058 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 21:01:13,317 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-jjz2, discord-sessions-prd-1-16 (Session ID: ed65374e418e03f1426e3b522aefd863).
+2019-05-05 21:01:13,321 - INFO - Connected to Discord.
+2019-05-05 21:01:17,696 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:01:17,839 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:01:17,984 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 21:01:17,986 - INFO - Client caches filled. Ready.
+2019-05-05 21:01:29,713 - INFO - Cleaning up event loop.
+2019-05-05 21:01:29,851 - INFO - Cleaning up after 5 tasks.
+2019-05-05 21:01:35,779 - INFO - logging in using static token
+2019-05-05 21:01:37,133 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 21:01:37,145 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 21:01:37,409 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-cdd3, discord-sessions-prd-1-24 (Session ID: a52befd296f9a447b71ac72aec392eb2).
+2019-05-05 21:01:37,414 - INFO - Connected to Discord.
+2019-05-05 21:01:41,786 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:01:41,852 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:01:41,912 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 21:01:41,913 - INFO - Client caches filled. Ready.
+2019-05-05 21:02:46,504 - INFO - Cleaning up event loop.
+2019-05-05 21:02:46,642 - INFO - Cleaning up after 5 tasks.
+2019-05-05 21:02:50,434 - INFO - logging in using static token
+2019-05-05 21:02:51,748 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 21:02:51,753 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 21:02:52,983 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-3llm, discord-sessions-prd-1-7 (Session ID: 048f0eb9b1bbde98a6b4138f289e5fac).
+2019-05-05 21:02:52,989 - INFO - Connected to Discord.
+2019-05-05 21:02:57,393 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:02:57,526 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:02:57,674 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 21:02:57,676 - INFO - Client caches filled. Ready.
+2019-05-05 21:03:00,308 - INFO - Cleaning up event loop.
+2019-05-05 21:03:00,442 - INFO - Cleaning up after 5 tasks.
+2019-05-05 21:03:29,908 - INFO - logging in using static token
+2019-05-05 21:03:31,408 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 21:03:31,420 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 21:03:31,851 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-pghz, discord-sessions-prd-1-19 (Session ID: 6a8220486e42b61069086abbc05b5292).
+2019-05-05 21:03:31,857 - INFO - Connected to Discord.
+2019-05-05 21:03:36,251 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:03:36,319 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:03:36,382 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 21:03:36,386 - INFO - Client caches filled. Ready.
+2019-05-05 21:04:17,784 - INFO - Cleaning up event loop.
+2019-05-05 21:04:17,926 - INFO - Cleaning up after 5 tasks.
+2019-05-05 21:04:48,354 - INFO - logging in using static token
+2019-05-05 21:04:49,715 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 21:04:49,724 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 21:04:50,010 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-z65v, discord-sessions-prd-1-10 (Session ID: 3f9c88cb64737f4436c2ebbe041cf313).
+2019-05-05 21:04:50,012 - INFO - Connected to Discord.
+2019-05-05 21:04:54,444 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:04:54,580 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:04:54,656 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 21:04:54,660 - INFO - Client caches filled. Ready.
+2019-05-05 21:04:59,269 - INFO - Cleaning up event loop.
+2019-05-05 21:04:59,405 - INFO - Cleaning up after 5 tasks.
+2019-05-05 21:05:07,094 - INFO - logging in using static token
+2019-05-05 21:05:08,455 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 21:05:08,465 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 21:05:08,728 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-mh1k, discord-sessions-prd-1-27 (Session ID: b9967d557f758be616fed76fd0d46a93).
+2019-05-05 21:05:08,730 - INFO - Connected to Discord.
+2019-05-05 21:05:13,265 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:05:13,334 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:05:13,401 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 21:05:13,403 - INFO - Client caches filled. Ready.
+2019-05-05 21:05:27,054 - INFO - Cleaning up event loop.
+2019-05-05 21:05:27,199 - INFO - Cleaning up after 5 tasks.
+2019-05-05 21:05:30,573 - INFO - logging in using static token
+2019-05-05 21:05:32,108 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 21:05:32,116 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 21:05:32,483 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-6cf7, discord-sessions-prd-1-17 (Session ID: ac16a70b4d5623c3889946f280bae91e).
+2019-05-05 21:05:32,486 - INFO - Connected to Discord.
+2019-05-05 21:05:36,896 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:05:36,958 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:05:37,019 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 21:05:37,020 - INFO - Client caches filled. Ready.
+2019-05-05 21:05:41,138 - INFO - Cleaning up event loop.
+2019-05-05 21:05:41,285 - INFO - Cleaning up after 5 tasks.
+2019-05-05 21:05:45,522 - INFO - logging in using static token
+2019-05-05 21:05:46,854 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 21:05:46,859 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 21:05:47,148 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-cdd3, discord-sessions-prd-1-16 (Session ID: b0da5430da66659b10a8b0d43b732317).
+2019-05-05 21:05:47,150 - INFO - Connected to Discord.
+2019-05-05 21:05:51,676 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:05:51,739 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:05:51,854 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 21:05:51,855 - INFO - Client caches filled. Ready.
+2019-05-05 21:05:55,156 - INFO - Cleaning up event loop.
+2019-05-05 21:05:55,298 - INFO - Cleaning up after 5 tasks.
+2019-05-05 21:07:24,148 - INFO - logging in using static token
+2019-05-05 21:07:25,467 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 21:07:25,478 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 21:07:27,311 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-gdbh, discord-sessions-prd-1-7 (Session ID: 7f23196977f729f6224db08fcef23232).
+2019-05-05 21:07:27,316 - INFO - Connected to Discord.
+2019-05-05 21:07:31,680 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:07:31,748 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:07:31,809 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 21:07:31,810 - INFO - Client caches filled. Ready.
+2019-05-05 21:07:35,251 - INFO - Cleaning up event loop.
+2019-05-05 21:07:35,394 - INFO - Cleaning up after 5 tasks.
+2019-05-05 21:07:39,486 - INFO - logging in using static token
+2019-05-05 21:07:40,828 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 21:07:40,833 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 21:07:41,105 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-fgf7, discord-sessions-prd-1-20 (Session ID: 692926b5b54f51ac94690ae6cf1dd6d5).
+2019-05-05 21:07:41,112 - INFO - Connected to Discord.
+2019-05-05 21:07:45,546 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:07:45,614 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:07:45,692 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 21:07:45,694 - INFO - Client caches filled. Ready.
+2019-05-05 21:07:48,001 - INFO - Cleaning up event loop.
+2019-05-05 21:07:48,135 - INFO - Cleaning up after 5 tasks.
+2019-05-05 21:07:58,909 - INFO - logging in using static token
+2019-05-05 21:08:00,180 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 21:08:00,185 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 21:08:00,443 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-qcsh, discord-sessions-prd-1-11 (Session ID: c3933e78cdad3457723bb74d8d679e8b).
+2019-05-05 21:08:00,446 - INFO - Connected to Discord.
+2019-05-05 21:08:05,188 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:08:05,292 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:08:05,380 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 21:08:05,382 - INFO - Client caches filled. Ready.
+2019-05-05 21:09:57,879 - INFO - Cleaning up event loop.
+2019-05-05 21:09:58,016 - INFO - Cleaning up after 5 tasks.
+2019-05-05 21:10:01,778 - INFO - logging in using static token
+2019-05-05 21:10:03,063 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 21:10:03,067 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 21:10:03,326 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-mh1k, discord-sessions-prd-1-21 (Session ID: 24116281c1bb4b48a3b31fc0be379fdd).
+2019-05-05 21:10:03,328 - INFO - Connected to Discord.
+2019-05-05 21:10:07,710 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:10:07,776 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:10:07,837 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 21:10:07,840 - INFO - Client caches filled. Ready.
+2019-05-05 21:10:48,036 - INFO - Cleaning up event loop.
+2019-05-05 21:10:48,175 - INFO - Cleaning up after 5 tasks.
+2019-05-05 21:10:52,295 - INFO - logging in using static token
+2019-05-05 21:10:53,514 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 21:10:53,522 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 21:10:55,403 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-jjz2, discord-sessions-prd-1-2 (Session ID: c094ea660b9f10ff4d109ac7d3065de7).
+2019-05-05 21:10:55,410 - INFO - Connected to Discord.
+2019-05-05 21:10:59,929 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:11:00,234 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:11:00,385 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 21:11:00,386 - INFO - Client caches filled. Ready.
+2019-05-05 21:11:25,189 - INFO - Cleaning up event loop.
+2019-05-05 21:11:25,334 - INFO - Cleaning up after 5 tasks.
+2019-05-05 21:11:29,083 - INFO - logging in using static token
+2019-05-05 21:11:30,631 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 21:11:30,635 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 21:11:30,903 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-p4lk, discord-sessions-prd-1-18 (Session ID: e15a05d6c56a5ff078bcf106559a3053).
+2019-05-05 21:11:30,907 - INFO - Connected to Discord.
+2019-05-05 21:11:35,325 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:11:35,471 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:11:35,598 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 21:11:35,602 - INFO - Client caches filled. Ready.
+2019-05-05 21:11:39,492 - INFO - Cleaning up event loop.
+2019-05-05 21:11:39,637 - INFO - Cleaning up after 5 tasks.
+2019-05-05 21:11:53,335 - INFO - logging in using static token
+2019-05-05 21:11:54,884 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 21:11:54,889 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 21:11:55,166 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-lzc4, discord-sessions-prd-1-22 (Session ID: 75286924ed102a46e310907f6b49ec47).
+2019-05-05 21:11:55,168 - INFO - Connected to Discord.
+2019-05-05 21:11:59,569 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:11:59,634 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:11:59,701 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 21:11:59,703 - INFO - Client caches filled. Ready.
+2019-05-05 21:12:35,497 - INFO - Cleaning up event loop.
+2019-05-05 21:12:35,646 - INFO - Cleaning up after 5 tasks.
+2019-05-05 21:12:39,885 - INFO - logging in using static token
+2019-05-05 21:12:41,271 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 21:12:41,277 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 21:12:41,551 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-6xv9, discord-sessions-prd-1-4 (Session ID: dd3fcf00c444acc8099ce93e02e8c1d5).
+2019-05-05 21:12:41,556 - INFO - Connected to Discord.
+2019-05-05 21:12:46,232 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:12:46,709 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:12:47,028 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 21:12:47,029 - INFO - Client caches filled. Ready.
+2019-05-05 21:13:46,867 - INFO - Cleaning up event loop.
+2019-05-05 21:13:47,003 - INFO - Cleaning up after 5 tasks.
+2019-05-05 21:13:50,837 - INFO - logging in using static token
+2019-05-05 21:13:52,131 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 21:13:52,136 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 21:13:52,391 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-6cf7, discord-sessions-prd-1-13 (Session ID: 54ad70737272947b36d57daab75595d4).
+2019-05-05 21:13:52,393 - INFO - Connected to Discord.
+2019-05-05 21:13:56,838 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:13:56,987 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:13:57,070 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 21:13:57,071 - INFO - Client caches filled. Ready.
+2019-05-05 21:14:05,006 - INFO - Cleaning up event loop.
+2019-05-05 21:14:05,149 - INFO - Cleaning up after 5 tasks.
+2019-05-05 21:14:08,838 - INFO - logging in using static token
+2019-05-05 21:14:10,363 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 21:14:10,368 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 21:14:11,596 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-nrxf, discord-sessions-prd-1-15 (Session ID: b19ec8d76766487327e2f9dc1b1edeb4).
+2019-05-05 21:14:11,602 - INFO - Connected to Discord.
+2019-05-05 21:14:15,967 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:14:16,032 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:14:16,103 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 21:14:16,105 - INFO - Client caches filled. Ready.
+2019-05-05 21:14:45,054 - INFO - Cleaning up event loop.
+2019-05-05 21:14:45,202 - INFO - Cleaning up after 5 tasks.
+2019-05-05 21:14:48,795 - INFO - logging in using static token
+2019-05-05 21:14:50,299 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 21:14:50,308 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 21:14:50,915 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-6qdq, discord-sessions-prd-1-7 (Session ID: a8a08f1504d7f715635381648f203a4a).
+2019-05-05 21:14:50,924 - INFO - Connected to Discord.
+2019-05-05 21:14:55,288 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:14:55,357 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:14:55,435 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 21:14:55,437 - INFO - Client caches filled. Ready.
+2019-05-05 21:15:12,446 - INFO - Cleaning up event loop.
+2019-05-05 21:15:12,595 - INFO - Cleaning up after 5 tasks.
+2019-05-05 21:15:18,201 - INFO - logging in using static token
+2019-05-05 21:15:19,480 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 21:15:19,492 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 21:15:19,754 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-z1d0, discord-sessions-prd-1-2 (Session ID: 345b1cdf0f59401c4f1223369573ec89).
+2019-05-05 21:15:19,760 - INFO - Connected to Discord.
+2019-05-05 21:15:24,179 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:15:24,261 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:15:24,334 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 21:15:24,337 - INFO - Client caches filled. Ready.
+2019-05-05 21:19:46,523 - INFO - Cleaning up event loop.
+2019-05-05 21:19:46,681 - INFO - Cleaning up after 5 tasks.
+2019-05-05 21:20:56,585 - INFO - logging in using static token
+2019-05-05 21:20:58,031 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 21:20:58,038 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 21:20:58,317 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-mdp4, discord-sessions-prd-1-15 (Session ID: 3355d4ed6335c04675bf041d89471f9a).
+2019-05-05 21:20:58,320 - INFO - Connected to Discord.
+2019-05-05 21:21:02,726 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:21:02,815 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:21:02,906 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 21:21:02,908 - INFO - Client caches filled. Ready.
+2019-05-05 21:21:34,478 - INFO - Cleaning up event loop.
+2019-05-05 21:21:34,617 - INFO - Cleaning up after 5 tasks.
+2019-05-05 21:21:38,307 - INFO - logging in using static token
+2019-05-05 21:21:39,811 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 21:21:39,821 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 21:21:40,066 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-4br4, discord-sessions-prd-1-24 (Session ID: c9a00e2ed0d9d616a45193655114b3ca).
+2019-05-05 21:21:40,074 - INFO - Connected to Discord.
+2019-05-05 21:21:44,759 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:21:45,078 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:21:45,392 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 21:21:45,394 - INFO - Client caches filled. Ready.
+2019-05-05 21:23:01,872 - INFO - Cleaning up event loop.
+2019-05-05 21:23:02,001 - INFO - Cleaning up after 5 tasks.
+2019-05-05 21:23:19,497 - INFO - logging in using static token
+2019-05-05 21:23:20,881 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 21:23:20,889 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 21:23:23,034 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-qcsh, discord-sessions-prd-1-17 (Session ID: 5f4ad1246df286777dc33c6c52195277).
+2019-05-05 21:23:23,038 - INFO - Connected to Discord.
+2019-05-05 21:23:23,920 - WARNING - Unknown event PRESENCES_REPLACE.
+2019-05-05 21:23:27,720 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:23:28,051 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:23:28,363 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 21:23:28,364 - INFO - Client caches filled. Ready.
+2019-05-05 21:23:57,848 - INFO - Cleaning up event loop.
+2019-05-05 21:23:57,987 - INFO - Cleaning up after 5 tasks.
+2019-05-05 21:24:40,526 - INFO - logging in using static token
+2019-05-05 21:24:42,291 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 21:24:42,298 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 21:24:42,547 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-4x4m, discord-sessions-prd-1-18 (Session ID: 630ff76c4f0f3d04d81d7425137eec82).
+2019-05-05 21:24:42,549 - INFO - Connected to Discord.
+2019-05-05 21:24:46,924 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:24:47,001 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:24:47,062 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 21:24:47,063 - INFO - Client caches filled. Ready.
+2019-05-05 21:25:20,752 - INFO - Cleaning up event loop.
+2019-05-05 21:25:20,885 - INFO - Cleaning up after 5 tasks.
+2019-05-05 21:27:15,278 - INFO - logging in using static token
+2019-05-05 21:27:17,121 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 21:27:17,130 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 21:27:18,548 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-9xgj, discord-sessions-prd-1-14 (Session ID: ef7cee915d5fad8d6be8396dba1b0d75).
+2019-05-05 21:27:18,556 - INFO - Connected to Discord.
+2019-05-05 21:27:19,999 - WARNING - Unknown event PRESENCES_REPLACE.
+2019-05-05 21:27:23,029 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:27:23,096 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 21:27:23,157 - INFO - Processed a chunk for 959 members in guild ID 294479294040768524.
+2019-05-05 21:27:23,159 - INFO - Client caches filled. Ready.
+2019-05-05 21:31:59,356 - INFO - Cleaning up event loop.
+2019-05-05 21:31:59,490 - INFO - Cleaning up after 5 tasks.
+2019-05-06 08:23:23,491 - INFO - logging in using static token
+2019-05-06 08:23:24,308 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 08:23:24,317 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 08:23:26,001 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-98g6, discord-sessions-prd-1-28 (Session ID: 0915a2a36849b0c48df24f2f1ed015d9).
+2019-05-06 08:23:26,004 - INFO - Connected to Discord.
+2019-05-06 08:23:26,687 - WARNING - Unknown event PRESENCES_REPLACE.
+2019-05-06 08:23:30,286 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 08:23:30,351 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 08:23:30,447 - INFO - Processed a chunk for 957 members in guild ID 294479294040768524.
+2019-05-06 08:23:30,449 - INFO - Client caches filled. Ready.
+2019-05-06 08:24:15,180 - INFO - Cleaning up event loop.
+2019-05-06 08:24:15,330 - INFO - Cleaning up after 5 tasks.
+2019-05-06 08:24:57,516 - INFO - logging in using static token
+2019-05-06 08:24:58,315 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 08:24:58,323 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 08:24:58,512 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-nrxf, discord-sessions-prd-1-19 (Session ID: 1251ae1eff5922ac348e804f765eeb76).
+2019-05-06 08:24:58,515 - INFO - Connected to Discord.
+2019-05-06 08:25:02,812 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 08:25:02,957 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 08:25:03,018 - INFO - Processed a chunk for 957 members in guild ID 294479294040768524.
+2019-05-06 08:25:03,020 - INFO - Client caches filled. Ready.
+2019-05-06 08:25:36,039 - INFO - Cleaning up event loop.
+2019-05-06 08:25:36,172 - INFO - Cleaning up after 5 tasks.
+2019-05-06 08:25:58,680 - INFO - logging in using static token
+2019-05-06 08:25:59,441 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 08:25:59,452 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 08:26:00,463 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-bbqf, discord-sessions-prd-1-25 (Session ID: 2b1a552de9df8495b2ba50cded892153).
+2019-05-06 08:26:00,470 - INFO - Connected to Discord.
+2019-05-06 08:26:04,931 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 08:26:05,271 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 08:26:05,393 - INFO - Processed a chunk for 957 members in guild ID 294479294040768524.
+2019-05-06 08:26:05,395 - INFO - Client caches filled. Ready.
+2019-05-06 08:27:15,070 - INFO - Cleaning up event loop.
+2019-05-06 08:27:15,207 - INFO - Cleaning up after 5 tasks.
+2019-05-06 08:27:27,084 - INFO - logging in using static token
+2019-05-06 08:27:28,120 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 08:27:28,131 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 08:27:29,349 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-2kp3, discord-sessions-prd-1-23 (Session ID: d7ebd56021cc50549aef13ec2a2ed898).
+2019-05-06 08:27:29,352 - INFO - Connected to Discord.
+2019-05-06 08:27:30,064 - WARNING - Unknown event PRESENCES_REPLACE.
+2019-05-06 08:27:33,675 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 08:27:33,829 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 08:27:33,968 - INFO - Processed a chunk for 957 members in guild ID 294479294040768524.
+2019-05-06 08:27:33,972 - INFO - Client caches filled. Ready.
+2019-05-06 08:28:50,406 - INFO - Cleaning up event loop.
+2019-05-06 08:28:50,544 - INFO - Cleaning up after 5 tasks.
+2019-05-06 08:40:36,172 - INFO - logging in using static token
+2019-05-06 08:40:36,990 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 08:40:36,998 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 08:40:37,194 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-klbv, discord-sessions-prd-1-4 (Session ID: 3f98143a624813b572742dbb338cffb0).
+2019-05-06 08:40:37,198 - INFO - Connected to Discord.
+2019-05-06 08:40:41,478 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 08:40:41,544 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 08:40:41,632 - INFO - Processed a chunk for 957 members in guild ID 294479294040768524.
+2019-05-06 08:40:41,634 - INFO - Client caches filled. Ready.
+2019-05-06 08:42:20,528 - INFO - Cleaning up event loop.
+2019-05-06 08:42:20,667 - INFO - Cleaning up after 5 tasks.
+2019-05-06 08:44:01,434 - INFO - logging in using static token
+2019-05-06 08:44:02,197 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 08:44:02,204 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 08:44:02,405 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-r48s, discord-sessions-prd-1-27 (Session ID: deece6ad7f91c9dec8d3d0c65e21f494).
+2019-05-06 08:44:02,408 - INFO - Connected to Discord.
+2019-05-06 08:44:06,845 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 08:44:07,158 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 08:44:07,320 - INFO - Processed a chunk for 957 members in guild ID 294479294040768524.
+2019-05-06 08:44:07,322 - INFO - Client caches filled. Ready.
+2019-05-06 08:44:57,713 - INFO - Cleaning up event loop.
+2019-05-06 08:44:57,860 - INFO - Cleaning up after 5 tasks.
+2019-05-06 08:50:24,205 - INFO - logging in using static token
+2019-05-06 08:50:25,071 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 08:50:25,078 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 08:50:25,283 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-5f9l, discord-sessions-prd-1-22 (Session ID: 1ab59da1443d0e3827979fa3fbcf6d40).
+2019-05-06 08:50:25,286 - INFO - Connected to Discord.
+2019-05-06 08:50:29,631 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 08:50:29,872 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 08:50:30,143 - INFO - Processed a chunk for 957 members in guild ID 294479294040768524.
+2019-05-06 08:50:30,145 - INFO - Client caches filled. Ready.
+2019-05-06 08:50:57,551 - INFO - Cleaning up event loop.
+2019-05-06 08:50:57,711 - INFO - Cleaning up after 5 tasks.
+2019-05-06 08:51:02,858 - INFO - logging in using static token
+2019-05-06 08:51:03,675 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 08:51:03,680 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 08:51:03,890 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-bm08, discord-sessions-prd-1-14 (Session ID: 8f7de18adce2647c45381e092b56ebda).
+2019-05-06 08:51:03,895 - INFO - Connected to Discord.
+2019-05-06 08:51:08,183 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 08:51:08,345 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 08:51:08,500 - INFO - Processed a chunk for 957 members in guild ID 294479294040768524.
+2019-05-06 08:51:08,506 - INFO - Client caches filled. Ready.
+2019-05-06 08:56:28,549 - INFO - Cleaning up event loop.
+2019-05-06 08:56:28,703 - INFO - Cleaning up after 5 tasks.
+2019-05-06 08:57:34,887 - INFO - logging in using static token
+2019-05-06 08:57:35,669 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 08:57:35,679 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 08:57:35,869 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-klbv, discord-sessions-prd-1-26 (Session ID: 7c42b0ed0e767b8076a5f2ebb462c562).
+2019-05-06 08:57:35,871 - INFO - Connected to Discord.
+2019-05-06 08:57:40,219 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 08:57:40,383 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 08:57:40,537 - INFO - Processed a chunk for 957 members in guild ID 294479294040768524.
+2019-05-06 08:57:40,539 - INFO - Client caches filled. Ready.
+2019-05-06 08:57:45,396 - INFO - Cleaning up event loop.
+2019-05-06 08:57:45,544 - INFO - Cleaning up after 5 tasks.
+2019-05-06 08:58:04,240 - INFO - logging in using static token
+2019-05-06 08:58:04,922 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 08:58:04,927 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 08:58:05,936 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-lw5f, discord-sessions-prd-1-3 (Session ID: e76a36b902a20b53d3558e11e3309a9b).
+2019-05-06 08:58:05,941 - INFO - Connected to Discord.
+2019-05-06 08:58:10,546 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 08:58:11,036 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 08:58:11,345 - INFO - Processed a chunk for 957 members in guild ID 294479294040768524.
+2019-05-06 08:58:11,347 - INFO - Client caches filled. Ready.
+2019-05-06 08:59:04,214 - INFO - Cleaning up event loop.
+2019-05-06 08:59:04,362 - INFO - Cleaning up after 5 tasks.
+2019-05-06 08:59:10,028 - INFO - logging in using static token
+2019-05-06 08:59:10,742 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 08:59:10,747 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 08:59:11,065 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-nrxf, discord-sessions-prd-1-14 (Session ID: 2315c00963b7a340f3c73d3b7a3eb536).
+2019-05-06 08:59:11,071 - INFO - Connected to Discord.
+2019-05-06 08:59:15,352 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 08:59:15,517 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 08:59:15,579 - INFO - Processed a chunk for 957 members in guild ID 294479294040768524.
+2019-05-06 08:59:15,580 - INFO - Client caches filled. Ready.
+2019-05-06 09:00:12,988 - INFO - Cleaning up event loop.
+2019-05-06 09:00:13,125 - INFO - Cleaning up after 5 tasks.
+2019-05-06 09:00:31,551 - INFO - logging in using static token
+2019-05-06 09:00:32,252 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 09:00:32,257 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 09:00:32,465 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-8h8j, discord-sessions-prd-1-4 (Session ID: 939a8ff51ea7bf847bb1085069e7faf8).
+2019-05-06 09:00:32,466 - INFO - Connected to Discord.
+2019-05-06 09:00:37,076 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 09:00:37,584 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 09:00:37,893 - INFO - Processed a chunk for 957 members in guild ID 294479294040768524.
+2019-05-06 09:00:37,895 - INFO - Client caches filled. Ready.
+2019-05-06 09:01:51,118 - INFO - Cleaning up event loop.
+2019-05-06 09:01:51,265 - INFO - Cleaning up after 5 tasks.
+2019-05-06 09:02:14,620 - INFO - logging in using static token
+2019-05-06 09:02:15,371 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 09:02:15,379 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 09:02:15,568 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-z1d0, discord-sessions-prd-1-3 (Session ID: 1705c7640616b9b6752fad1cefd3fc59).
+2019-05-06 09:02:15,574 - INFO - Connected to Discord.
+2019-05-06 09:02:19,849 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 09:02:19,907 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 09:02:20,026 - INFO - Processed a chunk for 957 members in guild ID 294479294040768524.
+2019-05-06 09:02:20,027 - INFO - Client caches filled. Ready.
+2019-05-06 09:02:46,053 - INFO - Cleaning up event loop.
+2019-05-06 09:02:46,195 - INFO - Cleaning up after 5 tasks.
+2019-05-06 09:03:03,866 - INFO - logging in using static token
+2019-05-06 09:03:04,643 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 09:03:04,650 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 09:03:04,843 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-xp0j, discord-sessions-prd-1-5 (Session ID: 9801eeea62d8cc02fe8b877c4dfdae1d).
+2019-05-06 09:03:04,846 - INFO - Connected to Discord.
+2019-05-06 09:03:09,452 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 09:03:09,940 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 09:03:10,245 - INFO - Processed a chunk for 957 members in guild ID 294479294040768524.
+2019-05-06 09:03:10,246 - INFO - Client caches filled. Ready.
+2019-05-06 09:05:49,045 - INFO - Cleaning up event loop.
+2019-05-06 09:05:49,190 - INFO - Cleaning up after 5 tasks.
+2019-05-06 10:35:53,333 - INFO - logging in using static token
+2019-05-06 10:35:54,195 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 10:35:54,207 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 10:35:54,403 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-r81d, discord-sessions-prd-1-5 (Session ID: 598b6c920fde403854ae87909decc7cd).
+2019-05-06 10:35:54,406 - INFO - Connected to Discord.
+2019-05-06 10:35:58,869 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 10:35:59,000 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 10:35:59,155 - INFO - Processed a chunk for 957 members in guild ID 294479294040768524.
+2019-05-06 10:35:59,157 - INFO - Client caches filled. Ready.
+2019-05-06 10:38:05,420 - INFO - Cleaning up event loop.
+2019-05-06 10:38:05,578 - INFO - Cleaning up after 5 tasks.
+2019-05-06 10:45:51,352 - INFO - logging in using static token
+2019-05-06 10:45:52,117 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 10:45:52,128 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 10:45:52,349 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-v0r8, discord-sessions-prd-1-4 (Session ID: 18dd8c19ea5a7a47b4a6e62116aca6ce).
+2019-05-06 10:45:52,358 - INFO - Connected to Discord.
+2019-05-06 10:45:56,668 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 10:45:56,752 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 10:45:56,847 - INFO - Processed a chunk for 957 members in guild ID 294479294040768524.
+2019-05-06 10:45:56,849 - INFO - Client caches filled. Ready.
+2019-05-06 10:46:29,567 - INFO - Cleaning up event loop.
+2019-05-06 10:46:29,721 - INFO - Cleaning up after 5 tasks.
+2019-05-06 10:46:33,950 - INFO - logging in using static token
+2019-05-06 10:46:34,729 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 10:46:34,735 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 10:46:34,943 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-lzc4, discord-sessions-prd-1-30 (Session ID: fb37da25c724555db1b020cbe57abe2a).
+2019-05-06 10:46:34,948 - INFO - Connected to Discord.
+2019-05-06 10:46:39,230 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 10:46:39,399 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 10:46:39,553 - INFO - Processed a chunk for 957 members in guild ID 294479294040768524.
+2019-05-06 10:46:39,554 - INFO - Client caches filled. Ready.
+2019-05-06 10:47:06,945 - INFO - Cleaning up event loop.
+2019-05-06 10:47:07,087 - INFO - Cleaning up after 5 tasks.
+2019-05-06 10:47:11,433 - INFO - logging in using static token
+2019-05-06 10:47:12,117 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 10:47:12,122 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 10:47:12,315 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-1zc2, discord-sessions-prd-1-6 (Session ID: 16a499a0015a87843da7c7877825a405).
+2019-05-06 10:47:12,318 - INFO - Connected to Discord.
+2019-05-06 10:47:16,927 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 10:47:17,249 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 10:47:17,579 - INFO - Processed a chunk for 957 members in guild ID 294479294040768524.
+2019-05-06 10:47:17,582 - INFO - Client caches filled. Ready.
+2019-05-06 10:49:09,362 - INFO - Cleaning up event loop.
+2019-05-06 10:49:09,516 - INFO - Cleaning up after 5 tasks.
+2019-05-06 10:49:14,416 - INFO - logging in using static token
+2019-05-06 10:49:15,140 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 10:49:15,149 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 10:49:15,362 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-lzc4, discord-sessions-prd-1-20 (Session ID: 7f12f5c8e61712f12a3387db7c8e2bde).
+2019-05-06 10:49:15,367 - INFO - Connected to Discord.
+2019-05-06 10:49:19,704 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 10:49:19,800 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 10:49:19,908 - INFO - Processed a chunk for 957 members in guild ID 294479294040768524.
+2019-05-06 10:49:19,910 - INFO - Client caches filled. Ready.
+2019-05-06 10:50:37,207 - INFO - Cleaning up event loop.
+2019-05-06 10:50:37,343 - INFO - Cleaning up after 5 tasks.
+2019-05-06 10:50:44,292 - INFO - logging in using static token
+2019-05-06 10:50:45,092 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 10:50:45,100 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 10:50:45,397 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-jjz2, discord-sessions-prd-1-7 (Session ID: 551fb8aa16cbdcdaf328985d906471a8).
+2019-05-06 10:50:45,402 - INFO - Connected to Discord.
+2019-05-06 10:50:49,699 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 10:50:49,764 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 10:50:49,853 - INFO - Processed a chunk for 957 members in guild ID 294479294040768524.
+2019-05-06 10:50:49,854 - INFO - Client caches filled. Ready.
+2019-05-06 10:52:14,867 - INFO - Cleaning up event loop.
+2019-05-06 10:52:15,009 - INFO - Cleaning up after 5 tasks.
+2019-05-06 10:52:20,083 - INFO - logging in using static token
+2019-05-06 10:52:20,836 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 10:52:20,844 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 10:52:21,047 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-6483, discord-sessions-prd-1-7 (Session ID: 0ea25dd4f5237ee283fe3b4bbdeabd40).
+2019-05-06 10:52:21,052 - INFO - Connected to Discord.
+2019-05-06 10:52:25,321 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 10:52:25,496 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 10:52:25,643 - INFO - Processed a chunk for 957 members in guild ID 294479294040768524.
+2019-05-06 10:52:25,645 - INFO - Client caches filled. Ready.
+2019-05-06 10:53:11,360 - INFO - Cleaning up event loop.
+2019-05-06 10:53:11,509 - INFO - Cleaning up after 5 tasks.
+2019-05-06 10:54:18,610 - INFO - logging in using static token
+2019-05-06 10:54:19,421 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 10:54:19,429 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 10:54:19,628 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-mh1k, discord-sessions-prd-1-26 (Session ID: 6b14f228fdf1cbe40408e9bf44c3cc77).
+2019-05-06 10:54:19,631 - INFO - Connected to Discord.
+2019-05-06 10:54:23,927 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 10:54:24,011 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 10:54:24,067 - INFO - Processed a chunk for 957 members in guild ID 294479294040768524.
+2019-05-06 10:54:24,068 - INFO - Client caches filled. Ready.
+2019-05-06 10:55:39,449 - INFO - Cleaning up event loop.
+2019-05-06 10:55:39,641 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-06 10:55:39,644 - INFO - Cleaning up after 3 tasks.
