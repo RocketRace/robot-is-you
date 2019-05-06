@@ -6,7 +6,7 @@ from json        import load
 from PIL         import Image
 
 def genFrame(fp):
-    im = Image.open(fp)
+    im = Image.open(fp).convert("RGBA")
     # Gets the alpha from the images
     alpha = im.getchannel("A")
 
