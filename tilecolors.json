@@ -1,0 +1,1150 @@
+{
+   "baba": [
+      "baba",
+      [
+         "0",
+         "3"
+      ]
+   ],
+   "keke": [
+      "keke",
+      [
+         "2",
+         "2"
+      ]
+   ],
+   "rock": [
+      "rock",
+      [
+         "1",
+         "4"
+      ]
+   ],
+   "text_grass": [
+      "text_grass",
+      [
+         "5",
+         "3"
+      ]
+   ],
+   "tile": [
+      "tile",
+      [
+         "1",
+         "0"
+      ]
+   ],
+   "text_and": [
+      "text_and",
+      [
+         "0",
+         "3"
+      ]
+   ],
+   "text_hide": [
+      "text_hide",
+      [
+         "3",
+         "3"
+      ]
+   ],
+   "text_follow": [
+      "text_follow",
+      [
+         "5",
+         "2"
+      ]
+   ],
+   "text_float": [
+      "text_float",
+      [
+         "1",
+         "4"
+      ]
+   ],
+   "text_lonely": [
+      "text_lonely",
+      [
+         "2",
+         "2"
+      ]
+   ],
+   "lava": [
+      "water",
+      [
+         "2",
+         "3"
+      ]
+   ],
+   "bog": [
+      "water",
+      [
+         "5",
+         "1"
+      ]
+   ],
+   "water": [
+      "water",
+      [
+         "1",
+         "3"
+      ]
+   ],
+   "wall": [
+      "wall",
+      [
+         "6",
+         "0"
+      ]
+   ],
+   "text_empty": [
+      "text_empty",
+      [
+         "0",
+         "3"
+      ]
+   ],
+   "text_tile": [
+      "text_tile",
+      [
+         "0",
+         "1"
+      ]
+   ],
+   "text_weak": [
+      "text_weak",
+      [
+         "1",
+         "2"
+      ]
+   ],
+   "text_near": [
+      "text_near",
+      [
+         "0",
+         "3"
+      ]
+   ],
+   "cloud": [
+      "cloud",
+      [
+         "1",
+         "4"
+      ]
+   ],
+   "pillar": [
+      "pillar",
+      [
+         "0",
+         "2"
+      ]
+   ],
+   "text_fungus": [
+      "text_fungus",
+      [
+         "6",
+         "1"
+      ]
+   ],
+   "text_cliff": [
+      "text_cliff",
+      [
+         "6",
+         "0"
+      ]
+   ],
+   "text_ufo": [
+      "text_ufo",
+      [
+         "4",
+         "1"
+      ]
+   ],
+   "text_jelly": [
+      "text_jelly",
+      [
+         "1",
+         "3"
+      ]
+   ],
+   "text_baba": [
+      "text_baba",
+      [
+         "4",
+         "1"
+      ]
+   ],
+   "text_keke": [
+      "text_keke",
+      [
+         "2",
+         "2"
+      ]
+   ],
+   "text_flag": [
+      "text_flag",
+      [
+         "2",
+         "4"
+      ]
+   ],
+   "flag": [
+      "flag",
+      [
+         "2",
+         "4"
+      ]
+   ],
+   "ice": [
+      "ice",
+      [
+         "1",
+         "2"
+      ]
+   ],
+   "text_shift": [
+      "text_shift",
+      [
+         "1",
+         "3"
+      ]
+   ],
+   "rose": [
+      "rose",
+      [
+         "2",
+         "2"
+      ]
+   ],
+   "text_all": [
+      "text_all",
+      [
+         "0",
+         "3"
+      ]
+   ],
+   "text_right": [
+      "text_right",
+      [
+         "1",
+         "4"
+      ]
+   ],
+   "text_cloud": [
+      "text_cloud",
+      [
+         "1",
+         "4"
+      ]
+   ],
+   "text_pillar": [
+      "text_pillar",
+      [
+         "0",
+         "2"
+      ]
+   ],
+   "fungus": [
+      "fungus",
+      [
+         "6",
+         "1"
+      ]
+   ],
+   "cliff": [
+      "cliff",
+      [
+         "6",
+         "1"
+      ]
+   ],
+   "ufo": [
+      "ufo",
+      [
+         "4",
+         "2"
+      ]
+   ],
+   "jelly": [
+      "jelly",
+      [
+         "1",
+         "4"
+      ]
+   ],
+   "text_rock": [
+      "text_rock",
+      [
+         "1",
+         "2"
+      ]
+   ],
+   "text_lava": [
+      "text_lava",
+      [
+         "2",
+         "3"
+      ]
+   ],
+   "text_bog": [
+      "text_bog",
+      [
+         "5",
+         "1"
+      ]
+   ],
+   "text_wall": [
+      "text_wall",
+      [
+         "6",
+         "0"
+      ]
+   ],
+   "text_ice": [
+      "text_ice",
+      [
+         "1",
+         "3"
+      ]
+   ],
+   "text_is": [
+      "text_is",
+      [
+         "0",
+         "3"
+      ]
+   ],
+   "text_rose": [
+      "text_rose",
+      [
+         "2",
+         "2"
+      ]
+   ],
+   "text_more": [
+      "text_more",
+      [
+         "4",
+         "1"
+      ]
+   ],
+   "text_safe": [
+      "text_safe",
+      [
+         "0",
+         "3"
+      ]
+   ],
+   "text_up": [
+      "text_up",
+      [
+         "1",
+         "4"
+      ]
+   ],
+   "star": [
+      "seastar",
+      [
+         "2",
+         "3"
+      ]
+   ],
+   "reed": [
+      "reed",
+      [
+         "6",
+         "2"
+      ]
+   ],
+   "husk": [
+      "husk",
+      [
+         "5",
+         "1"
+      ]
+   ],
+   "cog": [
+      "cog",
+      [
+         "0",
+         "1"
+      ]
+   ],
+   "text_word": [
+      "text_word",
+      [
+         "0",
+         "3"
+      ]
+   ],
+   "text_fruit": [
+      "text_fruit",
+      [
+         "2",
+         "2"
+      ]
+   ],
+   "text_bat": [
+      "text_bat",
+      [
+         "3",
+         "0"
+      ]
+   ],
+   "text_stump": [
+      "text_stumble",
+      [
+         "6",
+         "0"
+      ]
+   ],
+   "text_sun": [
+      "text_sun",
+      [
+         "2",
+         "3"
+      ]
+   ],
+   "text_dot": [
+      "text_dot",
+      [
+         "2",
+         "2"
+      ]
+   ],
+   "text_bubble": [
+      "text_bubble",
+      [
+         "1",
+         "3"
+      ]
+   ],
+   "text_water": [
+      "text_water",
+      [
+         "1",
+         "3"
+      ]
+   ],
+   "text_win": [
+      "text_win",
+      [
+         "2",
+         "4"
+      ]
+   ],
+   "text_push": [
+      "text_push",
+      [
+         "6",
+         "1"
+      ]
+   ],
+   "text_stop": [
+      "text_stop",
+      [
+         "5",
+         "1"
+      ]
+   ],
+   "text_move": [
+      "text_move",
+      [
+         "5",
+         "3"
+      ]
+   ],
+   "text_best": [
+      "text_best",
+      [
+         "2",
+         "4"
+      ]
+   ],
+   "text_tele": [
+      "text_tele",
+      [
+         "1",
+         "4"
+      ]
+   ],
+   "hand": [
+      "hand",
+      [
+         "0",
+         "3"
+      ]
+   ],
+   "rubble": [
+      "rubble",
+      [
+         "6",
+         "1"
+      ]
+   ],
+   "crab": [
+      "crab",
+      [
+         "2",
+         "2"
+      ]
+   ],
+   "bolt": [
+      "bolt",
+      [
+         "2",
+         "4"
+      ]
+   ],
+   "text_left": [
+      "text_left",
+      [
+         "1",
+         "4"
+      ]
+   ],
+   "text_star": [
+      "text_star",
+      [
+         "2",
+         "2"
+      ]
+   ],
+   "text_reed": [
+      "text_reed",
+      [
+         "6",
+         "0"
+      ]
+   ],
+   "text_husk": [
+      "text_husk",
+      [
+         "5",
+         "1"
+      ]
+   ],
+   "text_cog": [
+      "text_cog",
+      [
+         "0",
+         "1"
+      ]
+   ],
+   "text_red": [
+      "text_red",
+      [
+         "2",
+         "2"
+      ]
+   ],
+   "fruit": [
+      "fruit",
+      [
+         "2",
+         "2"
+      ]
+   ],
+   "bat": [
+      "bat",
+      [
+         "3",
+         "1"
+      ]
+   ],
+   "stump": [
+      "stumble",
+      [
+         "6",
+         "1"
+      ]
+   ],
+   "sun": [
+      "sun",
+      [
+         "2",
+         "4"
+      ]
+   ],
+   "dot": [
+      "dot",
+      [
+         "2",
+         "3"
+      ]
+   ],
+   "bubble": [
+      "bubble",
+      [
+         "1",
+         "4"
+      ]
+   ],
+   "text_melt": [
+      "text_melt",
+      [
+         "1",
+         "3"
+      ]
+   ],
+   "text_hot": [
+      "text_hot",
+      [
+         "2",
+         "3"
+      ]
+   ],
+   "text_you": [
+      "text_you",
+      [
+         "4",
+         "1"
+      ]
+   ],
+   "text_not": [
+      "text_not",
+      [
+         "2",
+         "2"
+      ]
+   ],
+   "text_sink": [
+      "text_sink",
+      [
+         "1",
+         "3"
+      ]
+   ],
+   "love": [
+      "love",
+      [
+         "4",
+         "2"
+      ]
+   ],
+   "door": [
+      "door",
+      [
+         "2",
+         "2"
+      ]
+   ],
+   "text_hand": [
+      "text_hand",
+      [
+         "0",
+         "3"
+      ]
+   ],
+   "text_down": [
+      "text_down",
+      [
+         "1",
+         "4"
+      ]
+   ],
+   "dust": [
+      "dust",
+      [
+         "6",
+         "2"
+      ]
+   ],
+   "text_flower": [
+      "text_flower",
+      [
+         "5",
+         "1"
+      ]
+   ],
+   "text_tree": [
+      "text_tree",
+      [
+         "5",
+         "2"
+      ]
+   ],
+   "text_fire": [
+      "text_fire",
+      [
+         "2",
+         "0"
+      ]
+   ],
+   "text_rocket": [
+      "text_rocket",
+      [
+         "0",
+         "0"
+      ]
+   ],
+   "text_algae": [
+      "text_algae",
+      [
+         "1",
+         "4"
+      ]
+   ],
+   "ghost": [
+      "ghost",
+      [
+         "4",
+         "2"
+      ]
+   ],
+   "bird": [
+      "bird",
+      [
+         "2",
+         "3"
+      ]
+   ],
+   "text_defeat": [
+      "text_defeat",
+      [
+         "2",
+         "1"
+      ]
+   ],
+   "skull": [
+      "skull",
+      [
+         "2",
+         "1"
+      ]
+   ],
+   "grass": [
+      "grass",
+      [
+         "5",
+         "0"
+      ]
+   ],
+   "text_skull": [
+      "text_skull",
+      [
+         "2",
+         "1"
+      ]
+   ],
+   "text_love": [
+      "text_love",
+      [
+         "4",
+         "2"
+      ]
+   ],
+   "text_door": [
+      "text_door",
+      [
+         "2",
+         "2"
+      ]
+   ],
+   "text_text": [
+      "text_text",
+      [
+         "4",
+         "1"
+      ]
+   ],
+   "text_sleep": [
+      "text_sleep",
+      [
+         "1",
+         "4"
+      ]
+   ],
+   "text_dust": [
+      "text_dust",
+      [
+         "2",
+         "4"
+      ]
+   ],
+   "text_blue": [
+      "text_blue",
+      [
+         "3",
+         "3"
+      ]
+   ],
+   "tree": [
+      "tree",
+      [
+         "5",
+         "2"
+      ]
+   ],
+   "algae": [
+      "algae",
+      [
+         "2",
+         "2"
+      ]
+   ],
+   "key": [
+      "key",
+      [
+         "2",
+         "4"
+      ]
+   ],
+   "text_key": [
+      "text_key",
+      [
+         "2",
+         "4"
+      ]
+   ],
+   "text_open": [
+      "text_open",
+      [
+         "2",
+         "4"
+      ]
+   ],
+   "text_shut": [
+      "text_shut",
+      [
+         "2",
+         "2"
+      ]
+   ],
+   "text_has": [
+      "text_has",
+      [
+         "0",
+         "3"
+      ]
+   ],
+   "box": [
+      "box",
+      [
+         "6",
+         "2"
+      ]
+   ],
+   "spike": [
+      "spike",
+      [
+         "1",
+         "1"
+      ]
+   ],
+   "text_box": [
+      "text_spike",
+      [
+         "1",
+         "1"
+      ]
+   ],
+   "belt": [
+      "belt",
+      [
+         "1",
+         "1"
+      ]
+   ],
+   "text_make": [
+      "text_make",
+      [
+         "0",
+         "3"
+      ]
+   ],
+   "text_fall": [
+      "text_fall",
+      [
+         "5",
+         "3"
+      ]
+   ],
+   "flower": [
+      "flower",
+      [
+         "5",
+         "2"
+      ]
+   ],
+   "text_fence": [
+      "text_fence",
+      [
+         "6",
+         "1"
+      ]
+   ],
+   "text_belt": [
+      "text_belt",
+      [
+         "1",
+         "3"
+      ]
+   ],
+   "me": [
+      "me",
+      [
+         "3",
+         "1"
+      ]
+   ],
+   "text_me": [
+      "text_me",
+      [
+         "3",
+         "1"
+      ]
+   ],
+   "text_swap": [
+      "text_swap",
+      [
+         "3",
+         "1"
+      ]
+   ],
+   "text_pull": [
+      "text_pull",
+      [
+         "6",
+         "2"
+      ]
+   ],
+   "text_on": [
+      "text_on",
+      [
+         "0",
+         "3"
+      ]
+   ],
+   "moon": [
+      "moon",
+      [
+         "2",
+         "4"
+      ]
+   ],
+   "leaf": [
+      "leaf",
+      [
+         "6",
+         "0"
+      ]
+   ],
+   "text_ghost": [
+      "text_ghost",
+      [
+         "4",
+         "2"
+      ]
+   ],
+   "text_bug": [
+      "text_bug",
+      [
+         "6",
+         "0"
+      ]
+   ],
+   "text_bird": [
+      "text_bird",
+      [
+         "2",
+         "2"
+      ]
+   ],
+   "fence": [
+      "fence",
+      [
+         "6",
+         "1"
+      ]
+   ],
+   "hedge": [
+      "hedge",
+      [
+         "5",
+         "1"
+      ]
+   ],
+   "pipe": [
+      "pipe",
+      [
+         "1",
+         "1"
+      ]
+   ],
+   "text_hedge": [
+      "text_hedge",
+      [
+         "5",
+         "1"
+      ]
+   ],
+   "text_pipe": [
+      "text_pipe",
+      [
+         "1",
+         "1"
+      ]
+   ],
+   "text_level": [
+      "text_level",
+      [
+         "4",
+         "1"
+      ]
+   ],
+   "text_orb": [
+      "text_orb",
+      [
+         "4",
+         "1"
+      ]
+   ],
+   "orb": [
+      "orb",
+      [
+         "4",
+         "1"
+      ]
+   ],
+   "text_bonus": [
+      "text_bonus",
+      [
+         "4",
+         "1"
+      ]
+   ],
+   "text_moon": [
+      "text_moon",
+      [
+         "2",
+         "4"
+      ]
+   ],
+   "text_spike": [
+      "text_spike",
+      [
+         "1",
+         "1"
+      ]
+   ],
+   "text_leaf": [
+      "text_leaf",
+      [
+         "2",
+         "4"
+      ]
+   ],
+   "text_group": [
+      "text_group",
+      [
+         "3",
+         "3"
+      ]
+   ],
+   "text_line": [
+      "text_line",
+      [
+         "0",
+         "3"
+      ]
+   ],
+   "brick": [
+      "brick",
+      [
+         "6",
+         "3"
+      ]
+   ],
+   "text_brick": [
+      "text_brick",
+      [
+         "6",
+         "1"
+      ]
+   ],
+   "text_wonder": [
+      "text_wonder",
+      [
+         "0",
+         "3"
+      ]
+   ],
+   "text_eat": [
+      "text_eat",
+      [
+         "2",
+         "2"
+      ]
+   ],
+   "text_statue": [
+      "text_statue",
+      [
+         "0",
+         "2"
+      ]
+   ],
+   "text_robot": [
+      "text_robot",
+      [
+         "0",
+         "1"
+      ]
+   ],
+   "statue": [
+      "statue",
+      [
+         "0",
+         "2"
+      ]
+   ],
+   "foliage": [
+      "foliage",
+      [
+         "6",
+         "0"
+      ]
+   ],
+   "robot": [
+      "robot",
+      [
+         "5",
+         "1"
+      ]
+   ],
+   "text_facing": [
+      "text_facing",
+      [
+         "0",
+         "3"
+      ]
+   ],
+   "line": [
+      "line",
+      [
+         "0",
+         "3"
+      ]
+   ],
+   "text_fear": [
+      "text_fear",
+      [
+         "2",
+         "2"
+      ]
+   ],
+   "text_sad": [
+      "text_sad",
+      [
+         "3",
+         "2"
+      ]
+   ],
+   "seastar": [
+      "seastar",
+      [
+         "2",
+         "3"
+      ]
+   ]
+}
