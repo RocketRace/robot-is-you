@@ -45,6 +45,10 @@ class globalCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    # Check if the bot is loading
+    async def cog_check(self, ctx):
+        return self.bot.get_cog("ownerCog").notLoading
+
     # Generates an animated gif of the tiles provided, using (TODO) the default palette
     @commands.command()
     @commands.guild_only()
