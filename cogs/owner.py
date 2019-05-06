@@ -37,6 +37,9 @@ class ownerCog(commands.Cog):
         if stat(altFile).st_size != 0:
             self.alternateTiles = json.load(open(altFile))
 
+        # Are assets loading?
+        self.notLoading = True
+
     # Evaluates input if you're the owner of the bot (me)
     # TODO: sandbox it
     @commands.command(name="eval")
@@ -58,6 +61,9 @@ class ownerCog(commands.Cog):
     @commands.is_owner()
     async def loadthemes(self, ctx):
         # Loads the sprites, names and colors for each "alternate object", that is, an object with data NOT in values.lua
+
+        # Disables all other commands for now
+        self.notLoading = False
 
         # Clears existing data
         altFile = open("alternatetiles.json", "wt")
@@ -124,10 +130,15 @@ class ownerCog(commands.Cog):
         json.dump(self.alternateTiles, alternateFile, indent=3)
         alternateFile.close()
 
+        # Enables commands again
+        self.NotLoading = True
+
     @commands.command()
     @commands.is_owner()
     async def loadcolors(self, ctx):
         # Reads values.lua and scrapes the tile data from there
+
+        self.notLoading = False
         # values.lua contains the data about which color (on the palette) is associated with each tile.
         colorvalues = open("values.lua")
         lines = colorvalues.readlines()
@@ -204,9 +215,13 @@ class ownerCog(commands.Cog):
         json.dump(self.tileColors, emotefile, indent=3)
         emotefile.close()
 
+        self.notLoading = True
+
     @commands.command()
     @commands.is_owner()
     async def loadpalette(self, ctx, arg):
+
+        self.notLoading = False
 
         # Tests for a supplied palette
         if arg not in [str[:-4] for str in listdir("palettes")]:
@@ -240,6 +255,7 @@ class ownerCog(commands.Cog):
                 framesColor = [multiplyColor(fp, paletteColors[x][y]) for fp in files]
                 # Saves the colored images to /color/[palette]/
                 [framesColor[i].save("color/%s/%s-%s-.png" % (palette, name, i), format="PNG") for i in range(len(framesColor))]
+        self.notLoading = True
 
     @commands.command()
     @commands.is_owner()
