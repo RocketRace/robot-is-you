@@ -131,6 +131,16 @@ class globalCog(commands.Cog):
         # Sends the image through discord
         await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif"))
 
+    @commands.command()
+    @commands.cooldown(2,5, commands.BucketType.channel)
+    async def help(self, ctx):
+        content = "Commands:\n`+help` : Displays this.\n`+about` : Displays bot info.\n" + \
+            "`+tile [tiles]` : Renders the input tiles. Text tiles must be prefixed with \"text_\"." + \
+            "Use hyphens to render empty tiles.\n`+rule [words]` : Like `+tile`, but only takes" + \
+            "word tiles as input. Words do not need to be prefixed by \"text_\". Use hyphens to render empty tiles."
+        helpEmbed = discord.Embed(title = "Help", type="rich", colour=0xffff, description=content)
+        await ctx.send(" ", embed=helpEmbed)
+
     @rule.error
     async def ruleError(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
@@ -145,6 +155,10 @@ class globalCog(commands.Cog):
         elif isinstance(error, commands.CheckFailure):
             await ctx.send("⚠️ Please input less than 50 tiles [Empty tiles included]")
 
+    @help.error
+    async def helpError(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.send("⚠️ Command on cooldown.")
 
 def setup(bot):
     bot.add_cog(globalCog(bot))
