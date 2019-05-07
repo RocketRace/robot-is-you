@@ -132,6 +132,14 @@ class globalCog(commands.Cog):
         await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif"))
 
     @commands.command()
+    @commands.cooldown(2, 5, commands.BucketType.channel)
+    async def about(self, ctx):
+        content = "ROBOT - Bot for Discord.\nDeveloped by RocketRace#0798 (156021301654454272) using the discord.py library." + \
+            "Guilds: %s" % (len(self.bot.guilds))
+        aboutEmbed = discord.Embed(title="About", type="rich", coloud=0xffff, description=content)
+        await ctx.send(" ", embed=aboutEmbed)
+
+    @commands.command()
     @commands.cooldown(2,5, commands.BucketType.channel)
     async def help(self, ctx):
         content = "Commands:\n`+help` : Displays this.\n`+about` : Displays bot info.\n" + \
