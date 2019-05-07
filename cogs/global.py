@@ -41,6 +41,9 @@ def mergeImages(wordGrid, width, height):
     f2 = genFrame("renders/frame2.png")
     f0.save("renders/render.gif", save_all=True, append_images=[f1, f2], duration=200, loop=0, disposal=2)
 
+async def notTooManyArguments(ctx):
+    return len(ctx.message.content.split(" ")) <= 50
+
 class globalCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -52,6 +55,8 @@ class globalCog(commands.Cog):
     # Generates an animated gif of the tiles provided, using (TODO) the default palette
     @commands.command()
     @commands.guild_only()
+    @commands.check(notTooManyArguments)
+    @commands.cooldown(2, 10, type=commands.BucketType.channel)
     async def tile(self, ctx, *, content: str):
         # Split input into a grid
         wordRows = content.lower().splitlines()
@@ -89,6 +94,8 @@ class globalCog(commands.Cog):
     # Same as +tile but only for word tiles
     @commands.command()
     @commands.guild_only()
+    @commands.check(notTooManyArguments)
+    @commands.cooldown(2, 10, type=commands.BucketType.channel)
     async def rule(self, ctx, *, content:str):
         # Split input into a grid
         wordRows = content.lower().splitlines()
@@ -123,6 +130,20 @@ class globalCog(commands.Cog):
         mergeImages(wordGrid, width, height)
         # Sends the image through discord
         await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif"))
+
+    @rule.error
+    async def ruleError(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.send("⚠️ Command on cooldown.")
+        elif isinstance(error, commands.CheckFailure):
+            await ctx.send("⚠️ Please input less than 50 tiles [Empty tiles included]")
+    
+    @tile.error
+    async def tileError(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.send("⚠️ Command on cooldown.")
+        elif isinstance(error, commands.CheckFailure):
+            await ctx.send("⚠️ Please input less than 50 tiles [Empty tiles included]")
 
 
 def setup(bot):
