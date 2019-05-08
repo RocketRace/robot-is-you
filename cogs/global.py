@@ -41,8 +41,12 @@ def mergeImages(wordGrid, width, height):
     f2 = genFrame("renders/frame2.png")
     f0.save("renders/render.gif", save_all=True, append_images=[f1, f2], duration=200, loop=0, disposal=2)
 
+# For +tile and +rule commands.
 async def notTooManyArguments(ctx):
-    return len(ctx.message.content.split(" ")) <= 50
+    if len(ctx.message.content.split(" ")) <= 50:
+        await ctx.send("⚠️ Please input less than 50 tiles [Empty tiles included]")
+        return False
+    return True
 
 class globalCog(commands.Cog):
     def __init__(self, bot):
@@ -134,8 +138,10 @@ class globalCog(commands.Cog):
     @commands.command()
     @commands.cooldown(2, 5, commands.BucketType.channel)
     async def about(self, ctx):
-        content = "ROBOT - Bot for Discord.\nDeveloped by RocketRace#0798 (156021301654454272) using the discord.py library." + \
-            "Guilds: %s" % (len(self.bot.guilds))
+        content = "ROBOT - Bot for Discord based on the indie game Baba Is You." + \
+            "\nDeveloped by RocketRace#0798 (156021301654454272) using the discord.py library." + \
+            "\n[Github repository](https://github.com/RocketRace/robot-is-you)" + \
+            "\nGuilds: %s" % (len(self.bot.guilds))
         aboutEmbed = discord.Embed(title="About", type="rich", coloud=0xffff, description=content)
         await ctx.send(" ", embed=aboutEmbed)
 
@@ -143,30 +149,11 @@ class globalCog(commands.Cog):
     @commands.cooldown(2,5, commands.BucketType.channel)
     async def help(self, ctx):
         content = "Commands:\n`+help` : Displays this.\n`+about` : Displays bot info.\n" + \
-            "`+tile [tiles]` : Renders the input tiles. Text tiles must be prefixed with \"text_\"." + \
+            "`+tile [tiles]` : Renders the input tiles. Text tiles must be prefixed with \"text\\_\"." + \
             "Use hyphens to render empty tiles.\n`+rule [words]` : Like `+tile`, but only takes" + \
-            "word tiles as input. Words do not need to be prefixed by \"text_\". Use hyphens to render empty tiles."
+            "word tiles as input. Words do not need to be prefixed by \"text\\_\". Use hyphens to render empty tiles."
         helpEmbed = discord.Embed(title = "Help", type="rich", colour=0xffff, description=content)
         await ctx.send(" ", embed=helpEmbed)
-
-    @rule.error
-    async def ruleError(self, ctx, error):
-        if isinstance(error, commands.CommandOnCooldown):
-            await ctx.send("⚠️ Command on cooldown.")
-        elif isinstance(error, commands.CheckFailure):
-            await ctx.send("⚠️ Please input less than 50 tiles [Empty tiles included]")
-    
-    @tile.error
-    async def tileError(self, ctx, error):
-        if isinstance(error, commands.CommandOnCooldown):
-            await ctx.send("⚠️ Command on cooldown.")
-        elif isinstance(error, commands.CheckFailure):
-            await ctx.send("⚠️ Please input less than 50 tiles [Empty tiles included]")
-
-    @help.error
-    async def helpError(self, ctx, error):
-        if isinstance(error, commands.CommandOnCooldown):
-            await ctx.send("⚠️ Command on cooldown.")
 
 def setup(bot):
     bot.add_cog(globalCog(bot))

@@ -16,7 +16,7 @@ DEFAULT_ACTIVITY = discord.Game(name=configuration.get("activity"))
 COGS = configuration.get("cogs")
 
 # Establishes the bot
-bot = commands.Bot(command_prefix=["+"], case_insensitive=True, help_command=None)
+bot = commands.Bot(command_prefix=["+"], case_insensitive=True, help_command=None, activity=DEFAULT_ACTIVITY)
 
 # Loads the modules of the bot
 if __name__ == "__main__":
@@ -31,5 +31,11 @@ async def on_connect():
 @bot.event
 async def on_ready():
     logging.info("Client caches filled. Ready.")
+
+@bot.event
+async def on_command_error(ctx, error):
+    logging.info(error)
+    if isinstance(error, commands.CommandOnCooldown):
+        await ctx.send("⚠️ Command on cooldown.")
 
 bot.run(BOT_TOKEN, bot = True, reconnect = True)

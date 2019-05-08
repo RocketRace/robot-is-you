@@ -3,6 +3,7 @@ color/
 renders/
 palettes/
 themes/
+levels/
 testing.py
 setup.json
 log.txt
