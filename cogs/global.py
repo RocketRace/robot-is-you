@@ -13,7 +13,7 @@ def genFrame(fp):
     # Converts to 256 color, but only uses 255
     # Not sure if this acatually does anything
     im = im.convert("RGB").convert("P", palette=Image.ADAPTIVE, colors=255)
-    mask = Image.eval(alpha, lambda a: 255 if a == 0 else 0)
+    mask = Image.eval(alpha, lambda a: 255 if a <= 128 else 0)
 
     # Gets the color value of the 0,0 pixel
     # This will be the transparency value in the .gif
@@ -44,9 +44,9 @@ def mergeImages(wordGrid, width, height):
 # For +tile and +rule commands.
 async def notTooManyArguments(ctx):
     if len(ctx.message.content.split(" ")) <= 50:
-        await ctx.send("⚠️ Please input less than 50 tiles [Empty tiles included]")
-        return False
-    return True
+        return True
+    await ctx.send("⚠️ Please input less than 50 tiles [Empty tiles included]")
+    return False
 
 class globalCog(commands.Cog):
     def __init__(self, bot):
