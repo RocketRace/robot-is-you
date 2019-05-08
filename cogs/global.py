@@ -12,7 +12,7 @@ def genFrame(fp):
 
     # Converts to 256 color, but only uses 255
     # Not sure if this acatually does anything
-    im = im.convert("RGB").convert("P", palette=Image.ADAPTIVE, colors=255)
+    im = im.convert("RGB").quantize(colors=255)
     mask = Image.eval(alpha, lambda a: 255 if a <= 128 else 0)
 
     # Gets the color value of the 0,0 pixel
@@ -39,7 +39,7 @@ def mergeImages(wordGrid, width, height):
     f0 = genFrame("renders/frame0.png")
     f1 = genFrame("renders/frame1.png")
     f2 = genFrame("renders/frame2.png")
-    f0.save("renders/render.gif", save_all=True, append_images=[f1, f2], duration=200, loop=0, disposal=2)
+    f0.save("renders/render.gif", save_all=True, append_images=[f1, f2], duration=200, loop=0, disposal=2)    
 
 # For +tile and +rule commands.
 async def notTooManyArguments(ctx):
