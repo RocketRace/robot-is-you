@@ -134,6 +134,14 @@ class ownerCog(commands.Cog):
         # Enables commands again
         self.NotLoading = True
 
+
+    @commands.command()
+    @commands.is_owner()
+    async def loadchanges(self, ctx):
+        self.notLoading = False
+        # TODO
+        self.notLoading = True
+
     @commands.command()
     @commands.is_owner()
     async def loadcolors(self, ctx):
