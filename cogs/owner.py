@@ -57,6 +57,7 @@ class ownerCog(commands.Cog):
         else:
             await ctx.send("An exception occurred%s" % result)
 
+
     @commands.command()
     @commands.is_owner()
     async def loadthemes(self, ctx):

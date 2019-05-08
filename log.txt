@@ -1068,3 +1068,2402 @@ discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK
 2019-05-06 10:55:39,449 - INFO - Cleaning up event loop.
 2019-05-06 10:55:39,641 - INFO - Websocket closed with 1000 (), cannot reconnect.
 2019-05-06 10:55:39,644 - INFO - Cleaning up after 3 tasks.
+2019-05-05 17:35:28,498 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2019-05-05 17:35:29,083 - INFO - logging in using static token
+2019-05-05 17:35:30,468 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 17:35:30,482 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 17:35:30,806 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-fgf7, discord-sessions-prd-1-4 (Session ID: 41449b066d0e3e0ab122833fbbeacc3e).
+2019-05-05 17:35:30,812 - INFO - Connected to Discord.
+2019-05-05 17:35:35,310 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 17:35:35,480 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 17:35:35,641 - INFO - Processed a chunk for 956 members in guild ID 294479294040768524.
+2019-05-05 17:35:35,646 - INFO - Client caches filled. Ready.
+2019-05-05 17:43:14,893 - WARNING - Can't keep up, websocket is 10.6s behind.
+2019-05-05 17:54:15,857 - WARNING - Can't keep up, websocket is 11.5s behind.
+2019-05-05 18:05:14,815 - WARNING - Can't keep up, websocket is 10.4s behind.
+2019-05-05 18:16:16,819 - WARNING - Can't keep up, websocket is 12.4s behind.
+2019-05-05 18:27:15,790 - WARNING - Can't keep up, websocket is 11.3s behind.
+2019-05-05 18:38:15,233 - WARNING - Can't keep up, websocket is 10.7s behind.
+2019-05-05 18:49:15,205 - WARNING - Can't keep up, websocket is 10.6s behind.
+2019-05-05 19:00:19,785 - WARNING - Can't keep up, websocket is 15.1s behind.
+2019-05-05 19:22:16,632 - WARNING - Can't keep up, websocket is 11.9s behind.
+2019-05-05 19:42:52,073 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-05 19:42:53,027 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-05 19:42:53,029 - ERROR - Attempting a reconnect in 0.93s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.5/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.5/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.5/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.5/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.5/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.5/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-05 19:42:59,435 - ERROR - Attempting a reconnect in 3.96s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.5/site-packages/aiohttp/connector.py", line 955, in _create_direct_connection
+    traces=traces), loop=self._loop)
+  File "/usr/lib/python3.5/asyncio/futures.py", line 380, in __iter__
+    yield self  # This tells Task to wait for completion.
+  File "/usr/lib/python3.5/asyncio/tasks.py", line 304, in _wakeup
+    future.result()
+  File "/usr/lib/python3.5/asyncio/futures.py", line 293, in result
+    raise self._exception
+  File "/usr/lib/python3.5/asyncio/tasks.py", line 241, in _step
+    result = coro.throw(exc)
+  File "/home/pi/.local/lib/python3.5/site-packages/aiohttp/connector.py", line 825, in _resolve_host
+    self._resolver.resolve(host, port, family=self._family)
+  File "/home/pi/.local/lib/python3.5/site-packages/aiohttp/resolver.py", line 30, in resolve
+    host, port, type=socket.SOCK_STREAM, family=family)
+  File "/usr/lib/python3.5/asyncio/futures.py", line 380, in __iter__
+    yield self  # This tells Task to wait for completion.
+  File "/usr/lib/python3.5/asyncio/tasks.py", line 304, in _wakeup
+    future.result()
+  File "/usr/lib/python3.5/asyncio/futures.py", line 293, in result
+    raise self._exception
+  File "/usr/lib/python3.5/concurrent/futures/thread.py", line 55, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/usr/lib/python3.5/socket.py", line 733, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+socket.gaierror: [Errno -3] Temporary failure in name resolution
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.5/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.5/site-packages/discord/client.py", line 392, in _connect
+    self.ws = await asyncio.wait_for(coro, timeout=180.0, loop=self.loop)
+  File "/usr/lib/python3.5/asyncio/tasks.py", line 400, in wait_for
+    return fut.result()
+  File "/usr/lib/python3.5/asyncio/futures.py", line 293, in result
+    raise self._exception
+  File "/usr/lib/python3.5/asyncio/tasks.py", line 241, in _step
+    result = coro.throw(exc)
+  File "/home/pi/.local/lib/python3.5/site-packages/discord/gateway.py", line 219, in from_client
+    gateway = await client.http.get_gateway()
+  File "/home/pi/.local/lib/python3.5/site-packages/discord/http.py", line 786, in get_gateway
+    data = await self.request(Route('GET', '/gateway'))
+  File "/home/pi/.local/lib/python3.5/site-packages/discord/http.py", line 158, in request
+    async with self.__session.request(method, url, **kwargs) as r:
+  File "/home/pi/.local/lib/python3.5/site-packages/aiohttp/client.py", line 1005, in __aenter__
+    self._resp = await self._coro
+  File "/home/pi/.local/lib/python3.5/site-packages/aiohttp/client.py", line 476, in _request
+    timeout=real_timeout
+  File "/home/pi/.local/lib/python3.5/site-packages/aiohttp/connector.py", line 522, in connect
+    proto = await self._create_connection(req, traces, timeout)
+  File "/home/pi/.local/lib/python3.5/site-packages/aiohttp/connector.py", line 854, in _create_connection
+    req, traces, timeout)
+  File "/home/pi/.local/lib/python3.5/site-packages/aiohttp/connector.py", line 959, in _create_direct_connection
+    raise ClientConnectorError(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorError: Cannot connect to host discordapp.com:443 ssl:None [Temporary failure in name resolution]
+2019-05-05 19:43:03,485 - ERROR - Attempting a reconnect in 6.85s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.5/site-packages/aiohttp/connector.py", line 955, in _create_direct_connection
+    traces=traces), loop=self._loop)
+  File "/usr/lib/python3.5/asyncio/futures.py", line 380, in __iter__
+    yield self  # This tells Task to wait for completion.
+  File "/usr/lib/python3.5/asyncio/tasks.py", line 304, in _wakeup
+    future.result()
+  File "/usr/lib/python3.5/asyncio/futures.py", line 293, in result
+    raise self._exception
+  File "/usr/lib/python3.5/asyncio/tasks.py", line 241, in _step
+    result = coro.throw(exc)
+  File "/home/pi/.local/lib/python3.5/site-packages/aiohttp/connector.py", line 825, in _resolve_host
+    self._resolver.resolve(host, port, family=self._family)
+  File "/home/pi/.local/lib/python3.5/site-packages/aiohttp/resolver.py", line 30, in resolve
+    host, port, type=socket.SOCK_STREAM, family=family)
+  File "/usr/lib/python3.5/asyncio/futures.py", line 380, in __iter__
+    yield self  # This tells Task to wait for completion.
+  File "/usr/lib/python3.5/asyncio/tasks.py", line 304, in _wakeup
+    future.result()
+  File "/usr/lib/python3.5/asyncio/futures.py", line 293, in result
+    raise self._exception
+  File "/usr/lib/python3.5/concurrent/futures/thread.py", line 55, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/usr/lib/python3.5/socket.py", line 733, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+socket.gaierror: [Errno -3] Temporary failure in name resolution
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.5/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.5/site-packages/discord/client.py", line 392, in _connect
+    self.ws = await asyncio.wait_for(coro, timeout=180.0, loop=self.loop)
+  File "/usr/lib/python3.5/asyncio/tasks.py", line 400, in wait_for
+    return fut.result()
+  File "/usr/lib/python3.5/asyncio/futures.py", line 293, in result
+    raise self._exception
+  File "/usr/lib/python3.5/asyncio/tasks.py", line 241, in _step
+    result = coro.throw(exc)
+  File "/home/pi/.local/lib/python3.5/site-packages/discord/gateway.py", line 219, in from_client
+    gateway = await client.http.get_gateway()
+  File "/home/pi/.local/lib/python3.5/site-packages/discord/http.py", line 786, in get_gateway
+    data = await self.request(Route('GET', '/gateway'))
+  File "/home/pi/.local/lib/python3.5/site-packages/discord/http.py", line 158, in request
+    async with self.__session.request(method, url, **kwargs) as r:
+  File "/home/pi/.local/lib/python3.5/site-packages/aiohttp/client.py", line 1005, in __aenter__
+    self._resp = await self._coro
+  File "/home/pi/.local/lib/python3.5/site-packages/aiohttp/client.py", line 476, in _request
+    timeout=real_timeout
+  File "/home/pi/.local/lib/python3.5/site-packages/aiohttp/connector.py", line 522, in connect
+    proto = await self._create_connection(req, traces, timeout)
+  File "/home/pi/.local/lib/python3.5/site-packages/aiohttp/connector.py", line 854, in _create_connection
+    req, traces, timeout)
+  File "/home/pi/.local/lib/python3.5/site-packages/aiohttp/connector.py", line 959, in _create_direct_connection
+    raise ClientConnectorError(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorError: Cannot connect to host discordapp.com:443 ssl:None [Temporary failure in name resolution]
+2019-05-05 19:43:11,565 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 19:43:11,592 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 19:43:12,805 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-gfs7, discord-sessions-prd-1-11 (Session ID: 9df6368de0ccb5114b2a86a58673094a).
+2019-05-05 19:43:12,817 - INFO - Connected to Discord.
+2019-05-05 19:43:17,505 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 19:43:17,911 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 19:43:18,263 - INFO - Processed a chunk for 956 members in guild ID 294479294040768524.
+2019-05-05 19:43:18,274 - INFO - Client caches filled. Ready.
+2019-05-05 19:55:12,482 - INFO - Websocket closed with 1006 (), attempting a reconnect.
+2019-05-05 19:55:12,483 - INFO - Got a request to RESUME the websocket.
+2019-05-05 19:55:13,583 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 19:55:13,603 - INFO - Shard ID None has sent the RESUME payload.
+2019-05-05 19:55:13,927 - INFO - Shard ID None has successfully RESUMED session 9df6368de0ccb5114b2a86a58673094a under trace gateway-prd-main-rwdh, discord-sessions-prd-1-11.
+2019-05-05 19:55:34,157 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-05 20:07:12,334 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-05 20:07:12,345 - ERROR - Attempting a reconnect in 9.73s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.5/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.5/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.5/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.5/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.5/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.5/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-05 20:07:23,138 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-05 20:07:23,153 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-05 20:07:23,508 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-xb3g, discord-sessions-prd-1-30 (Session ID: 652db637ee60430a3467b2b4d745bef9).
+2019-05-05 20:07:23,517 - INFO - Connected to Discord.
+2019-05-05 20:07:28,569 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:07:28,981 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-05 20:07:29,357 - INFO - Processed a chunk for 956 members in guild ID 294479294040768524.
+2019-05-05 20:07:29,369 - INFO - Client caches filled. Ready.
+2019-05-05 20:07:36,179 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-05 20:09:51,849 - INFO - Cleaning up event loop.
+2019-05-05 20:09:52,121 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-05 20:09:52,123 - INFO - Cleaning up after 2 tasks.
+2019-05-06 13:50:34,223 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2019-05-06 13:51:50,022 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2019-05-06 14:17:27,335 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2019-05-06 14:46:14,602 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2019-05-06 15:00:57,251 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2019-05-06 15:00:57,624 - INFO - logging in using static token
+2019-05-06 15:00:59,066 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 15:00:59,075 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 15:00:59,799 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-2sw1, discord-sessions-prd-1-4 (Session ID: eb556cd6fbcada9baed9c881de0bd896).
+2019-05-06 15:00:59,807 - INFO - Connected to Discord.
+2019-05-06 15:01:04,602 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 15:01:05,050 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 15:01:05,414 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-06 15:01:05,419 - INFO - Client caches filled. Ready.
+2019-05-06 15:14:56,583 - WARNING - Can't keep up, websocket is 12.4s behind.
+2019-05-06 15:56:54,676 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-06 15:56:54,677 - ERROR - Attempting a reconnect in 0.20s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-06 15:56:55,921 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 15:56:55,927 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 15:56:56,188 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-029q, discord-sessions-prd-1-27 (Session ID: 7ed08babce69a2e3f16b4d368afe1321).
+2019-05-06 15:56:56,196 - INFO - Connected to Discord.
+2019-05-06 15:57:00,661 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 15:57:00,818 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 15:57:00,959 - INFO - Processed a chunk for 952 members in guild ID 294479294040768524.
+2019-05-06 15:57:00,963 - INFO - Client caches filled. Ready.
+2019-05-06 15:57:21,833 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-06 16:32:55,178 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-06 16:32:55,187 - ERROR - Attempting a reconnect in 1.51s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-06 16:32:57,729 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 16:32:57,736 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 16:32:57,995 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-njxv, discord-sessions-prd-1-8 (Session ID: fc533605ebf60864fb9113e6214f4f49).
+2019-05-06 16:32:57,999 - INFO - Connected to Discord.
+2019-05-06 16:33:02,615 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 16:33:02,776 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 16:33:02,920 - INFO - Processed a chunk for 952 members in guild ID 294479294040768524.
+2019-05-06 16:33:02,924 - INFO - Client caches filled. Ready.
+2019-05-06 16:33:22,353 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-06 16:44:57,709 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-06 16:44:57,711 - ERROR - Attempting a reconnect in 3.53s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-06 16:45:02,308 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 16:45:02,315 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 16:45:02,562 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-lw5f, discord-sessions-prd-1-3 (Session ID: 0041d4b96b58df76c3ce4d7e29e38d93).
+2019-05-06 16:45:02,566 - INFO - Connected to Discord.
+2019-05-06 16:45:07,358 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 16:45:07,809 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 16:45:08,160 - INFO - Processed a chunk for 952 members in guild ID 294479294040768524.
+2019-05-06 16:45:08,165 - INFO - Client caches filled. Ready.
+2019-05-06 16:45:20,290 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-06 16:56:57,322 - WARNING - Can't keep up, websocket is 13.7s behind.
+2019-05-06 17:20:57,882 - WARNING - Can't keep up, websocket is 10.4s behind.
+2019-05-06 17:38:56,157 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-06 17:38:56,159 - ERROR - Attempting a reconnect in 0.09s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-06 17:38:57,284 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 17:38:57,290 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 17:38:57,545 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-mh1k, discord-sessions-prd-1-6 (Session ID: 951a6ddc7e5c5b1a192e528a4495a73a).
+2019-05-06 17:38:57,554 - INFO - Connected to Discord.
+2019-05-06 17:39:02,037 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 17:39:02,198 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 17:39:02,341 - INFO - Processed a chunk for 950 members in guild ID 294479294040768524.
+2019-05-06 17:39:02,347 - INFO - Client caches filled. Ready.
+2019-05-06 17:39:21,330 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-06 17:50:58,879 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-06 17:50:58,882 - ERROR - Attempting a reconnect in 3.50s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-06 17:51:03,402 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 17:51:03,408 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 17:51:03,652 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-4x4m, discord-sessions-prd-1-18 (Session ID: 0b8707dda37cfe50246b4c745aaf4ec2).
+2019-05-06 17:51:03,655 - INFO - Connected to Discord.
+2019-05-06 17:51:08,164 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 17:51:08,322 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 17:51:08,466 - INFO - Processed a chunk for 950 members in guild ID 294479294040768524.
+2019-05-06 17:51:08,471 - INFO - Client caches filled. Ready.
+2019-05-06 17:51:19,845 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-06 18:02:57,763 - WARNING - Can't keep up, websocket is 13.0s behind.
+2019-05-06 18:44:55,295 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-06 18:44:55,296 - ERROR - Attempting a reconnect in 0.72s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-06 18:44:57,085 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 18:44:57,091 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 18:44:57,374 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-z3p2, discord-sessions-prd-1-18 (Session ID: ae77e4ae4a68eefe4affc1c17d8db1be).
+2019-05-06 18:44:57,381 - INFO - Connected to Discord.
+2019-05-06 18:45:02,242 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 18:45:02,625 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 18:45:02,993 - INFO - Processed a chunk for 950 members in guild ID 294479294040768524.
+2019-05-06 18:45:02,999 - INFO - Client caches filled. Ready.
+2019-05-06 18:45:22,416 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-06 18:45:54,924 - INFO - Processed a chunk for 583 members in guild ID 556333985882439680.
+2019-05-06 18:53:58,379 - WARNING - Heartbeat blocked for more than 5 seconds.
+2019-05-06 18:56:58,155 - WARNING - Can't keep up, websocket is 14.5s behind.
+2019-05-06 19:20:57,995 - WARNING - Can't keep up, websocket is 10.5s behind.
+2019-05-06 19:28:26,293 - WARNING - Heartbeat blocked for more than 5 seconds.
+2019-05-06 19:28:31,294 - WARNING - Heartbeat blocked for more than 10 seconds.
+2019-05-06 19:28:36,295 - WARNING - Heartbeat blocked for more than 15 seconds.
+2019-05-06 19:28:41,296 - WARNING - Heartbeat blocked for more than 20 seconds.
+2019-05-06 19:28:46,297 - WARNING - Heartbeat blocked for more than 25 seconds.
+2019-05-06 19:28:51,298 - WARNING - Heartbeat blocked for more than 30 seconds.
+2019-05-06 19:28:56,299 - WARNING - Heartbeat blocked for more than 35 seconds.
+2019-05-06 19:29:01,300 - WARNING - Heartbeat blocked for more than 40 seconds.
+2019-05-06 19:29:06,300 - WARNING - Heartbeat blocked for more than 45 seconds.
+2019-05-06 19:29:11,301 - WARNING - Heartbeat blocked for more than 50 seconds.
+2019-05-06 19:29:16,302 - WARNING - Heartbeat blocked for more than 55 seconds.
+2019-05-06 19:29:21,303 - WARNING - Heartbeat blocked for more than 60 seconds.
+2019-05-06 19:29:26,304 - WARNING - Heartbeat blocked for more than 65 seconds.
+2019-05-06 19:29:31,305 - WARNING - Heartbeat blocked for more than 70 seconds.
+2019-05-06 19:29:36,306 - WARNING - Heartbeat blocked for more than 75 seconds.
+2019-05-06 19:29:41,307 - WARNING - Heartbeat blocked for more than 80 seconds.
+2019-05-06 19:29:46,308 - WARNING - Heartbeat blocked for more than 85 seconds.
+2019-05-06 19:29:51,309 - WARNING - Heartbeat blocked for more than 90 seconds.
+2019-05-06 19:29:56,310 - WARNING - Heartbeat blocked for more than 95 seconds.
+2019-05-06 19:30:01,311 - WARNING - Heartbeat blocked for more than 100 seconds.
+2019-05-06 19:30:06,312 - WARNING - Heartbeat blocked for more than 105 seconds.
+2019-05-06 19:30:11,312 - WARNING - Heartbeat blocked for more than 110 seconds.
+2019-05-06 19:30:16,313 - WARNING - Heartbeat blocked for more than 115 seconds.
+2019-05-06 19:30:21,314 - WARNING - Heartbeat blocked for more than 120 seconds.
+2019-05-06 19:30:26,315 - WARNING - Heartbeat blocked for more than 125 seconds.
+2019-05-06 19:30:31,316 - WARNING - Heartbeat blocked for more than 130 seconds.
+2019-05-06 19:30:36,317 - WARNING - Heartbeat blocked for more than 135 seconds.
+2019-05-06 19:30:41,318 - WARNING - Heartbeat blocked for more than 140 seconds.
+2019-05-06 19:30:46,319 - WARNING - Heartbeat blocked for more than 145 seconds.
+2019-05-06 19:30:51,320 - WARNING - Heartbeat blocked for more than 150 seconds.
+2019-05-06 19:30:56,321 - WARNING - Heartbeat blocked for more than 155 seconds.
+2019-05-06 19:31:01,322 - WARNING - Heartbeat blocked for more than 160 seconds.
+2019-05-06 19:31:06,323 - WARNING - Heartbeat blocked for more than 165 seconds.
+2019-05-06 19:31:11,324 - WARNING - Heartbeat blocked for more than 170 seconds.
+2019-05-06 19:31:16,325 - WARNING - Heartbeat blocked for more than 175 seconds.
+2019-05-06 19:31:16,675 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-06 19:31:16,676 - ERROR - Attempting a reconnect in 1.87s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-06 19:31:19,342 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 19:31:19,348 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 19:31:19,603 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-xsd1, discord-sessions-prd-1-3 (Session ID: f94211c7d25369c9348d083dae936df8).
+2019-05-06 19:31:19,609 - INFO - Connected to Discord.
+2019-05-06 19:31:24,172 - INFO - Processed a chunk for 583 members in guild ID 556333985882439680.
+2019-05-06 19:31:24,546 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 19:31:24,700 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 19:31:24,849 - INFO - Processed a chunk for 951 members in guild ID 294479294040768524.
+2019-05-06 19:31:24,854 - INFO - Client caches filled. Ready.
+2019-05-06 19:31:57,908 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-06 19:32:56,854 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-06 19:32:56,857 - ERROR - Attempting a reconnect in 2.96s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-06 19:33:00,817 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 19:33:00,823 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 19:33:01,075 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-8cw8, discord-sessions-prd-1-14 (Session ID: 48ed60b7447d606f970d9f0d1f9fe695).
+2019-05-06 19:33:01,084 - INFO - Connected to Discord.
+2019-05-06 19:33:05,564 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 19:33:05,719 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 19:33:05,865 - INFO - Processed a chunk for 951 members in guild ID 294479294040768524.
+2019-05-06 19:33:05,955 - INFO - Processed a chunk for 583 members in guild ID 556333985882439680.
+2019-05-06 19:33:05,959 - INFO - Client caches filled. Ready.
+2019-05-06 19:33:23,103 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-06 19:33:47,072 - WARNING - Heartbeat blocked for more than 5 seconds.
+2019-05-06 19:49:00,725 - WARNING - Heartbeat blocked for more than 5 seconds.
+2019-05-06 19:49:05,726 - WARNING - Heartbeat blocked for more than 10 seconds.
+2019-05-06 19:49:10,728 - WARNING - Heartbeat blocked for more than 15 seconds.
+2019-05-06 19:49:15,729 - WARNING - Heartbeat blocked for more than 20 seconds.
+2019-05-06 19:49:20,730 - WARNING - Heartbeat blocked for more than 25 seconds.
+2019-05-06 19:49:25,731 - WARNING - Heartbeat blocked for more than 30 seconds.
+2019-05-06 19:49:30,732 - WARNING - Heartbeat blocked for more than 35 seconds.
+2019-05-06 19:49:35,733 - WARNING - Heartbeat blocked for more than 40 seconds.
+2019-05-06 19:49:40,734 - WARNING - Heartbeat blocked for more than 45 seconds.
+2019-05-06 19:49:45,735 - WARNING - Heartbeat blocked for more than 50 seconds.
+2019-05-06 19:49:50,736 - WARNING - Heartbeat blocked for more than 55 seconds.
+2019-05-06 19:49:55,737 - WARNING - Heartbeat blocked for more than 60 seconds.
+2019-05-06 19:50:00,738 - WARNING - Heartbeat blocked for more than 65 seconds.
+2019-05-06 19:50:05,739 - WARNING - Heartbeat blocked for more than 70 seconds.
+2019-05-06 19:50:10,741 - WARNING - Heartbeat blocked for more than 75 seconds.
+2019-05-06 19:50:15,742 - WARNING - Heartbeat blocked for more than 80 seconds.
+2019-05-06 19:50:20,743 - WARNING - Heartbeat blocked for more than 85 seconds.
+2019-05-06 19:50:25,744 - WARNING - Heartbeat blocked for more than 90 seconds.
+2019-05-06 19:50:30,745 - WARNING - Heartbeat blocked for more than 95 seconds.
+2019-05-06 19:50:35,746 - WARNING - Heartbeat blocked for more than 100 seconds.
+2019-05-06 19:50:40,749 - WARNING - Heartbeat blocked for more than 105 seconds.
+2019-05-06 19:50:45,751 - WARNING - Heartbeat blocked for more than 110 seconds.
+2019-05-06 19:50:50,753 - WARNING - Heartbeat blocked for more than 115 seconds.
+2019-05-06 19:50:55,754 - WARNING - Heartbeat blocked for more than 120 seconds.
+2019-05-06 19:51:00,756 - WARNING - Heartbeat blocked for more than 125 seconds.
+2019-05-06 19:51:05,757 - WARNING - Heartbeat blocked for more than 130 seconds.
+2019-05-06 19:51:10,758 - WARNING - Heartbeat blocked for more than 135 seconds.
+2019-05-06 19:51:15,759 - WARNING - Heartbeat blocked for more than 140 seconds.
+2019-05-06 19:51:20,760 - WARNING - Heartbeat blocked for more than 145 seconds.
+2019-05-06 19:51:25,761 - WARNING - Heartbeat blocked for more than 150 seconds.
+2019-05-06 19:51:30,762 - WARNING - Heartbeat blocked for more than 155 seconds.
+2019-05-06 19:51:35,764 - WARNING - Heartbeat blocked for more than 160 seconds.
+2019-05-06 19:51:40,765 - WARNING - Heartbeat blocked for more than 165 seconds.
+2019-05-06 19:51:45,766 - WARNING - Heartbeat blocked for more than 170 seconds.
+2019-05-06 19:51:50,767 - WARNING - Heartbeat blocked for more than 175 seconds.
+2019-05-06 19:51:55,769 - WARNING - Heartbeat blocked for more than 180 seconds.
+2019-05-06 19:52:00,770 - WARNING - Heartbeat blocked for more than 185 seconds.
+2019-05-06 19:52:05,772 - WARNING - Heartbeat blocked for more than 190 seconds.
+2019-05-06 19:52:10,774 - WARNING - Heartbeat blocked for more than 195 seconds.
+2019-05-06 19:52:15,775 - WARNING - Heartbeat blocked for more than 200 seconds.
+2019-05-06 19:52:20,776 - WARNING - Heartbeat blocked for more than 205 seconds.
+2019-05-06 19:52:25,777 - WARNING - Heartbeat blocked for more than 210 seconds.
+2019-05-06 19:52:30,778 - WARNING - Heartbeat blocked for more than 215 seconds.
+2019-05-06 19:52:35,781 - WARNING - Heartbeat blocked for more than 220 seconds.
+2019-05-06 19:52:40,783 - WARNING - Heartbeat blocked for more than 225 seconds.
+2019-05-06 19:52:45,785 - WARNING - Heartbeat blocked for more than 230 seconds.
+2019-05-06 19:52:50,790 - WARNING - Heartbeat blocked for more than 235 seconds.
+2019-05-06 19:52:55,793 - WARNING - Heartbeat blocked for more than 240 seconds.
+2019-05-06 19:53:00,795 - WARNING - Heartbeat blocked for more than 245 seconds.
+2019-05-06 19:53:05,797 - WARNING - Heartbeat blocked for more than 250 seconds.
+2019-05-06 19:53:10,799 - WARNING - Heartbeat blocked for more than 255 seconds.
+2019-05-06 19:53:15,801 - WARNING - Heartbeat blocked for more than 260 seconds.
+2019-05-06 19:53:20,803 - WARNING - Heartbeat blocked for more than 265 seconds.
+2019-05-06 19:53:25,805 - WARNING - Heartbeat blocked for more than 270 seconds.
+2019-05-06 19:53:30,807 - WARNING - Heartbeat blocked for more than 275 seconds.
+2019-05-06 19:53:34,419 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-06 19:53:34,420 - ERROR - Attempting a reconnect in 1.12s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-06 19:53:36,546 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 19:53:36,553 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 19:53:36,806 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-h5b1, discord-sessions-prd-1-27 (Session ID: 7ab4610229a06ae7f471b90f91b46790).
+2019-05-06 19:53:36,816 - INFO - Connected to Discord.
+2019-05-06 19:53:41,202 - INFO - Processed a chunk for 583 members in guild ID 556333985882439680.
+2019-05-06 19:53:41,360 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 19:53:41,510 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 19:53:41,659 - INFO - Processed a chunk for 951 members in guild ID 294479294040768524.
+2019-05-06 19:53:41,669 - INFO - Client caches filled. Ready.
+2019-05-06 19:54:15,155 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-06 20:08:57,591 - WARNING - Can't keep up, websocket is 13.5s behind.
+2019-05-06 20:11:34,133 - WARNING - Heartbeat blocked for more than 5 seconds.
+2019-05-06 20:11:39,134 - WARNING - Heartbeat blocked for more than 10 seconds.
+2019-05-06 20:11:44,135 - WARNING - Heartbeat blocked for more than 15 seconds.
+2019-05-06 20:11:49,136 - WARNING - Heartbeat blocked for more than 20 seconds.
+2019-05-06 20:11:54,137 - WARNING - Heartbeat blocked for more than 25 seconds.
+2019-05-06 20:11:59,138 - WARNING - Heartbeat blocked for more than 30 seconds.
+2019-05-06 20:12:04,140 - WARNING - Heartbeat blocked for more than 35 seconds.
+2019-05-06 20:12:09,141 - WARNING - Heartbeat blocked for more than 40 seconds.
+2019-05-06 20:12:14,143 - WARNING - Heartbeat blocked for more than 45 seconds.
+2019-05-06 20:12:19,145 - WARNING - Heartbeat blocked for more than 50 seconds.
+2019-05-06 20:12:24,147 - WARNING - Heartbeat blocked for more than 55 seconds.
+2019-05-06 20:12:29,149 - WARNING - Heartbeat blocked for more than 60 seconds.
+2019-05-06 20:12:34,151 - WARNING - Heartbeat blocked for more than 65 seconds.
+2019-05-06 20:12:39,153 - WARNING - Heartbeat blocked for more than 70 seconds.
+2019-05-06 20:12:44,155 - WARNING - Heartbeat blocked for more than 75 seconds.
+2019-05-06 20:12:49,157 - WARNING - Heartbeat blocked for more than 80 seconds.
+2019-05-06 20:12:54,160 - WARNING - Heartbeat blocked for more than 85 seconds.
+2019-05-06 20:12:59,162 - WARNING - Heartbeat blocked for more than 90 seconds.
+2019-05-06 20:13:04,164 - WARNING - Heartbeat blocked for more than 95 seconds.
+2019-05-06 20:13:09,166 - WARNING - Heartbeat blocked for more than 100 seconds.
+2019-05-06 20:13:14,168 - WARNING - Heartbeat blocked for more than 105 seconds.
+2019-05-06 20:13:19,170 - WARNING - Heartbeat blocked for more than 110 seconds.
+2019-05-06 20:13:24,172 - WARNING - Heartbeat blocked for more than 115 seconds.
+2019-05-06 20:13:28,658 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-06 20:13:28,659 - ERROR - Attempting a reconnect in 5.42s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-06 20:13:34,853 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 20:13:34,860 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 20:13:35,110 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-s47l, discord-sessions-prd-1-4 (Session ID: b7a1bb626f22d99c761a3f25de83516b).
+2019-05-06 20:13:35,119 - INFO - Connected to Discord.
+2019-05-06 20:13:39,938 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 20:13:40,346 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 20:13:40,716 - INFO - Processed a chunk for 951 members in guild ID 294479294040768524.
+2019-05-06 20:13:40,810 - INFO - Processed a chunk for 583 members in guild ID 556333985882439680.
+2019-05-06 20:13:40,816 - INFO - Client caches filled. Ready.
+2019-05-06 20:14:09,879 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-06 20:15:02,362 - WARNING - Heartbeat blocked for more than 5 seconds.
+2019-05-06 20:15:07,363 - WARNING - Heartbeat blocked for more than 10 seconds.
+2019-05-06 20:15:12,364 - WARNING - Heartbeat blocked for more than 15 seconds.
+2019-05-06 20:15:17,365 - WARNING - Heartbeat blocked for more than 20 seconds.
+2019-05-06 20:15:22,366 - WARNING - Heartbeat blocked for more than 25 seconds.
+2019-05-06 20:15:27,367 - WARNING - Heartbeat blocked for more than 30 seconds.
+2019-05-06 20:15:32,369 - WARNING - Heartbeat blocked for more than 35 seconds.
+2019-05-06 20:15:37,370 - WARNING - Heartbeat blocked for more than 40 seconds.
+2019-05-06 20:15:42,371 - WARNING - Heartbeat blocked for more than 45 seconds.
+2019-05-06 20:15:47,372 - WARNING - Heartbeat blocked for more than 50 seconds.
+2019-05-06 20:15:52,374 - WARNING - Heartbeat blocked for more than 55 seconds.
+2019-05-06 20:15:57,376 - WARNING - Heartbeat blocked for more than 60 seconds.
+2019-05-06 20:16:02,378 - WARNING - Heartbeat blocked for more than 65 seconds.
+2019-05-06 20:16:07,380 - WARNING - Heartbeat blocked for more than 70 seconds.
+2019-05-06 20:16:12,382 - WARNING - Heartbeat blocked for more than 75 seconds.
+2019-05-06 20:16:17,384 - WARNING - Heartbeat blocked for more than 80 seconds.
+2019-05-06 20:16:22,386 - WARNING - Heartbeat blocked for more than 85 seconds.
+2019-05-06 20:16:27,388 - WARNING - Heartbeat blocked for more than 90 seconds.
+2019-05-06 20:16:32,390 - WARNING - Heartbeat blocked for more than 95 seconds.
+2019-05-06 20:16:37,392 - WARNING - Heartbeat blocked for more than 100 seconds.
+2019-05-06 20:16:40,649 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-06 20:16:40,649 - ERROR - Attempting a reconnect in 24.91s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-06 20:17:06,581 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 20:17:06,588 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 20:17:06,829 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-lzc4, discord-sessions-prd-1-28 (Session ID: b211a4c84995719dc5923e080061a852).
+2019-05-06 20:17:06,837 - INFO - Connected to Discord.
+2019-05-06 20:17:11,238 - INFO - Processed a chunk for 583 members in guild ID 556333985882439680.
+2019-05-06 20:17:11,397 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 20:17:11,552 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 20:17:11,697 - INFO - Processed a chunk for 951 members in guild ID 294479294040768524.
+2019-05-06 20:17:11,702 - INFO - Client caches filled. Ready.
+2019-05-06 20:17:21,855 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-06 20:26:57,423 - WARNING - Can't keep up, websocket is 13.3s behind.
+2019-05-06 20:48:54,120 - INFO - Cleaning up event loop.
+2019-05-06 20:48:54,365 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-06 20:48:54,368 - INFO - Cleaning up after 2 tasks.
+2019-05-06 20:53:20,376 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2019-05-06 20:55:35,599 - WARNING - PyNaCl is not installed, voice will NOT be supported
+2019-05-06 20:55:35,968 - INFO - logging in using static token
+2019-05-06 20:55:37,273 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 20:55:37,281 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 20:55:37,535 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-njxv, discord-sessions-prd-1-24 (Session ID: 16b7c5c495815d815c256d1e63f2d779).
+2019-05-06 20:55:37,541 - INFO - Connected to Discord.
+2019-05-06 20:55:42,069 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 20:55:42,223 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 20:55:42,374 - INFO - Processed a chunk for 952 members in guild ID 294479294040768524.
+2019-05-06 20:55:42,463 - INFO - Processed a chunk for 583 members in guild ID 556333985882439680.
+2019-05-06 20:55:42,467 - INFO - Client caches filled. Ready.
+2019-05-06 21:08:56,268 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-06 21:08:56,269 - ERROR - Attempting a reconnect in 1.08s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-06 21:08:58,380 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 21:08:58,386 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 21:08:58,647 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-xt1j, discord-sessions-prd-1-25 (Session ID: a564fe4f6422de8ffadef46542fda9fe).
+2019-05-06 21:08:58,656 - INFO - Connected to Discord.
+2019-05-06 21:09:03,214 - INFO - Processed a chunk for 583 members in guild ID 556333985882439680.
+2019-05-06 21:09:03,716 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 21:09:04,090 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 21:09:04,353 - INFO - Processed a chunk for 952 members in guild ID 294479294040768524.
+2019-05-06 21:09:04,358 - INFO - Client caches filled. Ready.
+2019-05-06 21:09:22,343 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-06 21:20:53,776 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-06 21:20:53,778 - ERROR - Attempting a reconnect in 3.35s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-06 21:20:58,112 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 21:20:58,119 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 21:20:58,374 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-bm08, discord-sessions-prd-1-20 (Session ID: b7dcd3af075222374d1ac516929ca1cd).
+2019-05-06 21:20:58,385 - INFO - Connected to Discord.
+2019-05-06 21:21:02,930 - INFO - Processed a chunk for 583 members in guild ID 556333985882439680.
+2019-05-06 21:21:03,419 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 21:21:03,811 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 21:21:04,078 - INFO - Processed a chunk for 952 members in guild ID 294479294040768524.
+2019-05-06 21:21:04,083 - INFO - Client caches filled. Ready.
+2019-05-06 21:21:20,940 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-06 21:32:53,489 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-06 21:32:53,490 - ERROR - Attempting a reconnect in 2.02s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-06 21:32:56,519 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 21:32:56,527 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 21:32:56,778 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-98g6, discord-sessions-prd-1-1 (Session ID: 4437db0a702d104e3b699a69cccbef79).
+2019-05-06 21:32:56,782 - INFO - Connected to Discord.
+2019-05-06 21:33:01,420 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 21:33:01,579 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 21:33:01,736 - INFO - Processed a chunk for 952 members in guild ID 294479294040768524.
+2019-05-06 21:33:01,825 - INFO - Processed a chunk for 583 members in guild ID 556333985882439680.
+2019-05-06 21:33:01,828 - INFO - Client caches filled. Ready.
+2019-05-06 21:33:20,673 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-06 22:08:56,493 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-06 22:08:56,494 - ERROR - Attempting a reconnect in 0.11s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-06 22:08:57,621 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 22:08:57,635 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 22:08:57,894 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-z3p2, discord-sessions-prd-1-15 (Session ID: 6b9e30200d3b27c32aa0df866dacc9b7).
+2019-05-06 22:08:57,899 - INFO - Connected to Discord.
+2019-05-06 22:09:02,294 - INFO - Processed a chunk for 583 members in guild ID 556333985882439680.
+2019-05-06 22:09:02,600 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 22:09:02,753 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 22:09:02,898 - INFO - Processed a chunk for 952 members in guild ID 294479294040768524.
+2019-05-06 22:09:02,904 - INFO - Client caches filled. Ready.
+2019-05-06 22:09:22,945 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-06 22:20:53,055 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-06 22:20:53,058 - ERROR - Attempting a reconnect in 0.07s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-06 22:20:54,141 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 22:20:54,149 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 22:20:54,408 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-jg92, discord-sessions-prd-1-16 (Session ID: fcb3b496cf248c8a6eeb88e45c754c55).
+2019-05-06 22:20:54,417 - INFO - Connected to Discord.
+2019-05-06 22:20:58,952 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 22:20:59,115 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 22:20:59,260 - INFO - Processed a chunk for 952 members in guild ID 294479294040768524.
+2019-05-06 22:20:59,350 - INFO - Processed a chunk for 583 members in guild ID 556333985882439680.
+2019-05-06 22:20:59,354 - INFO - Client caches filled. Ready.
+2019-05-06 22:21:20,193 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-06 22:38:58,049 - WARNING - Can't keep up, websocket is 11.3s behind.
+2019-05-06 22:56:53,442 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-06 22:56:53,443 - ERROR - Attempting a reconnect in 1.29s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-06 22:56:55,767 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 22:56:55,774 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 22:56:56,033 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-8zcs, discord-sessions-prd-1-25 (Session ID: b2d85aac6769601257aed33e1cb1c3da).
+2019-05-06 22:56:56,041 - INFO - Connected to Discord.
+2019-05-06 22:57:00,523 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 22:57:00,683 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 22:57:00,832 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-06 22:57:00,921 - INFO - Processed a chunk for 583 members in guild ID 556333985882439680.
+2019-05-06 22:57:00,924 - INFO - Client caches filled. Ready.
+2019-05-06 22:57:20,573 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-06 23:14:58,665 - WARNING - Can't keep up, websocket is 10.3s behind.
+2019-05-06 23:32:55,090 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-06 23:32:55,091 - ERROR - Attempting a reconnect in 0.01s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-06 23:32:56,262 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-06 23:32:56,268 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-06 23:32:56,528 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-jjr7, discord-sessions-prd-1-11 (Session ID: 4d9bf020def82a8c820a7349647392ce).
+2019-05-06 23:32:56,532 - INFO - Connected to Discord.
+2019-05-06 23:33:01,239 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 23:33:01,395 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-06 23:33:01,542 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-06 23:33:01,630 - INFO - Processed a chunk for 582 members in guild ID 556333985882439680.
+2019-05-06 23:33:01,633 - INFO - Client caches filled. Ready.
+2019-05-06 23:33:22,194 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 00:08:55,569 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 00:08:55,571 - ERROR - Attempting a reconnect in 1.34s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 00:08:57,984 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 00:08:57,998 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 00:08:58,260 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-xt1j, discord-sessions-prd-1-27 (Session ID: eb5ecfff221404735026f1bd9276fc2c).
+2019-05-07 00:08:58,269 - INFO - Connected to Discord.
+2019-05-07 00:09:02,679 - INFO - Processed a chunk for 582 members in guild ID 556333985882439680.
+2019-05-07 00:09:02,841 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 00:09:02,993 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 00:09:03,148 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 00:09:03,153 - INFO - Client caches filled. Ready.
+2019-05-07 00:09:22,694 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 00:20:53,407 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 00:20:53,409 - ERROR - Attempting a reconnect in 3.30s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 00:20:57,745 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 00:20:57,751 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 00:20:58,048 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-l420, discord-sessions-prd-1-1 (Session ID: 3933e128404dbed0879e508ea060d045).
+2019-05-07 00:20:58,056 - INFO - Connected to Discord.
+2019-05-07 00:21:02,693 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 00:21:02,855 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 00:21:02,998 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 00:21:03,087 - INFO - Processed a chunk for 582 members in guild ID 556333985882439680.
+2019-05-07 00:21:03,090 - INFO - Client caches filled. Ready.
+2019-05-07 00:21:20,551 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 00:32:53,150 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 00:32:53,151 - ERROR - Attempting a reconnect in 5.06s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 00:32:59,492 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 00:32:59,498 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 00:32:59,762 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-mdp4, discord-sessions-prd-1-7 (Session ID: 0c3c3973e59f03a5039627f8a084cb71).
+2019-05-07 00:32:59,773 - INFO - Connected to Discord.
+2019-05-07 00:33:04,229 - INFO - Processed a chunk for 582 members in guild ID 556333985882439680.
+2019-05-07 00:33:04,396 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 00:33:04,550 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 00:33:04,696 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 00:33:04,701 - INFO - Client caches filled. Ready.
+2019-05-07 00:33:20,309 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 00:44:54,909 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 00:44:54,911 - ERROR - Attempting a reconnect in 9.06s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 00:45:04,740 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 00:45:04,747 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 00:45:05,013 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-rwdh, discord-sessions-prd-1-18 (Session ID: cae19e9839082090d1fce2e0b1efde8a).
+2019-05-07 00:45:05,021 - INFO - Connected to Discord.
+2019-05-07 00:45:09,456 - INFO - Processed a chunk for 582 members in guild ID 556333985882439680.
+2019-05-07 00:45:09,614 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 00:45:09,770 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 00:45:09,918 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 00:45:09,923 - INFO - Client caches filled. Ready.
+2019-05-07 00:45:22,056 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 00:57:00,392 - WARNING - Can't keep up, websocket is 14.3s behind.
+2019-05-07 01:14:57,218 - WARNING - Can't keep up, websocket is 18.6s behind.
+2019-05-07 01:38:56,489 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 01:38:56,490 - ERROR - Attempting a reconnect in 0.27s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 512, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 01:38:57,798 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 01:38:57,805 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 01:38:58,090 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-98g6, discord-sessions-prd-1-6 (Session ID: dd86eb35f578b9efa04e1cef4be10a07).
+2019-05-07 01:38:58,100 - INFO - Connected to Discord.
+2019-05-07 01:39:02,513 - INFO - Processed a chunk for 581 members in guild ID 556333985882439680.
+2019-05-07 01:39:02,669 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 01:39:02,823 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 01:39:02,968 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 01:39:02,973 - INFO - Client caches filled. Ready.
+2019-05-07 01:39:23,755 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 01:50:57,132 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 01:50:57,134 - ERROR - Attempting a reconnect in 1.48s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 01:50:59,679 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 01:50:59,686 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 01:50:59,962 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-dp3d, discord-sessions-prd-1-1 (Session ID: f01d8cdf6ec4c90cc3b22610f13553a6).
+2019-05-07 01:50:59,972 - INFO - Connected to Discord.
+2019-05-07 01:51:04,397 - INFO - Processed a chunk for 581 members in guild ID 556333985882439680.
+2019-05-07 01:51:04,554 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 01:51:04,713 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 01:51:04,857 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 01:51:04,863 - INFO - Client caches filled. Ready.
+2019-05-07 01:51:20,362 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 02:02:55,065 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 02:02:55,066 - ERROR - Attempting a reconnect in 6.63s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 02:03:02,750 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 02:03:02,756 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 02:03:03,025 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-lz8n, discord-sessions-prd-1-26 (Session ID: 5b8c842520abec1bdf38d6a72d6062b4).
+2019-05-07 02:03:03,033 - INFO - Connected to Discord.
+2019-05-07 02:03:07,520 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 02:03:07,679 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 02:03:07,826 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 02:03:07,915 - INFO - Processed a chunk for 581 members in guild ID 556333985882439680.
+2019-05-07 02:03:07,919 - INFO - Client caches filled. Ready.
+2019-05-07 02:03:22,240 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 02:56:54,659 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 02:56:54,660 - ERROR - Attempting a reconnect in 0.72s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 02:56:56,716 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 02:56:56,722 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 02:56:57,000 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-6483, discord-sessions-prd-1-12 (Session ID: 60c779fd473d82d9d442417e93b092cc).
+2019-05-07 02:56:57,004 - INFO - Connected to Discord.
+2019-05-07 02:57:01,664 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 02:57:02,005 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 02:57:02,454 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 02:57:02,543 - INFO - Processed a chunk for 581 members in guild ID 556333985882439680.
+2019-05-07 02:57:02,546 - INFO - Client caches filled. Ready.
+2019-05-07 02:57:21,767 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 03:32:56,001 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 03:32:56,003 - ERROR - Attempting a reconnect in 0.29s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 03:32:57,713 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 03:32:57,721 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 03:33:02,095 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-s47l, discord-sessions-prd-1-4 (Session ID: 86aeb8ad27f882ad52be301d0e77cf39).
+2019-05-07 03:33:02,104 - INFO - Connected to Discord.
+2019-05-07 03:33:06,525 - INFO - Processed a chunk for 581 members in guild ID 556333985882439680.
+2019-05-07 03:33:06,750 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 03:33:06,991 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 03:33:07,363 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 03:33:07,369 - INFO - Client caches filled. Ready.
+2019-05-07 03:33:23,149 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 03:37:09,582 - ERROR - Fatal read error on socket transport
+protocol: <asyncio.sslproto.SSLProtocol object at 0x73babe30>
+transport: <_SelectorSocketTransport fd=8 read=polling write=<idle, bufsize=0>>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.7/asyncio/selector_events.py", line 812, in _read_ready__data_received
+    data = self._sock.recv(self.max_size)
+TimeoutError: [Errno 110] Connection timed out
+2019-05-07 03:44:58,150 - INFO - Websocket closed with 1006 (), attempting a reconnect.
+2019-05-07 03:44:58,151 - INFO - Got a request to RESUME the websocket.
+2019-05-07 03:44:59,342 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 03:44:59,354 - INFO - Shard ID None has sent the RESUME payload.
+2019-05-07 03:44:59,630 - INFO - Shard ID None has successfully RESUMED session 86aeb8ad27f882ad52be301d0e77cf39 under trace gateway-prd-main-9xgj, discord-sessions-prd-1-4.
+2019-05-07 03:45:20,275 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 03:56:58,812 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 03:56:58,814 - ERROR - Attempting a reconnect in 0.24s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 03:57:00,137 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 03:57:00,143 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 03:57:00,433 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-m278, discord-sessions-prd-1-6 (Session ID: 236f84db003ee5a4cbb3ad4436823126).
+2019-05-07 03:57:00,441 - INFO - Connected to Discord.
+2019-05-07 03:57:04,855 - INFO - Processed a chunk for 581 members in guild ID 556333985882439680.
+2019-05-07 03:57:05,007 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 03:57:05,164 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 03:57:05,312 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 03:57:05,316 - INFO - Client caches filled. Ready.
+2019-05-07 03:57:21,908 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 04:08:55,557 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 04:08:55,558 - ERROR - Attempting a reconnect in 1.84s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 04:08:59,078 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 04:08:59,089 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 04:08:59,392 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-gdbh, discord-sessions-prd-1-3 (Session ID: 8b609e05f75b56a609444f4b3d0cd230).
+2019-05-07 04:08:59,395 - INFO - Connected to Discord.
+2019-05-07 04:09:04,056 - INFO - Processed a chunk for 581 members in guild ID 556333985882439680.
+2019-05-07 04:09:04,339 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 04:09:04,588 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 04:09:04,736 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 04:09:04,742 - INFO - Client caches filled. Ready.
+2019-05-07 04:09:22,699 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 04:20:54,478 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 04:20:54,480 - ERROR - Attempting a reconnect in 6.55s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 04:21:03,173 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 04:21:03,181 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 04:21:03,467 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-01vm, discord-sessions-prd-1-15 (Session ID: fadb45d719ecbd21769684c3ec7c2a46).
+2019-05-07 04:21:03,475 - INFO - Connected to Discord.
+2019-05-07 04:21:08,014 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 04:21:08,177 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 04:21:08,378 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 04:21:08,518 - INFO - Processed a chunk for 581 members in guild ID 556333985882439680.
+2019-05-07 04:21:08,522 - INFO - Client caches filled. Ready.
+2019-05-07 04:21:21,643 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 04:33:14,806 - WARNING - Can't keep up, websocket is 30.3s behind.
+2019-05-07 04:45:48,298 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 04:46:08,399 - INFO - Websocket closed with 1006 (), attempting a reconnect.
+2019-05-07 04:46:08,400 - INFO - Got a request to RESUME the websocket.
+2019-05-07 04:47:25,129 - ERROR - Attempting a reconnect in 17.33s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/aiohttp/connector.py", line 924, in _wrap_create_connection
+    await self._loop.create_connection(*args, **kwargs))
+  File "/usr/local/lib/python3.7/asyncio/base_events.py", line 970, in create_connection
+    ssl_handshake_timeout=ssl_handshake_timeout)
+  File "/usr/local/lib/python3.7/asyncio/base_events.py", line 998, in _create_connection_transport
+    await waiter
+ConnectionAbortedError: SSL handshake is taking longer than 60.0 seconds: aborting the connection
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 401, in _connect
+    self.ws = await asyncio.wait_for(coro, timeout=180.0, loop=self.loop)
+  File "/usr/local/lib/python3.7/asyncio/tasks.py", line 412, in wait_for
+    return fut.result()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 219, in from_client
+    gateway = await client.http.get_gateway()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/http.py", line 786, in get_gateway
+    data = await self.request(Route('GET', '/gateway'))
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/http.py", line 158, in request
+    async with self.__session.request(method, url, **kwargs) as r:
+  File "/home/pi/.local/lib/python3.7/site-packages/aiohttp/client.py", line 1005, in __aenter__
+    self._resp = await self._coro
+  File "/home/pi/.local/lib/python3.7/site-packages/aiohttp/client.py", line 476, in _request
+    timeout=real_timeout
+  File "/home/pi/.local/lib/python3.7/site-packages/aiohttp/connector.py", line 522, in connect
+    proto = await self._create_connection(req, traces, timeout)
+  File "/home/pi/.local/lib/python3.7/site-packages/aiohttp/connector.py", line 854, in _create_connection
+    req, traces, timeout)
+  File "/home/pi/.local/lib/python3.7/site-packages/aiohttp/connector.py", line 992, in _create_direct_connection
+    raise last_exc
+  File "/home/pi/.local/lib/python3.7/site-packages/aiohttp/connector.py", line 974, in _create_direct_connection
+    req=req, client_error=client_error)
+  File "/home/pi/.local/lib/python3.7/site-packages/aiohttp/connector.py", line 931, in _wrap_create_connection
+    raise client_error(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorError: Cannot connect to host discordapp.com:443 ssl:None [None]
+2019-05-07 04:48:51,777 - ERROR - Attempting a reconnect in 27.80s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 392, in _connect
+    self.ws = await asyncio.wait_for(coro, timeout=180.0, loop=self.loop)
+  File "/usr/local/lib/python3.7/asyncio/tasks.py", line 412, in wait_for
+    return fut.result()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 220, in from_client
+    ws = await websockets.connect(gateway, loop=client.loop, klass=cls, compression=None)
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/py35/client.py", line 12, in __await_impl__
+    transport, protocol = await self._creating_connection
+  File "/usr/local/lib/python3.7/asyncio/base_events.py", line 970, in create_connection
+    ssl_handshake_timeout=ssl_handshake_timeout)
+  File "/usr/local/lib/python3.7/asyncio/base_events.py", line 998, in _create_connection_transport
+    await waiter
+ConnectionAbortedError: SSL handshake is taking longer than 60.0 seconds: aborting the connection
+2019-05-07 04:51:21,527 - ERROR - Attempting a reconnect in 57.84s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/aiohttp/connector.py", line 924, in _wrap_create_connection
+    await self._loop.create_connection(*args, **kwargs))
+  File "/usr/local/lib/python3.7/asyncio/base_events.py", line 970, in create_connection
+    ssl_handshake_timeout=ssl_handshake_timeout)
+  File "/usr/local/lib/python3.7/asyncio/base_events.py", line 998, in _create_connection_transport
+    await waiter
+ConnectionAbortedError: SSL handshake is taking longer than 60.0 seconds: aborting the connection
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 392, in _connect
+    self.ws = await asyncio.wait_for(coro, timeout=180.0, loop=self.loop)
+  File "/usr/local/lib/python3.7/asyncio/tasks.py", line 412, in wait_for
+    return fut.result()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 219, in from_client
+    gateway = await client.http.get_gateway()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/http.py", line 786, in get_gateway
+    data = await self.request(Route('GET', '/gateway'))
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/http.py", line 158, in request
+    async with self.__session.request(method, url, **kwargs) as r:
+  File "/home/pi/.local/lib/python3.7/site-packages/aiohttp/client.py", line 1005, in __aenter__
+    self._resp = await self._coro
+  File "/home/pi/.local/lib/python3.7/site-packages/aiohttp/client.py", line 476, in _request
+    timeout=real_timeout
+  File "/home/pi/.local/lib/python3.7/site-packages/aiohttp/connector.py", line 522, in connect
+    proto = await self._create_connection(req, traces, timeout)
+  File "/home/pi/.local/lib/python3.7/site-packages/aiohttp/connector.py", line 854, in _create_connection
+    req, traces, timeout)
+  File "/home/pi/.local/lib/python3.7/site-packages/aiohttp/connector.py", line 992, in _create_direct_connection
+    raise last_exc
+  File "/home/pi/.local/lib/python3.7/site-packages/aiohttp/connector.py", line 974, in _create_direct_connection
+    req=req, client_error=client_error)
+  File "/home/pi/.local/lib/python3.7/site-packages/aiohttp/connector.py", line 931, in _wrap_create_connection
+    raise client_error(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorError: Cannot connect to host discordapp.com:443 ssl:None [None]
+2019-05-07 04:53:45,753 - ERROR - Attempting a reconnect in 28.16s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 392, in _connect
+    self.ws = await asyncio.wait_for(coro, timeout=180.0, loop=self.loop)
+  File "/usr/local/lib/python3.7/asyncio/tasks.py", line 412, in wait_for
+    return fut.result()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 220, in from_client
+    ws = await websockets.connect(gateway, loop=client.loop, klass=cls, compression=None)
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/py35/client.py", line 12, in __await_impl__
+    transport, protocol = await self._creating_connection
+  File "/usr/local/lib/python3.7/asyncio/base_events.py", line 970, in create_connection
+    ssl_handshake_timeout=ssl_handshake_timeout)
+  File "/usr/local/lib/python3.7/asyncio/base_events.py", line 998, in _create_connection_transport
+    await waiter
+ConnectionAbortedError: SSL handshake is taking longer than 60.0 seconds: aborting the connection
+2019-05-07 04:55:39,083 - ERROR - Attempting a reconnect in 425.63s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 392, in _connect
+    self.ws = await asyncio.wait_for(coro, timeout=180.0, loop=self.loop)
+  File "/usr/local/lib/python3.7/asyncio/tasks.py", line 412, in wait_for
+    return fut.result()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 220, in from_client
+    ws = await websockets.connect(gateway, loop=client.loop, klass=cls, compression=None)
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/py35/client.py", line 12, in __await_impl__
+    transport, protocol = await self._creating_connection
+  File "/usr/local/lib/python3.7/asyncio/base_events.py", line 970, in create_connection
+    ssl_handshake_timeout=ssl_handshake_timeout)
+  File "/usr/local/lib/python3.7/asyncio/base_events.py", line 998, in _create_connection_transport
+    await waiter
+ConnectionAbortedError: SSL handshake is taking longer than 60.0 seconds: aborting the connection
+2019-05-07 05:02:44,822 - ERROR - Attempting a reconnect in 561.47s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/aiohttp/connector.py", line 955, in _create_direct_connection
+    traces=traces), loop=self._loop)
+  File "/home/pi/.local/lib/python3.7/site-packages/aiohttp/connector.py", line 825, in _resolve_host
+    self._resolver.resolve(host, port, family=self._family)
+  File "/home/pi/.local/lib/python3.7/site-packages/aiohttp/resolver.py", line 30, in resolve
+    host, port, type=socket.SOCK_STREAM, family=family)
+  File "/usr/local/lib/python3.7/asyncio/base_events.py", line 773, in getaddrinfo
+    None, getaddr_func, host, port, family, type, proto, flags)
+  File "/usr/local/lib/python3.7/concurrent/futures/thread.py", line 57, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/usr/local/lib/python3.7/socket.py", line 748, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+socket.gaierror: [Errno -3] Temporary failure in name resolution
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 392, in _connect
+    self.ws = await asyncio.wait_for(coro, timeout=180.0, loop=self.loop)
+  File "/usr/local/lib/python3.7/asyncio/tasks.py", line 412, in wait_for
+    return fut.result()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 219, in from_client
+    gateway = await client.http.get_gateway()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/http.py", line 786, in get_gateway
+    data = await self.request(Route('GET', '/gateway'))
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/http.py", line 158, in request
+    async with self.__session.request(method, url, **kwargs) as r:
+  File "/home/pi/.local/lib/python3.7/site-packages/aiohttp/client.py", line 1005, in __aenter__
+    self._resp = await self._coro
+  File "/home/pi/.local/lib/python3.7/site-packages/aiohttp/client.py", line 476, in _request
+    timeout=real_timeout
+  File "/home/pi/.local/lib/python3.7/site-packages/aiohttp/connector.py", line 522, in connect
+    proto = await self._create_connection(req, traces, timeout)
+  File "/home/pi/.local/lib/python3.7/site-packages/aiohttp/connector.py", line 854, in _create_connection
+    req, traces, timeout)
+  File "/home/pi/.local/lib/python3.7/site-packages/aiohttp/connector.py", line 959, in _create_direct_connection
+    raise ClientConnectorError(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorError: Cannot connect to host discordapp.com:443 ssl:None [Temporary failure in name resolution]
+2019-05-07 05:12:08,394 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 05:12:08,404 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 05:12:14,505 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-h5b1, discord-sessions-prd-1-8 (Session ID: 1612d949e126a8dd35160a3923e57714).
+2019-05-07 05:12:14,513 - INFO - Connected to Discord.
+2019-05-07 05:12:25,040 - INFO - Processed a chunk for 582 members in guild ID 556333985882439680.
+2019-05-07 05:12:25,045 - INFO - Client caches filled. Ready.
+2019-05-07 05:33:27,249 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 05:33:47,366 - INFO - Websocket closed with 1006 (), attempting a reconnect.
+2019-05-07 05:33:47,367 - INFO - Got a request to RESUME the websocket.
+2019-05-07 05:34:54,189 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 05:34:54,208 - INFO - Shard ID None has sent the RESUME payload.
+2019-05-07 05:35:02,228 - INFO - Shard ID None has successfully RESUMED session 1612d949e126a8dd35160a3923e57714 under trace gateway-prd-main-m278, discord-sessions-prd-1-8.
+2019-05-07 05:50:57,510 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 05:50:57,511 - ERROR - Attempting a reconnect in 1.64s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 05:51:00,673 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 05:51:00,680 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 05:51:00,964 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-bnfw, discord-sessions-prd-1-21 (Session ID: c485ea1ea7cd2d7d1a25c4ddf2b29c3d).
+2019-05-07 05:51:00,968 - INFO - Connected to Discord.
+2019-05-07 05:51:07,547 - INFO - Processed a chunk for 582 members in guild ID 556333985882439680.
+2019-05-07 05:51:07,810 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 05:51:08,358 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 05:51:08,500 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 05:51:08,505 - INFO - Client caches filled. Ready.
+2019-05-07 05:51:24,285 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 05:57:28,723 - WARNING - Can't keep up, websocket is 16.8s behind.
+2019-05-07 06:02:58,133 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 06:02:58,134 - ERROR - Attempting a reconnect in 0.72s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 06:03:23,235 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 06:04:06,236 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 06:04:06,243 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 06:04:06,510 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-4br4, discord-sessions-prd-1-25 (Session ID: 05b8ed1d783f9705b3a1a495b8b276e8).
+2019-05-07 06:04:06,518 - INFO - Connected to Discord.
+2019-05-07 06:04:08,521 - INFO - Client caches filled. Ready.
+2019-05-07 06:04:10,696 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 06:04:11,073 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 06:04:12,609 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 06:04:14,726 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 06:04:18,996 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 06:04:19,520 - INFO - Processed a chunk for 582 members in guild ID 556333985882439680.
+2019-05-07 06:44:57,078 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 06:44:57,081 - ERROR - Attempting a reconnect in 1.91s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 06:45:00,756 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 06:45:00,764 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 06:45:02,749 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-lz8n, discord-sessions-prd-1-4 (Session ID: fe5e0dbec0741041db1c38d747d21c9b).
+2019-05-07 06:45:02,758 - INFO - Connected to Discord.
+2019-05-07 06:45:04,760 - INFO - Client caches filled. Ready.
+2019-05-07 06:45:05,915 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 06:45:21,434 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 06:46:23,266 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 06:46:40,122 - INFO - Websocket closed with 1006 (), attempting a reconnect.
+2019-05-07 06:46:40,123 - INFO - Got a request to RESUME the websocket.
+2019-05-07 06:46:43,125 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 06:46:45,394 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 06:46:45,403 - INFO - Shard ID None has sent the RESUME payload.
+2019-05-07 06:46:53,338 - INFO - Processed a chunk for 582 members in guild ID 556333985882439680.
+2019-05-07 06:46:53,437 - INFO - Shard ID None has successfully RESUMED session fe5e0dbec0741041db1c38d747d21c9b under trace gateway-prd-main-2kp3, discord-sessions-prd-1-4.
+2019-05-07 07:08:56,888 - WARNING - Can't keep up, websocket is 11.4s behind.
+2019-05-07 07:50:57,096 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 07:50:57,097 - ERROR - Attempting a reconnect in 0.15s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 07:50:59,476 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 07:50:59,484 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 07:51:00,477 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-jb3n, discord-sessions-prd-1-8 (Session ID: 1074ddd99e9e9cf17e10461d2403ae54).
+2019-05-07 07:51:00,486 - INFO - Connected to Discord.
+2019-05-07 07:51:07,391 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 07:51:08,374 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 07:51:08,708 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 07:51:08,796 - INFO - Processed a chunk for 582 members in guild ID 556333985882439680.
+2019-05-07 07:51:23,213 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 07:53:06,598 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 07:53:06,600 - INFO - Client caches filled. Ready.
+2019-05-07 08:02:58,327 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 08:02:58,329 - ERROR - Attempting a reconnect in 2.42s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 08:03:02,744 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 08:03:02,754 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 08:03:03,037 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-h5b1, discord-sessions-prd-1-7 (Session ID: 2488a7ecfce4603f9e2564fceb8e973e).
+2019-05-07 08:03:03,041 - INFO - Connected to Discord.
+2019-05-07 08:03:05,045 - INFO - Client caches filled. Ready.
+2019-05-07 08:03:08,157 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 08:03:08,545 - INFO - Processed a chunk for 582 members in guild ID 556333985882439680.
+2019-05-07 08:03:09,891 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 08:03:10,067 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 08:03:10,839 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 08:03:11,156 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 08:03:22,036 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 08:14:58,499 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 08:14:58,500 - ERROR - Attempting a reconnect in 7.28s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 08:15:09,248 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 08:15:09,255 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 08:15:09,566 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-z1d0, discord-sessions-prd-1-23 (Session ID: 39245e4f4eeff16c25168fbc309b72e5).
+2019-05-07 08:15:09,570 - INFO - Connected to Discord.
+2019-05-07 08:15:11,574 - INFO - Client caches filled. Ready.
+2019-05-07 08:15:13,804 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 08:15:14,487 - INFO - Processed a chunk for 582 members in guild ID 556333985882439680.
+2019-05-07 08:15:15,399 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 08:15:16,316 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 08:15:16,639 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 08:15:17,494 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 08:15:25,306 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 08:20:55,719 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 08:20:55,721 - ERROR - Attempting a reconnect in 2.01s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 08:20:59,950 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 08:20:59,957 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 08:21:00,215 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-l1kq, discord-sessions-prd-1-26 (Session ID: b2eaf173046443e7984675822e7556be).
+2019-05-07 08:21:00,219 - INFO - Connected to Discord.
+2019-05-07 08:21:06,876 - INFO - Processed a chunk for 582 members in guild ID 556333985882439680.
+2019-05-07 08:21:07,181 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 08:21:07,867 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 08:21:08,240 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 08:21:20,530 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 08:23:06,227 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 08:23:06,229 - INFO - Client caches filled. Ready.
+2019-05-07 08:32:57,211 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 08:32:57,212 - ERROR - Attempting a reconnect in 16.82s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 08:33:15,171 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 08:33:15,179 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 08:33:16,140 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-lz8n, discord-sessions-prd-1-23 (Session ID: bb431fb55054fa231c3ba6949b2cf396).
+2019-05-07 08:33:16,149 - INFO - Connected to Discord.
+2019-05-07 08:33:20,954 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 08:33:21,223 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 08:33:21,566 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 08:33:21,653 - INFO - Processed a chunk for 581 members in guild ID 556333985882439680.
+2019-05-07 08:33:22,513 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 08:35:20,156 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 08:35:20,157 - INFO - Client caches filled. Ready.
+2019-05-07 08:38:57,582 - WARNING - Can't keep up, websocket is 12.4s behind.
+2019-05-07 09:20:58,976 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 09:20:58,978 - ERROR - Attempting a reconnect in 1.69s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 09:21:04,702 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 09:21:04,708 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 09:21:05,061 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-8255, discord-sessions-prd-1-11 (Session ID: 883c3cd4640d75d122ad2a86c4af0562).
+2019-05-07 09:21:05,070 - INFO - Connected to Discord.
+2019-05-07 09:21:11,914 - INFO - Processed a chunk for 581 members in guild ID 556333985882439680.
+2019-05-07 09:21:14,020 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 09:21:18,346 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 09:21:19,636 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 09:21:22,897 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 09:23:11,083 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 09:23:11,085 - INFO - Client caches filled. Ready.
+2019-05-07 09:32:57,874 - WARNING - Can't keep up, websocket is 11.9s behind.
+2019-05-07 10:14:57,208 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 10:14:57,210 - ERROR - Attempting a reconnect in 1.04s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 10:15:00,080 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 10:15:00,087 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 10:15:00,345 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-vv9q, discord-sessions-prd-1-26 (Session ID: 0de023a123e9b09f9b922d3aa4dcc749).
+2019-05-07 10:15:00,353 - INFO - Connected to Discord.
+2019-05-07 10:15:05,377 - INFO - Processed a chunk for 581 members in guild ID 556333985882439680.
+2019-05-07 10:15:05,915 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 10:15:06,489 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 10:15:06,800 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 10:15:23,704 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 10:17:04,422 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 10:17:04,425 - INFO - Client caches filled. Ready.
+2019-05-07 10:26:57,969 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 10:26:57,977 - ERROR - Attempting a reconnect in 0.64s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 10:27:00,024 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 10:27:00,031 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 10:27:00,319 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-5391, discord-sessions-prd-1-28 (Session ID: 2315ad61a58cb9d18bca900f98720912).
+2019-05-07 10:27:00,323 - INFO - Connected to Discord.
+2019-05-07 10:27:04,976 - INFO - Processed a chunk for 581 members in guild ID 556333985882439680.
+2019-05-07 10:27:05,208 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 10:27:05,799 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 10:27:05,950 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 10:27:22,645 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 10:29:04,330 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 10:29:04,332 - INFO - Client caches filled. Ready.
+2019-05-07 10:38:57,568 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 10:38:57,571 - ERROR - Attempting a reconnect in 0.22s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 10:38:59,136 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 10:38:59,143 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 10:38:59,492 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-kccm, discord-sessions-prd-1-24 (Session ID: b252ff7bc0e8c82f30dd27a28a9a40fd).
+2019-05-07 10:38:59,500 - INFO - Connected to Discord.
+2019-05-07 10:39:06,584 - INFO - Processed a chunk for 581 members in guild ID 556333985882439680.
+2019-05-07 10:39:06,730 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 10:39:07,151 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 10:39:07,295 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 10:39:22,585 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 10:41:05,621 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 10:41:05,623 - INFO - Client caches filled. Ready.
+2019-05-07 10:50:57,650 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 10:50:57,651 - ERROR - Attempting a reconnect in 1.33s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 10:51:00,527 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 10:51:00,535 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 10:51:00,825 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-zs49, discord-sessions-prd-1-14 (Session ID: ea7842ef4244b8979abe4769774ccd4d).
+2019-05-07 10:51:00,829 - INFO - Connected to Discord.
+2019-05-07 10:51:05,430 - INFO - Processed a chunk for 582 members in guild ID 556333985882439680.
+2019-05-07 10:51:05,817 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 10:51:06,134 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 10:51:06,280 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 10:51:21,695 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 10:53:04,892 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 10:53:04,895 - INFO - Client caches filled. Ready.
+2019-05-07 11:02:58,365 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 11:02:58,367 - ERROR - Attempting a reconnect in 29.12s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 11:03:23,087 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 11:03:29,634 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 11:03:29,642 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 11:03:29,919 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-bnfw, discord-sessions-prd-1-20 (Session ID: 53419b7c890567ff39bff30009df2a06).
+2019-05-07 11:03:29,923 - INFO - Connected to Discord.
+2019-05-07 11:03:31,928 - INFO - Client caches filled. Ready.
+2019-05-07 11:03:34,956 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 11:03:35,039 - INFO - Processed a chunk for 582 members in guild ID 556333985882439680.
+2019-05-07 11:03:36,018 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 11:03:37,011 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 11:03:37,158 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 11:03:37,955 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 11:20:58,516 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 11:20:58,517 - ERROR - Attempting a reconnect in 42.52s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 11:21:22,220 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 11:21:42,647 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 11:21:42,654 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 11:21:42,909 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-dg6v, discord-sessions-prd-1-6 (Session ID: 04d4231a7c207ab91ea008174f61feaf).
+2019-05-07 11:21:42,913 - INFO - Connected to Discord.
+2019-05-07 11:21:44,917 - INFO - Client caches filled. Ready.
+2019-05-07 11:21:47,868 - INFO - Processed a chunk for 582 members in guild ID 556333985882439680.
+2019-05-07 11:21:48,629 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 11:21:49,282 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 11:21:49,451 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 11:21:50,784 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 11:33:01,109 - WARNING - Can't keep up, websocket is 18.4s behind.
+2019-05-07 11:56:57,606 - WARNING - Can't keep up, websocket is 11.0s behind.
+2019-05-07 12:14:57,221 - WARNING - Can't keep up, websocket is 18.1s behind.
+2019-05-07 12:21:02,099 - WARNING - Can't keep up, websocket is 11.7s behind.
+2019-05-07 12:38:57,149 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 12:38:57,151 - ERROR - Attempting a reconnect in 1.37s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 12:38:59,939 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 12:38:59,946 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 12:39:00,713 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-tx99, discord-sessions-prd-1-13 (Session ID: 60edd78e6651ed905c08f53a6d3affc2).
+2019-05-07 12:39:00,717 - INFO - Connected to Discord.
+2019-05-07 12:39:02,722 - INFO - Client caches filled. Ready.
+2019-05-07 12:39:03,729 - INFO - Processed a chunk for 582 members in guild ID 556333985882439680.
+2019-05-07 12:39:04,193 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 12:39:04,399 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 12:39:04,611 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 12:39:06,644 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 12:39:24,279 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 12:50:58,946 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 12:50:58,948 - ERROR - Attempting a reconnect in 0.68s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 12:51:00,924 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 12:51:00,933 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 12:51:01,202 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-ww7z, discord-sessions-prd-1-8 (Session ID: 01e09bffb5c101915438f1ceb8a221c7).
+2019-05-07 12:51:01,206 - INFO - Connected to Discord.
+2019-05-07 12:51:03,210 - INFO - Client caches filled. Ready.
+2019-05-07 12:51:04,998 - INFO - Processed a chunk for 582 members in guild ID 556333985882439680.
+2019-05-07 12:51:05,458 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 12:51:05,792 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 12:51:05,942 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 12:51:07,915 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 12:51:22,500 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 13:02:58,610 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 13:02:58,611 - ERROR - Attempting a reconnect in 1.07s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 13:03:02,149 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 13:03:02,157 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 13:03:02,438 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-fqmc, discord-sessions-prd-1-28 (Session ID: b62888e9dcc6f090ab64abcce2b96a8b).
+2019-05-07 13:03:02,447 - INFO - Connected to Discord.
+2019-05-07 13:03:09,066 - INFO - Processed a chunk for 582 members in guild ID 556333985882439680.
+2019-05-07 13:03:09,540 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 13:03:09,933 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 13:03:11,113 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 13:03:23,488 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 13:05:08,455 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 13:05:08,458 - INFO - Client caches filled. Ready.
+2019-05-07 13:14:58,096 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 13:14:58,097 - ERROR - Attempting a reconnect in 9.15s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 13:15:08,662 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 13:15:08,668 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 13:15:08,942 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-7fk2, discord-sessions-prd-1-11 (Session ID: 1776a657025740733ad76ee0b3178fa3).
+2019-05-07 13:15:08,957 - INFO - Connected to Discord.
+2019-05-07 13:15:24,711 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 13:15:44,134 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 13:15:45,420 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 13:15:47,687 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 13:15:53,436 - INFO - Processed a chunk for 582 members in guild ID 556333985882439680.
+2019-05-07 13:17:12,964 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 13:17:12,966 - INFO - Client caches filled. Ready.
+2019-05-07 13:44:57,601 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 13:44:57,602 - ERROR - Attempting a reconnect in 18.93s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 13:45:17,619 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 13:45:17,626 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 13:45:17,915 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-nrxf, discord-sessions-prd-1-1 (Session ID: c23c4d44fec5f0747edac4fdf8abfe99).
+2019-05-07 13:45:17,919 - INFO - Connected to Discord.
+2019-05-07 13:45:22,605 - INFO - Processed a chunk for 582 members in guild ID 556333985882439680.
+2019-05-07 13:45:23,109 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 13:45:23,591 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 13:45:23,738 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 13:45:23,806 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 13:47:22,000 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 13:47:22,003 - INFO - Client caches filled. Ready.
+2019-05-07 13:50:58,082 - WARNING - Can't keep up, websocket is 10.4s behind.
+2019-05-07 14:08:58,355 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 14:08:58,357 - ERROR - Attempting a reconnect in 59.36s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 14:09:21,483 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 14:09:58,783 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 14:09:58,789 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 14:09:59,606 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-4br4, discord-sessions-prd-1-4 (Session ID: 58360e6694253108cee6f6ae76ea27e6).
+2019-05-07 14:09:59,615 - INFO - Connected to Discord.
+2019-05-07 14:10:04,071 - INFO - Processed a chunk for 582 members in guild ID 556333985882439680.
+2019-05-07 14:10:04,251 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 14:10:04,405 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 14:10:04,557 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 14:12:03,621 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 14:12:03,624 - INFO - Client caches filled. Ready.
+2019-05-07 14:14:57,775 - WARNING - Can't keep up, websocket is 10.2s behind.
+2019-05-07 14:32:58,118 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 14:32:58,120 - ERROR - Attempting a reconnect in 96.06s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 14:33:21,392 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 14:34:35,278 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 14:34:35,285 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 14:34:35,545 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-hzjl, discord-sessions-prd-1-20 (Session ID: 9f79b153a6475b2ada5d1e34213f52d1).
+2019-05-07 14:34:35,554 - INFO - Connected to Discord.
+2019-05-07 14:34:40,004 - INFO - Processed a chunk for 582 members in guild ID 556333985882439680.
+2019-05-07 14:34:40,173 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 14:34:40,329 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 14:34:40,478 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 14:36:39,562 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 14:36:39,564 - INFO - Client caches filled. Ready.
+2019-05-07 14:38:58,979 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 14:38:58,981 - ERROR - Attempting a reconnect in 147.38s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 14:39:24,053 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 14:41:27,418 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 14:41:27,425 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 14:41:28,756 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-zs49, discord-sessions-prd-1-10 (Session ID: c6082daeb5cb3ee2e233b77a7bf77a2d).
+2019-05-07 14:41:28,760 - INFO - Connected to Discord.
+2019-05-07 14:41:33,269 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 14:41:33,424 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 14:41:33,574 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 14:41:33,662 - INFO - Processed a chunk for 582 members in guild ID 556333985882439680.
+2019-05-07 14:43:32,768 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 14:43:32,770 - INFO - Client caches filled. Ready.
+2019-05-07 15:02:57,999 - WARNING - Can't keep up, websocket is 11.7s behind.
+2019-05-07 15:45:01,704 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 15:45:01,705 - ERROR - Attempting a reconnect in 1.10s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 15:45:04,178 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 15:45:04,185 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 15:45:04,479 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-bm08, discord-sessions-prd-1-9 (Session ID: 1f41dae7d30ccffed79267d2c87144b2).
+2019-05-07 15:45:04,488 - INFO - Connected to Discord.
+2019-05-07 15:45:08,980 - INFO - Processed a chunk for 581 members in guild ID 556333985882439680.
+2019-05-07 15:45:09,193 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 15:45:09,358 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 15:45:09,503 - INFO - Processed a chunk for 953 members in guild ID 294479294040768524.
+2019-05-07 15:45:23,967 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 15:47:08,496 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 15:47:08,499 - INFO - Client caches filled. Ready.
+2019-05-07 15:56:58,288 - WARNING - Can't keep up, websocket is 12.8s behind.
+2019-05-07 16:38:58,009 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 16:38:58,011 - ERROR - Attempting a reconnect in 1.36s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 16:39:00,385 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 16:39:00,391 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 16:39:00,690 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-klbv, discord-sessions-prd-1-6 (Session ID: bb5f25139f7368ba936138989a5917e5).
+2019-05-07 16:39:00,695 - INFO - Connected to Discord.
+2019-05-07 16:39:05,392 - INFO - Processed a chunk for 580 members in guild ID 556333985882439680.
+2019-05-07 16:39:05,543 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 16:39:05,700 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 16:39:05,843 - INFO - Processed a chunk for 955 members in guild ID 294479294040768524.
+2019-05-07 16:39:23,190 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 16:41:04,705 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 16:41:04,707 - INFO - Client caches filled. Ready.
+2019-05-07 16:50:58,733 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 16:50:58,734 - ERROR - Attempting a reconnect in 0.56s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 16:51:00,341 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 16:51:00,348 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 16:51:00,644 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-jjz2, discord-sessions-prd-1-19 (Session ID: f896a7395130c1721816f98c8874c862).
+2019-05-07 16:51:00,654 - INFO - Connected to Discord.
+2019-05-07 16:51:05,226 - INFO - Processed a chunk for 580 members in guild ID 556333985882439680.
+2019-05-07 16:51:05,608 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 16:51:06,108 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 16:51:06,366 - INFO - Processed a chunk for 954 members in guild ID 294479294040768524.
+2019-05-07 16:51:22,946 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 16:53:04,682 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 16:53:04,684 - INFO - Client caches filled. Ready.
+2019-05-07 17:02:58,527 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 17:02:58,528 - ERROR - Attempting a reconnect in 6.28s
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 464, in poll_event
+    msg = await self.recv()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 350, in recv
+    yield from self.ensure_open()
+  File "/home/pi/.local/lib/python3.7/site-packages/websockets/protocol.py", line 501, in ensure_open
+    self.close_code, self.close_reason) from self.transfer_data_exc
+websockets.exceptions.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 431, in connect
+    await self._connect()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/client.py", line 395, in _connect
+    await self.ws.poll_event()
+  File "/home/pi/.local/lib/python3.7/site-packages/discord/gateway.py", line 472, in poll_event
+    raise ConnectionClosed(exc, shard_id=self.shard_id) from exc
+discord.errors.ConnectionClosed: WebSocket connection is closed: code = 1000 (OK), no reason
+2019-05-07 17:03:07,852 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 17:03:07,859 - INFO - Shard ID None has sent the IDENTIFY payload.
+2019-05-07 17:03:08,108 - INFO - Shard ID None has connected to Gateway: gateway-prd-main-6cf7, discord-sessions-prd-1-21 (Session ID: cb82ab136f1ad55fa0d366e37afe1113).
+2019-05-07 17:03:08,116 - INFO - Connected to Discord.
+2019-05-07 17:03:12,543 - INFO - Processed a chunk for 580 members in guild ID 556333985882439680.
+2019-05-07 17:03:12,698 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 17:03:12,852 - INFO - Processed a chunk for 1000 members in guild ID 294479294040768524.
+2019-05-07 17:03:13,270 - INFO - Processed a chunk for 954 members in guild ID 294479294040768524.
+2019-05-07 17:03:22,905 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 17:05:12,124 - INFO - Somehow timed out waiting for chunks.
+2019-05-07 17:05:12,126 - INFO - Client caches filled. Ready.
+2019-05-07 17:18:03,863 - INFO - Websocket closed with 1006 (), attempting a reconnect.
+2019-05-07 17:18:03,863 - INFO - Got a request to RESUME the websocket.
+2019-05-07 17:18:04,906 - INFO - Created websocket connected to wss://gateway.discord.gg?encoding=json&v=6&compress=zlib-stream
+2019-05-07 17:18:04,913 - INFO - Shard ID None has sent the RESUME payload.
+2019-05-07 17:18:05,162 - INFO - Shard ID None has successfully RESUMED session cb82ab136f1ad55fa0d366e37afe1113 under trace gateway-prd-main-rpbx, discord-sessions-prd-1-21.
+2019-05-07 17:18:56,678 - WARNING - Shard ID None has stopped responding to the gateway. Closing and restarting.
+2019-05-07 17:38:18,409 - INFO - Cleaning up event loop.
+2019-05-07 17:38:18,664 - INFO - Websocket closed with 1000 (), cannot reconnect.
+2019-05-07 17:38:18,666 - INFO - Cleaning up after 2 tasks.
