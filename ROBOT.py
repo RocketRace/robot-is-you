@@ -16,7 +16,7 @@ DEFAULT_ACTIVITY = discord.Game(name=configuration.get("activity"))
 COGS = configuration.get("cogs")
 
 # Establishes the bot
-bot = commands.Bot(command_prefix=["+"], case_insensitive=True, help_command=None, activity=DEFAULT_ACTIVITY)
+bot = commands.Bot(command_prefix=["-"], case_insensitive=True, help_command=None, activity=DEFAULT_ACTIVITY)
 
 # Loads the modules of the bot
 if __name__ == "__main__":
