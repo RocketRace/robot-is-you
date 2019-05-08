@@ -41,6 +41,9 @@ def mergeImages(wordGrid, width, height):
     f2 = genFrame("renders/frame2.png")
     f0.save("renders/render.gif", save_all=True, append_images=[f1, f2], duration=200, loop=0, disposal=2)
 
+async def notTooManyArguments(ctx):
+    return len(ctx.message.content.split(" ")) <= 50
+
 class globalCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -52,6 +55,8 @@ class globalCog(commands.Cog):
     # Generates an animated gif of the tiles provided, using (TODO) the default palette
     @commands.command()
     @commands.guild_only()
+    @commands.check(notTooManyArguments)
+    @commands.cooldown(2, 10, type=commands.BucketType.channel)
     async def tile(self, ctx, *, content: str):
         # Split input into a grid
         wordRows = content.lower().splitlines()
@@ -89,6 +94,8 @@ class globalCog(commands.Cog):
     # Same as +tile but only for word tiles
     @commands.command()
     @commands.guild_only()
+    @commands.check(notTooManyArguments)
+    @commands.cooldown(2, 10, type=commands.BucketType.channel)
     async def rule(self, ctx, *, content:str):
         # Split input into a grid
         wordRows = content.lower().splitlines()
@@ -124,6 +131,42 @@ class globalCog(commands.Cog):
         # Sends the image through discord
         await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif"))
 
+    @commands.command()
+    @commands.cooldown(2, 5, commands.BucketType.channel)
+    async def about(self, ctx):
+        content = "ROBOT - Bot for Discord.\nDeveloped by RocketRace#0798 (156021301654454272) using the discord.py library." + \
+            "Guilds: %s" % (len(self.bot.guilds))
+        aboutEmbed = discord.Embed(title="About", type="rich", coloud=0xffff, description=content)
+        await ctx.send(" ", embed=aboutEmbed)
+
+    @commands.command()
+    @commands.cooldown(2,5, commands.BucketType.channel)
+    async def help(self, ctx):
+        content = "Commands:\n`+help` : Displays this.\n`+about` : Displays bot info.\n" + \
+            "`+tile [tiles]` : Renders the input tiles. Text tiles must be prefixed with \"text_\"." + \
+            "Use hyphens to render empty tiles.\n`+rule [words]` : Like `+tile`, but only takes" + \
+            "word tiles as input. Words do not need to be prefixed by \"text_\". Use hyphens to render empty tiles."
+        helpEmbed = discord.Embed(title = "Help", type="rich", colour=0xffff, description=content)
+        await ctx.send(" ", embed=helpEmbed)
+
+    @rule.error
+    async def ruleError(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.send("⚠️ Command on cooldown.")
+        elif isinstance(error, commands.CheckFailure):
+            await ctx.send("⚠️ Please input less than 50 tiles [Empty tiles included]")
+    
+    @tile.error
+    async def tileError(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.send("⚠️ Command on cooldown.")
+        elif isinstance(error, commands.CheckFailure):
+            await ctx.send("⚠️ Please input less than 50 tiles [Empty tiles included]")
+
+    @help.error
+    async def helpError(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.send("⚠️ Command on cooldown.")
 
 def setup(bot):
     bot.add_cog(globalCog(bot))
