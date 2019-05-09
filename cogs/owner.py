@@ -26,7 +26,7 @@ def multiplyColor(fp, RGB):
 class ownerCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.tileColors = {}
+        self.tileColors = []
         self.alternateTiles = {}
         # Loads the tile colors, if it exists
         colorsFile = "tilecolors.json"
@@ -56,6 +56,13 @@ class ownerCog(commands.Cog):
             await ctx.send(f"```\n✅ Evaluated successfully:\n{result}\n```")
         else:
             await ctx.send(f"```\n🚫 An exception occurred:\n{result}\n```")
+
+    # Sends a message in the specified channel
+    @commands.command()
+    @commands.is_owner()
+    async def announce(self, ctx, channel:str, title:str, *, content:str):
+        embed = discord.Embed(title=title, type="rich", description=content, colour=0x00ffff)
+        await ctx.message.channel_mentions[0].send(" ", embed=embed)
 
     @commands.command()
     @commands.is_owner()
@@ -259,14 +266,21 @@ class ownerCog(commands.Cog):
                                     altSprite = obj.get("sprite")
                                 if obj.get("color") != []: # This shouldn't ever be false
                                     altColor = obj.get("color")
-                                # Adds the change to the alts
-                                if not name == altName:
-                                    alts.append({"name":altName, "sprite":altSprite, "color":altColor})
-                        # # Removes duplicate objects in alts
-                        # uniqueAlts = list({alt["name"] : alt for alt in alts}.values())
+                                # Adds the change to the alts, but only if it's the first with that name
+                                if name != altName:
+                                    duplicate = False
+                                    for obj in alts:
+                                        if name == obj["name"]:
+                                            duplicate = True
+                                    for obj in self.tileColors:
+                                        if name == obj["name"]:
+                                            duplicate = True
+                                    if not duplicate:
+                                        print(altName, " ", altSprite)
+                                        alts.append({"name":altName, "sprite":altSprite, "color":altColor})
                         # Adds each unique name-color pairs to the tileColors dict
                         for obj in alts:
-                            self.tileColors[obj["name"]] = [obj["sprite"], obj["color"]]               
+                            self.tileColors.append(obj)
                     # Resets the fields
                     name = sprite = colorRaw = ""
                     color = []
@@ -315,11 +329,13 @@ class ownerCog(commands.Cog):
             except FileExistsError:
                 pass
             
-            # Goes through each tile object in the tileColors dict
-            for name in self.tileColors:
+            # Goes through each tile object in the tileColors array
+            for obj in self.tileColors:
                 # Fetches the tile data
-                sprite = self.tileColors[name][0]
-                color = self.tileColors[name][1]
+                name = obj["name"]
+                sprite = obj["sprite"]
+                color = obj["color"]
+                
                 # For convenience
                 x,y = [int(n) for n in color]
             
