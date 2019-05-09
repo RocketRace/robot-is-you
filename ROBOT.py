@@ -5,7 +5,7 @@ from discord.ext import commands
 from json        import load
 
 # Sets up logging 
-logging.basicConfig(filename="log.txt", level=20, format="%(asctime)s - %(levelname)s - %(message)s") 
+# logging.basicConfig(filename="log.txt", level=20, format="%(asctime)s - %(levelname)s - %(message)s") 
 
 # Sets up the configuration
 configFile = open("setup.json")
@@ -16,7 +16,7 @@ DEFAULT_ACTIVITY = discord.Game(name=configuration.get("activity"))
 COGS = configuration.get("cogs")
 
 # Establishes the bot
-bot = commands.Bot(command_prefix=["+"], case_insensitive=True, help_command=None, activity=DEFAULT_ACTIVITY)
+bot = commands.Bot(command_prefix=["-"], case_insensitive=True, help_command=None, activity=DEFAULT_ACTIVITY)
 
 # Loads the modules of the bot
 if __name__ == "__main__":
@@ -33,8 +33,9 @@ async def on_ready():
     logging.info("Client caches filled. Ready.")
 
 @bot.event
-async def on_command_error(ctx, error):
-    logging.info(error)
+async def on_command_error(ctx, error, *args):
+    print(error)
+    print(args)
     if isinstance(error, commands.CommandOnCooldown):
         await ctx.send("⚠️ Command on cooldown.")
 
