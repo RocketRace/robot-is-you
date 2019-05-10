@@ -290,13 +290,12 @@ class ownerCog(commands.Cog):
                                     duplicate = False
                                     # If the name matches the name of an object already in the alt list
                                     for tile in alts:
-                                        if name == tile["name"]:
+                                        if altName == tile["name"]:
                                             duplicate = True
                                     for tile in self.tileColors:
-                                        if name == tile["name"]:
+                                        if altName == tile["name"]:
                                             duplicate = True
                                     if not duplicate:
-                                        print(altName, " ", altSprite)
                                         alts.append({"name":altName, "sprite":altSprite, "color":altColor})
                         # Adds each unique name-color pairs to the tileColors dict
                         for obj in alts:
@@ -379,7 +378,7 @@ class ownerCog(commands.Cog):
         await msg.edit(content="Loading themes... Done.\nLoading colors... Done.")
         
 
-        palettes = listdir("palettes")
+        palettes = ["default"]#listdir("palettes")
         total = len(palettes)
 
         await msg.edit(content="Loading themes... Done.\nLoading colors... Done.\nLoading palettes... (0/%s)" % total)

@@ -958,5 +958,6101 @@
          "3",
          "2"
       ]
+   },
+   {
+      "name": "baba",
+      "sprite": "baba",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "keke",
+      "sprite": "keke",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "rock",
+      "sprite": "rock",
+      "color": [
+         "6",
+         "2"
+      ]
+   },
+   {
+      "name": "text_grass",
+      "sprite": "text_grass",
+      "color": [
+         "5",
+         "3"
+      ]
+   },
+   {
+      "name": "tile",
+      "sprite": "tile",
+      "color": [
+         "1",
+         "0"
+      ]
+   },
+   {
+      "name": "text_and",
+      "sprite": "text_and",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_hide",
+      "sprite": "text_hide",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "text_follow",
+      "sprite": "text_follow",
+      "color": [
+         "5",
+         "2"
+      ]
+   },
+   {
+      "name": "text_float",
+      "sprite": "text_float",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_lonely",
+      "sprite": "text_lonely",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "lava",
+      "sprite": "water",
+      "color": [
+         "2",
+         "3"
+      ]
+   },
+   {
+      "name": "water",
+      "sprite": "water",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "wall",
+      "sprite": "wall",
+      "color": [
+         "1",
+         "1"
+      ]
+   },
+   {
+      "name": "text_empty",
+      "sprite": "text_empty",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_tile",
+      "sprite": "text_tile",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_weak",
+      "sprite": "text_weak",
+      "color": [
+         "1",
+         "2"
+      ]
+   },
+   {
+      "name": "text_near",
+      "sprite": "text_near",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "cloud",
+      "sprite": "cloud",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "pillar",
+      "sprite": "pillar",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_fungus",
+      "sprite": "text_fungus",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_baba",
+      "sprite": "text_baba",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_keke",
+      "sprite": "text_keke",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_flag",
+      "sprite": "text_flag",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "flag",
+      "sprite": "flag",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "ice",
+      "sprite": "ice",
+      "color": [
+         "1",
+         "2"
+      ]
+   },
+   {
+      "name": "text_shift",
+      "sprite": "text_shift",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "rose",
+      "sprite": "rose",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_all",
+      "sprite": "text_all",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_right",
+      "sprite": "text_right",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_cloud",
+      "sprite": "text_cloud",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_pillar",
+      "sprite": "text_pillar",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "fungus",
+      "sprite": "fungus",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_rock",
+      "sprite": "text_rock",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_lava",
+      "sprite": "text_lava",
+      "color": [
+         "2",
+         "3"
+      ]
+   },
+   {
+      "name": "text_wall",
+      "sprite": "text_wall",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_ice",
+      "sprite": "text_ice",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "text_is",
+      "sprite": "text_is",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_rose",
+      "sprite": "text_rose",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_more",
+      "sprite": "text_more",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_safe",
+      "sprite": "text_safe",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_up",
+      "sprite": "text_up",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "star",
+      "sprite": "star",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_word",
+      "sprite": "text_word",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_fruit",
+      "sprite": "text_fruit",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_water",
+      "sprite": "text_water",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "text_win",
+      "sprite": "text_win",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_push",
+      "sprite": "text_push",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_stop",
+      "sprite": "text_stop",
+      "color": [
+         "5",
+         "1"
+      ]
+   },
+   {
+      "name": "text_move",
+      "sprite": "text_move",
+      "color": [
+         "5",
+         "3"
+      ]
+   },
+   {
+      "name": "text_best",
+      "sprite": "text_best",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_tele",
+      "sprite": "text_tele",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "hand",
+      "sprite": "hand",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_left",
+      "sprite": "text_left",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_star",
+      "sprite": "text_star",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_red",
+      "sprite": "text_red",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "fruit",
+      "sprite": "fruit",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_melt",
+      "sprite": "text_melt",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "text_hot",
+      "sprite": "text_hot",
+      "color": [
+         "2",
+         "3"
+      ]
+   },
+   {
+      "name": "text_you",
+      "sprite": "text_you",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_not",
+      "sprite": "text_not",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_sink",
+      "sprite": "text_sink",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "love",
+      "sprite": "love",
+      "color": [
+         "4",
+         "2"
+      ]
+   },
+   {
+      "name": "door",
+      "sprite": "door",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_hand",
+      "sprite": "text_hand",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_down",
+      "sprite": "text_down",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "dust",
+      "sprite": "dust",
+      "color": [
+         "6",
+         "2"
+      ]
+   },
+   {
+      "name": "text_flower",
+      "sprite": "text_flower",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "text_tree",
+      "sprite": "text_tree",
+      "color": [
+         "5",
+         "2"
+      ]
+   },
+   {
+      "name": "ghost",
+      "sprite": "ghost",
+      "color": [
+         "4",
+         "2"
+      ]
+   },
+   {
+      "name": "text_defeat",
+      "sprite": "text_defeat",
+      "color": [
+         "2",
+         "1"
+      ]
+   },
+   {
+      "name": "skull",
+      "sprite": "skull",
+      "color": [
+         "2",
+         "1"
+      ]
+   },
+   {
+      "name": "grass",
+      "sprite": "grass",
+      "color": [
+         "5",
+         "0"
+      ]
+   },
+   {
+      "name": "text_skull",
+      "sprite": "text_skull",
+      "color": [
+         "2",
+         "1"
+      ]
+   },
+   {
+      "name": "text_love",
+      "sprite": "text_love",
+      "color": [
+         "4",
+         "2"
+      ]
+   },
+   {
+      "name": "text_door",
+      "sprite": "text_door",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_text",
+      "sprite": "text_text",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_sleep",
+      "sprite": "text_sleep",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_dust",
+      "sprite": "text_dust",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_blue",
+      "sprite": "text_blue",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "tree",
+      "sprite": "tree",
+      "color": [
+         "5",
+         "2"
+      ]
+   },
+   {
+      "name": "key",
+      "sprite": "key",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_key",
+      "sprite": "text_key",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_open",
+      "sprite": "text_open",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_shut",
+      "sprite": "text_shut",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_has",
+      "sprite": "text_has",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "box",
+      "sprite": "box",
+      "color": [
+         "6",
+         "2"
+      ]
+   },
+   {
+      "name": "text_box",
+      "sprite": "text_box",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "belt",
+      "sprite": "belt",
+      "color": [
+         "1",
+         "1"
+      ]
+   },
+   {
+      "name": "text_make",
+      "sprite": "text_make",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_fall",
+      "sprite": "text_fall",
+      "color": [
+         "5",
+         "3"
+      ]
+   },
+   {
+      "name": "flower",
+      "sprite": "flower",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "text_fence",
+      "sprite": "text_fence",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_belt",
+      "sprite": "text_belt",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "me",
+      "sprite": "me",
+      "color": [
+         "3",
+         "1"
+      ]
+   },
+   {
+      "name": "text_me",
+      "sprite": "text_me",
+      "color": [
+         "3",
+         "1"
+      ]
+   },
+   {
+      "name": "text_swap",
+      "sprite": "text_swap",
+      "color": [
+         "3",
+         "1"
+      ]
+   },
+   {
+      "name": "text_pull",
+      "sprite": "text_pull",
+      "color": [
+         "6",
+         "2"
+      ]
+   },
+   {
+      "name": "text_on",
+      "sprite": "text_on",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "moon",
+      "sprite": "moon",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_ghost",
+      "sprite": "text_ghost",
+      "color": [
+         "4",
+         "2"
+      ]
+   },
+   {
+      "name": "fence",
+      "sprite": "fence",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "hedge",
+      "sprite": "hedge",
+      "color": [
+         "5",
+         "1"
+      ]
+   },
+   {
+      "name": "text_hedge",
+      "sprite": "text_hedge",
+      "color": [
+         "5",
+         "1"
+      ]
+   },
+   {
+      "name": "text_level",
+      "sprite": "text_level",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_orb",
+      "sprite": "text_orb",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "orb",
+      "sprite": "orb",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_bonus",
+      "sprite": "text_bonus",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_moon",
+      "sprite": "text_moon",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_group",
+      "sprite": "text_group",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "text_line",
+      "sprite": "text_line",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "brick",
+      "sprite": "brick",
+      "color": [
+         "6",
+         "3"
+      ]
+   },
+   {
+      "name": "text_brick",
+      "sprite": "text_brick",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_wonder",
+      "sprite": "text_wonder",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_eat",
+      "sprite": "text_eat",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_statue",
+      "sprite": "text_statue",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "statue",
+      "sprite": "statue",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_facing",
+      "sprite": "text_facing",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "line",
+      "sprite": "line",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_fear",
+      "sprite": "text_fear",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_sad",
+      "sprite": "text_sad",
+      "color": [
+         "3",
+         "2"
+      ]
+   },
+   {
+      "name": "baba",
+      "sprite": "baba",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "keke",
+      "sprite": "keke",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "rock",
+      "sprite": "rock",
+      "color": [
+         "6",
+         "2"
+      ]
+   },
+   {
+      "name": "text_grass",
+      "sprite": "text_grass",
+      "color": [
+         "5",
+         "3"
+      ]
+   },
+   {
+      "name": "tile",
+      "sprite": "tile",
+      "color": [
+         "1",
+         "0"
+      ]
+   },
+   {
+      "name": "text_and",
+      "sprite": "text_and",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_hide",
+      "sprite": "text_hide",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "text_follow",
+      "sprite": "text_follow",
+      "color": [
+         "5",
+         "2"
+      ]
+   },
+   {
+      "name": "text_float",
+      "sprite": "text_float",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_lonely",
+      "sprite": "text_lonely",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "lava",
+      "sprite": "water",
+      "color": [
+         "2",
+         "3"
+      ]
+   },
+   {
+      "name": "water",
+      "sprite": "water",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "wall",
+      "sprite": "wall",
+      "color": [
+         "1",
+         "1"
+      ]
+   },
+   {
+      "name": "text_empty",
+      "sprite": "text_empty",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_tile",
+      "sprite": "text_tile",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_weak",
+      "sprite": "text_weak",
+      "color": [
+         "1",
+         "2"
+      ]
+   },
+   {
+      "name": "text_near",
+      "sprite": "text_near",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "cloud",
+      "sprite": "cloud",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "pillar",
+      "sprite": "pillar",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_fungus",
+      "sprite": "text_fungus",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_baba",
+      "sprite": "text_baba",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_keke",
+      "sprite": "text_keke",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_flag",
+      "sprite": "text_flag",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "flag",
+      "sprite": "flag",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "ice",
+      "sprite": "ice",
+      "color": [
+         "1",
+         "2"
+      ]
+   },
+   {
+      "name": "text_shift",
+      "sprite": "text_shift",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "rose",
+      "sprite": "rose",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_all",
+      "sprite": "text_all",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_right",
+      "sprite": "text_right",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_cloud",
+      "sprite": "text_cloud",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_pillar",
+      "sprite": "text_pillar",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "fungus",
+      "sprite": "fungus",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_rock",
+      "sprite": "text_rock",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_lava",
+      "sprite": "text_lava",
+      "color": [
+         "2",
+         "3"
+      ]
+   },
+   {
+      "name": "text_wall",
+      "sprite": "text_wall",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_ice",
+      "sprite": "text_ice",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "text_is",
+      "sprite": "text_is",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_rose",
+      "sprite": "text_rose",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_more",
+      "sprite": "text_more",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_safe",
+      "sprite": "text_safe",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_up",
+      "sprite": "text_up",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "star",
+      "sprite": "star",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_word",
+      "sprite": "text_word",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_fruit",
+      "sprite": "text_fruit",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_water",
+      "sprite": "text_water",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "text_win",
+      "sprite": "text_win",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_push",
+      "sprite": "text_push",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_stop",
+      "sprite": "text_stop",
+      "color": [
+         "5",
+         "1"
+      ]
+   },
+   {
+      "name": "text_move",
+      "sprite": "text_move",
+      "color": [
+         "5",
+         "3"
+      ]
+   },
+   {
+      "name": "text_best",
+      "sprite": "text_best",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_tele",
+      "sprite": "text_tele",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "hand",
+      "sprite": "hand",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_left",
+      "sprite": "text_left",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_star",
+      "sprite": "text_star",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_red",
+      "sprite": "text_red",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "fruit",
+      "sprite": "fruit",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_melt",
+      "sprite": "text_melt",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "text_hot",
+      "sprite": "text_hot",
+      "color": [
+         "2",
+         "3"
+      ]
+   },
+   {
+      "name": "text_you",
+      "sprite": "text_you",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_not",
+      "sprite": "text_not",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_sink",
+      "sprite": "text_sink",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "love",
+      "sprite": "love",
+      "color": [
+         "4",
+         "2"
+      ]
+   },
+   {
+      "name": "door",
+      "sprite": "door",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_hand",
+      "sprite": "text_hand",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_down",
+      "sprite": "text_down",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "dust",
+      "sprite": "dust",
+      "color": [
+         "6",
+         "2"
+      ]
+   },
+   {
+      "name": "text_flower",
+      "sprite": "text_flower",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "text_tree",
+      "sprite": "text_tree",
+      "color": [
+         "5",
+         "2"
+      ]
+   },
+   {
+      "name": "ghost",
+      "sprite": "ghost",
+      "color": [
+         "4",
+         "2"
+      ]
+   },
+   {
+      "name": "text_defeat",
+      "sprite": "text_defeat",
+      "color": [
+         "2",
+         "1"
+      ]
+   },
+   {
+      "name": "skull",
+      "sprite": "skull",
+      "color": [
+         "2",
+         "1"
+      ]
+   },
+   {
+      "name": "grass",
+      "sprite": "grass",
+      "color": [
+         "5",
+         "0"
+      ]
+   },
+   {
+      "name": "text_skull",
+      "sprite": "text_skull",
+      "color": [
+         "2",
+         "1"
+      ]
+   },
+   {
+      "name": "text_love",
+      "sprite": "text_love",
+      "color": [
+         "4",
+         "2"
+      ]
+   },
+   {
+      "name": "text_door",
+      "sprite": "text_door",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_text",
+      "sprite": "text_text",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_sleep",
+      "sprite": "text_sleep",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_dust",
+      "sprite": "text_dust",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_blue",
+      "sprite": "text_blue",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "tree",
+      "sprite": "tree",
+      "color": [
+         "5",
+         "2"
+      ]
+   },
+   {
+      "name": "key",
+      "sprite": "key",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_key",
+      "sprite": "text_key",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_open",
+      "sprite": "text_open",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_shut",
+      "sprite": "text_shut",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_has",
+      "sprite": "text_has",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "box",
+      "sprite": "box",
+      "color": [
+         "6",
+         "2"
+      ]
+   },
+   {
+      "name": "text_box",
+      "sprite": "text_box",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "belt",
+      "sprite": "belt",
+      "color": [
+         "1",
+         "1"
+      ]
+   },
+   {
+      "name": "text_make",
+      "sprite": "text_make",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_fall",
+      "sprite": "text_fall",
+      "color": [
+         "5",
+         "3"
+      ]
+   },
+   {
+      "name": "flower",
+      "sprite": "flower",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "text_fence",
+      "sprite": "text_fence",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_belt",
+      "sprite": "text_belt",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "me",
+      "sprite": "me",
+      "color": [
+         "3",
+         "1"
+      ]
+   },
+   {
+      "name": "text_me",
+      "sprite": "text_me",
+      "color": [
+         "3",
+         "1"
+      ]
+   },
+   {
+      "name": "text_swap",
+      "sprite": "text_swap",
+      "color": [
+         "3",
+         "1"
+      ]
+   },
+   {
+      "name": "text_pull",
+      "sprite": "text_pull",
+      "color": [
+         "6",
+         "2"
+      ]
+   },
+   {
+      "name": "text_on",
+      "sprite": "text_on",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "moon",
+      "sprite": "moon",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_ghost",
+      "sprite": "text_ghost",
+      "color": [
+         "4",
+         "2"
+      ]
+   },
+   {
+      "name": "fence",
+      "sprite": "fence",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "hedge",
+      "sprite": "hedge",
+      "color": [
+         "5",
+         "1"
+      ]
+   },
+   {
+      "name": "text_hedge",
+      "sprite": "text_hedge",
+      "color": [
+         "5",
+         "1"
+      ]
+   },
+   {
+      "name": "text_level",
+      "sprite": "text_level",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_orb",
+      "sprite": "text_orb",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "orb",
+      "sprite": "orb",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_bonus",
+      "sprite": "text_bonus",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_moon",
+      "sprite": "text_moon",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_group",
+      "sprite": "text_group",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "text_line",
+      "sprite": "text_line",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "brick",
+      "sprite": "brick",
+      "color": [
+         "6",
+         "3"
+      ]
+   },
+   {
+      "name": "text_brick",
+      "sprite": "text_brick",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_wonder",
+      "sprite": "text_wonder",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_eat",
+      "sprite": "text_eat",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_statue",
+      "sprite": "text_statue",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "statue",
+      "sprite": "statue",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_facing",
+      "sprite": "text_facing",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "line",
+      "sprite": "line",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_fear",
+      "sprite": "text_fear",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_sad",
+      "sprite": "text_sad",
+      "color": [
+         "3",
+         "2"
+      ]
+   },
+   {
+      "name": "baba",
+      "sprite": "baba",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "keke",
+      "sprite": "keke",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_l",
+      "sprite": "text_l",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "dot",
+      "sprite": "dot",
+      "color": [
+         "0",
+         "0"
+      ]
+   },
+   {
+      "name": "text_rubble",
+      "sprite": "text_rubble",
+      "color": [
+         "6",
+         "0"
+      ]
+   },
+   {
+      "name": "text_cliff",
+      "sprite": "text_cliff",
+      "color": [
+         "6",
+         "0"
+      ]
+   },
+   {
+      "name": "text_e",
+      "sprite": "text_e",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "rock",
+      "sprite": "rock",
+      "color": [
+         "6",
+         "2"
+      ]
+   },
+   {
+      "name": "sun",
+      "sprite": "sun",
+      "color": [
+         "1",
+         "2"
+      ]
+   },
+   {
+      "name": "text_grass",
+      "sprite": "text_grass",
+      "color": [
+         "5",
+         "3"
+      ]
+   },
+   {
+      "name": "tile",
+      "sprite": "tile",
+      "color": [
+         "1",
+         "0"
+      ]
+   },
+   {
+      "name": "fire",
+      "sprite": "fire",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_foliage",
+      "sprite": "text_foliage",
+      "color": [
+         "6",
+         "3"
+      ]
+   },
+   {
+      "name": "text_crab",
+      "sprite": "text_crab",
+      "color": [
+         "2",
+         "1"
+      ]
+   },
+   {
+      "name": "text_c",
+      "sprite": "text_c",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_and",
+      "sprite": "text_and",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_hide",
+      "sprite": "text_hide",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "text_s",
+      "sprite": "text_s",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_follow",
+      "sprite": "text_follow",
+      "color": [
+         "5",
+         "2"
+      ]
+   },
+   {
+      "name": "text_float",
+      "sprite": "text_float",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_lonely",
+      "sprite": "text_lonely",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "lava",
+      "sprite": "water",
+      "color": [
+         "2",
+         "3"
+      ]
+   },
+   {
+      "name": "bug",
+      "sprite": "bug",
+      "color": [
+         "6",
+         "2"
+      ]
+   },
+   {
+      "name": "text_bog",
+      "sprite": "text_bog",
+      "color": [
+         "5",
+         "1"
+      ]
+   },
+   {
+      "name": "text_bolt",
+      "sprite": "text_bolt",
+      "color": [
+         "2",
+         "3"
+      ]
+   },
+   {
+      "name": "spike",
+      "sprite": "spike",
+      "color": [
+         "1",
+         "1"
+      ]
+   },
+   {
+      "name": "text_robot",
+      "sprite": "text_robot",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_reed",
+      "sprite": "text_reed",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_w",
+      "sprite": "text_w",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_rocket",
+      "sprite": "text_rocket",
+      "color": [
+         "2",
+         "3"
+      ]
+   },
+   {
+      "name": "text_fungi",
+      "sprite": "text_fungus_map",
+      "color": [
+         "6",
+         "0"
+      ]
+   },
+   {
+      "name": "text_husk",
+      "sprite": "text_husk",
+      "color": [
+         "0",
+         "2"
+      ]
+   },
+   {
+      "name": "cog",
+      "sprite": "cog",
+      "color": [
+         "6",
+         "3"
+      ]
+   },
+   {
+      "name": "reed",
+      "sprite": "reed",
+      "color": [
+         "6",
+         "2"
+      ]
+   },
+   {
+      "name": "text_cog",
+      "sprite": "text_cog",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "water",
+      "sprite": "water",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "ufo",
+      "sprite": "ufo",
+      "color": [
+         "6",
+         "3"
+      ]
+   },
+   {
+      "name": "wall",
+      "sprite": "wall",
+      "color": [
+         "1",
+         "1"
+      ]
+   },
+   {
+      "name": "text_you2",
+      "sprite": "text_p2",
+      "color": [
+         "1",
+         "1"
+      ]
+   },
+   {
+      "name": "rocket",
+      "sprite": "rocket",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "control_enter",
+      "sprite": "text_enter",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_empty",
+      "sprite": "text_empty",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_tile",
+      "sprite": "text_tile",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_weak",
+      "sprite": "text_weak",
+      "color": [
+         "1",
+         "2"
+      ]
+   },
+   {
+      "name": "text_near",
+      "sprite": "text_near",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "cloud",
+      "sprite": "cloud",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_anni",
+      "sprite": "text_anni",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "pillar",
+      "sprite": "pillar",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_g",
+      "sprite": "text_g",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_bug",
+      "sprite": "text_bug",
+      "color": [
+         "6",
+         "0"
+      ]
+   },
+   {
+      "name": "leaf",
+      "sprite": "leaf",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_fungus",
+      "sprite": "text_fungus",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_t",
+      "sprite": "text_t",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_b",
+      "sprite": "text_b",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_cursor",
+      "sprite": "text_cursor",
+      "color": [
+         "2",
+         "3"
+      ]
+   },
+   {
+      "name": "text_baba",
+      "sprite": "text_baba",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_keke",
+      "sprite": "text_keke",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_flag",
+      "sprite": "text_flag",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "flag",
+      "sprite": "flag",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "ice",
+      "sprite": "ice",
+      "color": [
+         "1",
+         "2"
+      ]
+   },
+   {
+      "name": "text_shift",
+      "sprite": "text_shift",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "rose",
+      "sprite": "rose",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "violet",
+      "sprite": "text_violet",
+      "color": [
+         "3",
+         "2"
+      ]
+   },
+   {
+      "name": "text_all",
+      "sprite": "text_all",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_right",
+      "sprite": "text_right",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_cloud",
+      "sprite": "text_cloud",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_pillar",
+      "sprite": "text_pillar",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_a",
+      "sprite": "text_a",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "fungus",
+      "sprite": "fungus",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_rock",
+      "sprite": "text_rock",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_lava",
+      "sprite": "text_lava",
+      "color": [
+         "2",
+         "3"
+      ]
+   },
+   {
+      "name": "text_wall",
+      "sprite": "text_wall",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_ice",
+      "sprite": "text_ice",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "text_is",
+      "sprite": "text_is",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_rose",
+      "sprite": "text_rose",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_more",
+      "sprite": "text_more",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_safe",
+      "sprite": "text_safe",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_up",
+      "sprite": "text_up",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "star",
+      "sprite": "star",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "husk",
+      "sprite": "husk",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "foliage",
+      "sprite": "foliage",
+      "color": [
+         "6",
+         "0"
+      ]
+   },
+   {
+      "name": "text_word",
+      "sprite": "text_word",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_fruit",
+      "sprite": "text_fruit",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_water",
+      "sprite": "text_water",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "text_win",
+      "sprite": "text_win",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_push",
+      "sprite": "text_push",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_stop",
+      "sprite": "text_stop",
+      "color": [
+         "5",
+         "1"
+      ]
+   },
+   {
+      "name": "text_move",
+      "sprite": "text_move",
+      "color": [
+         "5",
+         "3"
+      ]
+   },
+   {
+      "name": "text_best",
+      "sprite": "text_best",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_tele",
+      "sprite": "text_tele",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "hand",
+      "sprite": "hand",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_left",
+      "sprite": "text_left",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_star",
+      "sprite": "text_star",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_red",
+      "sprite": "text_red",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "fruit",
+      "sprite": "fruit",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_melt",
+      "sprite": "text_melt",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "text_hot",
+      "sprite": "text_hot",
+      "color": [
+         "2",
+         "3"
+      ]
+   },
+   {
+      "name": "text_you",
+      "sprite": "text_you",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_not",
+      "sprite": "text_not",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_sink",
+      "sprite": "text_sink",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "love",
+      "sprite": "love",
+      "color": [
+         "4",
+         "2"
+      ]
+   },
+   {
+      "name": "door",
+      "sprite": "door",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_hand",
+      "sprite": "text_hand",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_down",
+      "sprite": "text_down",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "dust",
+      "sprite": "dust",
+      "color": [
+         "6",
+         "2"
+      ]
+   },
+   {
+      "name": "text_flower",
+      "sprite": "text_flower",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "text_tree",
+      "sprite": "text_tree",
+      "color": [
+         "5",
+         "2"
+      ]
+   },
+   {
+      "name": "cake",
+      "sprite": "cake",
+      "color": [
+         "4",
+         "2"
+      ]
+   },
+   {
+      "name": "ghost",
+      "sprite": "ghost",
+      "color": [
+         "4",
+         "2"
+      ]
+   },
+   {
+      "name": "bird",
+      "sprite": "bird",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_defeat",
+      "sprite": "text_defeat",
+      "color": [
+         "2",
+         "1"
+      ]
+   },
+   {
+      "name": "skull",
+      "sprite": "skull",
+      "color": [
+         "2",
+         "1"
+      ]
+   },
+   {
+      "name": "grass",
+      "sprite": "grass",
+      "color": [
+         "5",
+         "0"
+      ]
+   },
+   {
+      "name": "text_skull",
+      "sprite": "text_skull",
+      "color": [
+         "2",
+         "1"
+      ]
+   },
+   {
+      "name": "text_love",
+      "sprite": "text_love",
+      "color": [
+         "4",
+         "2"
+      ]
+   },
+   {
+      "name": "text_door",
+      "sprite": "text_door",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_text",
+      "sprite": "text_text",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_sleep",
+      "sprite": "text_sleep",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_dust",
+      "sprite": "text_dust",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_blue",
+      "sprite": "text_blue",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "tree",
+      "sprite": "tree",
+      "color": [
+         "5",
+         "2"
+      ]
+   },
+   {
+      "name": "key",
+      "sprite": "key",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_key",
+      "sprite": "text_key",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_open",
+      "sprite": "text_open",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_shut",
+      "sprite": "text_shut",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_has",
+      "sprite": "text_has",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "box",
+      "sprite": "box",
+      "color": [
+         "6",
+         "2"
+      ]
+   },
+   {
+      "name": "text_box",
+      "sprite": "text_box",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "belt",
+      "sprite": "belt",
+      "color": [
+         "1",
+         "1"
+      ]
+   },
+   {
+      "name": "text_make",
+      "sprite": "text_make",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_fall",
+      "sprite": "text_fall",
+      "color": [
+         "5",
+         "3"
+      ]
+   },
+   {
+      "name": "flower",
+      "sprite": "flower",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "text_fence",
+      "sprite": "text_fence",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_belt",
+      "sprite": "text_belt",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "me",
+      "sprite": "me",
+      "color": [
+         "3",
+         "1"
+      ]
+   },
+   {
+      "name": "text_me",
+      "sprite": "text_me",
+      "color": [
+         "3",
+         "1"
+      ]
+   },
+   {
+      "name": "text_swap",
+      "sprite": "text_swap",
+      "color": [
+         "3",
+         "1"
+      ]
+   },
+   {
+      "name": "text_pull",
+      "sprite": "text_pull",
+      "color": [
+         "6",
+         "2"
+      ]
+   },
+   {
+      "name": "text_on",
+      "sprite": "text_on",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "moon",
+      "sprite": "moon",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_ghost",
+      "sprite": "text_ghost",
+      "color": [
+         "4",
+         "2"
+      ]
+   },
+   {
+      "name": "fence",
+      "sprite": "fence",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "hedge",
+      "sprite": "hedge",
+      "color": [
+         "5",
+         "1"
+      ]
+   },
+   {
+      "name": "text_hedge",
+      "sprite": "text_hedge",
+      "color": [
+         "5",
+         "1"
+      ]
+   },
+   {
+      "name": "text_level",
+      "sprite": "text_level",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_orb",
+      "sprite": "text_orb",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "orb",
+      "sprite": "orb",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_bonus",
+      "sprite": "text_bonus",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_end",
+      "sprite": "text_end",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_moon",
+      "sprite": "text_moon",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_group",
+      "sprite": "text_group",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "text_line",
+      "sprite": "text_line",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "brick",
+      "sprite": "brick",
+      "color": [
+         "6",
+         "3"
+      ]
+   },
+   {
+      "name": "text_brick",
+      "sprite": "text_brick",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_wonder",
+      "sprite": "text_wonder",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_eat",
+      "sprite": "text_eat",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_statue",
+      "sprite": "text_statue",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "statue",
+      "sprite": "statue",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_facing",
+      "sprite": "text_facing",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "line",
+      "sprite": "line",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_fear",
+      "sprite": "text_fear",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_sad",
+      "sprite": "text_sad",
+      "color": [
+         "3",
+         "2"
+      ]
+   },
+   {
+      "name": "baba",
+      "sprite": "baba",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "keke",
+      "sprite": "keke",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "rock",
+      "sprite": "rock",
+      "color": [
+         "6",
+         "2"
+      ]
+   },
+   {
+      "name": "text_grass",
+      "sprite": "text_grass",
+      "color": [
+         "5",
+         "3"
+      ]
+   },
+   {
+      "name": "tile",
+      "sprite": "tile",
+      "color": [
+         "1",
+         "0"
+      ]
+   },
+   {
+      "name": "text_and",
+      "sprite": "text_and",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_hide",
+      "sprite": "text_hide",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "text_follow",
+      "sprite": "text_follow",
+      "color": [
+         "5",
+         "2"
+      ]
+   },
+   {
+      "name": "text_float",
+      "sprite": "text_float",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_lonely",
+      "sprite": "text_lonely",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "lava",
+      "sprite": "water",
+      "color": [
+         "2",
+         "3"
+      ]
+   },
+   {
+      "name": "water",
+      "sprite": "water",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "wall",
+      "sprite": "wall",
+      "color": [
+         "1",
+         "1"
+      ]
+   },
+   {
+      "name": "text_empty",
+      "sprite": "text_empty",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_tile",
+      "sprite": "text_tile",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_weak",
+      "sprite": "text_weak",
+      "color": [
+         "1",
+         "2"
+      ]
+   },
+   {
+      "name": "text_near",
+      "sprite": "text_near",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "cloud",
+      "sprite": "cloud",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "pillar",
+      "sprite": "pillar",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_fungus",
+      "sprite": "text_fungus",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_baba",
+      "sprite": "text_baba",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_keke",
+      "sprite": "text_keke",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_flag",
+      "sprite": "text_flag",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "flag",
+      "sprite": "flag",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "ice",
+      "sprite": "ice",
+      "color": [
+         "1",
+         "2"
+      ]
+   },
+   {
+      "name": "text_shift",
+      "sprite": "text_shift",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "rose",
+      "sprite": "rose",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_all",
+      "sprite": "text_all",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_right",
+      "sprite": "text_right",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_cloud",
+      "sprite": "text_cloud",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_pillar",
+      "sprite": "text_pillar",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "fungus",
+      "sprite": "fungus",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_rock",
+      "sprite": "text_rock",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_lava",
+      "sprite": "text_lava",
+      "color": [
+         "2",
+         "3"
+      ]
+   },
+   {
+      "name": "text_wall",
+      "sprite": "text_wall",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_ice",
+      "sprite": "text_ice",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "text_is",
+      "sprite": "text_is",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_rose",
+      "sprite": "text_rose",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_more",
+      "sprite": "text_more",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_safe",
+      "sprite": "text_safe",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_up",
+      "sprite": "text_up",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "star",
+      "sprite": "star",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_word",
+      "sprite": "text_word",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_fruit",
+      "sprite": "text_fruit",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_water",
+      "sprite": "text_water",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "text_win",
+      "sprite": "text_win",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_push",
+      "sprite": "text_push",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_stop",
+      "sprite": "text_stop",
+      "color": [
+         "5",
+         "1"
+      ]
+   },
+   {
+      "name": "text_move",
+      "sprite": "text_move",
+      "color": [
+         "5",
+         "3"
+      ]
+   },
+   {
+      "name": "text_best",
+      "sprite": "text_best",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_tele",
+      "sprite": "text_tele",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "hand",
+      "sprite": "hand",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_left",
+      "sprite": "text_left",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_star",
+      "sprite": "text_star",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_red",
+      "sprite": "text_red",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "fruit",
+      "sprite": "fruit",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_melt",
+      "sprite": "text_melt",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "text_hot",
+      "sprite": "text_hot",
+      "color": [
+         "2",
+         "3"
+      ]
+   },
+   {
+      "name": "text_you",
+      "sprite": "text_you",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_not",
+      "sprite": "text_not",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_sink",
+      "sprite": "text_sink",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "love",
+      "sprite": "love",
+      "color": [
+         "4",
+         "2"
+      ]
+   },
+   {
+      "name": "door",
+      "sprite": "door",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_hand",
+      "sprite": "text_hand",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_down",
+      "sprite": "text_down",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "dust",
+      "sprite": "dust",
+      "color": [
+         "6",
+         "2"
+      ]
+   },
+   {
+      "name": "text_flower",
+      "sprite": "text_flower",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "text_tree",
+      "sprite": "text_tree",
+      "color": [
+         "5",
+         "2"
+      ]
+   },
+   {
+      "name": "ghost",
+      "sprite": "ghost",
+      "color": [
+         "4",
+         "2"
+      ]
+   },
+   {
+      "name": "text_defeat",
+      "sprite": "text_defeat",
+      "color": [
+         "2",
+         "1"
+      ]
+   },
+   {
+      "name": "skull",
+      "sprite": "skull",
+      "color": [
+         "2",
+         "1"
+      ]
+   },
+   {
+      "name": "grass",
+      "sprite": "grass",
+      "color": [
+         "5",
+         "0"
+      ]
+   },
+   {
+      "name": "text_skull",
+      "sprite": "text_skull",
+      "color": [
+         "2",
+         "1"
+      ]
+   },
+   {
+      "name": "text_love",
+      "sprite": "text_love",
+      "color": [
+         "4",
+         "2"
+      ]
+   },
+   {
+      "name": "text_door",
+      "sprite": "text_door",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_text",
+      "sprite": "text_text",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_sleep",
+      "sprite": "text_sleep",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_dust",
+      "sprite": "text_dust",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_blue",
+      "sprite": "text_blue",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "tree",
+      "sprite": "tree",
+      "color": [
+         "5",
+         "2"
+      ]
+   },
+   {
+      "name": "key",
+      "sprite": "key",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_key",
+      "sprite": "text_key",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_open",
+      "sprite": "text_open",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_shut",
+      "sprite": "text_shut",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_has",
+      "sprite": "text_has",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "box",
+      "sprite": "box",
+      "color": [
+         "6",
+         "2"
+      ]
+   },
+   {
+      "name": "text_box",
+      "sprite": "text_box",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "belt",
+      "sprite": "belt",
+      "color": [
+         "1",
+         "1"
+      ]
+   },
+   {
+      "name": "text_make",
+      "sprite": "text_make",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_fall",
+      "sprite": "text_fall",
+      "color": [
+         "5",
+         "3"
+      ]
+   },
+   {
+      "name": "flower",
+      "sprite": "flower",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "text_fence",
+      "sprite": "text_fence",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_belt",
+      "sprite": "text_belt",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "me",
+      "sprite": "me",
+      "color": [
+         "3",
+         "1"
+      ]
+   },
+   {
+      "name": "text_me",
+      "sprite": "text_me",
+      "color": [
+         "3",
+         "1"
+      ]
+   },
+   {
+      "name": "text_swap",
+      "sprite": "text_swap",
+      "color": [
+         "3",
+         "1"
+      ]
+   },
+   {
+      "name": "text_pull",
+      "sprite": "text_pull",
+      "color": [
+         "6",
+         "2"
+      ]
+   },
+   {
+      "name": "text_on",
+      "sprite": "text_on",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "moon",
+      "sprite": "moon",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_ghost",
+      "sprite": "text_ghost",
+      "color": [
+         "4",
+         "2"
+      ]
+   },
+   {
+      "name": "fence",
+      "sprite": "fence",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "hedge",
+      "sprite": "hedge",
+      "color": [
+         "5",
+         "1"
+      ]
+   },
+   {
+      "name": "text_hedge",
+      "sprite": "text_hedge",
+      "color": [
+         "5",
+         "1"
+      ]
+   },
+   {
+      "name": "text_level",
+      "sprite": "text_level",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_orb",
+      "sprite": "text_orb",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "orb",
+      "sprite": "orb",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_bonus",
+      "sprite": "text_bonus",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_moon",
+      "sprite": "text_moon",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_group",
+      "sprite": "text_group",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "text_line",
+      "sprite": "text_line",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "brick",
+      "sprite": "brick",
+      "color": [
+         "6",
+         "3"
+      ]
+   },
+   {
+      "name": "text_brick",
+      "sprite": "text_brick",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_wonder",
+      "sprite": "text_wonder",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_eat",
+      "sprite": "text_eat",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_statue",
+      "sprite": "text_statue",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "statue",
+      "sprite": "statue",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_facing",
+      "sprite": "text_facing",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "line",
+      "sprite": "line",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_fear",
+      "sprite": "text_fear",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_sad",
+      "sprite": "text_sad",
+      "color": [
+         "3",
+         "2"
+      ]
+   },
+   {
+      "name": "baba",
+      "sprite": "baba",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "keke",
+      "sprite": "keke",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "rock",
+      "sprite": "rock",
+      "color": [
+         "6",
+         "2"
+      ]
+   },
+   {
+      "name": "text_grass",
+      "sprite": "text_grass",
+      "color": [
+         "5",
+         "3"
+      ]
+   },
+   {
+      "name": "tile",
+      "sprite": "tile",
+      "color": [
+         "1",
+         "0"
+      ]
+   },
+   {
+      "name": "text_and",
+      "sprite": "text_and",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_hide",
+      "sprite": "text_hide",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "text_follow",
+      "sprite": "text_follow",
+      "color": [
+         "5",
+         "2"
+      ]
+   },
+   {
+      "name": "text_float",
+      "sprite": "text_float",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_lonely",
+      "sprite": "text_lonely",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "lava",
+      "sprite": "water",
+      "color": [
+         "2",
+         "3"
+      ]
+   },
+   {
+      "name": "water",
+      "sprite": "water",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "wall",
+      "sprite": "wall",
+      "color": [
+         "1",
+         "1"
+      ]
+   },
+   {
+      "name": "text_empty",
+      "sprite": "text_empty",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_tile",
+      "sprite": "text_tile",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_weak",
+      "sprite": "text_weak",
+      "color": [
+         "1",
+         "2"
+      ]
+   },
+   {
+      "name": "text_near",
+      "sprite": "text_near",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "cloud",
+      "sprite": "cloud",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "pillar",
+      "sprite": "pillar",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_fungus",
+      "sprite": "text_fungus",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_baba",
+      "sprite": "text_baba",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_keke",
+      "sprite": "text_keke",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_flag",
+      "sprite": "text_flag",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "flag",
+      "sprite": "flag",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "ice",
+      "sprite": "ice",
+      "color": [
+         "1",
+         "2"
+      ]
+   },
+   {
+      "name": "text_shift",
+      "sprite": "text_shift",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "rose",
+      "sprite": "rose",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_all",
+      "sprite": "text_all",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_right",
+      "sprite": "text_right",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_cloud",
+      "sprite": "text_cloud",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_pillar",
+      "sprite": "text_pillar",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "fungus",
+      "sprite": "fungus",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_rock",
+      "sprite": "text_rock",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_lava",
+      "sprite": "text_lava",
+      "color": [
+         "2",
+         "3"
+      ]
+   },
+   {
+      "name": "text_wall",
+      "sprite": "text_wall",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_ice",
+      "sprite": "text_ice",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "text_is",
+      "sprite": "text_is",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_rose",
+      "sprite": "text_rose",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_more",
+      "sprite": "text_more",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_safe",
+      "sprite": "text_safe",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_up",
+      "sprite": "text_up",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "star",
+      "sprite": "star",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_word",
+      "sprite": "text_word",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_fruit",
+      "sprite": "text_fruit",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_water",
+      "sprite": "text_water",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "text_win",
+      "sprite": "text_win",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_push",
+      "sprite": "text_push",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_stop",
+      "sprite": "text_stop",
+      "color": [
+         "5",
+         "1"
+      ]
+   },
+   {
+      "name": "text_move",
+      "sprite": "text_move",
+      "color": [
+         "5",
+         "3"
+      ]
+   },
+   {
+      "name": "text_best",
+      "sprite": "text_best",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_tele",
+      "sprite": "text_tele",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "hand",
+      "sprite": "hand",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_left",
+      "sprite": "text_left",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_star",
+      "sprite": "text_star",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_red",
+      "sprite": "text_red",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "fruit",
+      "sprite": "fruit",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_melt",
+      "sprite": "text_melt",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "text_hot",
+      "sprite": "text_hot",
+      "color": [
+         "2",
+         "3"
+      ]
+   },
+   {
+      "name": "text_you",
+      "sprite": "text_you",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_not",
+      "sprite": "text_not",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_sink",
+      "sprite": "text_sink",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "love",
+      "sprite": "love",
+      "color": [
+         "4",
+         "2"
+      ]
+   },
+   {
+      "name": "door",
+      "sprite": "door",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_hand",
+      "sprite": "text_hand",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_down",
+      "sprite": "text_down",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "dust",
+      "sprite": "dust",
+      "color": [
+         "6",
+         "2"
+      ]
+   },
+   {
+      "name": "text_flower",
+      "sprite": "text_flower",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "text_tree",
+      "sprite": "text_tree",
+      "color": [
+         "5",
+         "2"
+      ]
+   },
+   {
+      "name": "ghost",
+      "sprite": "ghost",
+      "color": [
+         "4",
+         "2"
+      ]
+   },
+   {
+      "name": "text_defeat",
+      "sprite": "text_defeat",
+      "color": [
+         "2",
+         "1"
+      ]
+   },
+   {
+      "name": "skull",
+      "sprite": "skull",
+      "color": [
+         "2",
+         "1"
+      ]
+   },
+   {
+      "name": "grass",
+      "sprite": "grass",
+      "color": [
+         "5",
+         "0"
+      ]
+   },
+   {
+      "name": "text_skull",
+      "sprite": "text_skull",
+      "color": [
+         "2",
+         "1"
+      ]
+   },
+   {
+      "name": "text_love",
+      "sprite": "text_love",
+      "color": [
+         "4",
+         "2"
+      ]
+   },
+   {
+      "name": "text_door",
+      "sprite": "text_door",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_text",
+      "sprite": "text_text",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_sleep",
+      "sprite": "text_sleep",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_dust",
+      "sprite": "text_dust",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_blue",
+      "sprite": "text_blue",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "tree",
+      "sprite": "tree",
+      "color": [
+         "5",
+         "2"
+      ]
+   },
+   {
+      "name": "key",
+      "sprite": "key",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_key",
+      "sprite": "text_key",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_open",
+      "sprite": "text_open",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_shut",
+      "sprite": "text_shut",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_has",
+      "sprite": "text_has",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "box",
+      "sprite": "box",
+      "color": [
+         "6",
+         "2"
+      ]
+   },
+   {
+      "name": "text_box",
+      "sprite": "text_box",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "belt",
+      "sprite": "belt",
+      "color": [
+         "1",
+         "1"
+      ]
+   },
+   {
+      "name": "text_make",
+      "sprite": "text_make",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_fall",
+      "sprite": "text_fall",
+      "color": [
+         "5",
+         "3"
+      ]
+   },
+   {
+      "name": "flower",
+      "sprite": "flower",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "text_fence",
+      "sprite": "text_fence",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_belt",
+      "sprite": "text_belt",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "me",
+      "sprite": "me",
+      "color": [
+         "3",
+         "1"
+      ]
+   },
+   {
+      "name": "text_me",
+      "sprite": "text_me",
+      "color": [
+         "3",
+         "1"
+      ]
+   },
+   {
+      "name": "text_swap",
+      "sprite": "text_swap",
+      "color": [
+         "3",
+         "1"
+      ]
+   },
+   {
+      "name": "text_pull",
+      "sprite": "text_pull",
+      "color": [
+         "6",
+         "2"
+      ]
+   },
+   {
+      "name": "text_on",
+      "sprite": "text_on",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "moon",
+      "sprite": "moon",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_ghost",
+      "sprite": "text_ghost",
+      "color": [
+         "4",
+         "2"
+      ]
+   },
+   {
+      "name": "fence",
+      "sprite": "fence",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "hedge",
+      "sprite": "hedge",
+      "color": [
+         "5",
+         "1"
+      ]
+   },
+   {
+      "name": "text_hedge",
+      "sprite": "text_hedge",
+      "color": [
+         "5",
+         "1"
+      ]
+   },
+   {
+      "name": "text_level",
+      "sprite": "text_level",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_orb",
+      "sprite": "text_orb",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "orb",
+      "sprite": "orb",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_bonus",
+      "sprite": "text_bonus",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_moon",
+      "sprite": "text_moon",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_group",
+      "sprite": "text_group",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "text_line",
+      "sprite": "text_line",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "brick",
+      "sprite": "brick",
+      "color": [
+         "6",
+         "3"
+      ]
+   },
+   {
+      "name": "text_brick",
+      "sprite": "text_brick",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_wonder",
+      "sprite": "text_wonder",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_eat",
+      "sprite": "text_eat",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_statue",
+      "sprite": "text_statue",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "statue",
+      "sprite": "statue",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_facing",
+      "sprite": "text_facing",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "line",
+      "sprite": "line",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_fear",
+      "sprite": "text_fear",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_sad",
+      "sprite": "text_sad",
+      "color": [
+         "3",
+         "2"
+      ]
+   },
+   {
+      "name": "baba",
+      "sprite": "baba",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "keke",
+      "sprite": "keke",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "rock",
+      "sprite": "rock",
+      "color": [
+         "6",
+         "2"
+      ]
+   },
+   {
+      "name": "text_grass",
+      "sprite": "text_grass",
+      "color": [
+         "5",
+         "3"
+      ]
+   },
+   {
+      "name": "tile",
+      "sprite": "tile",
+      "color": [
+         "1",
+         "0"
+      ]
+   },
+   {
+      "name": "text_and",
+      "sprite": "text_and",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_hide",
+      "sprite": "text_hide",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "text_follow",
+      "sprite": "text_follow",
+      "color": [
+         "5",
+         "2"
+      ]
+   },
+   {
+      "name": "text_float",
+      "sprite": "text_float",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_lonely",
+      "sprite": "text_lonely",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "lava",
+      "sprite": "water",
+      "color": [
+         "2",
+         "3"
+      ]
+   },
+   {
+      "name": "water",
+      "sprite": "water",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "wall",
+      "sprite": "wall",
+      "color": [
+         "1",
+         "1"
+      ]
+   },
+   {
+      "name": "text_empty",
+      "sprite": "text_empty",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_tile",
+      "sprite": "text_tile",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_weak",
+      "sprite": "text_weak",
+      "color": [
+         "1",
+         "2"
+      ]
+   },
+   {
+      "name": "text_near",
+      "sprite": "text_near",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "cloud",
+      "sprite": "cloud",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "pillar",
+      "sprite": "pillar",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_fungus",
+      "sprite": "text_fungus",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_baba",
+      "sprite": "text_baba",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_keke",
+      "sprite": "text_keke",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_flag",
+      "sprite": "text_flag",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "flag",
+      "sprite": "flag",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "ice",
+      "sprite": "ice",
+      "color": [
+         "1",
+         "2"
+      ]
+   },
+   {
+      "name": "text_shift",
+      "sprite": "text_shift",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "rose",
+      "sprite": "rose",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_all",
+      "sprite": "text_all",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_right",
+      "sprite": "text_right",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_cloud",
+      "sprite": "text_cloud",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_pillar",
+      "sprite": "text_pillar",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "fungus",
+      "sprite": "fungus",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_rock",
+      "sprite": "text_rock",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_lava",
+      "sprite": "text_lava",
+      "color": [
+         "2",
+         "3"
+      ]
+   },
+   {
+      "name": "text_wall",
+      "sprite": "text_wall",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_ice",
+      "sprite": "text_ice",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "text_is",
+      "sprite": "text_is",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_rose",
+      "sprite": "text_rose",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_more",
+      "sprite": "text_more",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_safe",
+      "sprite": "text_safe",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_up",
+      "sprite": "text_up",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "star",
+      "sprite": "star",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_word",
+      "sprite": "text_word",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_fruit",
+      "sprite": "text_fruit",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_water",
+      "sprite": "text_water",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "text_win",
+      "sprite": "text_win",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_push",
+      "sprite": "text_push",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_stop",
+      "sprite": "text_stop",
+      "color": [
+         "5",
+         "1"
+      ]
+   },
+   {
+      "name": "text_move",
+      "sprite": "text_move",
+      "color": [
+         "5",
+         "3"
+      ]
+   },
+   {
+      "name": "text_best",
+      "sprite": "text_best",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_tele",
+      "sprite": "text_tele",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "hand",
+      "sprite": "hand",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_left",
+      "sprite": "text_left",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_star",
+      "sprite": "text_star",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_red",
+      "sprite": "text_red",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "fruit",
+      "sprite": "fruit",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_melt",
+      "sprite": "text_melt",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "text_hot",
+      "sprite": "text_hot",
+      "color": [
+         "2",
+         "3"
+      ]
+   },
+   {
+      "name": "text_you",
+      "sprite": "text_you",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_not",
+      "sprite": "text_not",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_sink",
+      "sprite": "text_sink",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "love",
+      "sprite": "love",
+      "color": [
+         "4",
+         "2"
+      ]
+   },
+   {
+      "name": "door",
+      "sprite": "door",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_hand",
+      "sprite": "text_hand",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_down",
+      "sprite": "text_down",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "dust",
+      "sprite": "dust",
+      "color": [
+         "6",
+         "2"
+      ]
+   },
+   {
+      "name": "text_flower",
+      "sprite": "text_flower",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "text_tree",
+      "sprite": "text_tree",
+      "color": [
+         "5",
+         "2"
+      ]
+   },
+   {
+      "name": "ghost",
+      "sprite": "ghost",
+      "color": [
+         "4",
+         "2"
+      ]
+   },
+   {
+      "name": "text_defeat",
+      "sprite": "text_defeat",
+      "color": [
+         "2",
+         "1"
+      ]
+   },
+   {
+      "name": "skull",
+      "sprite": "skull",
+      "color": [
+         "2",
+         "1"
+      ]
+   },
+   {
+      "name": "grass",
+      "sprite": "grass",
+      "color": [
+         "5",
+         "0"
+      ]
+   },
+   {
+      "name": "text_skull",
+      "sprite": "text_skull",
+      "color": [
+         "2",
+         "1"
+      ]
+   },
+   {
+      "name": "text_love",
+      "sprite": "text_love",
+      "color": [
+         "4",
+         "2"
+      ]
+   },
+   {
+      "name": "text_door",
+      "sprite": "text_door",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_text",
+      "sprite": "text_text",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_sleep",
+      "sprite": "text_sleep",
+      "color": [
+         "1",
+         "4"
+      ]
+   },
+   {
+      "name": "text_dust",
+      "sprite": "text_dust",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_blue",
+      "sprite": "text_blue",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "tree",
+      "sprite": "tree",
+      "color": [
+         "5",
+         "2"
+      ]
+   },
+   {
+      "name": "key",
+      "sprite": "key",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_key",
+      "sprite": "text_key",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_open",
+      "sprite": "text_open",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_shut",
+      "sprite": "text_shut",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_has",
+      "sprite": "text_has",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "box",
+      "sprite": "box",
+      "color": [
+         "6",
+         "2"
+      ]
+   },
+   {
+      "name": "text_box",
+      "sprite": "text_box",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "belt",
+      "sprite": "belt",
+      "color": [
+         "1",
+         "1"
+      ]
+   },
+   {
+      "name": "text_make",
+      "sprite": "text_make",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_fall",
+      "sprite": "text_fall",
+      "color": [
+         "5",
+         "3"
+      ]
+   },
+   {
+      "name": "flower",
+      "sprite": "flower",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "text_fence",
+      "sprite": "text_fence",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_belt",
+      "sprite": "text_belt",
+      "color": [
+         "1",
+         "3"
+      ]
+   },
+   {
+      "name": "me",
+      "sprite": "me",
+      "color": [
+         "3",
+         "1"
+      ]
+   },
+   {
+      "name": "text_me",
+      "sprite": "text_me",
+      "color": [
+         "3",
+         "1"
+      ]
+   },
+   {
+      "name": "text_swap",
+      "sprite": "text_swap",
+      "color": [
+         "3",
+         "1"
+      ]
+   },
+   {
+      "name": "text_pull",
+      "sprite": "text_pull",
+      "color": [
+         "6",
+         "2"
+      ]
+   },
+   {
+      "name": "text_on",
+      "sprite": "text_on",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "moon",
+      "sprite": "moon",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_ghost",
+      "sprite": "text_ghost",
+      "color": [
+         "4",
+         "2"
+      ]
+   },
+   {
+      "name": "fence",
+      "sprite": "fence",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "hedge",
+      "sprite": "hedge",
+      "color": [
+         "5",
+         "1"
+      ]
+   },
+   {
+      "name": "text_hedge",
+      "sprite": "text_hedge",
+      "color": [
+         "5",
+         "1"
+      ]
+   },
+   {
+      "name": "text_level",
+      "sprite": "text_level",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_orb",
+      "sprite": "text_orb",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "orb",
+      "sprite": "orb",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_bonus",
+      "sprite": "text_bonus",
+      "color": [
+         "4",
+         "1"
+      ]
+   },
+   {
+      "name": "text_moon",
+      "sprite": "text_moon",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_group",
+      "sprite": "text_group",
+      "color": [
+         "3",
+         "3"
+      ]
+   },
+   {
+      "name": "text_line",
+      "sprite": "text_line",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "brick",
+      "sprite": "brick",
+      "color": [
+         "6",
+         "3"
+      ]
+   },
+   {
+      "name": "text_brick",
+      "sprite": "text_brick",
+      "color": [
+         "6",
+         "1"
+      ]
+   },
+   {
+      "name": "text_wonder",
+      "sprite": "text_wonder",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_eat",
+      "sprite": "text_eat",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_statue",
+      "sprite": "text_statue",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "statue",
+      "sprite": "statue",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_facing",
+      "sprite": "text_facing",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "line",
+      "sprite": "line",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_fear",
+      "sprite": "text_fear",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_sad",
+      "sprite": "text_sad",
+      "color": [
+         "3",
+         "2"
+      ]
    }
 ]
