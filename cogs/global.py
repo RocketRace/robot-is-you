@@ -5,7 +5,7 @@ from discord.ext import commands
 from json        import load
 from PIL         import Image
 
-def genFrame(fp):
+def genFrame(fp, pixel):
     im = Image.open(fp).convert("RGBA")
     # Gets the alpha from the images
     alpha = im.getchannel("A")
@@ -15,9 +15,9 @@ def genFrame(fp):
     im = im.convert("RGB").quantize(colors=255)
     mask = Image.eval(alpha, lambda a: 255 if a <= 128 else 0)
 
-    # Gets the color value of the 0,0 pixel
+    # Gets the color value of the px,0 pixel
     # This will be the transparency value in the .gif
-    c = im.getpixel((0,0))
+    c = im.getpixel((0,2 * pixel))
 
     # Pastes the transparency value to every spot on the picture that has alpha dictated by the mask above
     im.paste(c, mask)
@@ -36,9 +36,13 @@ def mergeImages(wordGrid, width, height, spoiler=False):
                 img = Image.open(pathGrid[i][j])
                 frame.paste(img.resize((48,48)), (48 * j, 48 * i, 48 * j + 48, 48 * i + 48))
                 frame.save("renders/frame%s.png" % f)
-    f0 = genFrame("renders/frame0.png")
-    f1 = genFrame("renders/frame1.png")
-    f2 = genFrame("renders/frame2.png")
+    px = 0
+    if wordGrid[0][0] == "belt":
+        px = 4
+    
+    f0 = genFrame("renders/frame0.png", px)
+    f1 = genFrame("renders/frame1.png", px)
+    f2 = genFrame("renders/frame2.png", px)
     if spoiler:
         name = "renders/SPOILER_render.gif"
     else:
@@ -97,7 +101,7 @@ class globalCog(commands.Cog):
         # Merges the images found
         mergeImages(wordGrid, width, height, spoiler=True)
         # Sends the image through discord
-        await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif"))
+        await ctx.send(content=ctx.author.mention, file=discord.File("renders/SPOILER_render.gif"))
 
 
     # Generates an animated gif of the tiles provided, using (TODO) the default palette
