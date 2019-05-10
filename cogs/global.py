@@ -27,7 +27,7 @@ def genFrame(fp, pixel):
 
     return im
 
-def mergeImages(wordGrid, width, height, spoiler=False):
+def mergeImages(wordGrid, width, height, spoiler):
     for f in range(3):
         pathGrid = [["empty.png" if word == "-" else "color/%s/%s-%s-.png" % ("default", word, f) for word in row] for row in wordGrid]
         frame = Image.new("RGBA", size=(48 * width, 48 * height))
@@ -99,7 +99,7 @@ class globalCog(commands.Cog):
         except:
             await ctx.send("⚠️ Could not find a tile for \"%s\"." % failedWord)
         # Merges the images found
-        mergeImages(wordGrid, width, height, spoiler=True)
+        mergeImages(wordGrid, width, height, True)
         # Sends the image through discord
         await ctx.send(content=ctx.author.mention, file=discord.File("renders/SPOILER_render.gif"))
 
@@ -139,7 +139,7 @@ class globalCog(commands.Cog):
         except:
             await ctx.send("⚠️ Could not find a tile for \"%s\"." % failedWord)
         # Merges the images found
-        mergeImages(wordGrid, width, height)
+        mergeImages(wordGrid, width, height, False)
         # Sends the image through discord
         await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif"))
 
@@ -179,7 +179,7 @@ class globalCog(commands.Cog):
             print(e)
             await ctx.send("⚠️ Could not find a tile for \"%s\"." % failedWord)
         # Merges the images found
-        mergeImages(wordGrid, width, height)
+        mergeImages(wordGrid, width, height, False)
         # Sends the image through discord
         await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif"))
 

@@ -37,6 +37,6 @@ async def on_command_error(ctx, error, *args):
     print(error)
     print(args)
     if isinstance(error, commands.CommandOnCooldown):
-        await ctx.send("⚠️ Command on cooldown.")
+        await ctx.send("⚠️ ", error)
 
 bot.run(BOT_TOKEN, bot = True, reconnect = True)

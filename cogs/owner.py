@@ -106,8 +106,14 @@ class ownerCog(commands.Cog):
                             # The alternate tile checker will consider an empty string "no change".
                             self.alternateTiles[ID] = [{"name":name, "sprite":sprite, "color":color}]
                         else:
-                            # Each ID has a list of alternative versions - each new one is appended
-                            self.alternateTiles[ID].append({"name":name, "sprite":sprite, "color":color})
+                            # Each ID has a list of alternative versions - each new one is appended only if it's the first
+                            # object with that specified name.
+                            duplicate = False
+                            for obj in self.alternateTiles[ID]:
+                                if obj["name"] == name:
+                                    duplicate = True
+                            if not duplicate:
+                                self.alternateTiles[ID].append({"name":name, "sprite":sprite, "color":color})
                         # Resets the values
                         ID = name = sprite = ""
                     ID = line[:9]
@@ -154,51 +160,64 @@ class ownerCog(commands.Cog):
             lines = fp.readlines()
             fp.close()
 
-            # The ID, name and sprite of the changed object
-            ID = name = sprite = ""
+            # The name and sprite of the changed object
+            name = sprite = ""
             # The color of the changed object
             colorRaw = ""
             color = []
+            IDs = []
+            alts = {}
 
             # Loop through the lines
             for line in lines:
                 # Only considers lines starting with objectXYZ
-                if line.startswith("object"):
-                    # Tests if a new object is being manipulated, unless it's the very first one
-                    if line[:9] != ID and bool(ID):
-                        # Adds the data to the alternateTiles dict
-                        # Creates a new key if the dict doesn't already have one
-                        if self.alternateTiles.get(ID) == None:
-                            # Note that if any of the variables is an empty string, that data is saved
-                            # The alternate tile checker will consider an empty string "no change".
-                            self.alternateTiles[ID] = [{"name":name, "sprite":sprite, "color":color}]
-                        else:
-                            # Each ID has a list of alternative versions - each new one is appended
-                            self.alternateTiles[ID].append({"name":name, "sprite":sprite, "color":color})
-                        # Resets the values
-                        ID = name = sprite = ""
-                    ID = line[:9]
-                    # If the line matches "objectZYX_name="
-                    # Sets the changed name
-                    if line.startswith("name=", 10):
-                        # Magic numbers used to grab only the name of the sprite
-                        # Same is used below for sprites/colors
-                        name = line[15:-1]
-                    # Sets the changed sprite
-                    elif line.startswith("image=", 10):
-                        sprite = line[16:-1]
-                    # Sets the changed color (all tiles)
-                    elif line.startswith("colour=", 10):
-                        colorRaw = line[17:-1]
-                        # Splits the color into a list 
-                        # "a,b" -> [a,b]
-                        color = colorRaw.split(",")
-                    # Sets the changed color (active text only)
-                    elif line.startswith("activecolour=", 10):
-                        colorRaw = line[23:-1]
-                        # Splits the color into a list 
-                        # "a,b" -> [a,b]
-                        color = colorRaw.split(",")
+                if line.startswith("changed="):
+                    if len(line) > 16:
+                        IDs = [line[8:17]]
+                        IDs.extend(line.strip().split(",")[1:-1])
+                        alts = dict.fromkeys(IDs, {"name":"", "sprite":"", "color":[]})
+                else:
+                    if line.startswith("object"):
+                        ID = line[:9]
+                        # If the line matches "objectZYX_name="
+                        # Sets the changed name
+                        if line.startswith("name=", 10):
+                            # Magic numbers used to grab only the name of the sprite
+                            # Same is used below for sprites/colors
+                            name = line[15:-1]
+                            alts[ID]["name"] = name
+                        # Sets the changed sprite
+                        elif line.startswith("image=", 10):
+                            sprite = line[16:-1]
+                            alts[ID]["sprite"] = sprite
+                        # Sets the changed color (all tiles)
+                        elif line.startswith("colour=", 10):
+                            colorRaw = line[17:-1]
+                            # Splits the color into a list 
+                            # "a,b" -> [a,b]
+                            color = colorRaw.split(",")
+                            alts[ID]["color"] = color
+                        # Sets the changed color (active text only)
+                        elif line.startswith("activecolour=", 10):
+                            colorRaw = line[23:-1]
+                            # Splits the color into a list 
+                            # "a,b" -> [a,b]
+                            color = colorRaw.split(",")
+                            alts[ID]["color"] = color
+                    
+            # Adds the data to the list of changed objects
+            for key in alts:
+                if self.alternateTiles.get(key) == None:
+                    self.alternateTiles[key] = [alts[key]]
+                else:
+                    duplicate = False
+                    for tile in self.alternateTiles[key]:
+                        a = tile.get("name")
+                        b = alts[key].get("name")
+                        if a == b:
+                            duplicate = True
+                    if not duplicate:
+                        self.alternateTiles[key].extend([alts[key]])
 
         # Saves the data of ALL the themes to the json file
         alternateFile = open("alternatetiles.json", "wt")
@@ -270,11 +289,12 @@ class ownerCog(commands.Cog):
                                 # Adds the change to the alts, but only if it's the first with that name
                                 if name != altName:
                                     duplicate = False
-                                    for obj in alts:
-                                        if name == obj["name"]:
+                                    # If the name matches the name of an object already in the alt list
+                                    for tile in alts:
+                                        if name == tile["name"]:
                                             duplicate = True
-                                    for obj in self.tileColors:
-                                        if name == obj["name"]:
+                                    for tile in self.tileColors:
+                                        if name == tile["name"]:
                                             duplicate = True
                                     if not duplicate:
                                         print(altName, " ", altSprite)
