@@ -16,7 +16,7 @@ DEFAULT_ACTIVITY = discord.Game(name=configuration.get("activity"))
 COGS = configuration.get("cogs")
 
 # Establishes the bot
-bot = commands.Bot(command_prefix=["+"], case_insensitive=True, help_command=None, activity=DEFAULT_ACTIVITY)
+bot = commands.Bot(command_prefix=["-"], case_insensitive=True, help_command=None, activity=DEFAULT_ACTIVITY)
 
 # Loads the modules of the bot
 if __name__ == "__main__":
@@ -37,6 +37,6 @@ async def on_command_error(ctx, error, *args):
     print(error)
     print(args)
     if isinstance(error, commands.CommandOnCooldown):
-        await ctx.send("⚠️ ", error)
+        await ctx.send("".join(["⚠️ " + error]))
 
 bot.run(BOT_TOKEN, bot = True, reconnect = True)
