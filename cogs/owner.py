@@ -61,97 +61,18 @@ class ownerCog(commands.Cog):
     # Sends a message in the specified channel
     @commands.command()
     @commands.is_owner()
-    async def announce(self, ctx, channel:str, title:str, *, content:str):
-        embed = discord.Embed(title=title, type="rich", description=content, colour=0x00ffff)
+    async def announce(self, ctx, channel, title, *, content):
+        t = title
+        t = t.replace("_", " ")
+        embed = discord.Embed(title=t, type="rich", description=content, colour=0x00ffff)
         await ctx.message.channel_mentions[0].send(" ", embed=embed)
-
-    @commands.command()
-    @commands.is_owner()
-    async def loadthemes(self, ctx):
-        # Loads the sprites, names and colors for each "alternate object", that is, an object with data NOT in values.lua
-
-        # Disables all other commands for now
-        self.notLoading = False
-
-        # Clears existing data
-        altFile = open("alternatetiles.json", "wt")
-        altFile.seek(0)
-        altFile.truncate()
-        altFile.close()
-
-        # Finds each theme
-        themes = listdir("themes")
-        for theme in themes:
-            # Reads each line of the theme file
-            fp = open("themes/%s" % theme)
-            lines = fp.readlines()
-            fp.close()
-
-            # The ID, name and sprite of the changed object
-            ID = name = sprite = ""
-            # The color of the changed object
-            colorRaw = ""
-            color = []
-
-            # Loop through the lines
-            for line in lines:
-                # Only considers lines starting with objectXYZ
-                if line.startswith("object"):
-                    # Tests if a new object is being manipulated, unless it's the very first one
-                    if line[:9] != ID and bool(ID):
-                        # Adds the data to the alternateTiles dict
-                        # Creates a new key if the dict doesn't already have one
-                        if self.alternateTiles.get(ID) == None:
-                            # Note that if any of the variables is an empty string, that data is saved
-                            # The alternate tile checker will consider an empty string "no change".
-                            self.alternateTiles[ID] = [{"name":name, "sprite":sprite, "color":color}]
-                        else:
-                            # Each ID has a list of alternative versions - each new one is appended only if it's the first
-                            # object with that specified name.
-                            duplicate = False
-                            for obj in self.alternateTiles[ID]:
-                                if obj["name"] == name:
-                                    duplicate = True
-                            if not duplicate:
-                                self.alternateTiles[ID].append({"name":name, "sprite":sprite, "color":color})
-                        # Resets the values
-                        ID = name = sprite = ""
-                    ID = line[:9]
-                    # If the line matches "objectZYX_name="
-                    # Sets the changed name
-                    if line.startswith("name=", 10):
-                        # Magic numbers used to grab only the name of the sprite
-                        # Same is used below for sprites/colors
-                        name = line[15:-1]
-                    # Sets the changed sprite
-                    elif line.startswith("image=", 10):
-                        sprite = line[16:-1]
-                    # Sets the changed color (all tiles)
-                    elif line.startswith("colour=", 10):
-                        colorRaw = line[17:-1]
-                        # Splits the color into a list 
-                        # "a,b" -> [a,b]
-                        color = colorRaw.split(",")
-                    # Sets the changed color (active text only)
-                    elif line.startswith("activecolour=", 10):
-                        colorRaw = line[23:-1]
-                        # Splits the color into a list 
-                        # "a,b" -> [a,b]
-                        color = colorRaw.split(",")
-
-        # Saves the data of ALL the themes to the json file
-        alternateFile = open("alternatetiles.json", "wt")
-        json.dump(self.alternateTiles, alternateFile, indent=3)
-        alternateFile.close()
-
-        # Enables commands again
-        self.NotLoading = True
-
 
     @commands.command()
     @commands.is_owner()
     async def loadchanges(self, ctx):
         self.notLoading = False
+        
+        self.alternateTiles = {}
 
         levels = listdir("levels")
         for level in levels:
@@ -160,11 +81,6 @@ class ownerCog(commands.Cog):
             lines = fp.readlines()
             fp.close()
 
-            # The name and sprite of the changed object
-            name = sprite = ""
-            # The color of the changed object
-            colorRaw = ""
-            color = []
             IDs = []
             alts = {}
 
@@ -175,31 +91,33 @@ class ownerCog(commands.Cog):
                     if len(line) > 16:
                         IDs = [line[8:17]]
                         IDs.extend(line.strip().split(",")[1:-1])
-                        alts = dict.fromkeys(IDs, {"name":"", "sprite":"", "color":[]})
+                        alts = dict.fromkeys(IDs[:])
+                        for alt in alts:
+                            alts[alt] = {"name":"", "sprite":"", "color":[]}
                 else:
                     if line.startswith("object"):
-                        ID = line[:9]
+                        ID = line[:][:9]
                         # If the line matches "objectZYX_name="
                         # Sets the changed name
-                        if line.startswith("name=", 10):
+                        if line[10:].startswith("name="):
                             # Magic numbers used to grab only the name of the sprite
                             # Same is used below for sprites/colors
-                            name = line[15:-1]
+                            name = line[:][15:-1]
                             alts[ID]["name"] = name
                         # Sets the changed sprite
                         elif line.startswith("image=", 10):
-                            sprite = line[16:-1]
+                            sprite = line[:][16:-1]
                             alts[ID]["sprite"] = sprite
                         # Sets the changed color (all tiles)
                         elif line.startswith("colour=", 10):
-                            colorRaw = line[17:-1]
+                            colorRaw = line[:][17:-1]
                             # Splits the color into a list 
                             # "a,b" -> [a,b]
                             color = colorRaw.split(",")
                             alts[ID]["color"] = color
                         # Sets the changed color (active text only)
                         elif line.startswith("activecolour=", 10):
-                            colorRaw = line[23:-1]
+                            colorRaw = line[:][23:-1]
                             # Splits the color into a list 
                             # "a,b" -> [a,b]
                             color = colorRaw.split(",")
@@ -219,8 +137,15 @@ class ownerCog(commands.Cog):
                     if not duplicate:
                         self.alternateTiles[key].extend([alts[key]])
 
+                          
+        # Custom sprites: Hempuli
+        self.alternateTiles["object001"].append({"name":"hempuli","sprite":"hempuli","color":[4,2]})
+        self.alternateTiles["object001"].append({"name":"text_hempuli","sprite":"text_hempuli","color":[4,2]})
+        
         # Saves the data of ALL the themes to the json file
         alternateFile = open("alternatetiles.json", "wt")
+        alternateFile.seek(0)
+        alternateFile.truncate()
         json.dump(self.alternateTiles, alternateFile, indent=3)
         alternateFile.close()
         self.notLoading = True
@@ -229,6 +154,8 @@ class ownerCog(commands.Cog):
     @commands.is_owner()
     async def loadcolors(self, ctx):
         # Reads values.lua and scrapes the tile data from there
+
+        self.tileColors = []
 
         self.notLoading = False
         # values.lua contains the data about which color (on the palette) is associated with each tile.
@@ -288,13 +215,10 @@ class ownerCog(commands.Cog):
                                     altColor = obj.get("color")
                                 # Adds the change to the alts, but only if it's the first with that name
                                 if name != altName:
-                                    duplicate = False
                                     # If the name matches the name of an object already in the alt list
-                                    for tile in alts:
-                                        if altName == tile["name"]:
-                                            duplicate = True
-                                    for tile in self.tileColors:
-                                        if altName == tile["name"]:
+                                    duplicate = False
+                                    for t in self.tileColors:
+                                        if t["name"] == altName:
                                             duplicate = True
                                     if not duplicate:
                                         alts.append({"name":altName, "sprite":altSprite, "color":altColor})
@@ -329,7 +253,7 @@ class ownerCog(commands.Cog):
     @commands.command()
     @commands.is_owner()
     async def loadpalette(self, ctx, arg):
-
+        
         self.notLoading = False
 
         # Tests for a supplied palette
@@ -355,7 +279,6 @@ class ownerCog(commands.Cog):
                 name = obj["name"]
                 sprite = obj["sprite"]
                 color = obj["color"]
-                
                 # For convenience
                 x,y = [int(n) for n in color]
             
@@ -379,7 +302,7 @@ class ownerCog(commands.Cog):
         await msg.edit(content="Loading themes... Done.\nLoading colors... Done.")
         
 
-        palettes = ["default"]#listdir("palettes")
+        palettes = ["default.png"]#listdir("palettes")
         total = len(palettes)
 
         await msg.edit(content="Loading themes... Done.\nLoading colors... Done.\nLoading palettes... (0/%s)" % total)
