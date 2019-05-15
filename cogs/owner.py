@@ -136,13 +136,8 @@ class ownerCog(commands.Cog):
                             duplicate = True
                     if not duplicate:
                         self.alternateTiles[key].extend([alts[key]])
-
-                          
-        # Custom sprites: Hempuli
-        self.alternateTiles["object001"].append({"name":"hempuli","sprite":"hempuli","color":[4,2]})
-        self.alternateTiles["object001"].append({"name":"text_hempuli","sprite":"text_hempuli","color":[4,2]})
         
-        # Saves the data of ALL the themes to the json file
+        # Saves the data of ALL the themes to alternatetiles.json
         alternateFile = open("alternatetiles.json", "wt")
         alternateFile.seek(0)
         alternateFile.truncate()
@@ -232,13 +227,28 @@ class ownerCog(commands.Cog):
             elif line == "tileslist =\n":
                 tileslist = True
 
+        # Custom and missing sprites added:
+        # Missing letter tiles
+        letters = "djkpqyz"
+        for c in letters:
+            self.tileColors.append({"name":"text_%s" % c, "sprite":"text_%s" % c, "color":["0","3"]})
+        # Load custom tile data from a json files
+        for f in listdir("custom"):
+            fp = open("custom/%s" % f)
+            dat = json.load(fp)
+            for obj in dat:
+                self.tileColors.append(obj)
+
         # Manual patches to the tile list for overall enjoyment.
         # Not all the information could be scrapped automatically, at least reliably.
 
-        # Set all letter tiles to the same color
         for obj in self.tileColors:
+            # Set all letter tiles to the same color
             if obj["name"].startswith("text_") and len(obj["name"]) == 6:
-                obj["color"] = ["0", "1"]
+                obj["color"] = ["0", "3"]
+            # Sets text_ba and text_ab to the same color as text_baba
+            if obj["name"] in ["text_ba", "text_ab"]:
+                obj["color"] = ["4", "1"]
 
         # Dumps the gathered data to tilecolors.json and tilesprites.json
         emotefile = open("tilecolors.json", "wt")
@@ -283,8 +293,11 @@ class ownerCog(commands.Cog):
                 x,y = [int(n) for n in color]
             
                 # Opens the three associated sprites from sprites/
-                # Only uses the first variation of the sprite ("_0_")
-                files = ["sprites/%s_0_%s.png" % (sprite, i + 1) for i in range(3)]
+                # Only uses the first variation of the sprite ("_0_"), unless you're ANNI which is special <3
+                n = 0
+                if sprite == "anni":
+                    n = 26
+                files = ["sprites/%s_%s_%s.png" % (sprite, n, i + 1) for i in range(3)]
                 # Changes the color of each image
                 framesColor = [multiplyColor(fp, paletteColors[x][y]) for fp in files]
                 # Saves the colored images to /color/[palette]/
@@ -294,24 +307,28 @@ class ownerCog(commands.Cog):
     @commands.command()
     @commands.is_owner()
     async def loadall(self, ctx):
-        msg = await ctx.send("Loading object changes...")
+        # Sends some feedback messages
+
+        msg = await ctx.send("Loading objects...")
+        content = msg.content
         await ctx.invoke(self.bot.get_command("loadchanges"))
-        await msg.edit(content="Loading themes... Done.")
-        await msg.edit(content="Loading themes... Done.\nLoading colors...")
+        content = "".join([content, " Done.\nLoading colors..."])
+        await msg.edit(content=content)
         await ctx.invoke(self.bot.get_command("loadcolors"))
-        await msg.edit(content="Loading themes... Done.\nLoading colors... Done.")
+        content = "".join([content, " Done.\nLoading palettes..."])
+        await msg.edit(content=content)
         
 
+        # Loads the default palette
         palettes = ["default.png"]#listdir("palettes")
         total = len(palettes)
 
-        await msg.edit(content="Loading themes... Done.\nLoading colors... Done.\nLoading palettes... (0/%s)" % total)
         i = 0
         for palette in [fp[:-4] for fp in palettes]:
+            await msg.edit(content="".join([content, "(%s/%s)" % (i, total)]))
             await ctx.invoke(self.bot.get_command("loadpalette"), palette)
             i += 1
-            await msg.edit(content="Loading themes... Done.\nLoading colors... Done.\nLoading palettes... (%s/%s)" % (i, total))
-        await msg.edit(content="Loading themes... Done.\nLoading colors... Done.\nLoading palettes... Done.")
+        await msg.edit(content="".join([content, " Done."]))
 
 def setup(bot):
     bot.add_cog(ownerCog(bot))
