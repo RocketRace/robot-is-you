@@ -30,11 +30,11 @@ def genFrame(fp, pixel):
 def mergeImages(wordGrid, width, height, spoiler):
     for f in range(3):
         pathGrid = [["empty.png" if word == "-" else "color/%s/%s-%s-.png" % ("default", word, f) for word in row] for row in wordGrid]
-        frame = Image.new("RGBA", size=(48 * width, 48 * height))
+        frame = Image.new("RGBA", size=(48 * width + 10, 48 * height + 10))
         for i in range(height):
             for j in range(width):
                 img = Image.open(pathGrid[i][j])
-                frame.paste(img.resize((48,48)), (48 * j, 48 * i, 48 * j + 48, 48 * i + 48))
+                frame.paste(img.resize((48,48)), (48 * j + 5, 48 * i + 5, 48 * j + 53, 48 * i + 53))
                 frame.save("renders/frame%s.png" % f)
     px = 0
     if wordGrid[0][0] == "belt":
@@ -51,10 +51,11 @@ def mergeImages(wordGrid, width, height, spoiler):
 
 # For +tile and +rule commands.
 async def notTooManyArguments(ctx):
-    if len(ctx.message.content.split(" ")) <= 50:
+    if len(ctx.message.content.split(" ")) <= 50 or ctx.message.author.id == 156021301654454272:
         return True
-    await ctx.send("⚠️ Please input less than 50 tiles [Empty tiles included]")
-    return False
+    else:
+        await ctx.send("⚠️ Please input less than 50 tiles [Empty tiles included]")
+        return False
 
 class globalCog(commands.Cog):
     def __init__(self, bot):
@@ -64,45 +65,16 @@ class globalCog(commands.Cog):
     async def cog_check(self, ctx):
         return self.bot.get_cog("ownerCog").notLoading
 
-    # Generates an animated gif of the tiles provided, using (TODO) the default palette, and with a spoiler tag.
     @commands.command()
     @commands.guild_only()
-    @commands.check(notTooManyArguments)
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
-    async def spoiler(self, ctx, *, content: str):
-        # Split input into a grid
-        wordRows = content.replace("|", "").lower().splitlines()
-        wordGrid = [row.split() for row in wordRows]
-
-        # Get the dimensions of the grid
-        lengths = [len(row) for row in wordGrid]
-        width = max(lengths)
-        height = len(wordRows)
-
-        # Pad the word rows from the end to fit the dimensions
-        [row.extend(["-"] * (width - len(row))) for row in wordGrid]
-
-        # Finds the associated image sprite for each word in the input
-        # Throws an exception which sends an error message if a word is not found.
-        failedWord = ""
-        try:
-            # Each row
-            for row in wordGrid:
-                # Each word
-                for word in row:
-                    # Checks for the word by attempting to open
-                    # If not present, trows an exception...
-                    if word != "-":
-                        failedWord = word
-                        open("color/%s/%s-0-.png" % ("default", word))
-        # ... which is caught and an error message is sent
-        except:
-            await ctx.send("⚠️ Could not find a tile for \"%s\"." % failedWord)
-        # Merges the images found
-        mergeImages(wordGrid, width, height, True)
-        # Sends the image through discord
-        await ctx.send(content=ctx.author.mention, file=discord.File("renders/SPOILER_render.gif"))
-
+    async def custom(self, ctx):
+        msg = discord.Embed(title="Custom Tiles?", description="Want custom tiles added to the bot? " + \
+            "DM @RocketRace#0798 about it! \nI can help you if you send me:\n * **The sprites you want added**, " + \
+            "preferably in an archived file (without any color, and in 24x24)\n * **The color of the sprites**, " + \
+            "an (x,y) coordinate on the default Baba color palette.\nFor examples of this, check the `values.lua` " + \
+            "file in your Baba Is You local files!", color=0x00ffff)
+        ctx.send(" ", embed=msg)
 
     # Generates an animated gif of the tiles provided, using (TODO) the default palette
     @commands.command()
@@ -110,8 +82,14 @@ class globalCog(commands.Cog):
     @commands.check(notTooManyArguments)
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
     async def tile(self, ctx, *, content: str):
+        # Determines if this should be a spoiler
+        spoiler = content.replace("|", "") != content
+
         # Split input into a grid
-        wordRows = content.lower().splitlines()
+        if spoiler:
+            wordRows = content.replace("|", "").lower().splitlines()
+        else:
+            wordRows = content.lower().splitlines()
         wordGrid = [row.split() for row in wordRows]
 
         # Get the dimensions of the grid
@@ -139,9 +117,12 @@ class globalCog(commands.Cog):
         except:
             await ctx.send("⚠️ Could not find a tile for \"%s\"." % failedWord)
         # Merges the images found
-        mergeImages(wordGrid, width, height, False)
+        mergeImages(wordGrid, width, height, spoiler)
         # Sends the image through discord
-        await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif"))
+        if spoiler:
+            await ctx.send(content=ctx.author.mention, file=discord.File("renders/SPOILER_render.gif"))
+        else:
+            await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif"))
 
     # Same as +tile but only for word tiles
     @commands.command()
@@ -149,8 +130,15 @@ class globalCog(commands.Cog):
     @commands.check(notTooManyArguments)
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
     async def rule(self, ctx, *, content:str):
+        # Determines if this should be a spoiler
+        spoiler = content.replace("|", "") != content
+
         # Split input into a grid
-        wordRows = content.lower().splitlines()
+        if spoiler:
+            wordRows = content.replace("|", "").lower().splitlines()
+        else:
+            wordRows = content.lower().splitlines()
+        wordGrid = [row.split() for row in wordRows]
         wordGrid = [[word if word == "-" else "text_" + word for word in row.split()] for row in wordRows]
 
         # Get the dimensions of the grid
@@ -179,9 +167,12 @@ class globalCog(commands.Cog):
             print(e)
             await ctx.send("⚠️ Could not find a tile for \"%s\"." % failedWord)
         # Merges the images found
-        mergeImages(wordGrid, width, height, False)
+        mergeImages(wordGrid, width, height, spoiler)
         # Sends the image through discord
-        await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif"))
+        if spoiler:
+            await ctx.send(content=ctx.author.mention, file=discord.File("renders/SPOILER_render.gif"))
+        else:
+            await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif"))
 
     @commands.command()
     @commands.cooldown(2, 5, commands.BucketType.channel)
@@ -199,9 +190,7 @@ class globalCog(commands.Cog):
         content = "Commands:\n`+help` : Displays this.\n`+about` : Displays bot info.\n" + \
             "`+tile [tiles]` : Renders the input tiles. Text tiles must be prefixed with \"text\\_\"." + \
             "Use hyphens to render empty tiles.\n`+rule [words]` : Like `+tile`, but only takes" + \
-            "word tiles as input. Words do not need to be prefixed by \"text\\_\". Use hyphens to render empty tiles." + \
-            "\n`+spoiler [tiles]` : Renders the input tiles and sends the results as a spoilered gif. Can read content" + \
-            "inside spoiler tags. "
+            "word tiles as input. Words do not need to be prefixed by \"text\\_\". Use hyphens to render empty tiles." 
         helpEmbed = discord.Embed(title = "Help", type="rich", colour=0x00ffff, description=content)
         await ctx.send(" ", embed=helpEmbed)
 
