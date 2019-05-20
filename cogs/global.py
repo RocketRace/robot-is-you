@@ -2,52 +2,32 @@ import discord
 import numpy     as np
 
 from discord.ext import commands
+from itertools   import chain
 from json        import load
-from PIL         import Image
+from subprocess  import call
 
-def genFrame(fp, pixel):
-    im = Image.open(fp).convert("RGBA")
-    # Gets the alpha from the images
-    alpha = im.getchannel("A")
-
-    # Converts to 256 color, but only uses 255
-    # Not sure if this acatually does anything
-    im = im.convert("RGB").quantize(colors=255)
-    mask = Image.eval(alpha, lambda a: 255 if a <= 128 else 0)
-
-    # Gets the color value of the px,0 pixel
-    # This will be the transparency value in the .gif
-    c = im.getpixel((0,2 * pixel))
-
-    # Pastes the transparency value to every spot on the picture that has alpha dictated by the mask above
-    im.paste(c, mask)
-
-    # Sets the transparency value to the pixel color
-    im.info["transparency"] = c
-
-    return im
-
-def mergeImages(wordGrid, width, height, spoiler):
-    for f in range(3):
-        pathGrid = [["empty.png" if word == "-" else "color/%s/%s-%s-.png" % ("default", word, f) for word in row] for row in wordGrid]
-        frame = Image.new("RGBA", size=(48 * width + 10, 48 * height + 10))
-        for i in range(height):
-            for j in range(width):
-                img = Image.open(pathGrid[i][j])
-                frame.paste(img.resize((48,48)), (48 * j + 5, 48 * i + 5, 48 * j + 53, 48 * i + 53))
-                frame.save("renders/frame%s.png" % f)
-    px = 0
-    if wordGrid[0][0] == "belt":
-        px = 4
-    
-    f0 = genFrame("renders/frame0.png", px)
-    f1 = genFrame("renders/frame1.png", px)
-    f2 = genFrame("renders/frame2.png", px)
-    if spoiler:
-        name = "renders/SPOILER_render.gif"
-    else:
-        name = "renders/render.gif"
-    f0.save(name, format="GIF", save_all=True, append_images=[f1, f2], duration=200, loop=0, disposal=2)
+# Takes a list of tile names and generates a gif with the associated sprites
+def magickImages(wordGrid, width, height, spoiler):
+    # For each animation frame
+    for fr in range(3):
+        # Efficiently converts the grid back into a list of words
+        wordList = chain.from_iterable(wordGrid)
+        # Gets the path of each image
+        paths = ["empty.png" if word == "-" else "color/%s/%s-%s-.png" % ("default", word, fr) for word in wordList]
+        # Merges the images with imagemagick
+        cmd =["magick", "montage", "-geometry", "200%+0+0", "-background", "none",
+        "-colors", "255", "-tile", "%sx%s" % (width, height)]
+        cmd.extend(paths) 
+        cmd.append("renders/render_%s.png" % fr)
+        call(cmd)
+    # Determines if the image should be a spoiler
+    spoilerText = "SPOILER_" if spoiler else ""
+    # Joins each frame into a .gif
+    fp = open("renders/render.gif", "w")
+    fp.truncate(0)
+    fp.close()
+    call(["magick", "convert", "renders/*.png", "-scale", "200%", "-set", "delay", "20", 
+          "-set", "dispose", "2", "renders/%srender.gif" % spoilerText])
 
 # For +tile and +rule commands.
 async def notTooManyArguments(ctx):
@@ -85,11 +65,13 @@ class globalCog(commands.Cog):
         # Determines if this should be a spoiler
         spoiler = content.replace("|", "") != content
 
-        # Split input into a grid
+        # Split input into lines
         if spoiler:
             wordRows = content.replace("|", "").lower().splitlines()
         else:
             wordRows = content.lower().splitlines()
+        
+        # Split each row into words
         wordGrid = [row.split() for row in wordRows]
 
         # Get the dimensions of the grid
@@ -103,6 +85,7 @@ class globalCog(commands.Cog):
         # Finds the associated image sprite for each word in the input
         # Throws an exception which sends an error message if a word is not found.
         failedWord = ""
+        safe = True
         try:
             # Each row
             for row in wordGrid:
@@ -113,22 +96,25 @@ class globalCog(commands.Cog):
                     if word != "-":
                         failedWord = word
                         open("color/%s/%s-0-.png" % ("default", word))
-        # ... which is caught and an error message is sent
+        # The error is caught and an error message is sent
         except:
             await ctx.send("⚠️ Could not find a tile for \"%s\"." % failedWord)
-        # Merges the images found
-        mergeImages(wordGrid, width, height, spoiler)
-        # Sends the image through discord
-        if spoiler:
-            await ctx.send(content=ctx.author.mention, file=discord.File("renders/SPOILER_render.gif"))
-        else:
-            await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif"))
+            safe = False
+        if safe:
+            # Merges the images found
+            magickImages(wordGrid, width, height, spoiler) # Previously used mergeImages()
+            # Sends the image through discord
+            if spoiler:
+                await ctx.send(content=ctx.author.mention, file=discord.File("renders/SPOILER_render.gif"))
+            else:
+                await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif"))
+        
 
     # Same as +tile but only for word tiles
     @commands.command()
     @commands.guild_only()
     @commands.check(notTooManyArguments)
-    @commands.cooldown(2, 10, type=commands.BucketType.channel)
+    @commands.cooldown(2, 20, type=commands.BucketType.channel)
     async def rule(self, ctx, *, content:str):
         # Determines if this should be a spoiler
         spoiler = content.replace("|", "") != content
@@ -162,17 +148,18 @@ class globalCog(commands.Cog):
                     if word != "-":
                         failedWord = word
                         open("color/%s/%s-0-.png" % ("default", word))
-        # ... which is caught and an error message is sent
-        except Exception as e:
-            print(e)
+        # The error is caught and an error message is sent
+        except:
             await ctx.send("⚠️ Could not find a tile for \"%s\"." % failedWord)
-        # Merges the images found
-        mergeImages(wordGrid, width, height, spoiler)
-        # Sends the image through discord
-        if spoiler:
-            await ctx.send(content=ctx.author.mention, file=discord.File("renders/SPOILER_render.gif"))
-        else:
-            await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif"))
+            safe = False
+        if safe:
+            # Merges the images found
+            magickImages(wordGrid, width, height, spoiler) # Previously used mergeImages()
+            # Sends the image through discord
+            if spoiler:
+                await ctx.send(content=ctx.author.mention, file=discord.File("renders/SPOILER_render.gif"))
+            else:
+                await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif"))
 
     @commands.command()
     @commands.cooldown(2, 5, commands.BucketType.channel)

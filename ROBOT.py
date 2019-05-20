@@ -36,9 +36,10 @@ async def on_command_error(ctx, error, *args):
     print(error)
     logger = await bot.fetch_webhook(int(WEBHOOK_ID))
     err = discord.Embed(title="Command Error", type="rich", description=str(error), color=0xffff00)
+    cmd = ctx.command
     await logger.send(content=" ", embed=err)
     if isinstance(error, commands.CommandOnCooldown):
-        await ctx.send("".join(["⚠️ " + error]))
+        await ctx.send("".join(["⚠️ " + str(error)]))
     
 @bot.event
 async def on_disconnect():
