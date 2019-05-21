@@ -1,4 +1,3 @@
-
 sprites/
 color/
 renders/
@@ -16,4 +15,3 @@ empty.png
 .DS_Store
 .vscode/
 cogs/__pycache__/*
- 
