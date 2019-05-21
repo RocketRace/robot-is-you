@@ -14,10 +14,6 @@ class CommandErrorHandler(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.logger = None
-    
-    async def getWebhook(self, bot, id):
-        self.logger = await bot.fetch_webhook(id)
-        print(self.logger)
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
@@ -29,7 +25,7 @@ class CommandErrorHandler(commands.Cog):
             configFile = open("setup.json")
             config = load(configFile)
             if config.get("webhook") != "":
-                self.logger = await self.bot.fetch_webhook(config.get("webhook"))
+                self.logger = await self.bot.fetch_webhook(int(config.get("webhook")))
 
         # This prevents any commands with local handlers being handled here in on_command_error.
         if hasattr(ctx.command, 'on_error'):
