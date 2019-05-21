@@ -4,33 +4,29 @@ Discord bot for servers about the indie  game "Baba Is You"
 # To Host this Yourself:
 Clone this repository. You will need the following additional directories in your working folder:
 
-* setup.json
+* `setup.json`
 
 A json file with the following fields - 
-"token": the bot token
-"activity" - the message the bot is displayed as Playing
-"cogs" - an array of each cog in the format "cogs.cogname"
+`"token"`: the bot token
+`"activity"` - the message the bot is displayed as Playing
+`"cogs"` - an array of each cog in the format `cogs.cogname`
 
-* palettes/
+* `palettes/`
 
-A directory containing the builtin level palette images
+A directory containing the builtin level palette images. Currently only the `default.png` palette is being used.
 
-* sprites/
+* `sprites/`
 
 A directory containing the default as well as world-specific sprites you wish to use.
 
-* themes/
+* `renders/`
 
-A directory containing the builtin theme files ("11theme.txt", etc.). Used to scrape theme-specific objects.
+An empty directory for image generation and caching (planned).
 
-* renders/
+* `log.txt`
 
-An empty directory for image generation.
+An empty file for logging. You may disable logging in `ROBOT.py`.
 
-* log.txt
+* `levels/`
 
-An empty file for logging. You may disable logging in ROBOT.py.
-
-* levels/
-
-A directory containing the .ld files of each baba level. Used to scrape any additional object data (currently not a feature).
+A directory containing the `.ld` files of each baba level. Used to scrape level-specific objects from the game.
