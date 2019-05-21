@@ -34,7 +34,7 @@ async def notTooManyArguments(ctx):
     if len(ctx.message.content.split(" ")) <= 50 or ctx.message.author.id == 156021301654454272:
         return True
     else:
-        await ctx.send("⚠️ Please input less than 50 tiles [Empty tiles included]")
+        await ctx.send("Please input less than 50 tiles [Empty tiles included]")
         return False
 
 class globalCog(commands.Cog):
