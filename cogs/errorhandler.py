@@ -16,6 +16,30 @@ class CommandErrorHandler(commands.Cog):
         self.logger = None
 
     @commands.Cog.listener()
+    async def on_error(self, ctx, error):
+        if self.logger == None:
+            configFile = open("setup.json")
+            config = load(configFile)
+            if config.get("webhook") != "":
+                self.logger = await self.bot.fetch_webhook(int(config.get("webhook")))
+
+        error = getattr(error, 'original', error)
+        
+        emb = discord.Embed(title="Command Error", color=0xffff00)
+        emb.description = str(error)
+        chan = "`Direct Message`"
+        gui = "Guild: [None]"
+        if isinstance(ctx.channel, discord.TextChannel):
+            chan = ctx.channel.name
+            gui = f"Guild: {ctx.guild.name} (ID:{ctx.guild.id})"
+        emb.add_field(name="Error Context", 
+                    value="".join([f"Message: `{ctx.message.content}` (ID: {ctx.message.id})\n",
+                             f"User: {ctx.author.name}#{ctx.author.discriminator} (ID: {ctx.author.id}\n",
+                             f"Channel: #{chan} (ID: {ctx.channel.id})\n", 
+                             gui]))
+
+    
+    @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         """The event triggered when an error is raised while invoking a command.
         ctx   : Context
@@ -38,12 +62,15 @@ class CommandErrorHandler(commands.Cog):
         error = getattr(error, 'original', error)
         
         # Constructs the error embed for logging
-        emb = discord.Embed(title="Command Error")
+        emb = discord.Embed(title="Command Error", color=0xffff00)
         emb.description = str(error)
-        emb.add_field("Error Context", 
-                    "".join([f"Message: `{ctx.message}` (ID: {ctx.message.id})\n",
+        chan = "`Direct Message`"
+        if isinstance(ctx.channel, discord.TextChannel):
+            chan = ctx.channel.name
+        emb.add_field(name="Error Context", 
+                    value="".join([f"Message: `{ctx.message.content}` (ID: {ctx.message.id})\n",
                              f"User: {ctx.author.name}#{ctx.author.discriminator} (ID: {ctx.author.id}\n",
-                             f"Channel: #{ctx.name} (ID: {ctx.id})\n", 
+                             f"Channel: #{chan} (ID: {ctx.channel.id})\n", 
                              f"Guild: {ctx.guild.name} (ID:{ctx.guild.id})"]))
 
         # Anything in ignored will return and prevent anything happening.
@@ -51,8 +78,12 @@ class CommandErrorHandler(commands.Cog):
             return
 
         elif isinstance(error, commands.DisabledCommand):
-            await self.logger.send(embed=emb, color=0xffff00)
+            await self.logger.send(embed=emb)
             return await ctx.send(f'{ctx.command} has been disabled.')
+        
+        elif isinstance(error, commands.CommandOnCooldown):
+            await self.logger.send(embed=emb)
+            return await ctx.send(error)
 
 
         elif isinstance(error, commands.NoPrivateMessage):
@@ -61,17 +92,17 @@ class CommandErrorHandler(commands.Cog):
                 msg = await ctx.author.send(f'{ctx.command} can not be used in Private Messages.')
             except:
                 emb.add_field("Notes", "Could not send private messages to user.")
-            await self.logger.send(embed=emb, color=0xffff00)
+            await self.logger.send(embed=emb)
             return msg
 
         # For this error example we check to see where it came from...
         elif isinstance(error, commands.BadArgument):
-            await self.logger.send(embed=emb, color=0xffff00)
+            await self.logger.send(embed=emb)
             if ctx.command.name in ["tile", "rule"]:  # Checks the 
                 return await ctx.add_reaction("⚠️")
 
         # All other Errors not returned come here... And we can just print the default TraceBack + log
-        await self.logger.send(embed=emb, color=0xffff00)
+        await self.logger.send(embed=emb)
         print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
