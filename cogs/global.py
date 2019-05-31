@@ -4,10 +4,11 @@ import numpy     as np
 from discord.ext import commands
 from itertools   import chain
 from json        import load
+from PIL         import Image
 from subprocess  import call
 
 # Takes a list of tile names and generates a gif with the associated sprites
-def magickImages(wordGrid, width, height, spoiler):
+async def magickImages(wordGrid, width, height, spoiler):
     async with ctx.typing():
         # For each animation frame
         for fr in range(3):
@@ -56,13 +57,27 @@ class globalCog(commands.Cog):
             "file in your Baba Is You local files!", color=0x00ffff)
         ctx.send(" ", embed=msg)
 
+
+    @commands.group()
+    @commands.check(notTooManyArguments)
+    async def render(self, ctx, *, content:str):
+        async with ctx.typing():
+            pass
+
+    @render.command()
+    async def nDevel(self):
+        pass
+
     # Generates an animated gif of the tiles provided, using (TODO) the default palette
-    @commands.command()
+    @commands.command(aliases=["rule"])
     @commands.check(notTooManyArguments)
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
     async def tile(self, ctx, *, content: str):
         # Determines if this should be a spoiler
         spoiler = content.replace("|", "") != content
+
+        # Determines if the command should use text tiles.
+        rule = ctx.invoked_with == "rule"
 
         # Split input into lines
         if spoiler:
@@ -72,6 +87,8 @@ class globalCog(commands.Cog):
         
         # Split each row into words
         wordGrid = [row.split() for row in wordRows]
+        if rule:
+            wordGrid = [[word if word == "-" else "text_" + word for word in row.split()] for row in wordRows]
 
         # Get the dimensions of the grid
         lengths = [len(row) for row in wordGrid]
@@ -80,7 +97,7 @@ class globalCog(commands.Cog):
 
         # Pad the word rows from the end to fit the dimensions
         [row.extend(["-"] * (width - len(row))) for row in wordGrid]
-
+        
         # Finds the associated image sprite for each word in the input
         # Throws an exception which sends an error message if a word is not found.
         failedWord = ""
@@ -108,59 +125,6 @@ class globalCog(commands.Cog):
                 await ctx.send(content=ctx.author.mention, file=discord.File("renders/SPOILER_render.gif"))
             else:
                 await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif"))
-        
-
-    # Same as +tile but only for word tiles
-    @commands.command()
-    @commands.check(notTooManyArguments)
-    @commands.cooldown(2, 20, type=commands.BucketType.channel)
-    async def rule(self, ctx, *, content:str):
-        async with ctx.typing():
-            # Determines if this should be a spoiler
-            spoiler = content.replace("|", "") != content
-
-            # Split input into a grid
-            if spoiler:
-                wordRows = content.replace("|", "").lower().splitlines()
-            else:
-                wordRows = content.lower().splitlines()
-            wordGrid = [row.split() for row in wordRows]
-            wordGrid = [[word if word == "-" else "text_" + word for word in row.split()] for row in wordRows]
-
-            # Get the dimensions of the grid
-            lengths = [len(row) for row in wordGrid]
-            width = max(lengths)
-            height = len(wordRows)
-
-            # Pad the word rows from the end to fit the dimensions
-            [row.extend(["-"] * (width - len(row))) for row in wordGrid]
-
-            # Finds the associated image sprite for each word in the input
-            # Throws an exception which sends an error message if a word is not found.
-            failedWord = ""
-            safe = True
-            try:
-                # Each row
-                for row in wordGrid:
-                    # Each word
-                    for word in row:
-                        # Checks for the word by attempting to open
-                        # If not present, trows an exception...
-                        if word != "-":
-                            failedWord = word
-                            open("color/%s/%s-0-.png" % ("default", word))
-            # The error is caught and an error message is sent
-            except:
-                await ctx.send("⚠️ Could not find a tile for \"%s\"." % failedWord)
-                safe = False
-            if safe:
-                # Merges the images found
-                magickImages(wordGrid, width, height, spoiler) # Previously used mergeImages()
-                # Sends the image through discord
-                if spoiler:
-                    await ctx.send(content=ctx.author.mention, file=discord.File("renders/SPOILER_render.gif"))
-                else:
-                    await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif"))
 
     @commands.command()
     @commands.cooldown(2, 5, commands.BucketType.channel)
