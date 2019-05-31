@@ -35,5 +35,6 @@ async def on_disconnect():
     logger = await bot.fetch_webhook(int(WEBHOOK_ID))
     err = discord.Embed(title="Disconnect", type="rich", description="Bot disconnected", color=0xff0000)
     await logger.send(content=" ", embed=err)
+    discord.Embed.ad
 
 bot.run(BOT_TOKEN, bot = True, reconnect = True)
