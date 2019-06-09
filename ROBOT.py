@@ -2,6 +2,7 @@ import discord
 
 from discord.ext import commands
 from json        import load
+from time        import time
 
 # Sets up the configuration
 configFile = open("setup.json")
@@ -27,14 +28,20 @@ if __name__ == "__main__":
 @bot.event
 async def on_ready():
     logger = await bot.fetch_webhook(int(WEBHOOK_ID))
-    msg = discord.Embed(title="READY", type="rich", description="Bot is ready", color=0x00ff00)
+    msg = discord.Embed(title="READY", type="rich", description="".join([bot.user.mention, " is ready"]), color=0x00ff00)
     await logger.send(content=" ", embed=msg)
     
 @bot.event
 async def on_disconnect():
+    start = time()
     logger = await bot.fetch_webhook(int(WEBHOOK_ID))
-    err = discord.Embed(title="Disconnect", type="rich", description="Bot disconnected", color=0xff0000)
+    try:
+        await bot.wait_for("resumed", timeout=30.0)
+    except TimeoutError:
+        err = discord.Embed(title="Disconnect", type="rich", description="".join([bot.user.mention, " has disconnected"]), color=0xff8800)
+    else: 
+        err = discord.Embed(title="Resumed", type="rich", description="".join(
+            [bot.user.mention, " has resumed. Downtime: ", round(time() - start), " seconds."]), color=0xffff00)
     await logger.send(content=" ", embed=err)
-    discord.Embed.ad
 
 bot.run(BOT_TOKEN, bot = True, reconnect = True)
