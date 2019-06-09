@@ -40,9 +40,9 @@ class globalCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    # Check if the bot is loading
+    # Check if the bot is loading, and that the current guild is not r/surrealmemes 
     async def cog_check(self, ctx):
-        return self.bot.get_cog("ownerCog").notLoading
+        return self.bot.get_cog("ownerCog").notLoading and ctx.channel.guild.id != 294479294040768524
 
     @commands.command()
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
