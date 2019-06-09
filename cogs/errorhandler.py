@@ -78,12 +78,15 @@ class CommandErrorHandler(commands.Cog):
             return
 
         elif isinstance(error, commands.DisabledCommand):
-            await self.logger.send(embed=emb)
-            return await ctx.send(f'{ctx.command} has been disabled.')
+            await ctx.send(f'{ctx.command} has been disabled.')
+            return await self.logger.send(embed=emb)
         
         elif isinstance(error, commands.CommandOnCooldown):
-            await self.logger.send(embed=emb)
-            return await ctx.send(error)
+            if ctx.author.id == bot.owner_id:
+                await ctx.reinvoke()
+            else:
+                await ctx.send(error)
+            return await self.logger.send(embed=emb)
 
 
         elif isinstance(error, commands.NoPrivateMessage):
