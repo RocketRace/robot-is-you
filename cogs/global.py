@@ -168,10 +168,14 @@ class globalCog(commands.Cog):
     @commands.command()
     @commands.cooldown(2,5, commands.BucketType.channel)
     async def help(self, ctx):
-        content = "Commands:\n`+help` : Displays this.\n`+about` : Displays bot info.\n" + \
-            "`+tile [tiles]` : Renders the input tiles. Text tiles must be prefixed with \"text\\_\"." + \
-            "Use hyphens to render empty tiles.\n`+rule [words]` : Like `+tile`, but only takes" + \
-            "word tiles as input. Words do not need to be prefixed by \"text\\_\". Use hyphens to render empty tiles." 
+        content = "".join(["Commands:\n", 
+            "`+help` : Displays this.\n", 
+            "`+about` : Displays bot info.\n",
+            "`+tile [tiles]` : Renders the input tiles. Text tiles must be prefixed with \"text\\_\".",
+            "Use hyphens to render empty tiles.\n`+rule [words]` : Like `+tile`, but only takes",
+            "word tiles as input. Words do not need to be prefixed by \"text\\_\". Use hyphens to render empty tiles.\n",
+            "`+search [query]` : Searches through valid tiles and returns matching tiles.\n",
+            "`+list` : Lists every tile useable for the `tile` and `rule` commands."])
         helpEmbed = discord.Embed(title = "Help", type="rich", colour=0x00ffff, description=content)
         await ctx.send(" ", embed=helpEmbed)
 
