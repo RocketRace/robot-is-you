@@ -8,11 +8,9 @@ from PIL         import Image
 from subprocess  import call
 
 # Takes a list of tile names and generates a gif with the associated sprites
-async def magickImages(wordGrid, width, height, spoiler):
+async def magickImages(wordGrid, width, height):
     # For each animation frame
     for fr in range(3):
-
-
         # Efficiently converts the grid back into a list of words
         wordList = chain.from_iterable(wordGrid)
         # Gets the path of each image
@@ -23,14 +21,12 @@ async def magickImages(wordGrid, width, height, spoiler):
         cmd.extend(paths) 
         cmd.append("renders/render_%s.png" % fr)
         call(cmd)
-    # Determines if the image should be a spoiler
-    spoilerText = "SPOILER_" if spoiler else ""
     # Joins each frame into a .gif
-    fp = open(f"renders/{spoilerText}render.gif", "w")
+    fp = open(f"renders/render.gif", "w")
     fp.truncate(0)
     fp.close()
     call(["magick", "convert", "renders/*.png", "-scale", "200%", "-set", "delay", "20", 
-        "-set", "dispose", "2", "renders/%srender.gif" % spoilerText])
+        "-set", "dispose", "2", "renders/render.gif"])
 
 # For the +tile command.
 async def notTooManyArguments(ctx):
@@ -96,6 +92,11 @@ class globalCog(commands.Cog):
             content = "\n".join(matches)
             await ctx.send(content)
 
+    @commands.command(name="list")
+    @commands.cooldown(2, 10, type=commands.BucketType.channel)
+    async def listTiles(self, ctx):
+        await ctx.send("List of all valid tiles:", file=discord.File("tilelist.txt"))
+
     # Generates an animated gif of the tiles provided, using (TODO) the default palette
     @commands.command(aliases=["rule"])
     @commands.check(notTooManyArguments)
@@ -148,12 +149,9 @@ class globalCog(commands.Cog):
                 raise commands.BadArgument()
             if safe:
                 # Merges the images found
-                await magickImages(wordGrid, width, height, spoiler) # Previously used mergeImages()
+                await magickImages(wordGrid, width, height) # Previously used mergeImages()
                 # Sends the image through discord
-                if spoiler:
-                    await ctx.send(content=ctx.author.mention, file=discord.File("renders/SPOILER_render.gif"))
-                else:
-                    await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif"))
+                await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif", spoiler=spoiler))
 
     @commands.command()
     @commands.cooldown(2, 5, commands.BucketType.channel)
