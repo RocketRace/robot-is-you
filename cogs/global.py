@@ -32,7 +32,7 @@ async def magickImages(wordGrid, width, height, spoiler):
     call(["magick", "convert", "renders/*.png", "-scale", "200%", "-set", "delay", "20", 
         "-set", "dispose", "2", "renders/%srender.gif" % spoilerText])
 
-# For +tile and +rule commands.
+# For the +tile command.
 async def notTooManyArguments(ctx):
     if len(ctx.message.content.split(" ")) <= 50 or ctx.message.author.id == 156021301654454272:
         return True
@@ -65,9 +65,36 @@ class globalCog(commands.Cog):
         async with ctx.typing():
             pass
 
-    @render.command()
-    async def nDevel(self):
-        pass
+    # Searches for a tile that matches the string provided
+    @commands.command()
+    @commands.cooldown(2, 10, type=commands.BucketType.channel)
+    async def search(self, ctx, *, query: str):
+        matches = []
+        # How many results will be shown
+        limit = 20
+        # For substrings
+        cutoff = len(query)
+        try:
+            # Searches through a list of the names of each tile
+            for name in [tile["name"] for tile in bot.get_cog("ownerCog").tileColors]:
+                match = False
+                # If the name starts with {query}, match succeeds
+                if name[:cutoff] == query:
+                    match = True
+                # If the name starts with "text_{query}", match succeeds
+                if name[:5] == "text_":
+                    if name[5:cutoff + 5] == query:
+                        match = True
+                if match:
+                    if len(matches) >= limit:
+                        raise Exception
+                    else:
+                        matches.append(name)
+        except:
+            matches.insert(0, f"Found more than {limit} results, showing only first {limit}:")
+        finally:
+            content = "\n".join(matches)
+            await ctx.send(content)
 
     # Generates an animated gif of the tiles provided, using (TODO) the default palette
     @commands.command(aliases=["rule"])
