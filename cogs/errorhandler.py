@@ -83,10 +83,10 @@ class CommandErrorHandler(commands.Cog):
         
         elif isinstance(error, commands.CommandOnCooldown):
             if ctx.author.id == self.bot.owner_id:
-                await ctx.reinvoke()
+                return await ctx.reinvoke()
             else:
                 await ctx.send(error)
-            return await self.logger.send(embed=emb)
+                return await self.logger.send(embed=emb)
 
 
         elif isinstance(error, commands.NoPrivateMessage):
