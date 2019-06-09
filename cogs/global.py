@@ -92,10 +92,11 @@ class globalCog(commands.Cog):
             content = "\n".join(matches)
             await ctx.send(content)
 
-    @commands.command(name="list")
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
+    @commands.command(name="list")
     async def listTiles(self, ctx):
-        await ctx.send("List of all valid tiles:", file=discord.File("tilelist.txt"))
+        fp = discord.File("tilelist.txt")
+        await ctx.send("List of all valid tiles:", file=fp)
 
     # Generates an animated gif of the tiles provided, using (TODO) the default palette
     @commands.command(aliases=["rule"])
