@@ -314,8 +314,15 @@ class ownerCog(commands.Cog):
             # Sets text_ba and text_ab to the same color as text_baba
             if obj["name"] in ["text_ba", "text_ab"]:
                 obj["color"] = ["4", "1"]
+            
+        # Sorts the tiles by name
+        self.tileColors.sort(key=lambda x: x["name"])
 
-        # Dumps the gathered data to tilecolors.json and tilesprites.json
+        allTiles = open("tilelist.txt", "wt")
+        allTiles.truncate(0)
+        allTiles.write("\n".join([tile["name"] for tile in self.tileColors]))
+
+        # Dumps the gathered data to tilecolors.json
         emotefile = open("tilecolors.json", "wt")
         # Clears the file first
         emotefile.seek(0)
