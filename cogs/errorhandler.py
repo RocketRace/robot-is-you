@@ -82,7 +82,7 @@ class CommandErrorHandler(commands.Cog):
             return await self.logger.send(embed=emb)
         
         elif isinstance(error, commands.CommandOnCooldown):
-            if ctx.author.id == bot.owner_id:
+            if ctx.author.id == self.bot.owner_id:
                 await ctx.reinvoke()
             else:
                 await ctx.send(error)
@@ -99,7 +99,7 @@ class CommandErrorHandler(commands.Cog):
             return msg
 
         # For this error example we check to see where it came from...
-        elif isinstance(error, commands):
+        elif isinstance(error, commands.ArgumentParsingError):
             await self.logger.send(embed=emb)
             if ctx.command.name in ["tile", "rule"]:  # Checks the 
                 return await ctx.add_reaction("⚠️")

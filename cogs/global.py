@@ -72,7 +72,7 @@ class globalCog(commands.Cog):
         cutoff = len(query)
         try:
             # Searches through a list of the names of each tile
-            for name in [tile["name"] for tile in bot.get_cog("ownerCog").tileColors]:
+            for name in [tile["name"] for tile in self.bot.get_cog("ownerCog").tileColors]:
                 match = False
                 # If the name starts with {query}, match succeeds
                 if name[:cutoff] == query:
@@ -89,6 +89,7 @@ class globalCog(commands.Cog):
         except:
             matches.insert(0, f"Found more than {limit} results, showing only first {limit}:")
         finally:
+            matches.insert(0, f"Found {len(matches)} results for \"{query}\":")
             content = "\n".join(matches)
             await ctx.send(content)
 
