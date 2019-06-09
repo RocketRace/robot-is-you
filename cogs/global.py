@@ -88,8 +88,9 @@ class globalCog(commands.Cog):
                         matches.append(name)
         except:
             matches.insert(0, f"Found more than {limit} results, showing only first {limit}:")
-        finally:
+        else:
             matches.insert(0, f"Found {len(matches)} results for \"{query}\":")
+        finally:
             content = "\n".join(matches)
             await ctx.send(content)
 
