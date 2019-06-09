@@ -1,8 +1,9 @@
 import discord
 
-from discord.ext import commands
-from json        import load
-from time        import time
+from discord.ext  import commands
+from discord.http import asyncio
+from json         import load
+from time         import time
 
 # Sets up the configuration
 configFile = open("setup.json")
@@ -36,8 +37,8 @@ async def on_disconnect():
     start = time()
     logger = await bot.fetch_webhook(int(WEBHOOK_ID))
     try:
-        await bot.wait_for("resumed", timeout=30.0)
-    except TimeoutError:
+        await bot.wait_for("resumed", timeout=60.0)
+    except asyncio.TimeoutError:
         err = discord.Embed(title="Disconnect", type="rich", description="".join([bot.user.mention, " has disconnected"]), color=0xff8800)
     else: 
         err = discord.Embed(title="Resumed", type="rich", description="".join(
