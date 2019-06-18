@@ -89,10 +89,13 @@ class globalCog(commands.Cog):
         except:
             matches.insert(0, f"Found more than {limit} results, showing only first {limit}:")
         else:
-            matches.insert(0, f"Found {len(matches)} results for \"{query}\":")
-        finally:
-            content = "\n".join(matches)
-            await ctx.send(content)
+            count = len(matches)
+            if count == 0:
+                await ctx.send(f"Found no results for \"{query}\".")
+            else:
+                matches.insert(0, f"Found {len(matches)} results for \"{query}\":")
+                content = "\n".join(matches)
+                await ctx.send(content)
 
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
     @commands.command(name="list")
