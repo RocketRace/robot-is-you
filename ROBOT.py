@@ -26,23 +26,30 @@ if __name__ == "__main__":
     for cog in COGS:
         bot.load_extension(cog)
 
-@bot.event
-async def on_ready():
-    logger = await bot.fetch_webhook(int(WEBHOOK_ID))
-    msg = discord.Embed(title="READY", type="rich", description="".join([bot.user.mention, " is ready"]), color=0x00ff00)
-    await logger.send(content=" ", embed=msg)
+# @bot.event
+# async def on_ready():
+#     logger = await bot.fetch_webhook(int(WEBHOOK_ID))
+#     msg = discord.Embed(title="READY", type="rich", description="".join([bot.user.mention, " is ready"]), color=0x00ff00)
+#     await logger.send(content=" ", embed=msg)
     
 @bot.event
 async def on_disconnect():
     start = time()
-    logger = await bot.fetch_webhook(int(WEBHOOK_ID))
     try:
-        await bot.wait_for("resumed", timeout=60.0)
+        await bot.wait_for("ready", timeout=60.0)
     except asyncio.TimeoutError:
-        err = discord.Embed(title="Disconnect", type="rich", description="".join([bot.user.mention, " has disconnected"]), color=0xff8800)
+        err = discord.Embed(
+            title="Disconnect", 
+            type="rich", 
+            description="".join([bot.user.mention, " has disconnected"]), 
+            color=0xff8800)
     else: 
-        err = discord.Embed(title="Resumed", type="rich", description="".join(
-            [bot.user.mention, " has resumed. Downtime: ", round(time() - start), " seconds."]), color=0xffff00)
+        err = discord.Embed(
+            title="Resumed", 
+            type="rich", 
+            description="".join([bot.user.mention, " has resumed. Downtime: ", round(time() - start), " seconds."]), 
+            color=0xffff00)
+    logger = await bot.fetch_webhook(WEBHOOK_ID)
     await logger.send(content=" ", embed=err)
 
 bot.run(BOT_TOKEN, bot = True, reconnect = True)

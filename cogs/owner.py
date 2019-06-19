@@ -3,6 +3,7 @@ import discord
 import json
 import numpy     as np
 
+from datetime    import datetime, timedelta
 from discord.ext import commands
 from os          import listdir, mkdir, stat
 from PIL         import Image
@@ -53,8 +54,31 @@ class ownerCog(commands.Cog):
         if stat(altFile).st_size != 0:
             self.alternateTiles = json.load(open(altFile))
 
+        self.identifies = []
+        self.resumes = []
+
         # Are assets loading?
         self.notLoading = True
+
+    @commands.command()
+    @commands.is_owner()
+    async def debug(self, ctx):
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        identifiesDay = sum([1 for event in self.identifies if event > yesterday])
+        resumesDay = sum([1 for event in self.resumes if event > yesterday])
+
+        globalRateLimit = not self.bot.http._global_over.is_set()
+
+        msg = discord.Embed(
+            title="Debug",
+            description="".join([f"IDENTIFYs in the past 24 hours: {identifiesDay}\n",
+                f"RESUMEs in the past 24 hours: {resumesDay}\n",
+                f"Global rate limit: {globalRateLimit}"]),
+            color=0x00ffff
+        )
+
+        await ctx.send(" ", embed=msg)
+        
 
     # Evaluates input if you're the owner of the bot (me)
     # TODO: sandbox it
@@ -401,6 +425,31 @@ class ownerCog(commands.Cog):
             await ctx.invoke(self.bot.get_command("loadpalette"), palette)
             i += 1
         await msg.edit(content="".join([content, " Done."]))
+
+    def _clear_gateway_data(self):
+        weekAgo = datetime.utcnow() - timedelta(days=7)
+        to_remove = [index for index, dt in enumerate(self.resumes) if dt < weekAgo]
+        for index in reversed(to_remove):
+            del self.resumes[index]
+
+        to_remove = [index for index, dt in enumerate(self.resumes) if dt < weekAgo]
+        for index in reversed(to_remove):
+            del self.identifies[index]
+
+    @commands.Cog.listener()
+    async def on_socket_raw_send(self, data):
+        # unconventional way to discern RESUMES from IDENTIFYs
+        if '"op":2' not in data and '"op":6' not in data:
+            return
+
+        back_to_json = json.loads(data)
+        if back_to_json['op'] == 2:
+            self.identifies.append(datetime.utcnow())
+        else:
+            self.resumes.append(datetime.utcnow())
+
+        # don't want to permanently grow memory
+        self._clear_gateway_data()   
 
 def setup(bot):
     bot.add_cog(ownerCog(bot))
