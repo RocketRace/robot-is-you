@@ -9,7 +9,13 @@ from os.path     import isfile
 from PIL         import Image
 from subprocess  import call
 
+
+# Custom exceptions
+
 class InvalidTile(commands.UserInputError):
+    pass
+
+class TooManyTiles(commands.UserInputError):
     pass
 
 # Takes a list of tile names and generates a gif with the associated sprites
@@ -143,11 +149,30 @@ class globalCog(commands.Cog):
             wordGrid = [row.split() for row in wordRows]
             if rule:
                 wordGrid = [[word if word == "-" else "text_" + word for word in row.split()] for row in wordRows]
+            
+            # Splits the "text_x,y,z..." shortcuts into "text_x", "text_y", ...
+            else:
+                for row in wordGrid:
+                    toAdd = []
+                    for i, word in enumerate(row):
+                        if "," in word:
+                            each = word.split(",")
+                            expanded = [each[0]]
+                            expanded.extend(["text_" + segment for segment in each[1:]])
+                            toAdd.append((i, expanded))
+                    for change in reversed(toAdd):
+                        row[change[0]:change[0] + 1] = change[1]
 
             # Get the dimensions of the grid
             lengths = [len(row) for row in wordGrid]
             width = max(lengths)
             height = len(wordRows)
+
+            # Don't proceed if the request is too long.
+            # (It shouldn't be that long to begin with because of Discord's 2000 character limit)
+            area = width * height
+            if area > 50 and ctx.author.id is not bot.owner_id:
+                raise TooManyTiles(str(area))
 
             # Pad the word rows from the end to fit the dimensions
             [row.extend(["-"] * (width - len(row))) for row in wordGrid]
@@ -181,11 +206,11 @@ class globalCog(commands.Cog):
 
     @tile.error
     async def tileError(self, ctx, error):
-        print(error.args)
-        print(error)
         if isinstance(error, InvalidTile):
             word = error.args[0]
             await ctx.send(f"\"{word}\" is not a valid tile.")
+        elif isinstance(error, TooManyTiles):
+            await ctx.send(f"You may only render up to 50 tiles per command, including empty tiles.")
 
     @commands.command()
     @commands.cooldown(2, 5, commands.BucketType.channel)
