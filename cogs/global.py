@@ -4,17 +4,22 @@ import numpy     as np
 from discord.ext import commands
 from itertools   import chain
 from json        import load
+from os          import listdir
+from os.path     import isfile
 from PIL         import Image
 from subprocess  import call
 
+class InvalidTile(commands.UserInputError):
+    pass
+
 # Takes a list of tile names and generates a gif with the associated sprites
-async def magickImages(wordGrid, width, height):
+async def magickImages(wordGrid, width, height, palette):
     # For each animation frame
     for fr in range(3):
         # Efficiently converts the grid back into a list of words
         wordList = chain.from_iterable(wordGrid)
         # Gets the path of each image
-        paths = ["empty.png" if word == "-" else "color/%s/%s-%s-.png" % ("default", word, fr) for word in wordList]
+        paths = ["empty.png" if word == "-" else "color/%s/%s-%s-.png" % (palette, word, fr) for word in wordList]
         # Merges the images with imagemagick
         cmd =["magick", "montage", "-geometry", "200%+0+0", "-background", "none",
         "-colors", "255", "-tile", "%sx%s" % (width, height)]
@@ -107,19 +112,32 @@ class globalCog(commands.Cog):
     @commands.command(aliases=["rule"])
     @commands.check(notTooManyArguments)
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
-    async def tile(self, ctx, *, content: str):
+    async def tile(self, ctx, pal: str,  *, content: str = ""):
         async with ctx.typing():
+            # Determines which palette to use
+            # If the argument is not of the format, it is prepended to the tile list
+            palette = ""
+            tiles = ""
+            if pal.startswith("palette:"):
+                palette = pal[8:]
+                if "".join([palette, ".png"]) not in listdir("palettes"):
+                    raise commands.ArgumentParsingError()
+                tiles = content
+            else:
+                palette = "default"
+                tiles = " ".join([pal, content])
+            
             # Determines if this should be a spoiler
-            spoiler = content.replace("|", "") != content
+            spoiler = tiles.replace("|", "") != tiles
 
             # Determines if the command should use text tiles.
             rule = ctx.invoked_with == "rule"
 
             # Split input into lines
             if spoiler:
-                wordRows = content.replace("|", "").lower().splitlines()
+                wordRows = tiles.replace("|", "").lower().splitlines()
             else:
-                wordRows = content.lower().splitlines()
+                wordRows = tiles.lower().splitlines()
             
             # Split each row into words
             wordGrid = [row.split() for row in wordRows]
@@ -147,17 +165,27 @@ class globalCog(commands.Cog):
                         # If not present, trows an exception...
                         if word != "-":
                             failedWord = word
-                            open("color/%s/%s-0-.png" % ("default", word))
+                            import os
+                            if not isfile(f"color/{palette}/{word}-0-.png"):
+                                raise InvalidTile(word)
             # The error is caught and an error message is sent
-            except:
+            except commands.BadArgument:
                 await ctx.send("⚠️ Could not find a tile for \"%s\"." % failedWord)
                 safe = False
                 raise commands.BadArgument()
             if safe:
                 # Merges the images found
-                await magickImages(wordGrid, width, height) # Previously used mergeImages()
+                await magickImages(wordGrid, width, height, palette) # Previously used mergeImages()
                 # Sends the image through discord
                 await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif", spoiler=spoiler))
+
+    @tile.error
+    async def tileError(self, ctx, error):
+        print(error.args)
+        print(error)
+        if isinstance(error, InvalidTile):
+            word = error.args[0]
+            await ctx.send(f"\"{word}\" is not a valid tile.")
 
     @commands.command()
     @commands.cooldown(2, 5, commands.BucketType.channel)
@@ -175,9 +203,13 @@ class globalCog(commands.Cog):
         content = "".join(["Commands:\n", 
             "`+help` : Displays this.\n", 
             "`+about` : Displays bot info.\n",
-            "`+tile [tiles]` : Renders the input tiles. Text tiles must be prefixed with \"text\\_\".",
-            "Use hyphens to render empty tiles.\n`+rule [words]` : Like `+tile`, but only takes",
-            "word tiles as input. Words do not need to be prefixed by \"text\\_\". Use hyphens to render empty tiles.\n",
+            "`+tile [palette\\*] [tiles]` : Renders the input tiles. `palette` is an optional argument and ",
+            "must be of the format `palette:[name]`. ",
+            "Text tiles must be prefixed with \"text\\_\".",
+            "Use hyphens to render empty tiles.\n",
+            "`+rule [palette\\*] [words]` : Like `+tile`, but only takes word tiles as input. ",
+            "Same parameters apply. ",
+            "Words do *not* need to be prefixed by \"text\\_\".\n",
             "`+search [query]` : Searches through valid tiles and returns matching tiles.\n",
             "`+list` : Lists every tile useable for the `tile` and `rule` commands."])
         helpEmbed = discord.Embed(title = "Help", type="rich", colour=0x00ffff, description=content)

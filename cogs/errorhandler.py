@@ -55,7 +55,7 @@ class CommandErrorHandler(commands.Cog):
         if hasattr(ctx.command, 'on_error'):
             return
         
-        ignored = (commands.UserInputError) # commands.CommandNotFound, 
+        ignored = (commands.CommandNotFound) # commands.CommandNotFound, 
         
         # Allows us to check for original exceptions raised and sent to CommandInvokeError.
         # If nothing is found. We keep the exception passed to on_command_error.
@@ -101,8 +101,9 @@ class CommandErrorHandler(commands.Cog):
         # For this error example we check to see where it came from...
         elif isinstance(error, commands.ArgumentParsingError):
             await self.logger.send(embed=emb)
-            if ctx.command.name in ["tile", "rule"]:  # Checks the 
-                return await ctx.add_reaction("⚠️")
+            if ctx.command.name == "tile":  # Checks the 
+                return await ctx.send("Invalid palette argument provided.")
+            return await ctx.send("Invalid function argumetns provided.")
 
         # All other Errors not returned come here... And we can just print the default TraceBack + log
         await self.logger.send(embed=emb)

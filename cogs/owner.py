@@ -415,8 +415,8 @@ class ownerCog(commands.Cog):
         await msg.edit(content=content)
         
 
-        # Loads the default palette
-        palettes = ["default.png"]#listdir("palettes")
+        # Loads every palette
+        palettes = listdir("palettes")
         total = len(palettes)
 
         i = 0
