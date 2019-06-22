@@ -127,6 +127,14 @@ class globalCog(commands.Cog):
         fp = discord.File("tilelist.txt")
         await ctx.send("List of all valid tiles:", file=fp)
 
+    @commands.cooldown(2,10,type=commands.BucketType.channel)
+    @commands.command()
+    async def palettes(self, ctx):
+        msg = ["Valid palettes:"]
+        for palette in listdir("palettes"):
+            msg.append(palette[:-4])
+        await ctx.send("\n".join(msg))
+
     # Generates an animated gif of the tiles provided, using (TODO) the default palette
     @commands.command(aliases=["rule"])
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
