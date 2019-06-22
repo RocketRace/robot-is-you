@@ -18,20 +18,47 @@ class InvalidTile(commands.UserInputError):
 class TooManyTiles(commands.UserInputError):
     pass
 
+class StackTooHigh(commands.UserInputError):
+    pass
+
 # Takes a list of tile names and generates a gif with the associated sprites
 async def magickImages(wordGrid, width, height, palette):
     # For each animation frame
     for fr in range(3):
         # Efficiently converts the grid back into a list of words
         wordList = chain.from_iterable(wordGrid)
-        # Gets the path of each image
-        paths = ["empty.png" if word == "-" else "color/%s/%s-%s-.png" % (palette, word, fr) for word in wordList]
-        # Merges the images with imagemagick
-        cmd =["magick", "montage", "-geometry", "200%+0+0", "-background", "none",
-        "-colors", "255", "-tile", "%sx%s" % (width, height)]
-        cmd.extend(paths) 
-        cmd.append("renders/render_%s.png" % fr)
-        call(cmd)
+        # Opens each image
+        paths = [[["empty.png" if word == "-" else "color/%s/%s-%s-.png" % (palette, word, fr) for word in stack] for stack in row] for row in wordGrid]
+        imgs = [[[Image.open(fp) for fp in stack] for stack in row] for row in paths]
+
+        # Get new image dimensions
+        totalWidth = len(paths[0]) * 24
+        totalHeight = len(paths) * 24
+
+        # Montage image
+        renderFrame = Image.new("RGBA", (totalWidth, totalHeight))
+
+        # Pastes each image onto the image
+        # For each row
+        yOffset = 0
+        for row in imgs:
+            # For each image
+            xOffset = 0
+            for stack in row:
+                for tile in stack:
+                    renderFrame.paste(tile, (xOffset, yOffset), tile)
+                xOffset += 24
+            yOffset += 24
+
+        # Saves the final image
+        renderFrame.save(f"renders/{fr}.png")
+
+        # # Merges the images with imagemagick
+        # cmd =["magick", "montage", "-geometry", "200%+0+0", "-background", "none",
+        # "-colors", "255", "-tile", "%sx%s" % (width, height)]
+        # cmd.extend(paths) 
+        # cmd.append("renders/render_%s.png" % fr)
+        # call(cmd)
     # Joins each frame into a .gif
     fp = open(f"renders/render.gif", "w")
     fp.truncate(0)
@@ -39,13 +66,6 @@ async def magickImages(wordGrid, width, height, palette):
     call(["magick", "convert", "renders/*.png", "-scale", "200%", "-set", "delay", "20", 
         "-set", "dispose", "2", "renders/render.gif"])
 
-# For the +tile command.
-async def notTooManyArguments(ctx):
-    if len(ctx.message.content.split(" ")) <= 50 or ctx.message.author.id == 156021301654454272:
-        return True
-    else:
-        await ctx.send("Please input less than 50 tiles [Empty tiles included]")
-        return False
 
 class globalCog(commands.Cog):
     def __init__(self, bot):
@@ -64,13 +84,6 @@ class globalCog(commands.Cog):
             "an (x,y) coordinate on the default Baba color palette.\nFor examples of this, check the `values.lua` " + \
             "file in your Baba Is You local files!", color=0x00ffff)
         ctx.send(" ", embed=msg)
-
-
-    @commands.group()
-    @commands.check(notTooManyArguments)
-    async def render(self, ctx, *, content:str):
-        async with ctx.typing():
-            pass
 
     # Searches for a tile that matches the string provided
     @commands.command()
@@ -116,7 +129,6 @@ class globalCog(commands.Cog):
 
     # Generates an animated gif of the tiles provided, using (TODO) the default palette
     @commands.command(aliases=["rule"])
-    @commands.check(notTooManyArguments)
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
     async def tile(self, ctx, pal: str,  *, content: str = ""):
         async with ctx.typing():
@@ -147,11 +159,9 @@ class globalCog(commands.Cog):
             
             # Split each row into words
             wordGrid = [row.split() for row in wordRows]
-            if rule:
-                wordGrid = [[word if word == "-" else "text_" + word for word in row.split()] for row in wordRows]
             
             # Splits the "text_x,y,z..." shortcuts into "text_x", "text_y", ...
-            else:
+            if not rule:
                 for row in wordGrid:
                     toAdd = []
                     for i, word in enumerate(row):
@@ -163,6 +173,22 @@ class globalCog(commands.Cog):
                     for change in reversed(toAdd):
                         row[change[0]:change[0] + 1] = change[1]
 
+            # Splits "&"-joined words into stacks
+            for row in wordGrid:
+                for i,stack in enumerate(row):
+                    if "&" in stack:
+                        row[i] = stack.split("&")
+                    else:
+                        row[i] = [stack]
+                    # Limit how many tiles can be rendered in one space
+                    height = len(row[i])
+                    if height > 3 and ctx.author.id != self.bot.owner_id:
+                        raise StackTooHigh(str(height))
+
+            # Prepends "text_" to words if invoked under the rule command
+            if rule:
+                wordGrid = [[[word if word == "-" else "text_" + word for word in stack] for stack in row] for row in wordGrid]
+
             # Get the dimensions of the grid
             lengths = [len(row) for row in wordGrid]
             width = max(lengths)
@@ -171,34 +197,28 @@ class globalCog(commands.Cog):
             # Don't proceed if the request is too long.
             # (It shouldn't be that long to begin with because of Discord's 2000 character limit)
             area = width * height
-            if area > 50 and ctx.author.id is not bot.owner_id:
+            if area > 50 and ctx.author.id != self.bot.owner_id:
                 raise TooManyTiles(str(area))
 
             # Pad the word rows from the end to fit the dimensions
-            [row.extend(["-"] * (width - len(row))) for row in wordGrid]
-            
+            [row.extend([["-"]] * (width - len(row))) for row in wordGrid]
             # Finds the associated image sprite for each word in the input
             # Throws an exception which sends an error message if a word is not found.
-            failedWord = ""
-            safe = True
             try:
                 # Each row
                 for row in wordGrid:
-                    # Each word
-                    for word in row:
-                        # Checks for the word by attempting to open
-                        # If not present, trows an exception...
-                        if word != "-":
-                            failedWord = word
-                            import os
-                            if not isfile(f"color/{palette}/{word}-0-.png"):
-                                raise InvalidTile(word)
-            # The error is caught and an error message is sent
-            except commands.BadArgument:
-                await ctx.send("⚠️ Could not find a tile for \"%s\"." % failedWord)
-                safe = False
-                raise commands.BadArgument()
-            if safe:
+                    # Each stack
+                    for stack in row:
+                        # Each word
+                        for word in stack:
+                            # Checks for the word by attempting to open
+                            # If not present, trows an exception.
+                            if word != "-":
+                                if not isfile(f"color/{palette}/{word}-0-.png"):
+                                    raise InvalidTile(word)
+            except:
+                pass
+            else:
                 # Merges the images found
                 await magickImages(wordGrid, width, height, palette) # Previously used mergeImages()
                 # Sends the image through discord
@@ -206,11 +226,14 @@ class globalCog(commands.Cog):
 
     @tile.error
     async def tileError(self, ctx, error):
+        print(error)
         if isinstance(error, InvalidTile):
             word = error.args[0]
-            await ctx.send(f"\"{word}\" is not a valid tile.")
+            await ctx.send(f"⚠️ Could not find a tile for \"{word}\".")
         elif isinstance(error, TooManyTiles):
-            await ctx.send(f"You may only render up to 50 tiles per command, including empty tiles.")
+            await ctx.send(f"⚠️ Too many tiles ({error.args[0]}). You may only render up to 50 tiles at once, including empty tiles.")
+        elif isinstance(error, StackTooHigh):
+            await ctx.send(f"⚠️ Stack too high ({error.args[0]}). You may only stack up to 3 tiles on one space.")
 
     @commands.command()
     @commands.cooldown(2, 5, commands.BucketType.channel)
