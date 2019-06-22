@@ -17,7 +17,7 @@ WEBHOOK_ID = configuration.get("webhook")
 WEBHOOK_TOKEN = configuration.get("webhook-token")
 
 # Establishes the bot
-bot = commands.Bot(command_prefix=PREFIXES, case_insensitive=True, help_command=None, activity=DEFAULT_ACTIVITY)
+bot = commands.Bot(command_prefix=PREFIXES, case_insensitive=True, help_command=None, activity=DEFAULT_ACTIVITY, owner_id = 156021301654454272)
 
 logger = None
 
@@ -47,7 +47,7 @@ async def on_disconnect():
         err = discord.Embed(
             title="Resumed", 
             type="rich", 
-            description="".join([bot.user.mention, " has resumed. Downtime: ", round(time() - start), " seconds."]), 
+            description="".join([bot.user.mention, " has resumed. Downtime: ", str(round(time() - start)), " seconds."]), 
             color=0xffff00)
     logger = await bot.fetch_webhook(WEBHOOK_ID)
     await logger.send(content=" ", embed=err)
