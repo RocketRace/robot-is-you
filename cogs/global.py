@@ -162,7 +162,7 @@ class globalCog(commands.Cog, name="Baba Is You"):
         Returns a grid of 24 x 24 animated pixel sprites associated with each input tile. Up to 50 tiles may be rendered per command.
         
         The optional `<palette>` argument will recolor the output based on the color data of the palette. 
-        `<palette>` must be of the format [palette:palette_name]. Valid palette names can be seen using the `palettes` command.
+        `<palette>` must be of the format `palette:palette_name`. Valid palette names can be seen using the `palettes` command.
         
         Use hyphens to render empty tiles.
 
