@@ -92,7 +92,7 @@ class PrettyHelpCommand(commands.DefaultHelpCommand):
     def get_ending_note(self):
         """Returns help command's ending note. This is mainly useful to override for i18n purposes."""
         command_name = self.invoked_with
-        return "*Type `{0}{1}` command for more info on a command.*".format(self.clean_prefix, command_name)
+        return "*Type `{0}{1} command` for more info on a command.*".format(self.clean_prefix, command_name)
 
     def get_command_signature(self, command):
         parent = command.full_parent_name
