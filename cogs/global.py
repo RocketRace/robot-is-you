@@ -67,28 +67,34 @@ async def magickImages(wordGrid, width, height, palette):
         "-set", "dispose", "2", "renders/render.gif"])
 
 
-class globalCog(commands.Cog):
+class globalCog(commands.Cog, name="Baba Is You"):
     def __init__(self, bot):
         self.bot = bot
 
     # Check if the bot is loading, and that the current guild is not r/surrealmemes 
     async def cog_check(self, ctx):
-        return self.bot.get_cog("ownerCog").notLoading and ctx.channel.guild.id != 294479294040768524
+        return self.bot.get_cog("Admin").notLoading and ctx.channel.guild.id != 294479294040768524
 
-    @commands.command()
+    @commands.command(hidden=True)
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
     async def custom(self, ctx):
         msg = discord.Embed(title="Custom Tiles?", description="Want custom tiles added to the bot? " + \
             "DM @RocketRace#0798 about it! \nI can help you if you send me:\n * **The sprites you want added**, " + \
             "preferably in an archived file (without any color, and in 24x24)\n * **The color of the sprites**, " + \
-            "an (x,y) coordinate on the default Baba color palette.\nFor examples of this, check the `values.lua` " + \
-            "file in your Baba Is You local files!", color=0x00ffff)
+            "an (x,y) coordinate on the default Baba color palette.\nFor examples of this, check the [values.lua] " + \
+            "file in your Baba Is You local files!", color=15335523)
         ctx.send(" ", embed=msg)
 
     # Searches for a tile that matches the string provided
     @commands.command()
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
     async def search(self, ctx, *, query: str):
+        """
+        Searches tiles for rendering from a query.
+        Returns a list of tile names that matche the query.
+        Can return up to 20 tiles per search.
+        Tiles may be used in the [tile] (and subsequently [rule]) commands.
+        """
         matches = []
         # How many results will be shown
         limit = 20
@@ -96,7 +102,7 @@ class globalCog(commands.Cog):
         cutoff = len(query)
         try:
             # Searches through a list of the names of each tile
-            for name in [tile["name"] for tile in self.bot.get_cog("ownerCog").tileColors]:
+            for name in [tile["name"] for tile in self.bot.get_cog("Admin").tileColors]:
                 match = False
                 # If the name starts with {query}, match succeeds
                 if name[:cutoff] == query:
@@ -107,10 +113,10 @@ class globalCog(commands.Cog):
                         match = True
                 if match:
                     if len(matches) >= limit:
-                        raise Exception
+                        raise OverflowError
                     else:
                         matches.append(name)
-        except:
+        except OverflowError:
             matches.insert(0, f"Found more than {limit} results, showing only first {limit}:")
         else:
             count = len(matches)
@@ -124,12 +130,21 @@ class globalCog(commands.Cog):
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
     @commands.command(name="list")
     async def listTiles(self, ctx):
+        """
+        Lists valid tiles for rendering.
+        Returns all valid tiles in a text file.
+        Tiles may be used in the [tile] (and subsequently [rule]) commands.
+        """
         fp = discord.File("tilelist.txt")
         await ctx.send("List of all valid tiles:", file=fp)
 
     @commands.cooldown(2,10,type=commands.BucketType.channel)
-    @commands.command()
-    async def palettes(self, ctx):
+    @commands.command(name="palettes")
+    async def listPalettes(self, ctx):
+        """
+        Lists palettes usable for rendering.
+        Palettes can be used as arguments for the [tile] (and subsequently [rule]) commands.
+        """
         msg = ["Valid palettes:"]
         for palette in listdir("palettes"):
             msg.append(palette[:-4])
@@ -138,19 +153,40 @@ class globalCog(commands.Cog):
     # Generates an animated gif of the tiles provided, using (TODO) the default palette
     @commands.command(aliases=["rule"])
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
-    async def tile(self, ctx, pal: str,  *, content: str = ""):
+    async def tile(self, ctx, palette: str,  *, content: str = ""):
+        """
+        Renders the tiles provided in an animated GIF.
+        Returns a grid of 24 x 24 animated pixel sprites associated with each input tile. Up to 50 tiles may be rendered per command.
+        
+        The optional `<palette>` argument will recolor the output based on the color data of the palette. 
+        `<palette>` must be of the format [palette:palette_name]. Valid palette names can be seen using the `palettes` command.
+        
+        Use hyphens to render empty tiles.
+
+        Invoking this command using `rule` instead of `tile` will cause the "text" counterparts of each tile to be rendered instead.
+        Otherwise, all text tiles are rendered with the format `text_object`.
+        
+        Input of the format `text_x,y,z...` will be expanded into `text_x, text_y, text_z, ...`. This is a convenience measure when working with many text tiles.
+
+        Up to three tiles may be rendered in the same spot, on top of each other. You may stack tiles by separating them with `&`.
+        An example of such stacked tiles: `baba&flag&text_you`
+
+        If any part of the command is hidden behind spoiler tags (like ||this||), the resulting gif will be marked as a spoiler. 
+
+
+        """
         async with ctx.typing():
             # Determines which palette to use
             # If the argument is not of the format, it is prepended to the tile list
-            palette = ""
+            pal = ""
             tiles = ""
-            if pal.startswith("palette:"):
-                palette = pal[8:]
-                if "".join([palette, ".png"]) not in listdir("palettes"):
+            if palette.startswith("palette:"):
+                pal = palette[8:]
+                if "".join([pal, ".png"]) not in listdir("palettes"):
                     raise commands.ArgumentParsingError()
                 tiles = content
             else:
-                palette = "default"
+                pal = "default"
                 tiles = " ".join([pal, content])
             
             # Determines if this should be a spoiler
@@ -222,9 +258,9 @@ class globalCog(commands.Cog):
                             # Checks for the word by attempting to open
                             # If not present, trows an exception.
                             if word != "-":
-                                if not isfile(f"color/{palette}/{word}-0-.png"):
+                                if not isfile(f"color/{pal}/{word}-0-.png"):
                                     raise InvalidTile(word)
-            except:
+            except InvalidTile:
                 pass
             else:
                 # Merges the images found
@@ -246,31 +282,16 @@ class globalCog(commands.Cog):
     @commands.command()
     @commands.cooldown(2, 5, commands.BucketType.channel)
     async def about(self, ctx):
+        """
+        Displays bot information.
+        """
         content = "ROBOT - Bot for Discord based on the indie game Baba Is You." + \
             "\nDeveloped by RocketRace#0798 (156021301654454272) using the discord.py library." + \
             "\n[Github repository](https://github.com/RocketRace/robot-is-you)" + \
-            "\nGuilds: %s" % (len(self.bot.guilds))
-        aboutEmbed = discord.Embed(title="About", type="rich", colour=0x00ffff, description=content)
+            f"\nGuilds: {len(self.bot.guilds)}"
+        aboutEmbed = discord.Embed(title="About", type="rich", colour=15335523, description=content)
         await ctx.send(" ", embed=aboutEmbed)
 
-    @commands.command()
-    @commands.cooldown(2,5, commands.BucketType.channel)
-    async def help(self, ctx):
-        content = "".join(["Commands:\n", 
-            "`+help` : Displays this.\n", 
-            "`+about` : Displays bot info.\n",
-            "`+tile [palette\\*] [tiles]` : Renders the input tiles. `palette` is an optional argument and ",
-            "must be of the format `palette:[name]`. ",
-            "Text tiles must be prefixed with \"text\\_\".",
-            "Use hyphens to render empty tiles.\n",
-            "`+rule [palette\\*] [words]` : Like `+tile`, but only takes word tiles as input. ",
-            "Same parameters apply. ",
-            "Words do *not* need to be prefixed by \"text\\_\".\n",
-            "`+search [query]` : Searches through valid tiles and returns matching tiles.\n",
-            "`+list` : Lists every tile useable for the `tile` and `rule` commands."])
-        helpEmbed = discord.Embed(title = "Help", type="rich", colour=0x00ffff, description=content)
-        await ctx.send(" ", embed=helpEmbed)
 
 def setup(bot):
     bot.add_cog(globalCog(bot))
-
