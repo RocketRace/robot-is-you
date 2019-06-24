@@ -21,6 +21,9 @@ class TooManyTiles(commands.UserInputError):
 class StackTooHigh(commands.UserInputError):
     pass
 
+class InvalidPalette(commands.UserInputError):
+    pass
+
 # Takes a list of tile names and generates a gif with the associated sprites
 async def magickImages(wordGrid, width, height, palette):
     # For each animation frame
@@ -181,11 +184,11 @@ class globalCog(commands.Cog, name="Baba Is You"):
             if palette.startswith("palette:"):
                 pal = palette[8:]
                 if "".join([pal, ".png"]) not in listdir("palettes"):
-                    raise commands.ArgumentParsingError()
+                    raise InvalidPalette(pal)
                 tiles = content
             else:
                 pal = "default"
-                tiles = " ".join([pal, content])
+                tiles = " ".join([palette, content])
             
             # Determines if this should be a spoiler
             spoiler = tiles.replace("|", "") != tiles
@@ -276,6 +279,8 @@ class globalCog(commands.Cog, name="Baba Is You"):
             await ctx.send(f"⚠️ Too many tiles ({error.args[0]}). You may only render up to 50 tiles at once, including empty tiles.")
         elif isinstance(error, StackTooHigh):
             await ctx.send(f"⚠️ Stack too high ({error.args[0]}). You may only stack up to 3 tiles on one space.")
+        elif isinstance(error, InvalidPalette):
+            await ctx.send(f"⚠️ Could not find a palette with name {error.args[0]}).")
 
     @commands.command()
     @commands.cooldown(2, 5, commands.BucketType.channel)
