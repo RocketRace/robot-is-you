@@ -249,25 +249,23 @@ class globalCog(commands.Cog, name="Baba Is You"):
             [row.extend([["-"]] * (width - len(row))) for row in wordGrid]
             # Finds the associated image sprite for each word in the input
             # Throws an exception which sends an error message if a word is not found.
-            try:
-                # Each row
-                for row in wordGrid:
-                    # Each stack
-                    for stack in row:
-                        # Each word
-                        for word in stack:
-                            # Checks for the word by attempting to open
-                            # If not present, trows an exception.
-                            if word != "-":
-                                if not isfile(f"color/{pal}/{word}-0-.png"):
-                                    raise InvalidTile(word)
-            except InvalidTile:
-                pass
-            else:
-                # Merges the images found
-                await magickImages(wordGrid, width, height, pal) # Previously used mergeImages()
-                # Sends the image through discord
-                await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif", spoiler=spoiler))
+            
+            # Each row
+            for row in wordGrid:
+                # Each stack
+                for stack in row:
+                    # Each word
+                    for word in stack:
+                        # Checks for the word by attempting to open
+                        # If not present, trows an exception.
+                        if word != "-":
+                            if not isfile(f"color/{pal}/{word}-0-.png"):
+                                raise InvalidTile(word)
+                
+            # Merges the images found
+            await magickImages(wordGrid, width, height, pal) # Previously used mergeImages()
+            # Sends the image through discord
+            await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif", spoiler=spoiler))
 
     @tile.error
     async def tileError(self, ctx, error):
