@@ -172,8 +172,6 @@ class globalCog(commands.Cog, name="Baba Is You"):
         An example of such stacked tiles: `baba&flag&text_you`
 
         If any part of the command is hidden behind spoiler tags (like ||this||), the resulting gif will be marked as a spoiler. 
-
-
         """
         async with ctx.typing():
             # Determines which palette to use
@@ -264,7 +262,7 @@ class globalCog(commands.Cog, name="Baba Is You"):
                 pass
             else:
                 # Merges the images found
-                await magickImages(wordGrid, width, height, palette) # Previously used mergeImages()
+                await magickImages(wordGrid, width, height, pal) # Previously used mergeImages()
                 # Sends the image through discord
                 await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif", spoiler=spoiler))
 
