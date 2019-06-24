@@ -40,7 +40,7 @@ def insert_returns(body):
     if isinstance(body[-1], ast.With):
         insert_returns(body[-1].body)
     
-class ownerCog(commands.Cog):
+class ownerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     def __init__(self, bot):
         self.bot = bot
         self.tileColors = []
