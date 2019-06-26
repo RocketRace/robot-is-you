@@ -84,7 +84,7 @@ class globalCog(commands.Cog, name="Baba Is You"):
         msg = discord.Embed(title="Custom Tiles?", description="Want custom tiles added to the bot? " + \
             "DM @RocketRace#0798 about it! \nI can help you if you send me:\n * **The sprites you want added**, " + \
             "preferably in an archived file (without any color, and in 24x24)\n * **The color of the sprites**, " + \
-            "an (x,y) coordinate on the default Baba color palette.\nFor examples of this, check the [values.lua] " + \
+            "an (x,y) coordinate on the default Baba color palette.\nFor examples of this, check the `values.lua` " + \
             "file in your Baba Is You local files!", color=15335523)
         ctx.send(" ", embed=msg)
 
@@ -96,7 +96,7 @@ class globalCog(commands.Cog, name="Baba Is You"):
         Searches tiles for rendering from a query.
         Returns a list of tile names that matche the query.
         Can return up to 20 tiles per search.
-        Tiles may be used in the [tile] (and subsequently [rule]) commands.
+        Tiles may be used in the `tile` (and subsequently `rule`) commands.
         """
         matches = []
         # How many results will be shown
@@ -136,7 +136,7 @@ class globalCog(commands.Cog, name="Baba Is You"):
         """
         Lists valid tiles for rendering.
         Returns all valid tiles in a text file.
-        Tiles may be used in the [tile] (and subsequently [rule]) commands.
+        Tiles may be used in the `tile` (and subsequently `rule`) commands.
         """
         fp = discord.File("tilelist.txt")
         await ctx.send("List of all valid tiles:", file=fp)
@@ -146,7 +146,7 @@ class globalCog(commands.Cog, name="Baba Is You"):
     async def listPalettes(self, ctx):
         """
         Lists palettes usable for rendering.
-        Palettes can be used as arguments for the [tile] (and subsequently [rule]) commands.
+        Palettes can be used as arguments for the `tile` (and subsequently `rule`) commands.
         """
         msg = ["Valid palettes:"]
         for palette in listdir("palettes"):

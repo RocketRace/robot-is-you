@@ -196,5 +196,23 @@
         "1",
         "1"
       ]
+  },
+  {
+    "sprite":"cash",
+    "name":"cash",
+    "color":
+      [
+        "5",
+        "2"
+      ]
+  },
+  {
+    "sprite":"text_cash",
+    "name":"text_cash",
+    "color":
+      [
+        "5",
+        "2"
+      ]
   }
 ]
