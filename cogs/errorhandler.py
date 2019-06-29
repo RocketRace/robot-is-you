@@ -94,7 +94,7 @@ class CommandErrorHandler(commands.Cog):
             try:
                 msg = await ctx.author.send(f'{ctx.command} can not be used in Private Messages.')
             except:
-                emb.add_field("Notes", "Could not send private messages to user.")
+                emb.add_field(name="Notes", value="Could not send private messages to user.")
             await self.logger.send(embed=emb)
             return msg
 

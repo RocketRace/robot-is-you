@@ -29,7 +29,7 @@ async def magickImages(wordGrid, width, height, palette):
     # For each animation frame
     for fr in range(3):
         # Efficiently converts the grid back into a list of words
-        wordList = chain.from_iterable(wordGrid)
+        # wordList = chain.from_iterable(wordGrid)
         # Opens each image
         paths = [[["empty.png" if word == "-" else "color/%s/%s-%s-.png" % (palette, word, fr) for word in stack] for stack in row] for row in wordGrid]
         imgs = [[[Image.open(fp) for fp in stack] for stack in row] for row in paths]
@@ -87,6 +87,15 @@ class globalCog(commands.Cog, name="Baba Is You"):
             "an (x,y) coordinate on the default Baba color palette.\nFor examples of this, check the `values.lua` " + \
             "file in your Baba Is You local files!", color=15335523)
         ctx.send(" ", embed=msg)
+
+    @commands.command()
+    @commands.cooldown(2, 10, type=commands.BucketType.channel)
+    async def invite(self, ctx):
+        '''
+        Invite the bot to your own server!
+        '''
+        msg = discord.embed(title="Invite", description="[Click Here to invite the bot to your guild!]" + \
+            "(https://discordapp.com/api/oauth2/authorize?client_id=592868050555109398&scope=bot&permissions=388160)")
 
     # Searches for a tile that matches the string provided
     @commands.command()

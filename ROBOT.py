@@ -113,7 +113,7 @@ bot.help_command = PrettyHelpCommand(**dict(paginator=EmbedPaginator(prefix="", 
 async def on_disconnect():
     start = time()
     try:
-        await bot.wait_for("ready", timeout=60.0)
+        await bot.wait_for("ready", timeout=5.0)
     except asyncio.TimeoutError:
         err = discord.Embed(
             title="Disconnect", 
