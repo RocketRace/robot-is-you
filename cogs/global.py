@@ -86,7 +86,7 @@ class globalCog(commands.Cog, name="Baba Is You"):
             "preferably in an archived file (without any color, and in 24x24)\n * **The color of the sprites**, " + \
             "an (x,y) coordinate on the default Baba color palette.\nFor examples of this, check the `values.lua` " + \
             "file in your Baba Is You local files!", color=15335523)
-        ctx.send(" ", embed=msg)
+        await ctx.send(" ", embed=msg)
 
     @commands.command()
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
@@ -94,8 +94,9 @@ class globalCog(commands.Cog, name="Baba Is You"):
         '''
         Invite the bot to your own server!
         '''
-        msg = discord.embed(title="Invite", description="[Click Here to invite the bot to your guild!]" + \
+        msg = discord.Embed(title="Invite", description="[Click Here to invite the bot to your guild!]" + \
             "(https://discordapp.com/api/oauth2/authorize?client_id=592868050555109398&scope=bot&permissions=388160)")
+        await ctx.send(" ", embed=msg)
 
     # Searches for a tile that matches the string provided
     @commands.command()
