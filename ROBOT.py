@@ -30,10 +30,7 @@ if __name__ == "__main__":
 
 # Sets up the help command
 
-# Implementation of a help command paginator that sends each page as an embed
-class EmbedPaginator(commands.Paginator):
-    def __init__(self, prefix='```', suffix='```', max_size=2000):
-        return super().__init__(prefix=prefix, suffix=suffix, max_size=max_size)
+# Implementation of a help command that sends each page as an embed
 
 class PrettyHelpCommand(commands.DefaultHelpCommand):
     async def send_pages(self):
@@ -54,8 +51,6 @@ class PrettyHelpCommand(commands.DefaultHelpCommand):
         get_width = discord.utils._string_width
         for command in commands:
             name = command.name
-            width = max_size - (get_width(name) - len(name))
-            entry = '{0}{1:-<{width}} {2}'.format(self.indent * '-', name, command.short_doc, width=width)
             self.paginator.add_line(self.shorten_text("\u00a0\u00a0\u00a0`" + name + "`"))
             self.paginator.add_line(self.shorten_text(command.short_doc))
 
@@ -67,8 +62,7 @@ class PrettyHelpCommand(commands.DefaultHelpCommand):
             # <description> portion
             self.paginator.add_line(bot.description, empty=True)
 
-        no_category = '\u200b**{0.no_category}**'.format(self)
-        def get_category(command, *, no_category=no_category):
+        def get_category(command, *, no_category='\u200b**{0.no_category}**'.format(self)):
             cog = command.cog
             return "**" + cog.qualified_name + '**' if cog is not None else no_category
 
@@ -78,7 +72,6 @@ class PrettyHelpCommand(commands.DefaultHelpCommand):
 
         # Now we can add the commands to the page.
         for category, commands in to_iterate:
-            category_formatted = "{0:-^{1}}".format(category, self.paginator.max_size)
             commands = sorted(commands, key=lambda c: c.name) if self.sort_commands else list(commands)
             self.add_indented_commands(commands, heading=category, max_size=max_size)
 
@@ -107,7 +100,7 @@ class PrettyHelpCommand(commands.DefaultHelpCommand):
 
         return '`%s%s %s`' % (self.clean_prefix, alias, command.signature)
 
-bot.help_command = PrettyHelpCommand(**dict(paginator=EmbedPaginator(prefix="", suffix="")))
+bot.help_command = PrettyHelpCommand(**dict(paginator=commands.Paginator(prefix="", suffix="")))
 
 @bot.event
 async def on_disconnect():
