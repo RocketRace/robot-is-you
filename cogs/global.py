@@ -95,7 +95,7 @@ class globalCog(commands.Cog, name="Baba Is You"):
         Invite the bot to your own server!
         '''
         msg = discord.Embed(title="Invite", description="[Click Here to invite the bot to your guild!]" + \
-            "(https://discordapp.com/api/oauth2/authorize?client_id=592868050555109398&scope=bot&permissions=388160)")
+            "(https://discordapp.com/api/oauth2/authorize?client_id=480227663047294987&scope=bot&permissions=388160)")
         await ctx.send(" ", embed=msg)
 
     # Searches for a tile that matches the string provided
