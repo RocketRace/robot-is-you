@@ -86,7 +86,32 @@ class MetaCog(commands.Cog, name="Other Commands"):
     async def cog_check(self, ctx):
         return self.bot.get_cog("Admin").notLoading and ctx.channel.guild.id != 294479294040768524
 
-    @commands.Cog.listener
+    @commands.command()
+    @commands.cooldown(2, 5, commands.BucketType.channel)
+    async def about(self, ctx):
+        """
+        Displays bot information.
+        """
+        content = "".join(["ROBOT - Bot for Discord based on the indie game Baba Is You.",
+            f"\nDeveloped by RocketRace#0798 (156021301654454272) using the discord.py library.",
+            "\n[Github repository](https://github.com/RocketRace/robot-is-you)",
+            f"\nGuilds: {len(self.bot.guilds)}",
+            f"\nUsers: {len(self.bot.users)}",
+            f"\nEmoji: {len(self.bot.emojis)}"])
+        aboutEmbed = discord.Embed(title="About", type="rich", colour=15335523, description=content)
+        await ctx.send(" ", embed=aboutEmbed)
+
+    @commands.command()
+    @commands.cooldown(2, 10, type=commands.BucketType.channel)
+    async def invite(self, ctx):
+        '''
+        Invite the bot to your own server!
+        '''
+        msg = discord.Embed(title="Invite", description="[Click Here to invite the bot to your guild!]" + \
+            "(https://discordapp.com/api/oauth2/authorize?client_id=480227663047294987&scope=bot&permissions=388160)")
+        await ctx.send(" ", embed=msg)
+
+    @commands.Cog.listener()
     async def on_disconnect(self):
         start = time()
         try:

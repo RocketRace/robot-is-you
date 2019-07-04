@@ -88,16 +88,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             "file in your Baba Is You local files!", color=15335523)
         await ctx.send(" ", embed=msg)
 
-    @commands.command()
-    @commands.cooldown(2, 10, type=commands.BucketType.channel)
-    async def invite(self, ctx):
-        '''
-        Invite the bot to your own server!
-        '''
-        msg = discord.Embed(title="Invite", description="[Click Here to invite the bot to your guild!]" + \
-            "(https://discordapp.com/api/oauth2/authorize?client_id=480227663047294987&scope=bot&permissions=388160)")
-        await ctx.send(" ", embed=msg)
-
     # Searches for a tile that matches the string provided
     @commands.command()
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
@@ -292,20 +282,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             await ctx.send(f"⚠️ Stack too high ({error.args[0]}). You may only stack up to 3 tiles on one space.")
         elif isinstance(error, InvalidPalette):
             await ctx.send(f"⚠️ Could not find a palette with name {error.args[0]}).")
-
-    @commands.command()
-    @commands.cooldown(2, 5, commands.BucketType.channel)
-    async def about(self, ctx):
-        """
-        Displays bot information.
-        """
-        content = "ROBOT - Bot for Discord based on the indie game Baba Is You." + \
-            "\nDeveloped by RocketRace#0798 (156021301654454272) using the discord.py library." + \
-            "\n[Github repository](https://github.com/RocketRace/robot-is-you)" + \
-            f"\nGuilds: {len(self.bot.guilds)}"
-        aboutEmbed = discord.Embed(title="About", type="rich", colour=15335523, description=content)
-        await ctx.send(" ", embed=aboutEmbed)
-
 
 def setup(bot):
     bot.add_cog(GlobalCog(bot))
