@@ -31,9 +31,10 @@ if __name__ == "__main__":
 @commands.is_owner()
 async def reloadcog(ctx, cog: str):
     if cog == "all":
-        for extension in bot.extensions.keys():
+        extensions = [a for a in bot.extensions.keys()]
+        for extension in extensions:
             bot.reload_extension(extension)
-            await ctx.send("Reloaded all extensions.")
+        await ctx.send("Reloaded all extensions.")
     elif cog in bot.extensions.keys():
         bot.reload_extension(cog)
         await ctx.send("Reloaded extension.")
