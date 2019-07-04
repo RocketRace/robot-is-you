@@ -70,7 +70,7 @@ async def magickImages(wordGrid, width, height, palette):
         "-set", "dispose", "2", "renders/render.gif"])
 
 
-class globalCog(commands.Cog, name="Baba Is You"):
+class GlobalCog(commands.Cog, name="Baba Is You"):
     def __init__(self, bot):
         self.bot = bot
 
@@ -166,7 +166,7 @@ class globalCog(commands.Cog, name="Baba Is You"):
     # Generates an animated gif of the tiles provided, using (TODO) the default palette
     @commands.command(aliases=["rule"])
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
-    async def tile(self, ctx, palette: str,  *, content: str = ""):
+    async def tile(self, ctx, *, palette: str, content: str = ""):
         """
         Renders the tiles provided in an animated GIF.
         Returns a grid of 24 x 24 animated pixel sprites associated with each input tile. Up to 50 tiles may be rendered per command.
@@ -189,16 +189,19 @@ class globalCog(commands.Cog, name="Baba Is You"):
         async with ctx.typing():
             # Determines which palette to use
             # If the argument is not of the format, it is prepended to the tile list
+
+            # The parameters of this command are a lie to appease the help command: here's what actually happens
             pal = ""
             tiles = ""
             if palette.startswith("palette:"):
-                pal = palette[8:]
-                if "".join([pal, ".png"]) not in listdir("palettes"):
+                spl = palette.split(" ")
+                pal = spl[0][8:]
+                if pal + ".png" not in listdir("palettes"):
                     raise InvalidPalette(pal)
-                tiles = content
+                tiles = " ".join(spl[1:])
             else:
                 pal = "default"
-                tiles = " ".join([palette, content])
+                tiles = palette
             
             # Determines if this should be a spoiler
             spoiler = tiles.replace("|", "") != tiles
@@ -305,4 +308,4 @@ class globalCog(commands.Cog, name="Baba Is You"):
 
 
 def setup(bot):
-    bot.add_cog(globalCog(bot))
+    bot.add_cog(GlobalCog(bot))
