@@ -1,12 +1,14 @@
 import ast
 import discord
 import json
-import numpy     as np
+import numpy      as np
 
-from datetime    import datetime, timedelta
-from discord.ext import commands
-from os          import listdir, mkdir, stat
-from PIL         import Image
+from datetime     import datetime, timedelta
+from discord.ext  import commands
+from discord.http import asyncio
+from os           import listdir, mkdir, stat
+from PIL          import Image
+from subprocess   import Popen, PIPE, STDOUT
 
 def multiplyColor(fp, RGB):
     newR, newG, newB = RGB
@@ -399,6 +401,32 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 # Saves the colored images to /color/[palette]/
                 [framesColor[i].save("color/%s/%s-%s-.png" % (palette, name, i), format="PNG") for i in range(len(framesColor))]
         self.notLoading = True
+
+    @commands.command()
+    @commands.is_owner()
+    async def pull(self, ctx):
+        await ctx.send("Pulling the new version from github...")
+        puller = Popen(["git", "pull"], cwd="~/Desktop/robot-private", stdout=PIPE, stderr=STDOUT, universal_newlines=True)
+        process = True
+        # Checks if the process has completed every half a second
+        i = 0
+        returncode = None
+        while process:
+            returncode = puller.poll()
+            i += 0.5
+            if returncode is None:
+                if i > 30:
+                    process = False
+                else:
+                    await asyncio.sleep(0.5)
+            else:
+                process = False
+        stdout, stderr = puller.communicate()
+        if i > 30:
+            await ctx.send("`git pull` took more than 30 seconds to execute. Aborting.")
+        else:
+            await ctx.send(f"`git pull` exited with code {returncode}. Output: ```\n{stdout}\n```")
+    
 
     @commands.command()
     @commands.is_owner()
