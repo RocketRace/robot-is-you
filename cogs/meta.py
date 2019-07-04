@@ -105,6 +105,9 @@ class MetaCog(commands.Cog, name="Other Commands"):
                 color=0xffff00)
         logger = await self.bot.fetch_webhook(594692503014473729)
         await logger.send(content=" ", embed=err)
+    
+    def cog_unload(self):
+        self.bot.help_command = self._original_help_command
 
 def setup(bot):
     bot.add_cog(MetaCog(bot))

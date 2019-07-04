@@ -40,7 +40,7 @@ def insert_returns(body):
     if isinstance(body[-1], ast.With):
         insert_returns(body[-1].body)
     
-class ownerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
+class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     def __init__(self, bot):
         self.bot = bot
         self.tileColors = []
@@ -426,6 +426,12 @@ class ownerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             i += 1
         await msg.edit(content="".join([content, " Done."]))
 
+    @commands.command()
+    @commands.is_owner()
+    async def reloadcog(self, ctx, cog: str):
+        if cog == "all":
+            pass
+
     def _clear_gateway_data(self):
         weekAgo = datetime.utcnow() - timedelta(days=7)
         to_remove = [index for index, dt in enumerate(self.resumes) if dt < weekAgo]
@@ -452,6 +458,4 @@ class ownerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         self._clear_gateway_data()   
 
 def setup(bot):
-    bot.add_cog(ownerCog(bot))
-
-
+    bot.add_cog(OwnerCog(bot))
