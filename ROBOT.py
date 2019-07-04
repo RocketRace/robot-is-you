@@ -26,4 +26,14 @@ if __name__ == "__main__":
     for cog in COGS:
         bot.load_extension(cog)
 
+# Allows for the code to be reloaded without reloading the bot
+@bot.command()
+@commands.is_owner()
+async def reloadcog(ctx, cog: str):
+    if cog == "all":
+        for extension in bot.extensions.keys():
+            bot.reload_extension(extension)
+    elif cog in bot.extensions.keys():
+        bot.reload_extension(cog)
+
 bot.run(BOT_TOKEN, bot = True, reconnect = True)
