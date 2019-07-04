@@ -33,7 +33,10 @@ async def reloadcog(ctx, cog: str):
     if cog == "all":
         for extension in bot.extensions.keys():
             bot.reload_extension(extension)
+            await ctx.send("Reloaded all extensions.")
     elif cog in bot.extensions.keys():
         bot.reload_extension(cog)
+        await ctx.send("Reloaded extension.")
+    
 
 bot.run(BOT_TOKEN, bot = True, reconnect = True)
