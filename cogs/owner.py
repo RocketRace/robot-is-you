@@ -426,12 +426,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             i += 1
         await msg.edit(content="".join([content, " Done."]))
 
-    @commands.command()
-    @commands.is_owner()
-    async def reloadcog(self, ctx, cog: str):
-        if cog == "all":
-            pass
-
     def _clear_gateway_data(self):
         weekAgo = datetime.utcnow() - timedelta(days=7)
         to_remove = [index for index, dt in enumerate(self.resumes) if dt < weekAgo]
