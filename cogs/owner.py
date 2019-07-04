@@ -406,7 +406,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.is_owner()
     async def pull(self, ctx):
         await ctx.send("Pulling the new version from github...")
-        puller = Popen(["git", "pull"], cwd="Desktop/robot-private", stdout=PIPE, stderr=STDOUT, universal_newlines=True)
+        puller = Popen(["git", "pull"], cwd="Desktop/robot-private/", stdout=PIPE, stderr=STDOUT, universal_newlines=True)
         process = True
         # Checks if the process has completed every half a second
         i = 0
