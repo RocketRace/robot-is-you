@@ -27,7 +27,7 @@ if __name__ == "__main__":
         bot.load_extension(cog)
 
 # Allows for the code to be reloaded without reloading the bot
-@bot.command()
+@bot.command(hidden=True)
 @commands.is_owner()
 async def reloadcog(ctx, cog: str):
     if cog == "all":
