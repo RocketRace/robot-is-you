@@ -158,7 +158,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
     async def tile(self, ctx, *, palette: str, content: str = ""):
         """
-        Renders the tiles provided in an animated GIF.
+        Renders the tiles provided, with many available options. See more using `help tile`...
         Returns a grid of 24 x 24 animated pixel sprites associated with each input tile. Up to 50 tiles may be rendered per command.
         
         The optional `<palette>` argument will recolor the output based on the color data of the palette. 
