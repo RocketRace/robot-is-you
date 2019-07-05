@@ -422,10 +422,13 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             else:
                 process = False
         stdout, stderr = puller.communicate()
-        if i > 30:
-            await ctx.send("`git pull` took more than 30 seconds to execute. Aborting.")
-        else:
-            await ctx.send(f"`git pull` exited with code {returncode}. Output: ```\n{stdout}\n```")
+        # stderr is always None
+        if stderr is None:
+            if i > 30:
+                await ctx.send("`git pull` took more than 30 seconds to execute. Aborting.")
+                puller.terminate()
+            else:
+                await ctx.send(f"`git pull` exited with code {returncode}. Output: ```\n{stdout}\n```")
     
 
     @commands.command()
