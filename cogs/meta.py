@@ -92,13 +92,14 @@ class MetaCog(commands.Cog, name="Other Commands"):
         """
         Displays bot information.
         """
-        content = "".join(["ROBOT - Bot for Discord based on the indie game Baba Is You.",
-            f"\nDeveloped by RocketRace#0798 (156021301654454272) using the discord.py library.",
-            "\n[Github repository](https://github.com/RocketRace/robot-is-you)",
+        aboutEmbed = discord.Embed(title="About", type="rich", colour=15335523, description="ROBOT - Bot for Discord based on the indie game Baba Is You.")
+        aboutEmbed.add_field(name="Github", value="@ROBOT is [hosted on GitHub.](https://github.com/RocketRace/robot-is-you)")
+        stats = "".join([
             f"\nGuilds: {len(self.bot.guilds)}",
             f"\nUsers: {len(self.bot.users)}",
-            f"\nEmoji: {len(self.bot.emojis)}"])
-        aboutEmbed = discord.Embed(title="About", type="rich", colour=15335523, description=content)
+            f"\nEmoji: {len(self.bot.emojis)}"
+        ])
+        aboutEmbed.add_field(name="Statistics", value=stats)
         await ctx.send(" ", embed=aboutEmbed)
 
     @commands.command()
