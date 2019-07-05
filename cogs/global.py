@@ -74,7 +74,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     def __init__(self, bot):
         self.bot = bot
 
-    # Check if the bot is loading, and that the current guild is not r/surrealmemes 
+    # Check if the bot is loading
     async def cog_check(self, ctx):
         return self.bot.get_cog("Admin").notLoading
 
