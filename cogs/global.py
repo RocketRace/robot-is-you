@@ -275,7 +275,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     async def tileError(self, ctx, error):
         print(error)
         print(error.args)
-        if isinstance(error, InvalidTile):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.send(error)
+        elif isinstance(error, InvalidTile):
             word = error.args[0]
             await ctx.send(f"⚠️ Could not find a tile for \"{word}\".")
         elif isinstance(error, TooManyTiles):
