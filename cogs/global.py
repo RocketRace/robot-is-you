@@ -76,7 +76,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
     # Check if the bot is loading, and that the current guild is not r/surrealmemes 
     async def cog_check(self, ctx):
-        return self.bot.get_cog("Admin").notLoading and ctx.channel.guild.id != 294479294040768524
+        return self.bot.get_cog("Admin").notLoading
 
     @commands.command(hidden=True)
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
