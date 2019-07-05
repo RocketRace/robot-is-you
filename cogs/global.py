@@ -177,21 +177,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         If any part of the command is hidden behind spoiler tags (like ||this||), the resulting gif will be marked as a spoiler. 
         """
         async with ctx.typing():
-            # Determines which palette to use
-            # If the argument is not of the format, it is prepended to the tile list
-
-            # The parameters of this command are a lie to appease the help command: here's what actually happens
-            pal = ""
-            tiles = ""
-            if palette.startswith("palette:"):
-                spl = palette.split(" ")
-                pal = spl[0][8:]
-                if pal + ".png" not in listdir("palettes"):
-                    raise InvalidPalette(pal)
-                tiles = " ".join(spl[1:])
-            else:
-                pal = "default"
-                tiles = palette
+            # The parameters of this command are a lie to appease the help command: here's what actually happens            
+            tiles = palette
             
             # Determines if this should be a spoiler
             spoiler = tiles.replace("|", "") != tiles
@@ -207,6 +194,20 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             
             # Split each row into words
             wordGrid = [row.split() for row in wordRows]
+
+            # Determines which palette to use
+            # If the argument (i.e. the first tile) is of the format "palette:xyz", it is popped from the tile list
+            firstarg = wordGrid[0][0]
+            pal = ""
+            if firstarg.startswith("palette:"):
+                pal = firstarg[8:] 
+                if pal + ".png" not in listdir("palettes"):
+                    raise InvalidPalette(pal)
+                wordGrid[0].pop(0)
+                if not wordGrid[0]:
+                    wordGrid[0].append("-")
+            else:
+                pal = "default"
             
             # Splits the "text_x,y,z..." shortcuts into "text_x", "text_y", ...
             if not rule:
@@ -273,6 +274,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     @tile.error
     async def tileError(self, ctx, error):
         print(error)
+        print(error.args)
         if isinstance(error, InvalidTile):
             word = error.args[0]
             await ctx.send(f"⚠️ Could not find a tile for \"{word}\".")
