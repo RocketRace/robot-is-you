@@ -82,9 +82,9 @@ class MetaCog(commands.Cog, name="Other Commands"):
         bot.help_command = PrettyHelpCommand(**dict(paginator=commands.Paginator(prefix="", suffix="")))
         bot.help_command.cog = self
 
-    # Check if the bot is loading, and that the current guild is not r/surrealmemes 
+    # Check if the bot is loading
     async def cog_check(self, ctx):
-        return self.bot.get_cog("Admin").notLoading and ctx.channel.guild.id != 294479294040768524
+        return self.bot.get_cog("Admin").notLoading
 
     @commands.command()
     @commands.cooldown(2, 5, commands.BucketType.channel)
