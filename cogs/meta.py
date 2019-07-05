@@ -108,7 +108,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
         '''
         Invite the bot to your own server!
         '''
-        msg = discord.Embed(title="Invite", description="[Click Here to invite the bot to your guild!]" + \
+        msg = discord.Embed(title="Invite", colour=15335523, description="[Click Here to invite the bot to your guild!]" + \
             "(https://discordapp.com/api/oauth2/authorize?client_id=480227663047294987&scope=bot&permissions=388160)\n")
 
         msg.add_field(name="Support Server", value="[Click here to join RocketRace's Bots](https://discord.gg/rMX3YPK)\n")
