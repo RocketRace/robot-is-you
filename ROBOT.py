@@ -16,10 +16,20 @@ COGS = configuration.get("cogs")
 PREFIXES = configuration.get("prefixes")
 WEBHOOK_ID = configuration.get("webhook")
 WEBHOOK_TOKEN = configuration.get("webhook-token")
-EMBED_COLOR = int(configuration.get("color"))
+EMBED_COLOR = configuration.get("color")
+
+# Uses a custom bot class
+class BabaBot(commands.Bot):
+    def __init__(self, command_prefix, webhook_id, embed_color, help_command=None, description=None, **options):
+        self.loading = False
+        self.tileStats = None
+        self.embedColor = embed_color
+        self.webhookId = webhook_id
+        super().__init__(command_prefix, help_command=help_command, description=description, **options)
+
 
 # Establishes the bot
-bot = commands.Bot(command_prefix=PREFIXES, case_insensitive=True, activity=DEFAULT_ACTIVITY, owner_id = 156021301654454272)
+bot = BabaBot(PREFIXES, WEBHOOK_ID, EMBED_COLOR, case_insensitive=True, activity=DEFAULT_ACTIVITY, owner_id = 156021301654454272)
 
 # Loads the modules of the bot
 if __name__ == "__main__":
@@ -37,7 +47,7 @@ async def reloadcog(ctx, cog: str):
         await ctx.send("Reloaded all extensions.")
     elif cog in bot.extensions.keys():
         bot.reload_extension(cog)
-        await ctx.send("Reloaded extension.")
+        await ctx.send(f"Reloaded extension `{cog}` from `cogs/{cog}.py`.")
     
 
 bot.run(BOT_TOKEN, bot = True, reconnect = True)
