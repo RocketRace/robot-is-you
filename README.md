@@ -4,7 +4,7 @@ A fun Discord bot based on the indie game [Baba Is You](https://store.steampower
 
 # Functionality
 
-A list of commands can be seen using the `help` command. (By default, the bot has a prefix of `+`.)
+A list of all commands can be seen using the `help` command. (By default, the bot has a prefix of `+`.)
 
 This bot primarily features rendering and animation of tiles in *Baba Is You*, through the `tile` and `rule` commands, as seen below. The command has many options, detailed in `help tile`.
 
