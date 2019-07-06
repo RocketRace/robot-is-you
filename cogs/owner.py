@@ -6,7 +6,6 @@ import numpy      as np
 
 from datetime     import datetime, timedelta
 from discord.ext  import commands, tasks
-from discord.http import asyncio
 from os           import listdir, mkdir, stat
 from PIL          import Image
 from subprocess   import Popen, PIPE, STDOUT
@@ -64,7 +63,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         self.bot.loading = False
 
         # Start tasks
-        self.statSaver.start()
+        self.statSaver.start() # pylint: disable=no-member
 
     @tasks.loop(minutes=2.0)
     async def statSaver(self):
@@ -74,6 +73,10 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         json.dump(to_dump, fp)
         fp.close()
         print("Saved tile stats.")
+
+    @statSaver.before_loop
+    async def before_anything_runs(self):
+        await self.bot.wait_until_ready()
 
     @commands.command()
     @commands.is_owner()
