@@ -99,7 +99,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         cutoff = len(query)
         try:
             # Searches through a list of the names of each tile
-            for name in [tile["name"] for tile in self.bot.tileColors]:
+            for name in [tile["name"] for tile in self.bot.get_cog("Admin").tileColors]:
                 match = False
                 # If the name starts with {query}, match succeeds
                 if name[:cutoff] == query:
