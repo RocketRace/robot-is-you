@@ -13,19 +13,20 @@ By EeviePy on GitHub: https://gist.github.com/EvieePy/7822af90858ef65012ea500bce
 class CommandErrorHandler(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.webhook_id = bot.webhook_id
         self.logger = None
+
+    async def setupLogger(self, webhook_id):
+        return await self.bot.fetch_webhook(webhook_id)
 
     @commands.Cog.listener()
     async def on_error(self, ctx, error):
         if self.logger == None:
-            configFile = open("setup.json")
-            config = load(configFile)
-            if config.get("webhook") != "":
-                self.logger = await self.bot.fetch_webhook(int(config.get("webhook")))
+            self.logger = await self.setupLogger(self.webhook_id)
 
         error = getattr(error, 'original', error)
         
-        emb = discord.Embed(title="Command Error", color=0xffff00)
+        emb = discord.Embed(title="Error", color=0xffff00)
         emb.description = str(error)
         chan = "`Direct Message`"
         gui = "Guild: [None]"
@@ -33,10 +34,12 @@ class CommandErrorHandler(commands.Cog):
             chan = ctx.channel.name
             gui = f"Guild: {ctx.guild.name} (ID:{ctx.guild.id})"
         emb.add_field(name="Error Context", 
-                    value="".join([f"Message: `{ctx.message.content}` (ID: {ctx.message.id})\n",
-                             f"User: {ctx.author.name}#{ctx.author.discriminator} (ID: {ctx.author.id}\n",
-                             f"Channel: #{chan} (ID: {ctx.channel.id})\n", 
-                             gui]))
+            value="".join([f"Message: `{ctx.message.content}` (ID: {ctx.message.id})\n",
+                f"User: {ctx.author.name}#{ctx.author.discriminator} (ID: {ctx.author.id}\n",
+                f"Channel: #{chan} (ID: {ctx.channel.id})\n", 
+                gui
+            ])
+        )
 
     
     @commands.Cog.listener()
@@ -46,10 +49,7 @@ class CommandErrorHandler(commands.Cog):
         error : Exception"""
 
         if self.logger == None:
-            configFile = open("setup.json")
-            config = load(configFile)
-            if config.get("webhook") != "":
-                self.logger = await self.bot.fetch_webhook(int(config.get("webhook")))
+            self.logger = await self.setupLogger(self.webhook_id)
 
         # This prevents any commands with local handlers being handled here in on_command_error.
         if hasattr(ctx.command, 'on_error'):

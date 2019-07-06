@@ -56,12 +56,6 @@ async def magickImages(wordGrid, width, height, palette):
         # Saves the final image
         renderFrame.save(f"renders/{fr}.png")
 
-        # # Merges the images with imagemagick
-        # cmd =["magick", "montage", "-geometry", "200%+0+0", "-background", "none",
-        # "-colors", "255", "-tile", "%sx%s" % (width, height)]
-        # cmd.extend(paths) 
-        # cmd.append("renders/render_%s.png" % fr)
-        # call(cmd)
     # Joins each frame into a .gif
     fp = open(f"renders/render.gif", "w")
     fp.truncate(0)
@@ -76,7 +70,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
     # Check if the bot is loading
     async def cog_check(self, ctx):
-        return self.bot.get_cog("Admin").notLoading
+        return not self.bot.loading
 
     @commands.command(hidden=True)
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
@@ -85,7 +79,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             "DM @RocketRace#0798 about it! \nI can help you if you send me:\n * **The sprites you want added**, " + \
             "preferably in an archived file (without any color, and in 24x24)\n * **The color of the sprites**, " + \
             "an (x,y) coordinate on the default Baba color palette.\nFor examples of this, check the `values.lua` " + \
-            "file in your Baba Is You local files!", color=15335523)
+            "file in your Baba Is You local files!", color=self.bot.embedColor)
         await ctx.send(" ", embed=msg)
 
     # Searches for a tile that matches the string provided
@@ -105,7 +99,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         cutoff = len(query)
         try:
             # Searches through a list of the names of each tile
-            for name in [tile["name"] for tile in self.bot.get_cog("Admin").tileColors]:
+            for name in [tile["name"] for tile in self.bot.tileColors]:
                 match = False
                 # If the name starts with {query}, match succeeds
                 if name[:cutoff] == query:

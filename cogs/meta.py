@@ -8,11 +8,16 @@ from time         import time
 
 # Custom help command implementation
 class PrettyHelpCommand(commands.DefaultHelpCommand):
+
+    def __init__(self, embedColor, **options):
+        self.embedColor = embedColor
+        super().__init__(**options)
+
     async def send_pages(self):
         # Overwrite the send method to send each page in an embed instead
         destination = self.get_destination()
         for page in self.paginator.pages:
-            formatted = discord.Embed(description=page, color=15335523)
+            formatted = discord.Embed(description=page, color=self.embedColor)
             await destination.send(" ", embed=formatted)
 
     def add_indented_commands(self, commands, *, heading, max_size=None):
@@ -79,12 +84,12 @@ class MetaCog(commands.Cog, name="Other Commands"):
         self.bot = bot
         self._original_help_command = bot.help_command
         # Sets up the help command
-        bot.help_command = PrettyHelpCommand(**dict(paginator=commands.Paginator(prefix="", suffix="")))
+        bot.help_command = PrettyHelpCommand(bot.embedColor, **dict(paginator=commands.Paginator(prefix="", suffix="")))
         bot.help_command.cog = self
 
     # Check if the bot is loading
     async def cog_check(self, ctx):
-        return self.bot.get_cog("Admin").notLoading
+        return not self.bot.loading
 
     @commands.command()
     @commands.cooldown(2, 5, commands.BucketType.channel)
@@ -92,7 +97,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
         """
         Displays bot information.
         """
-        aboutEmbed = discord.Embed(title="About", type="rich", colour=15335523, description="ROBOT - Bot for Discord based on the indie game Baba Is You.")
+        aboutEmbed = discord.Embed(title="About", type="rich", colour=self.bot.embedColor, description="ROBOT - Bot for Discord based on the indie game Baba Is You.")
         aboutEmbed.add_field(name="Github", value="[GitHub repository](https://github.com/RocketRace/robot-is-you)")
         stats = "".join([
             f"\nGuilds: {len(self.bot.guilds)}",
@@ -108,7 +113,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
         '''
         Invite the bot to your own server!
         '''
-        msg = discord.Embed(title="Invite", colour=15335523, description="[Click Here to invite the bot to your guild!]" + \
+        msg = discord.Embed(title="Invite", colour=self.bot.embedColor, description="[Click Here to invite the bot to your guild!]" + \
             "(https://discordapp.com/api/oauth2/authorize?client_id=480227663047294987&scope=bot&permissions=388160)\n")
 
         msg.add_field(name="Support Server", value="[Click here to join RocketRace's Bots](https://discord.gg/rMX3YPK)\n")

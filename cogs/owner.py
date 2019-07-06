@@ -60,7 +60,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         self.resumes = []
 
         # Are assets loading?
-        self.notLoading = True
+        self.bot.loading = False
 
     @commands.command()
     @commands.is_owner()
@@ -161,7 +161,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.command()
     @commands.is_owner()
     async def loadchanges(self, ctx):
-        self.notLoading = False
+        self.bot.loading = True
         
         self.alternateTiles = {}
 
@@ -234,7 +234,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         alternateFile.truncate()
         json.dump(self.alternateTiles, alternateFile, indent=3)
         alternateFile.close()
-        self.notLoading = True
+        self.bot.loading = False
 
     @commands.command()
     @commands.is_owner()
@@ -243,7 +243,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
         self.tileColors = []
 
-        self.notLoading = False
+        self.bot.loading = True
         # values.lua contains the data about which color (on the palette) is associated with each tile.
         colorvalues = open("values.lua")
         lines = colorvalues.readlines()
@@ -322,7 +322,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         # Missing letter tiles
         letters = "djkpqyz"
         for c in letters:
-            self.tileColors.append({"name":"text_%s" % c, "sprite":"text_%s" % c, "color":["0","3"]})
+            self.bot.append({"name":"text_%s" % c, "sprite":"text_%s" % c, "color":["0","3"]})
         # Load custom tile data from a json files
         for f in listdir("custom"):
             fp = open("custom/%s" % f)
@@ -356,13 +356,13 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         json.dump(self.tileColors, emotefile, indent=3)
         emotefile.close()
 
-        self.notLoading = True
+        self.bot.loading = False
 
     @commands.command()
     @commands.is_owner()
     async def loadpalette(self, ctx, arg):
         
-        self.notLoading = False
+        self.bot.loading = True
 
         # Tests for a supplied palette
         if arg not in [str[:-4] for str in listdir("palettes")]:
@@ -400,7 +400,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 framesColor = [multiplyColor(fp, paletteColors[x][y]) for fp in files]
                 # Saves the colored images to /color/[palette]/
                 [framesColor[i].save("color/%s/%s-%s-.png" % (palette, name, i), format="PNG") for i in range(len(framesColor))]
-        self.notLoading = True
+        self.bot.loading = False
 
     @commands.command()
     @commands.is_owner()
