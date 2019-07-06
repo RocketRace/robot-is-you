@@ -13,16 +13,16 @@ By EeviePy on GitHub: https://gist.github.com/EvieePy/7822af90858ef65012ea500bce
 class CommandErrorHandler(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.webhook_id = bot.webhook_id
+        self.webhookId = bot.webhookId
         self.logger = None
 
-    async def setupLogger(self, webhook_id):
-        return await self.bot.fetch_webhook(webhook_id)
+    async def setupLogger(self, webhookId):
+        return await self.bot.fetch_webhook(webhookId)
 
     @commands.Cog.listener()
     async def on_error(self, ctx, error):
         if self.logger == None:
-            self.logger = await self.setupLogger(self.webhook_id)
+            self.logger = await self.setupLogger(self.webhookId)
 
         error = getattr(error, 'original', error)
         
@@ -49,7 +49,7 @@ class CommandErrorHandler(commands.Cog):
         error : Exception"""
 
         if self.logger == None:
-            self.logger = await self.setupLogger(self.webhook_id)
+            self.logger = await self.setupLogger(self.webhookId)
 
         # This prevents any commands with local handlers being handled here in on_command_error.
         if hasattr(ctx.command, 'on_error'):

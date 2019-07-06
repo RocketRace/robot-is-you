@@ -135,6 +135,41 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         fp = discord.File("tilelist.txt")
         await ctx.send("List of all valid tiles:", file=fp)
 
+    @commands.cooldown(2, 10, type=commands.BucketType.channel)
+    @commands.command()
+    async def top(self, ctx, n: int = 20):
+        """
+        Returns the most commonly rendered tiles.
+        If `n` is provided, returns up to 10 tiles, starting with the tile with rank `n` and counting down to rank `n - 10`.
+        If `n` is 10 or less, returns the `n` most common tiles.
+        """
+        # Tidies up input
+        if type(n) != int:
+            raise TypeError
+        if n < 1 or n > len(self.bot.tileStats):
+            raise IndexError
+        # Gets the values requested
+        sortedKeys = sorted(self.bot.tileStats, key=self.bot.tileStats.get, reverse=True)
+        if n <= 20:
+            returnedKeys = sortedKeys[:n]
+            returnCount = n
+        else:
+            returnedKeys = sortedKeys[(n - 20):n]
+            returnCount = 20
+        returnedValues = [self.bot.tileStats[key] for key in returnedKeys]
+        # Calculates the percentage the values are worth
+        totalCount = self.bot.tileStats.get("_total")
+        percentages = [round(value / totalCount, 1) * 100 for value in returnedValues]
+        # Makes it pretty
+        neatPercentages = [str(pc) + " %" for pc in percentages]
+        # Joins the data together into a nice list
+        joined = [f"#{returnedKeys[i]}, `{returnedValues[i]}`: {neatPercentages[i]}" for i in range(returnCount)]
+        # Joins the data into a string
+        content = "\n".join(joined)
+        content = "\n".join(f"The most commonly used tiles from #{n - returnCount + 1} to #{n}")
+        embed = discord.Embed(title="Top Tiles", description=content, color=self.bot.embedColor)
+        await ctx.send(" ", embed=embed)
+
     @commands.cooldown(2,10,type=commands.BucketType.channel)
     @commands.command(name="palettes")
     async def listPalettes(self, ctx):
