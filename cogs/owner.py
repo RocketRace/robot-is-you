@@ -66,8 +66,10 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     async def statSaver(self):
         to_dump = self.bot.tileStats
         fp = open("tilestats.json")
+        fp.truncate(0)
         json.dump(to_dump, fp)
         fp.close()
+        print("Saved tile stats.")
 
     @commands.command()
     @commands.is_owner()
