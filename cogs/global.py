@@ -307,7 +307,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                         if self.bot.tileStats.get(word) is None:
                             self.bot.tileStats[word] = 1
                         else:
-                            self.bot.tileStats[word] += 1               
+                            self.bot.tileStats[word] += 1
+                        self.bot.tileStats["_total"] += 1               
 
             # Merges the images found
             await magickImages(wordGrid, width, height, pal) # Previously used mergeImages()
