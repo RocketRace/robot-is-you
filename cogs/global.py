@@ -148,7 +148,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             raise TypeError
         if n < 1 or n > len(self.bot.tileStats):
             raise IndexError
-            
+
         # Gets the values requested
         sortedKeys = sorted(self.bot.tileStats, key=self.bot.tileStats.get, reverse=True)
         if n <= 20:
@@ -300,6 +300,15 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                             if not isfile(f"color/{pal}/{word}-0-.png"):
                                 raise InvalidTile(word)
                 
+            # Gathers statistics on the tiles, now that the grid is "pure"
+            for row in wordGrid:
+                for stack in row:
+                    for word in stack:
+                        if self.bot.tileStats.get(word) is None:
+                            self.bot.tileStats[word] = 1
+                        else:
+                            self.bot.tileStats[word] += 1               
+
             # Merges the images found
             await magickImages(wordGrid, width, height, pal) # Previously used mergeImages()
             # Sends the image through discord
