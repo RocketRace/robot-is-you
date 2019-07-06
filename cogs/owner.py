@@ -63,6 +63,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         # Are assets loading?
         self.bot.loading = False
 
+        # Start tasks
+        self.statSaver.start()
+
     @tasks.loop(minutes=2.0)
     async def statSaver(self):
         to_dump = self.bot.tileStats
