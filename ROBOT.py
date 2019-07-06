@@ -22,7 +22,11 @@ EMBED_COLOR = configuration.get("color")
 class BabaBot(commands.Bot):
     def __init__(self, command_prefix, webhook_id, embed_color, help_command=None, description=None, **options):
         self.loading = False
-        self.tileStats = {"_total":0}
+        
+        fp = open("tilestats.json")
+        self.tileStats = load(fp)
+        fp.close
+        
         self.embedColor = embed_color
         self.webhookId = webhook_id
         super().__init__(command_prefix, help_command=help_command, description=description, **options)

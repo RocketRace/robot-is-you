@@ -4,7 +4,7 @@ import json
 import numpy      as np
 
 from datetime     import datetime, timedelta
-from discord.ext  import commands
+from discord.ext  import commands, tasks
 from discord.http import asyncio
 from os           import listdir, mkdir, stat
 from PIL          import Image
@@ -61,6 +61,13 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
         # Are assets loading?
         self.bot.loading = False
+
+    @tasks.loop(minutes=2.0)
+    async def statSaver(self):
+        to_dump = self.bot.tileStats
+        fp = open("tilestats.json")
+        json.dump(to_dump, fp)
+        fp.close()
 
     @commands.command()
     @commands.is_owner()
