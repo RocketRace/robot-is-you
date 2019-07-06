@@ -46,7 +46,7 @@ async def reloadcog(ctx, cog: str):
             bot.reload_extension(extension)
         await ctx.send("Reloaded all extensions.")
     elif cog in bot.extensions.keys():
-        bot.reload_extension(cog)
+        bot.reload_extension("cogs." + cog)
         await ctx.send(f"Reloaded extension `{cog}` from `cogs/{cog}.py`.")
     
 
