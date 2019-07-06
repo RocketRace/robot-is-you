@@ -92,6 +92,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         Can return up to 20 tiles per search.
         Tiles may be used in the `tile` (and subsequently `rule`) commands.
         """
+        sanitizedQuery = discord.utils.escape_mentions(query)
         matches = []
         # How many results will be shown
         limit = 20
@@ -118,9 +119,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         else:
             count = len(matches)
             if count == 0:
-                await ctx.send(f"Found no results for \"{query}\".")
+                await ctx.send(f"Found no results for \"{sanitizedQuery}\".")
             else:
-                matches.insert(0, f"Found {len(matches)} results for \"{query}\":")
+                matches.insert(0, f"Found {len(matches)} results for \"{sanitizedQuery}\":")
                 content = "\n".join(matches)
                 await ctx.send(content)
 
@@ -320,17 +321,21 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     async def tileError(self, ctx, error):
         print(error)
         print(error.args)
+        # Removes @everyone/here, @role and @user mentions
+        safeArgs = (discord.utils.escape_mentions(arg) for arg in error.args)
+        arg = ""
+        if len(safeArgs) == 1:
+            arg = safeArgs[0]
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.send(error)
         elif isinstance(error, InvalidTile):
-            word = error.args[0]
-            await ctx.send(f"⚠️ Could not find a tile for \"{word}\".")
+            await ctx.send(f"⚠️ Could not find a tile for \"{arg}\".")
         elif isinstance(error, TooManyTiles):
-            await ctx.send(f"⚠️ Too many tiles ({error.args[0]}). You may only render up to 50 tiles at once, including empty tiles.")
+            await ctx.send(f"⚠️ Too many tiles ({arg}). You may only render up to 50 tiles at once, including empty tiles.")
         elif isinstance(error, StackTooHigh):
-            await ctx.send(f"⚠️ Stack too high ({error.args[0]}). You may only stack up to 3 tiles on one space.")
+            await ctx.send(f"⚠️ Stack too high ({arg}). You may only stack up to 3 tiles on one space.")
         elif isinstance(error, InvalidPalette):
-            await ctx.send(f"⚠️ Could not find a palette with name {error.args[0]}).")
+            await ctx.send(f"⚠️ Could not find a palette with name {arg}).")
 
 def setup(bot):
     bot.add_cog(GlobalCog(bot))
