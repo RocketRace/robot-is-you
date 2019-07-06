@@ -148,6 +148,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             raise TypeError
         if n < 1 or n > len(self.bot.tileStats):
             raise IndexError
+            
         # Gets the values requested
         sortedKeys = sorted(self.bot.tileStats, key=self.bot.tileStats.get, reverse=True)
         if n <= 20:
@@ -157,13 +158,17 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             returnedKeys = sortedKeys[(n - 20):n]
             returnCount = 20
         returnedValues = [self.bot.tileStats[key] for key in returnedKeys]
+
         # Calculates the percentage the values are worth
         totalCount = self.bot.tileStats.get("_total")
         percentages = [round(value / totalCount, 1) * 100 for value in returnedValues]
+
         # Makes it pretty
         neatPercentages = [str(pc) + " %" for pc in percentages]
+
         # Joins the data together into a nice list
         joined = [f"#{returnedKeys[i]}, `{returnedValues[i]}`: {neatPercentages[i]}" for i in range(returnCount)]
+
         # Joins the data into a string
         content = "\n".join(joined)
         content = "\n".join(f"The most commonly used tiles from #{n - returnCount + 1} to #{n}")
