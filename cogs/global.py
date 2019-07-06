@@ -146,21 +146,22 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         # Tidies up input
         if type(n) != int:
             raise TypeError
-        if n < 1 or n > len(self.bot.tileStats):
+        if n < 1 or n > len(self.bot.tileStats) - 1:
             raise IndexError
 
         # Gets the values requested
-        sortedKeys = sorted(self.bot.tileStats, key=self.bot.tileStats.get, reverse=True)
+        totals = {key:value for key, value in self.bot.tileStats.items() if key != "_total"}
+        sortedKeys = sorted(totals, key=totals.get, reverse=True)
         if n <= 20:
             returnedKeys = sortedKeys[:n]
             returnCount = n
         else:
             returnedKeys = sortedKeys[(n - 20):n]
             returnCount = 20
-        returnedValues = [self.bot.tileStats[key] for key in returnedKeys]
+        returnedValues = [totals[key] for key in returnedKeys]
 
         # Calculates the percentage the values are worth
-        totalCount = self.bot.tileStats.get("_total")
+        totalCount = totals.get("_total")
         percentages = [round(value / totalCount, 1) * 100 for value in returnedValues]
 
         # Makes it pretty
