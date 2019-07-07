@@ -322,7 +322,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         print(error)
         print(error.args)
         # Removes @everyone/here, @role and @user mentions
-        safeArgs = (discord.utils.escape_mentions(arg) for arg in error.args)
+        safeArgs = [discord.utils.escape_mentions(arg) for arg in error.args]
         arg = ""
         if len(safeArgs) == 1:
             arg = safeArgs[0]
