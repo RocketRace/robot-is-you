@@ -60,8 +60,8 @@ async def magickImages(wordGrid, width, height, palette):
     fp = open(f"renders/render.gif", "w")
     fp.truncate(0)
     fp.close()
-    # call(["magick", "convert", "renders/*.png", "-scale", "200%", "-set", "delay", "20", 
-        # "-set", "dispose", "2", "renders/render.gif"])
+    call(["magick", "convert", "renders/*.png", "-scale", "200%", "-set", "delay", "20", 
+        "-set", "dispose", "2", "renders/render.gif"])
 
 
 class GlobalCog(commands.Cog, name="Baba Is You"):
