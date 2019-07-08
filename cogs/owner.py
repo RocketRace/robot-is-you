@@ -78,6 +78,46 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
     @commands.command()
     @commands.is_owner()
+    async def compileSurrealMemes(self, ctx):
+        '''
+        Life is a mystery, and death is the clearest.
+        '''
+        await ctx.send("This is going to take a while...")
+        surrealLore = self.bot.get_guild(294479294040768524).get_channel(358813638519422976)
+        lore = []
+
+        creationInAJar = {"from before":"history began its way"}
+
+        year = 0
+        async for fragment in surrealLore.history():
+            if year == 0:
+                creationInAJar["from before"] = fragment.id
+            measure = 0
+            worthy = False
+            for one in fragment.content:
+                if measure > 20 or one == "\n":
+                    worthy = True
+                    break
+                measure += 1
+            if worthy:
+                lore.append(fragment.content)
+            year += 1
+            if year % 50 == 0:
+                await ctx.send("50 years have been acquiesced.")
+        
+        creationInAJar["eternity in a pocket"] = lore
+
+        repositoryOfTheGods = open("data.json")
+        repositoryOfTheGods.truncate(0)
+        json.dump(lore, repositoryOfTheGods)
+        repositoryOfTheGods.close()
+        
+        await ctx.send("All of history is within me.")
+                 
+            
+
+    @commands.command()
+    @commands.is_owner()
     async def debug(self, ctx):
         yesterday = datetime.utcnow() - timedelta(days=1)
         identifiesDay = sum([1 for event in self.identifies if event > yesterday])
