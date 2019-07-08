@@ -89,7 +89,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         creationInAJar = {"from before":"history began its way"}
 
         year = 0
-        async for fragment in surrealLore.history():
+        async for fragment in surrealLore.history(limit=None):
             if year == 0:
                 creationInAJar["from before"] = fragment.id
             measure = 0
