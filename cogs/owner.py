@@ -5,7 +5,7 @@ import json
 import numpy      as np
 
 from datetime     import datetime, timedelta
-from discord.ext  import commands, tasks
+from discord.ext  import commands
 from os           import listdir, mkdir, stat
 from PIL          import Image
 from subprocess   import Popen, PIPE, STDOUT
@@ -43,6 +43,18 @@ def insert_returns(body):
         insert_returns(body[-1].body)
     
 class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
+    # A task to save the tile stats
+    async def statSaver(self):
+        await self.bot.wait_until_ready()
+        while self.keepSaving and self.bot.is_ready():
+            await asyncio.sleep(60)
+            to_dump = self.bot.tileStats
+            fp = open("tilestats.json", "wt")
+            fp.truncate(0)
+            json.dump(to_dump, fp)
+            fp.close()
+            print("Saved tile stats.")
+    
     def __init__(self, bot):
         self.bot = bot
         self.tileColors = []
@@ -55,28 +67,14 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         altFile = "alternatetiles.json"
         if stat(altFile).st_size != 0:
             self.alternateTiles = json.load(open(altFile))
+        self.bot.loop.create_task(self.statSaver())
 
         self.identifies = []
         self.resumes = []
+        self.keepSaving = True
 
         # Are assets loading?
         self.bot.loading = False
-
-        # Start tasks
-        self.statSaver.start() # pylint: disable=no-member
-
-    @tasks.loop(minutes=2.0)
-    async def statSaver(self):
-        to_dump = self.bot.tileStats
-        fp = open("tilestats.json")
-        fp.truncate(0)
-        json.dump(to_dump, fp)
-        fp.close()
-        print("Saved tile stats.")
-
-    @statSaver.before_loop
-    async def before_anything_runs(self):
-        await self.bot.wait_until_ready()
 
     @commands.command()
     @commands.is_owner()
