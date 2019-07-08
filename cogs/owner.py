@@ -107,9 +107,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         
         creationInAJar["eternity in a pocket"] = lore
 
-        repositoryOfTheGods = open("data.json")
+        repositoryOfTheGods = open("data.json", "wt")
         repositoryOfTheGods.truncate(0)
-        json.dump(lore, repositoryOfTheGods)
+        json.dump(creationInAJar, repositoryOfTheGods, indent=1)
         repositoryOfTheGods.close()
         
         await ctx.send("All of history is within me.")
