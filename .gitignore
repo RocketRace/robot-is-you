@@ -4,13 +4,7 @@ renders/
 palettes/
 themes/
 levels/
-tilecolors.json
-alternatetiles.json
-testing.py
-setup.json
-alternatetiles.json
-tilecolors.json
-tilestats.json
+*.json
 log.txt
 empty.png
 .DS_Store
