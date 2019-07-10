@@ -60,7 +60,7 @@ async def magickImages(wordGrid, width, height, palette):
     fp = open(f"renders/render.gif", "w")
     fp.truncate(0)
     fp.close()
-    call(["magick", "convert", "renders/*.png", "-scale", "100%", "-set", "delay", "10", 
+    call(["magick", "convert", "renders/*.png", "-scale", "200%", "-set", "delay", "20", 
         "-set", "dispose", "2", "renders/render.gif"])
 
 
