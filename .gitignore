@@ -5,6 +5,7 @@ palettes/
 themes/
 levels/
 *.json
+!custom/*
 log.txt
 empty.png
 .DS_Store
