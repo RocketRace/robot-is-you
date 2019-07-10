@@ -24,6 +24,9 @@ class StackTooHigh(commands.UserInputError):
 class InvalidPalette(commands.UserInputError):
     pass
 
+class OutOfRange(commands.UserInputError):
+    pass
+
 # Takes a list of tile names and generates a gif with the associated sprites
 async def magickImages(wordGrid, width, height, palette):
     # For each animation frame
@@ -147,8 +150,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         # Tidies up input
         if type(n) != int:
             return await ctx.send("⚠️ Please input only numbers.")
-        if n < 1 or n > len(self.bot.tileStats["tiles"]) - 1:
-            raise IndexError
+        if n < 1 or n > len(self.bot.tileStats["tiles"]):
+            raise OutOfRange(str(n), str(len(self.bot.tileStats["tiles"])))
 
         # Total tiles
         totalCount = self.bot.tileStats.get("total")
@@ -178,6 +181,15 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
         # Send it
         await ctx.send(" ", embed=embed)
+
+    @top.error
+    async def topError(self, ctx, error):
+        print(error)
+        args = error.args
+        if isinstance(error, OutOfRange):
+            return await ctx.send(f"⚠️ That value ({args[0]}) is out of range ({args[1]} max).")
+        if isinstance(error, commands.CommandOnCooldown):
+            return await ctx.send(str(error))
 
     @commands.cooldown(2,10,type=commands.BucketType.channel)
     @commands.command(name="palettes")
@@ -311,13 +323,13 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 if isfile(f"color/{pal}/{suggestion}-0-.png"):
                                     raise InvalidTile(word, suggestion)
                                 # Answer to both of those: No
-                                raise InvalidTile(word, None)
+                                raise InvalidTile(word, "")
                 
             # Gathers statistics on the tiles, now that the grid is "pure"
             for row in wordGrid:
                 for stack in row:
                     for word in stack:
-                        if self.bot.tileStats["tiles"].get(word) is None:
+                        if self.bot.tileStats["tiles"].get(word) == "":
                             self.bot.tileStats["tiles"][word] = 1
                         else:
                             self.bot.tileStats["tiles"][word] += 1
@@ -339,7 +351,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             return await ctx.send(error)
         if isinstance(error, InvalidTile):
             suggestion = safeArgs[1]
-            if suggestion is None:
+            if suggestion == "":
                 return await ctx.send(f"⚠️ Could not find a tile for \"{arg}\".")
             return await ctx.send(f"⚠️ Could not find a tile for \"{arg}\". Did you mean \"{suggestion}\"?")
         if isinstance(error, TooManyTiles):
