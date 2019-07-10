@@ -60,8 +60,8 @@ async def magickImages(wordGrid, width, height, palette):
     fp = open(f"renders/render.gif", "w")
     fp.truncate(0)
     fp.close()
-    call(["magick", "convert", "renders/*.png", "-scale", "200%", "-set", "delay", "20", 
-        "-set", "dispose", "2", "renders/render.gif"])
+    # call(["magick", "convert", "renders/*.png", "-scale", "100%", "-set", "delay", "10", 
+    #     "-set", "dispose", "2", "renders/render.gif"])
 
 
 class GlobalCog(commands.Cog, name="Baba Is You"):
@@ -89,13 +89,13 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         """
         Searches tiles for rendering from a query.
         Returns a list of tile names that matche the query.
-        Can return up to 20 tiles per search.
+        Can return up to 10 tiles per search.
         Tiles may be used in the `tile` (and subsequently `rule`) commands.
         """
         sanitizedQuery = discord.utils.escape_mentions(query)
         matches = []
         # How many results will be shown
-        limit = 20
+        limit = 10
         # For substrings
         cutoff = len(query)
         try:
@@ -138,7 +138,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
     @commands.command()
-    async def top(self, ctx, n: int = 20):
+    async def top(self, ctx, n: int = 10):
         """
         Returns the most commonly rendered tiles.
         If `n` is provided, returns up to 10 tiles, starting with the tile with rank `n` and counting down to rank `n - 10`.
@@ -146,35 +146,37 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         """
         # Tidies up input
         if type(n) != int:
-            raise TypeError
-        if n < 1 or n > len(self.bot.tileStats) - 1:
+            return await ctx.send("⚠️ Please input only numbers.")
+        if n < 1 or n > len(self.bot.tileStats["tiles"]) - 1:
             raise IndexError
 
+        # Total tiles
+        totalCount = self.bot.tileStats.get("total")
         # Gets the values requested
-        totals = {key:value for key, value in self.bot.tileStats.items() if key != "_total"}
+        totals = {key:value for key, value in self.bot.tileStats["tiles"].items()}
         sortedKeys = sorted(totals, key=totals.get, reverse=True)
-        if n <= 20:
+        if n <= 10:
             returnedKeys = sortedKeys[:n]
-            returnCount = n
+            ranks = ["#" + str(i + 1) for i in range(n)]
         else:
-            returnedKeys = sortedKeys[(n - 20):n]
-            returnCount = 20
+            returnedKeys = sortedKeys[(n - 10):n]
+            ranks = ["#" + str(i + 1) for i in range(n - 10, n, 1)]
         returnedValues = [totals[key] for key in returnedKeys]
 
         # Calculates the percentage the values are worth
-        totalCount = totals.get("_total")
-        percentages = [round(value / totalCount, 1) * 100 for value in returnedValues]
+        percentages = [round(value / totalCount * 100, 1) for value in returnedValues]
 
-        # Makes it pretty
+        # Neat lists (for embed columns)
+        tileNames = ["`" + key + "`" for key in returnedKeys]
         neatPercentages = [str(pc) + " %" for pc in percentages]
 
-        # Joins the data together into a nice list
-        joined = [f"#{returnedKeys[i]}, `{returnedValues[i]}`: {neatPercentages[i]}" for i in range(returnCount)]
+        # Adds columns to an embed
+        embed = discord.Embed(title="Most Commonly Used Tiles", color=self.bot.embedColor)
+        embed.add_field(name="Rank", value="\n".join(ranks))
+        embed.add_field(name="Tile", value="\n".join(tileNames))
+        embed.add_field(name="Usage", value="\n".join(neatPercentages))
 
-        # Joins the data into a string
-        content = "\n".join(joined)
-        content = "\n".join(f"The most commonly used tiles from #{n - returnCount + 1} to #{n}")
-        embed = discord.Embed(title="Top Tiles", description=content, color=self.bot.embedColor)
+        # Send it
         await ctx.send(" ", embed=embed)
 
     @commands.cooldown(2,10,type=commands.BucketType.channel)
@@ -280,7 +282,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             height = len(wordRows)
 
             # Don't proceed if the request is too long.
-            # (It shouldn't be that long to begin with because of Discord's 2000 character limit)
+            # (It shouldn't be that long to begin with because of Discord's 1000 character limit)
             area = width * height
             if area > 50 and ctx.author.id != self.bot.owner_id:
                 raise TooManyTiles(str(area))
@@ -300,17 +302,26 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                         # If not present, trows an exception.
                         if word != "-":
                             if not isfile(f"color/{pal}/{word}-0-.png"):
-                                raise InvalidTile(word)
+                                # Does a text counterpart exist
+                                suggestion = "text_" + word
+                                if isfile(f"color/{pal}/{suggestion}-0-.png"):
+                                    raise InvalidTile(word, suggestion)
+                                # Did the user accidentally prepend "text_" via hand or using +rule?
+                                suggestion = word[5:]
+                                if isfile(f"color/{pal}/{suggestion}-0-.png"):
+                                    raise InvalidTile(word, suggestion)
+                                # Answer to both of those: No
+                                raise InvalidTile(word, None)
                 
             # Gathers statistics on the tiles, now that the grid is "pure"
             for row in wordGrid:
                 for stack in row:
                     for word in stack:
-                        if self.bot.tileStats.get(word) is None:
-                            self.bot.tileStats[word] = 1
+                        if self.bot.tileStats["tiles"].get(word) is None:
+                            self.bot.tileStats["tiles"][word] = 1
                         else:
-                            self.bot.tileStats[word] += 1
-                        self.bot.tileStats["_total"] += 1               
+                            self.bot.tileStats["tiles"][word] += 1
+                        self.bot.tileStats["total"] += 1               
 
             # Merges the images found
             await magickImages(wordGrid, width, height, pal) # Previously used mergeImages()
@@ -323,19 +334,21 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         print(error.args)
         # Removes @everyone/here, @role and @user mentions
         safeArgs = [discord.utils.escape_mentions(arg) for arg in error.args]
-        arg = ""
-        if len(safeArgs) == 1:
-            arg = safeArgs[0]
+        arg = safeArgs[0]
         if isinstance(error, commands.CommandOnCooldown):
-            await ctx.send(error)
-        elif isinstance(error, InvalidTile):
-            await ctx.send(f"⚠️ Could not find a tile for \"{arg}\".")
-        elif isinstance(error, TooManyTiles):
-            await ctx.send(f"⚠️ Too many tiles ({arg}). You may only render up to 50 tiles at once, including empty tiles.")
-        elif isinstance(error, StackTooHigh):
-            await ctx.send(f"⚠️ Stack too high ({arg}). You may only stack up to 3 tiles on one space.")
-        elif isinstance(error, InvalidPalette):
-            await ctx.send(f"⚠️ Could not find a palette with name {arg}).")
+            return await ctx.send(error)
+        if isinstance(error, InvalidTile):
+            suggestion = safeArgs[1]
+            if suggestion is None:
+                return await ctx.send(f"⚠️ Could not find a tile for \"{arg}\".")
+            return await ctx.send(f"⚠️ Could not find a tile for \"{arg}\". Did you mean \"{suggestion}\"?")
+        if isinstance(error, TooManyTiles):
+            return await ctx.send(f"⚠️ Too many tiles ({arg}). You may only render up to 50 tiles at once, including empty tiles.")
+        if isinstance(error, StackTooHigh):
+            return await ctx.send(f"⚠️ Stack too high ({arg}). You may only stack up to 3 tiles on one space.")
+        if isinstance(error, InvalidPalette):
+            return await ctx.send(f"⚠️ Could not find a palette with name {arg}).")
+        return await ctx.send("⚠️ Something went wrong while processing your command.")
 
 def setup(bot):
     bot.add_cog(GlobalCog(bot))
