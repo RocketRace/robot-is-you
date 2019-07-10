@@ -1,0 +1,34 @@
+[
+   {
+      "name":"hempuli",
+      "sprite":"hempuli",
+      "color":[
+         "4",
+         "2"
+      ]
+   },
+   {
+      "name":"text_hempuli",
+      "sprite":"text_hempuli",
+      "color":[
+         "4",
+         "2"
+      ]
+   },
+   {
+       "name":"wug",
+       "sprite":"wug",
+       "color":[
+           "2",
+           "4"
+       ]
+   },
+   {
+    "name":"text_wug",
+    "sprite":"text_wug",
+    "color":[
+        "2",
+        "4"
+    ]
+}
+]
