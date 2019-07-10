@@ -10,6 +10,7 @@ testing.py
 setup.json
 alternatetiles.json
 tilecolors.json
+tilestats.json
 log.txt
 empty.png
 .DS_Store

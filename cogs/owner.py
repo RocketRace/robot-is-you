@@ -47,7 +47,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     async def statSaver(self):
         await self.bot.wait_until_ready()
         while self.keepSaving and self.bot.is_ready():
-            await asyncio.sleep(60)
+            await asyncio.sleep(600)
             to_dump = self.bot.tileStats
             fp = open("tilestats.json", "wt")
             fp.truncate(0)
