@@ -21,7 +21,7 @@ class CommandErrorHandler(commands.Cog):
 
     @commands.Cog.listener()
     async def on_error(self, ctx, error):
-        if self.logger == None:
+        if self.logger is None:
             self.logger = await self.setupLogger(self.webhookId)
 
         error = getattr(error, 'original', error)
@@ -48,7 +48,7 @@ class CommandErrorHandler(commands.Cog):
         ctx   : Context
         error : Exception"""
 
-        if self.logger == None:
+        if self.logger is None:
             self.logger = await self.setupLogger(self.webhookId)
 
         # This prevents any commands with local handlers being handled here in on_command_error.

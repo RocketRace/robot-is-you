@@ -270,7 +270,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                     
             # Adds the data to the list of changed objects
             for key in alts:
-                if self.alternateTiles.get(key) == None:
+                if self.alternateTiles.get(key) is None:
                     self.alternateTiles[key] = [alts[key]]
                 else:
                     duplicate = False
@@ -340,7 +340,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                         # Alternate tile data (initialized with the original)
                         alts = [{"name":name, "sprite":sprite, "color":color}]
                         # Looks for object replacements in the alternateTiles dict
-                        if self.alternateTiles.get(ID) != None:
+                        if self.alternateTiles.get(ID) is not None:
                             # Each replacement for the object ID:
                             for obj in self.alternateTiles[ID]:
                                 # Sets fields to the alternate fields, if specified
