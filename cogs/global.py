@@ -63,8 +63,8 @@ async def magickImages(wordGrid, width, height, palette):
     fp = open(f"renders/render.gif", "w")
     fp.truncate(0)
     fp.close()
-    call(["magick", "convert", "renders/*.png", "-scale", "200%", "-set", "delay", "20", 
-        "-set", "dispose", "2", "renders/render.gif"])
+    # call(["magick", "convert", "renders/*.png", "-scale", "200%", "-set", "delay", "20", 
+    #     "-set", "dispose", "2", "renders/render.gif"])
 
 
 class GlobalCog(commands.Cog, name="Baba Is You"):
@@ -329,7 +329,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             for row in wordGrid:
                 for stack in row:
                     for word in stack:
-                        if self.bot.tileStats["tiles"].get(word) == "":
+                        if self.bot.tileStats["tiles"].get(word) is None:
                             self.bot.tileStats["tiles"][word] = 1
                         else:
                             self.bot.tileStats["tiles"][word] += 1
