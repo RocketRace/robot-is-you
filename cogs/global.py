@@ -265,10 +265,13 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     toAdd = []
                     for i, word in enumerate(row):
                         if "," in word:
-                            each = word.split(",")
-                            expanded = [each[0]]
-                            expanded.extend(["text_" + segment for segment in each[1:]])
-                            toAdd.append((i, expanded))
+                            if word.startswith("text_"):
+                                each = word.split(",")
+                                expanded = [each[0]]
+                                expanded.extend(["text_" + segment for segment in each[1:]])
+                                toAdd.append((i, expanded))
+                            else:
+                                return await ctx.send(f"⚠️ I'm afraid I couldn't parse the following input: \"{discord.utils.escape_mentions(word)}\".")
                     for change in reversed(toAdd):
                         row[change[0]:change[0] + 1] = change[1]
 
