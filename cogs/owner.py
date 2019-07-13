@@ -238,7 +238,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                         IDs.extend(line.strip().split(",")[1:-1])
                         alts = dict.fromkeys(IDs[:])
                         for alt in alts:
-                            alts[alt] = {"name":"", "sprite":"", "color":[]}
+                            alts[alt] = {"name":"", "sprite":"", "tiling":"", "color":[]}
                 else:
                     if line.startswith("object"):
                         ID = line[:][:9]
@@ -253,6 +253,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                         elif line.startswith("image=", 10):
                             sprite = line[:][16:-1]
                             alts[ID]["sprite"] = sprite
+                        elif line.startswith("tiling=", 10):
+                            alts[ID]["tiling"] = line[:][17:-1]
                         # Sets the changed color (all tiles)
                         elif line.startswith("colour=", 10):
                             colorRaw = line[:][17:-1]
@@ -317,10 +319,13 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 if line.startswith("\t\tname = "):
                     # Grabs only the name of the object
                     name = line[10:-3] # Magic numbers used to grab the perfect substring
-                # This line has the format "\t\tsprite = \"name\"\n".
+                # This line has the format "\t\tsprite = \"name\",\n".
                 elif line.startswith("\t\tsprite = "):
                     # Grabs only the name of the sprite
                     sprite = line[12:-3]
+                # "\t\ttiling = [mode],\n"
+                elif line.startswith("\t\ttiling = "):
+                    tiling = line[11:-2]
                 # These lines have the format "\t\t[active or colour] = {a,b}\n" where a,b are int.
                 # "active = {a,b}" lines always come after "colour = {a,b}" so this check overwrites the color to "active".
                 # The "active" line only exists for text tiles.
@@ -336,9 +341,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 elif line == "\t},\n":
                     # Makes sure no fields are empty
                     # bool("") == False, but True for any other string
-                    if bool(name) and bool(sprite) and bool(colorRaw):
+                    if bool(name) and bool(sprite) and bool(colorRaw) and bool(tiling):
                         # Alternate tile data (initialized with the original)
-                        alts = [{"name":name, "sprite":sprite, "color":color}]
+                        alts = [{"name":name, "sprite":sprite, "color":color, "tiling":tiling}]
                         # Looks for object replacements in the alternateTiles dict
                         if self.alternateTiles.get(ID) is not None:
                             # Each replacement for the object ID:
@@ -346,6 +351,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                                 # Sets fields to the alternate fields, if specified
                                 altName = name
                                 altSprite = sprite
+                                altTiling = tiling
                                 altColor = color
                                 if obj.get("name") != "":
                                     altName = obj.get("name")
@@ -353,6 +359,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                                     altSprite = obj.get("sprite")
                                 if obj.get("color") != []: # This shouldn't ever be false
                                     altColor = obj.get("color")
+                                if obj.get("tiling") != "":
+                                    altTiling = obj.get("tiling")
                                 # Adds the change to the alts, but only if it's the first with that name
                                 if name != altName:
                                     # If the name matches the name of an object already in the alt list
@@ -360,13 +368,14 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                                     for t in self.tileColors:
                                         if t["name"] == altName:
                                             duplicate = True
+                                            break
                                     if not duplicate:
-                                        alts.append({"name":altName, "sprite":altSprite, "color":altColor})
+                                        alts.append({"name":altName, "sprite":altSprite, "tiling":altTiling, "color":altColor})
                         # Adds each unique name-color pairs to the tileColors dict
                         for obj in alts:
                             self.tileColors.append(obj)
                     # Resets the fields
-                    name = sprite = colorRaw = ""
+                    name = sprite = tiling = colorRaw = ""
                     color = []
             # Only begins checking for these lines once a certain point in the file has been passed
             elif line == "tileslist =\n":
@@ -376,10 +385,10 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         # Missing letter tiles
         letters = "djkpqyz"
         for c in letters:
-            self.bot.append({"name":"text_%s" % c, "sprite":"text_%s" % c, "color":["0","3"]})
+            self.tileColors.append({"name":f"text_{c}", "sprite":f"text_{c}", "tiling":"-1", "color":["0","3"]})
         # Load custom tile data from a json files
         for f in listdir("custom"):
-            fp = open("custom/%s" % f)
+            fp = open(f"custom/{f}")
             dat = json.load(fp)
             for obj in dat:
                 self.tileColors.append(obj)
@@ -440,20 +449,82 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 # Fetches the tile data
                 name = obj["name"]
                 sprite = obj["sprite"]
+                tiling = obj.get("tiling")
+                if tiling == None:
+                    tiling = "-1" # Custom tiles will probably not have the tiling property
                 color = obj["color"]
                 # For convenience
                 x,y = [int(n) for n in color]
             
-                # Opens the three associated sprites from sprites/
-                # Only uses the first variation of the sprite ("_0_"), unless you're ANNI which is special <3
-                n = 0
-                if sprite == "anni":
-                    n = 26
-                files = ["sprites/%s_%s_%s.png" % (sprite, n, i + 1) for i in range(3)]
-                # Changes the color of each image
-                framesColor = [multiplyColor(fp, paletteColors[x][y]) for fp in files]
-                # Saves the colored images to /color/[palette]/
-                [framesColor[i].save("color/%s/%s-%s-.png" % (palette, name, i), format="PNG") for i in range(len(framesColor))]
+                # Opens the associated sprites from sprites/
+                # Use every sprite variant, the amount based on the tiling type
+    
+                # Sprite variants follow this scheme:
+        
+                # == IF NOT TILING TYPE 1 ==
+                # Change by 1 := Change in animation
+                # -> 0,1,2,3 := Regular animation
+                # -> 7 := Sleeping animation
+                # Change by 8 := Change in direction
+        
+                # == IF TYLING TYPE 1 ==
+                # 0  := None adjacent
+                # 1  := Right
+                # 2  := Up
+                # 3  := Up & Right
+                # 4  := Left
+                # 5  := Left & Right
+                # 6  := Left & Up
+                # 7  := Left & Right & Up
+                # 8  := Down
+                # 9  := Down & Right
+                # 10 := Down & Up
+                # 11 := Down & Right & Up
+                # 12 := Down & Left
+                # 13 := Down & Left & Right
+                # 14 := Down & Left & Up
+                # 15 := Down & Left & Right & Up
+
+                if tiling == "4": # Animated, non-directional
+                    spriteNumbers = [0,1,2,3] # Animation
+                if tiling == "3": # Basically for belts only (anim + dirs)
+                    spriteNumbers = [0,1,2,3, # Animation right
+                                    8,9,10,11, # Animation up
+                                    16,17,18,19, # Animation left
+                                    24,25,26,27] # Animation down
+
+                elif tiling == "2" and sprite != "robot": # Baba, Keke, Me and Anni have some wonky sprite variations
+                    spriteNumbers = [0,1,2,3, # Moving animation to the right
+                                    7, # Sleep up
+                                    8,9,10, 11, # Moving animation up
+                                    15, # Sleep left
+                                    16,17,18,19, #Moving animation left
+                                    23, # Sleep down
+                                    24,25,26,27, # Moving animation down
+                                    31] # Sleep right
+
+                elif tiling == "2" and sprite == "robot": # No sleep sprite for robot
+                    spriteNumbers = [0,1,2,3, # Moving animation to the right
+                                    8,9,10, 11, # Moving animation up
+                                    16,17,18,19, #Moving animation left
+                                    24,25,26,27] # Moving animation down
+
+                elif tiling == "1": # "Tiling" objects
+                    spriteNumbers = [i for i in range(16)]
+
+                elif tiling == "0": # "Directional" objects have these sprite variations: 
+                    spriteNumbers = [0,8,16,24]
+
+                else: # No tiling
+                    spriteNumbers = [0]
+
+                # For each sprite, saves the frames
+                for spr in spriteNumbers:
+                    files = ["sprites/%s_%s_%s.png" % (sprite, spr, i + 1) for i in range(3)]
+                    # Changes the color of each image
+                    framesColor = [multiplyColor(fp, paletteColors[x][y]) for fp in files]
+                    # Saves the colored images to /color/[palette]/
+                    [framesColor[i].save(f"color/{palette}/{name}-{spr}-{i}-.png", format="PNG") for i in range(len(framesColor))]
         self.bot.loading = False
 
     @commands.command()
