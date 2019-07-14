@@ -104,7 +104,7 @@ class CommandErrorHandler(commands.Cog):
                 return await self.bot.send(ctx, "Invalid palette argument provided.")
             return await self.bot.send(ctx, "Invalid function argumetns provided.")
 
-        elif isinstance(commands.MissingRequiredArgument):
+        elif isinstance(error, commands.MissingRequiredArgument):
             return await self.bot.send(ctx, "Required arguments are missing.")
 
         # All other Errors not returned come here... And we can just print the default TraceBack + log

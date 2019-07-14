@@ -16,7 +16,7 @@ async def magickImages(wordGrid, width, height, palette):
         # Efficiently converts the grid back into a list of words
         # wordList = chain.from_iterable(wordGrid)
         # Opens each image
-        paths = [[["empty.png" if word == "-" else "color/%s/%s-%s-.png" % (palette, word, fr) for word in stack] for stack in row] for row in wordGrid]
+        paths = [[["empty.png" if word == "-" else f"color/{palette}/{word.split(':')[0]}-{word.split(':')[1]}-{fr}-.png" for word in stack] for stack in row] for row in wordGrid]
         imgs = [[[Image.open(fp) for fp in stack] for stack in row] for row in paths]
 
         # Get new image dimensions
@@ -85,7 +85,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         cutoff = len(query)
         try:
             # Searches through a list of the names of each tile
-            for name in [tile["name"] for tile in self.bot.get_cog("Admin").tileColors]:
+            for name in self.bot.get_cog("Admin").tileColors:
                 match = False
                 # If the name starts with {query}, match succeeds
                 if name[:cutoff] == query:
@@ -199,6 +199,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         An example of such stacked tiles: `baba&flag&text_you`
 
         If any part of the command is hidden behind spoiler tags (like ||this||), the resulting gif will be marked as a spoiler. 
+
+
         """
         async with ctx.typing():
             # The parameters of this command are a lie to appease the help command: here's what actually happens            
@@ -270,8 +272,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             width = max(lengths)
             height = len(wordRows)
 
-            # Don't proceed if the request is too long.
-            # (It shouldn't be that long to begin with because of Discord's 1000 character limit)
+            # Don't proceed if the request is too large.
+            # (It shouldn't be that long to begin with because of Discord's 2000 character limit)
             area = width * height
             if area > 50 and ctx.author.id != self.bot.owner_id:
                 return await self.bot.send(ctx, f"⚠️ Too many tiles ({area}). You may only render up to 50 tiles at once, including empty tiles.")
@@ -281,23 +283,82 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             # Finds the associated image sprite for each word in the input
             # Throws an exception which sends an error message if a word is not found.
             
+            # Appends ":0" to sprites without specified variants, and sets (& overrides) the suffix for tiled objects
+            cloneGrid = [[[word for word in stack] for stack in row] for row in wordGrid]
+            for y, row in enumerate(cloneGrid):
+                for x, stack in enumerate(row):
+                    for z, word in enumerate(stack):
+                        if word != "-":
+                            tile = word
+                            variant = "0"
+                            if ":" in word:
+                                segments = word.split(":")
+                                tile = segments[0]
+                                variant = segments[1]
+                            
+                            # Is this a tiling object (e.g. wall, water)?
+                            if self.bot.get_cog("Admin").tileColors.get(tile) is not None:
+                                if self.bot.get_cog("Admin").tileColors[tile]["tiling"] == "1":
+
+                                    #  The final variation stace of the tile
+                                    variant = 0
+
+                                    # Is there the same tile adjacent right?
+                                    if x == width - 1:
+                                        pass
+                                    elif tile in cloneGrid[y][x + 1]:
+                                        variant += 1
+
+                                    # Is there the same tile adjacent above?
+                                    if y == 0:
+                                        pass
+                                    elif tile in cloneGrid[y - 1][x]:
+                                        variant += 2
+
+                                    # Is there the same tile adjacent left?
+                                    if x == 0:
+                                        pass
+                                    elif tile in cloneGrid[y][x - 1]:
+                                        variant += 4
+
+                                    # Is there the same tile adjacent below?
+                                    if y == height - 1:
+                                        pass
+                                    elif tile in cloneGrid[y + 1][x]:
+                                        variant += 8
+                                    
+                                    # Stringify
+                                    variant = str(variant)
+
+                            # Finally, append the variant to the grid
+                            wordGrid[y][x][z] = tile + ":" + variant
+            del cloneGrid
+
             # Each row
             for row in wordGrid:
                 # Each stack
                 for stack in row:
                     # Each word
                     for word in stack:
-                        # Checks for the word by attempting to open
-                        # If not present, trows an exception.
                         if word != "-":
-                            if not isfile(f"color/{pal}/{word}-0-.png"):
-                                # Does a text counterpart exist
-                                suggestion = "text_" + word
-                                if isfile(f"color/{pal}/{suggestion}-0-.png"):
+                            tile = word
+                            variant = "0"
+                            if ":" in tile:
+                                segments = word.split(":")
+                                variant = segments[1]
+                                tile = segments[0]
+                            # Checks for the word by attempting to open
+                            if not isfile(f"color/{pal}/{tile}-{variant}-0-.png"):
+                                # Is the variant faulty?
+                                if isfile(f"color/{pal}/{tile}-{0}-0-.png"):
+                                    return await self.bot.send(ctx, f"⚠️ The sprite variant \"{variant}\"for \"{word}\" doesn't seem to be valid.")
+                                # Does a text counterpart exist?
+                                suggestion = "text_" + tile
+                                if isfile(f"color/{pal}/{suggestion}-{variant}-0-.png"):
                                     return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{word}\". Did you mean \"{suggestion}\"?")
                                 # Did the user accidentally prepend "text_" via hand or using +rule?
-                                suggestion = word[5:]
-                                if isfile(f"color/{pal}/{suggestion}-0-.png"):
+                                suggestion = tile[5:]
+                                if isfile(f"color/{pal}/{suggestion}-{variant}-0-.png"):
                                     return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{word}\". Did you mean \"{suggestion}\"?")
                                 # Answer to both of those: No
                                 return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{word}\".")
@@ -315,7 +376,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             # Merges the images found
             await magickImages(wordGrid, width, height, pal) # Previously used mergeImages()
         # Sends the image through discord
-        await self.bot.send(ctx, content=ctx.author.mention, file=discord.File("renders/render.gif", spoiler=spoiler))
+        await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif", spoiler=spoiler))
 
 def setup(bot):
     bot.add_cog(GlobalCog(bot))

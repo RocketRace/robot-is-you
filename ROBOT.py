@@ -33,7 +33,7 @@ class BabaBot(commands.Bot):
     
     # Custom send that sends content in an embed
     # Sanitizes input, so no mention abuse can occur
-    async def send(self, ctx, content, embed=None, tts=False):
+    async def send(self, ctx, content, embed=None, tts=False, file=None):
         sanitized = discord.utils.escape_mentions(content)
         if len(sanitized) > 1000:
             sanitized = sanitized[:1000] + " [...] \n\n (Character limit reached!)"
@@ -47,7 +47,7 @@ class BabaBot(commands.Bot):
                 title = None
                 description = "\n".join(segments)
             container = discord.Embed(title=title, description=description, color=self.embedColor)
-            await ctx.send(" ", embed=container, tts=tts)
+            await ctx.send(" ", embed=container, tts=tts, file=file)
 
 
 # Establishes the bot
