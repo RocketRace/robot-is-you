@@ -82,7 +82,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         '''
         Life is a mystery, and death is the clearest.
         '''
-        await ctx.send("This is going to take a while...")
+        await self.bot.send(ctx, "This is going to take a while...")
         surrealLore = self.bot.get_guild(294479294040768524).get_channel(358813638519422976)
         lore = []
 
@@ -103,7 +103,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 lore.append(fragment.content)
             year += 1
             if year % 50 == 0:
-                await ctx.send("50 years have been acquiesced.")
+                await self.bot.send(ctx, "50 years have been acquiesced.")
         
         creationInAJar["eternity in a pocket"] = lore
 
@@ -112,7 +112,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         json.dump(creationInAJar, repositoryOfTheGods, indent=1)
         repositoryOfTheGods.close()
         
-        await ctx.send("All of history is within me.")
+        await self.bot.send(ctx, "All of history is within me.")
                  
             
 
@@ -133,29 +133,12 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             color=0x00ffff
         )
 
-        await ctx.send(" ", embed=msg)
+        await self.bot.send(ctx, " ", embed=msg)
         
 
-    # Evaluates input if you're the owner of the bot (me)
-    # TODO: sandbox it
+    @commands.is_owner()
     @commands.command(name="eval")
-    @commands.is_owner()
-    async def evaluate(self, ctx, *, content: str):
-        success = True
-        result = ""
-        try:
-            result = eval(content)
-        except Exception as e:
-            result = e
-            success = False
-        if success:
-            await ctx.send("Evaluated successfully:\n%s" % result)
-        else:
-            await ctx.send("An exception occurred%s" % result)
-
-    @commands.is_owner()
-    @commands.command(name="exec")
-    async def execute(self, ctx, *, cmd):
+    async def _eval(self, ctx, *, cmd):
         """Evaluates input.
         Input is interpreted as newline seperated statements.
         If the last statement is an expression, that is the return value.
@@ -200,7 +183,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         exec(compile(parsed, filename="<ast>", mode="exec"), env)
 
         result = (await eval(f"{fn_name}()", env))
-        await ctx.send("Result:\n" + str(result))
+        await self.bot.send(ctx, "Result:\n" + str(result))
 
 
     # Sends a message in the specified channel
@@ -210,7 +193,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         t = title
         t = t.replace("_", " ")
         embed = discord.Embed(title=t, type="rich", description=content, colour=0x00ffff)
-        await ctx.message.channel_mentions[0].send(" ", embed=embed)
+        await self.bot.send(ctx.message.channel_mentions[0], " ", embed=embed)
 
     @commands.command()
     @commands.is_owner()
@@ -429,7 +412,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
         # Tests for a supplied palette
         if arg not in [str[:-4] for str in listdir("palettes")]:
-            await ctx.send("Supply a palette to load.")
+            await self.bot.send(ctx, "Supply a palette to load.")
         else: 
             # The palette name
             palette = arg
@@ -530,7 +513,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.command()
     @commands.is_owner()
     async def pull(self, ctx):
-        await ctx.send("Pulling the new version from github...")
+        await self.bot.send(ctx, "Pulling the new version from github...")
         puller = Popen(["git", "pull"], cwd="/home/pi/Desktop/robot-private/", stdout=PIPE, stderr=STDOUT, universal_newlines=True)
         process = True
         # Checks if the process has completed every half a second
@@ -550,10 +533,10 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         # stderr is always None
         if stderr is None:
             if i > 30:
-                await ctx.send("`git pull` took more than 30 seconds to execute. Aborting.")
+                await self.bot.send(ctx, "`git pull` took more than 30 seconds to execute. Aborting.")
                 puller.terminate()
             else:
-                await ctx.send(f"`git pull` exited with code {returncode}. Output: ```\n{stdout}\n```")
+                await self.bot.send(ctx, f"`git pull` exited with code {returncode}. Output: ```\n{stdout}\n```")
     
 
     @commands.command()
@@ -561,14 +544,11 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     async def loadall(self, ctx):
         # Sends some feedback messages
 
-        msg = await ctx.send("Loading objects...")
-        content = msg.content
+        await self.bot.send(ctx, "Loading objects...")
         await ctx.invoke(self.bot.get_command("loadchanges"))
-        content = "".join([content, " Done.\nLoading colors..."])
-        await msg.edit(content=content)
+        await self.bot.send(ctx, "Done. Loading colors...")
         await ctx.invoke(self.bot.get_command("loadcolors"))
-        content = "".join([content, " Done.\nLoading palettes..."])
-        await msg.edit(content=content)
+        await self.bot.send(ctx, "Done. Loading palettes...")
         
 
         # Loads every palette
@@ -577,10 +557,11 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
         i = 0
         for palette in [fp[:-4] for fp in palettes]:
-            await msg.edit(content="".join([content, "(%s/%s)" % (i, total)]))
+            await self.bot.send(ctx, f" {i}/{total}")
             await ctx.invoke(self.bot.get_command("loadpalette"), palette)
             i += 1
-        await msg.edit(content="".join([content, " Done."]))
+        await self.bot.send(ctx, f" {total}/{total}")
+        await self.bot.send(ctx, f"{ctx.author.mention} Finished loading tiles.")
 
     def _clear_gateway_data(self):
         weekAgo = datetime.utcnow() - timedelta(days=7)
