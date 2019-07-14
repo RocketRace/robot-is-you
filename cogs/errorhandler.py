@@ -78,16 +78,15 @@ class CommandErrorHandler(commands.Cog):
             return
 
         elif isinstance(error, commands.DisabledCommand):
-            await ctx.send(f'{ctx.command} has been disabled.')
+            await self.bot.send(ctx, f'{ctx.command} has been disabled.')
             return await self.logger.send(embed=emb)
         
         elif isinstance(error, commands.CommandOnCooldown):
             if ctx.author.id == self.bot.owner_id:
                 return await ctx.reinvoke()
             else:
-                await ctx.send(error)
+                await self.bot.send(ctx, error)
                 return await self.logger.send(embed=emb)
-
 
         elif isinstance(error, commands.NoPrivateMessage):
             msg = None
@@ -102,10 +101,14 @@ class CommandErrorHandler(commands.Cog):
         elif isinstance(error, commands.ArgumentParsingError):
             await self.logger.send(embed=emb)
             if ctx.command.name == "tile":  # Checks the 
-                return await ctx.send("Invalid palette argument provided.")
-            return await ctx.send("Invalid function argumetns provided.")
+                return await self.bot.send(ctx, "Invalid palette argument provided.")
+            return await self.bot.send(ctx, "Invalid function argumetns provided.")
+
+        elif isinstance(commands.MissingRequiredArgument):
+            return await self.bot.send(ctx, "Required arguments are missing.")
 
         # All other Errors not returned come here... And we can just print the default TraceBack + log
+        await self.bot.send(ctx, f"An exception occurred while processing your command:\n{type(error)}\n{error}")
         await self.logger.send(embed=emb)
         print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
