@@ -8,6 +8,7 @@ from datetime     import datetime, timedelta
 from discord.ext  import commands
 from os           import listdir, mkdir, stat
 from PIL          import Image
+from string       import ascii_lowercase
 from subprocess   import Popen, PIPE, STDOUT
 
 def multiplyColor(fp, RGB):
@@ -57,7 +58,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     
     def __init__(self, bot):
         self.bot = bot
-        self.tileColors = []
+        self.tileColors = {}
         self.alternateTiles = {}
         # Loads the tile colors, if it exists
         colorsFile = "tilecolors.json"
@@ -280,7 +281,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     async def loadcolors(self, ctx):
         # Reads values.lua and scrapes the tile data from there
 
-        self.tileColors = []
+        self.tileColors = {}
 
         self.bot.loading = True
         # values.lua contains the data about which color (on the palette) is associated with each tile.
@@ -326,37 +327,32 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                     # bool("") == False, but True for any other string
                     if bool(name) and bool(sprite) and bool(colorRaw) and bool(tiling):
                         # Alternate tile data (initialized with the original)
-                        alts = [{"name":name, "sprite":sprite, "color":color, "tiling":tiling}]
+                        alts = {name:{"sprite":sprite, "color":color, "tiling":tiling}}
                         # Looks for object replacements in the alternateTiles dict
                         if self.alternateTiles.get(ID) is not None:
                             # Each replacement for the object ID:
-                            for obj in self.alternateTiles[ID]:
+                            for value in self.alternateTiles[ID]:
                                 # Sets fields to the alternate fields, if specified
                                 altName = name
                                 altSprite = sprite
                                 altTiling = tiling
                                 altColor = color
-                                if obj.get("name") != "":
-                                    altName = obj.get("name")
-                                if obj.get("sprite") != "":
-                                    altSprite = obj.get("sprite")
-                                if obj.get("color") != []: # This shouldn't ever be false
-                                    altColor = obj.get("color")
-                                if obj.get("tiling") != "":
-                                    altTiling = obj.get("tiling")
+                                if value.get("name") != "":
+                                    altName = value.get("name")
+                                if value.get("sprite") != "":
+                                    altSprite = value.get("sprite")
+                                if value.get("color") != []: # This shouldn't ever be false
+                                    altColor = value.get("color")
+                                if value.get("tiling") != "":
+                                    altTiling = value.get("tiling")
                                 # Adds the change to the alts, but only if it's the first with that name
                                 if name != altName:
                                     # If the name matches the name of an object already in the alt list
-                                    duplicate = False
-                                    for t in self.tileColors:
-                                        if t["name"] == altName:
-                                            duplicate = True
-                                            break
-                                    if not duplicate:
-                                        alts.append({"name":altName, "sprite":altSprite, "tiling":altTiling, "color":altColor})
+                                    if self.tileColors.get(altName) is None:
+                                        alts[altName] = {"sprite":altSprite, "tiling":altTiling, "color":altColor}
                         # Adds each unique name-color pairs to the tileColors dict
-                        for obj in alts:
-                            self.tileColors.append(obj)
+                        for key,value in alts.items():
+                            self.tileColors[key] = value
                     # Resets the fields
                     name = sprite = tiling = colorRaw = ""
                     color = []
@@ -368,31 +364,38 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         # Missing letter tiles
         letters = "djkpqyz"
         for c in letters:
-            self.tileColors.append({"name":f"text_{c}", "sprite":f"text_{c}", "tiling":"-1", "color":["0","3"]})
+            self.tileColors[f"text_{c}"] = {"sprite":f"text_{c}", "tiling":"-1", "color":["0","3"]}
         # Load custom tile data from a json files
         for f in listdir("custom"):
             fp = open(f"custom/{f}")
             dat = json.load(fp)
-            for obj in dat:
-                self.tileColors.append(obj)
+            for tile in dat:
+                name = tile["name"]
+                # Rewrites the objects slightly
+                rewritten = {}
+                for key,value in tile.items():
+                    if key != "name":
+                        rewritten[key] = value
+                if name is not None:
+                    self.tileColors[name] = rewritten
 
         # Manual patches to the tile list for overall enjoyment.
         # Not all the information could be scrapped automatically, at least reliably.
 
-        for obj in self.tileColors:
-            # Set all letter tiles to the same color
-            if obj["name"].startswith("text_") and len(obj["name"]) == 6:
-                obj["color"] = ["0", "3"]
-            # Sets text_ba and text_ab to the same color as text_baba
-            if obj["name"] in ["text_ba", "text_ab"]:
-                obj["color"] = ["4", "1"]
-            
-        # Sorts the tiles by name
-        self.tileColors.sort(key=lambda x: x["name"])
+        letters = ascii_lowercase
 
+        for c in letters:
+            # Set all letter tiles to the same color
+            if self.tileColors.get(f"text_{c}") is not None:
+                self.tileColors[f"text_{c}"]["color"] = ["0", "3"]
+        # Sets text_ba and text_ab to the same color as text_baba
+        for key in ["text_ba", "text_ab"]:
+            if self.tileColors.get(key) is not None:
+                self.tileColors[key]["color"] = ["4", "1"]
+            
         allTiles = open("tilelist.txt", "wt")
         allTiles.truncate(0)
-        allTiles.write("\n".join([tile["name"] for tile in self.tileColors]))
+        allTiles.write("\n".join([tile for tile in self.tileColors]))
 
         # Dumps the gathered data to tilecolors.json
         emotefile = open("tilecolors.json", "wt")
@@ -428,9 +431,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 pass
             
             # Goes through each tile object in the tileColors array
-            for obj in self.tileColors:
+            for name,obj in self.tileColors.items():
                 # Fetches the tile data
-                name = obj["name"]
                 sprite = obj["sprite"]
                 tiling = obj.get("tiling")
                 if tiling == None:
@@ -508,6 +510,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                     framesColor = [multiplyColor(fp, paletteColors[x][y]) for fp in files]
                     # Saves the colored images to /color/[palette]/
                     [framesColor[i].save(f"color/{palette}/{name}-{spr}-{i}-.png", format="PNG") for i in range(len(framesColor))]
+
         self.bot.loading = False
 
     @commands.command()
