@@ -9,24 +9,6 @@ from os.path     import isfile
 from PIL         import Image
 from subprocess  import call
 
-
-# Custom exceptions
-
-class InvalidTile(commands.UserInputError):
-    pass
-
-class TooManyTiles(commands.UserInputError):
-    pass
-
-class StackTooHigh(commands.UserInputError):
-    pass
-
-class InvalidPalette(commands.UserInputError):
-    pass
-
-class OutOfRange(commands.UserInputError):
-    pass
-
 # Takes a list of tile names and generates a gif with the associated sprites
 async def magickImages(wordGrid, width, height, palette):
     # For each animation frame
@@ -147,11 +129,12 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         If `n` is provided, returns up to 10 tiles, starting with the tile with rank `n` and counting down to rank `n - 10`.
         If `n` is 10 or less, returns the `n` most common tiles.
         """
+        maxTiles = len(self.bot.tileStats["tiles"])
         # Tidies up input
         if type(n) != int:
             return await ctx.send("⚠️ Please input only numbers.")
-        if n < 1 or n > len(self.bot.tileStats["tiles"]):
-            raise OutOfRange(str(n), str(len(self.bot.tileStats["tiles"])))
+        if n < 1 or n > maxTiles:
+            return await ctx.send(f"⚠️ That value ({n}) is out of range ({maxTiles} max).")
 
         # Total tiles
         totalCount = self.bot.tileStats.get("total")
@@ -181,15 +164,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
         # Send it
         await ctx.send(" ", embed=embed)
-
-    @top.error
-    async def topError(self, ctx, error):
-        print(error)
-        args = error.args
-        if isinstance(error, OutOfRange):
-            return await ctx.send(f"⚠️ That value ({args[0]}) is out of range ({args[1]} max).")
-        if isinstance(error, commands.CommandOnCooldown):
-            return await ctx.send(str(error))
 
     @commands.cooldown(2,10,type=commands.BucketType.channel)
     @commands.command(name="palettes")
@@ -252,7 +226,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             if firstarg.startswith("palette:"):
                 pal = firstarg[8:] 
                 if pal + ".png" not in listdir("palettes"):
-                    raise InvalidPalette(pal)
+                    return await ctx.send(f"⚠️ Could not find a palette with name {pal}).")
                 wordGrid[0].pop(0)
                 if not wordGrid[0]:
                     wordGrid[0].append("-")
@@ -285,7 +259,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     # Limit how many tiles can be rendered in one space
                     height = len(row[i])
                     if height > 3 and ctx.author.id != self.bot.owner_id:
-                        raise StackTooHigh(str(height))
+                        return await ctx.send(f"⚠️ Stack too high ({height}). You may only stack up to 3 tiles on one space.")
 
             # Prepends "text_" to words if invoked under the rule command
             if rule:
@@ -300,7 +274,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             # (It shouldn't be that long to begin with because of Discord's 1000 character limit)
             area = width * height
             if area > 50 and ctx.author.id != self.bot.owner_id:
-                raise TooManyTiles(str(area))
+                return await ctx.send(f"⚠️ Too many tiles ({area}). You may only render up to 50 tiles at once, including empty tiles.")
 
             # Pad the word rows from the end to fit the dimensions
             [row.extend([["-"]] * (width - len(row))) for row in wordGrid]
@@ -320,13 +294,13 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 # Does a text counterpart exist
                                 suggestion = "text_" + word
                                 if isfile(f"color/{pal}/{suggestion}-0-.png"):
-                                    raise InvalidTile(word, suggestion)
+                                    return await ctx.send(f"⚠️ Could not find a tile for \"{word}\". Did you mean \"{suggestion}\"?")
                                 # Did the user accidentally prepend "text_" via hand or using +rule?
                                 suggestion = word[5:]
                                 if isfile(f"color/{pal}/{suggestion}-0-.png"):
-                                    raise InvalidTile(word, suggestion)
+                                    return await ctx.send(f"⚠️ Could not find a tile for \"{word}\". Did you mean \"{suggestion}\"?")
                                 # Answer to both of those: No
-                                raise InvalidTile(word, "")
+                                return await ctx.send(f"⚠️ Could not find a tile for \"{word}\".")
                 
             # Gathers statistics on the tiles, now that the grid is "pure"
             for row in wordGrid:
@@ -342,28 +316,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             await magickImages(wordGrid, width, height, pal) # Previously used mergeImages()
         # Sends the image through discord
         await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif", spoiler=spoiler))
-
-    @tile.error
-    async def tileError(self, ctx, error):
-        print(error)
-        print(error.args)
-        # Removes @everyone/here, @role and @user mentions
-        safeArgs = [discord.utils.escape_mentions(arg) for arg in error.args]
-        arg = safeArgs[0]
-        if isinstance(error, commands.CommandOnCooldown):
-            return await ctx.send(error)
-        if isinstance(error, InvalidTile):
-            suggestion = safeArgs[1]
-            if suggestion == "":
-                return await ctx.send(f"⚠️ Could not find a tile for \"{arg}\".")
-            return await ctx.send(f"⚠️ Could not find a tile for \"{arg}\". Did you mean \"{suggestion}\"?")
-        if isinstance(error, TooManyTiles):
-            return await ctx.send(f"⚠️ Too many tiles ({arg}). You may only render up to 50 tiles at once, including empty tiles.")
-        if isinstance(error, StackTooHigh):
-            return await ctx.send(f"⚠️ Stack too high ({arg}). You may only stack up to 3 tiles on one space.")
-        if isinstance(error, InvalidPalette):
-            return await ctx.send(f"⚠️ Could not find a palette with name {arg}).")
-        return await ctx.send("⚠️ Something went wrong while processing your command.")
 
 def setup(bot):
     bot.add_cog(GlobalCog(bot))
