@@ -30,6 +30,16 @@ class BabaBot(commands.Bot):
         self.embedColor = embed_color
         self.webhookId = webhook_id
         super().__init__(command_prefix, help_command=help_command, description=description, **options)
+    
+    # Custom send that sends content in an embed
+    # Sanitizes input, so no mention abuse can occur
+    async def send(self, ctx, content, embed=None, tts=False):
+        sanitized = discord.utils.escape_mentions(content)
+        if embed is not None:
+            await ctx.send(sanitized, embed=embed)
+        else:
+            container = discord.Embed(description=sanitized, color=self.embedColor)
+            await ctx.send(" ", embed=container, tts=tts)
 
 
 # Establishes the bot

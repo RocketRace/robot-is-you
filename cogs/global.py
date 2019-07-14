@@ -65,7 +65,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             "preferably in an archived file (without any color, and in 24x24)\n * **The color of the sprites**, " + \
             "an (x,y) coordinate on the default Baba color palette.\nFor examples of this, check the `values.lua` " + \
             "file in your Baba Is You local files!", color=self.bot.embedColor)
-        await ctx.send(" ", embed=msg)
+        await self.bot.send(ctx, " ", embed=msg)
 
     # Searches for a tile that matches the string provided
     @commands.command()
@@ -104,11 +104,11 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         else:
             count = len(matches)
             if count == 0:
-                await ctx.send(f"Found no results for \"{sanitizedQuery}\".")
+                await self.bot.send(ctx, f"Found no results for \"{sanitizedQuery}\".")
             else:
                 matches.insert(0, f"Found {len(matches)} results for \"{sanitizedQuery}\":")
                 content = "\n".join(matches)
-                await ctx.send(content)
+                await self.bot.send(ctx, content)
 
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
     @commands.command(name="list")
@@ -119,7 +119,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         Tiles may be used in the `tile` (and subsequently `rule`) commands.
         """
         fp = discord.File("tilelist.txt")
-        await ctx.send("List of all valid tiles:", file=fp)
+        await self.bot.send(ctx, "List of all valid tiles:", file=fp)
 
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
     @commands.command()
@@ -132,9 +132,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         maxTiles = len(self.bot.tileStats["tiles"])
         # Tidies up input
         if type(n) != int:
-            return await ctx.send("⚠️ Please input only numbers.")
+            return await self.bot.send(ctx, "⚠️ Please input only numbers.")
         if n < 1 or n > maxTiles:
-            return await ctx.send(f"⚠️ That value ({n}) is out of range ({maxTiles} max).")
+            return await self.bot.send(ctx, f"⚠️ That value ({n}) is out of range ({maxTiles} max).")
 
         # Total tiles
         totalCount = self.bot.tileStats.get("total")
@@ -163,7 +163,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         embed.add_field(name="Usage", value="\n".join(neatPercentages))
 
         # Send it
-        await ctx.send(" ", embed=embed)
+        await self.bot.send(ctx, " ", embed=embed)
 
     @commands.cooldown(2,10,type=commands.BucketType.channel)
     @commands.command(name="palettes")
@@ -175,7 +175,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         msg = ["Valid palettes:"]
         for palette in listdir("palettes"):
             msg.append(palette[:-4])
-        await ctx.send("\n".join(msg))
+        await self.bot.send(ctx, "\n".join(msg))
 
     # Generates an animated gif of the tiles provided, using (TODO) the default palette
     @commands.command(aliases=["rule"])
@@ -226,7 +226,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             if firstarg.startswith("palette:"):
                 pal = firstarg[8:] 
                 if pal + ".png" not in listdir("palettes"):
-                    return await ctx.send(f"⚠️ Could not find a palette with name {pal}).")
+                    return await self.bot.send(ctx, f"⚠️ Could not find a palette with name {pal}).")
                 wordGrid[0].pop(0)
                 if not wordGrid[0]:
                     wordGrid[0].append("-")
@@ -245,7 +245,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 expanded.extend(["text_" + segment for segment in each[1:]])
                                 toAdd.append((i, expanded))
                             else:
-                                return await ctx.send(f"⚠️ I'm afraid I couldn't parse the following input: \"{discord.utils.escape_mentions(word)}\".")
+                                return await self.bot.send(ctx, f"⚠️ I'm afraid I couldn't parse the following input: \"{word}\".")
                     for change in reversed(toAdd):
                         row[change[0]:change[0] + 1] = change[1]
 
@@ -259,7 +259,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     # Limit how many tiles can be rendered in one space
                     height = len(row[i])
                     if height > 3 and ctx.author.id != self.bot.owner_id:
-                        return await ctx.send(f"⚠️ Stack too high ({height}). You may only stack up to 3 tiles on one space.")
+                        return await self.bot.send(ctx, f"⚠️ Stack too high ({height}). You may only stack up to 3 tiles on one space.")
 
             # Prepends "text_" to words if invoked under the rule command
             if rule:
@@ -274,7 +274,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             # (It shouldn't be that long to begin with because of Discord's 1000 character limit)
             area = width * height
             if area > 50 and ctx.author.id != self.bot.owner_id:
-                return await ctx.send(f"⚠️ Too many tiles ({area}). You may only render up to 50 tiles at once, including empty tiles.")
+                return await self.bot.send(ctx, f"⚠️ Too many tiles ({area}). You may only render up to 50 tiles at once, including empty tiles.")
 
             # Pad the word rows from the end to fit the dimensions
             [row.extend([["-"]] * (width - len(row))) for row in wordGrid]
@@ -294,13 +294,13 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 # Does a text counterpart exist
                                 suggestion = "text_" + word
                                 if isfile(f"color/{pal}/{suggestion}-0-.png"):
-                                    return await ctx.send(f"⚠️ Could not find a tile for \"{word}\". Did you mean \"{suggestion}\"?")
+                                    return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{word}\". Did you mean \"{suggestion}\"?")
                                 # Did the user accidentally prepend "text_" via hand or using +rule?
                                 suggestion = word[5:]
                                 if isfile(f"color/{pal}/{suggestion}-0-.png"):
-                                    return await ctx.send(f"⚠️ Could not find a tile for \"{word}\". Did you mean \"{suggestion}\"?")
+                                    return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{word}\". Did you mean \"{suggestion}\"?")
                                 # Answer to both of those: No
-                                return await ctx.send(f"⚠️ Could not find a tile for \"{word}\".")
+                                return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{word}\".")
                 
             # Gathers statistics on the tiles, now that the grid is "pure"
             for row in wordGrid:
@@ -315,7 +315,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             # Merges the images found
             await magickImages(wordGrid, width, height, pal) # Previously used mergeImages()
         # Sends the image through discord
-        await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif", spoiler=spoiler))
+        await self.bot.send(ctx, content=ctx.author.mention, file=discord.File("renders/render.gif", spoiler=spoiler))
 
 def setup(bot):
     bot.add_cog(GlobalCog(bot))
