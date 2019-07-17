@@ -18,6 +18,7 @@
    {
        "name":"wug",
        "sprite":"wug",
+       "tiling":"2",
        "color":[
            "2",
            "4"
