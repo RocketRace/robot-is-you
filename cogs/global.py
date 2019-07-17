@@ -94,7 +94,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         else:
             count = len(matches)
             if count == 0:
-                await self.bot.send(ctx, f"Found no results for \"{sanitizedQuery}\".")
+                matches.insert(0, f"Found no results for \"{sanitizedQuery}\".")
             else:
                 matches.insert(0, f"Found {len(matches)} results for \"{sanitizedQuery}\":")
         content = "\n".join(matches)
