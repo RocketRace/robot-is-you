@@ -5,6 +5,7 @@ palettes/
 themes/
 levels/
 *.json
+tilelist.txt
 !custom/*
 log.txt
 empty.png
