@@ -27,6 +27,71 @@ def multiplyColor(fp, RGB):
     # Merges the channels and returns the RGBA image
     RGBA = Image.merge("RGBA", (R, G, B, A))
     return RGBA
+
+def getSpriteVariants(sprite, tiling):
+    # Opens the associated sprites from sprites/
+    # Use every sprite variant, the amount based on the tiling type
+
+    # Sprite variants follow this scheme:
+
+    # == IF NOT TILING TYPE 1 ==
+    # Change by 1 := Change in animation
+    # -> 0,1,2,3 := Regular animation
+    # -> 7 := Sleeping animation
+    # Change by 8 := Change in direction
+
+    # == IF TYLING TYPE 1 ==
+    # 0  := None adjacent
+    # 1  := Right
+    # 2  := Up
+    # 3  := Up & Right
+    # 4  := Left
+    # 5  := Left & Right
+    # 6  := Left & Up
+    # 7  := Left & Right & Up
+    # 8  := Down
+    # 9  := Down & Right
+    # 10 := Down & Up
+    # 11 := Down & Right & Up
+    # 12 := Down & Left
+    # 13 := Down & Left & Right
+    # 14 := Down & Left & Up
+    # 15 := Down & Left & Right & Up
+
+    if tiling == "4": # Animated, non-directional
+        spriteNumbers = [0,1,2,3] # Animation
+    if tiling == "3": # Basically for belts only (anim + dirs)
+        spriteNumbers = [0,1,2,3, # Animation right
+                        8,9,10,11, # Animation up
+                        16,17,18,19, # Animation left
+                        24,25,26,27] # Animation down
+
+    elif tiling == "2" and sprite != "robot": # Baba, Keke, Me and Anni have some wonky sprite variations
+        spriteNumbers = [0,1,2,3, # Moving animation to the right
+                        7, # Sleep up
+                        8,9,10, 11, # Moving animation up
+                        15, # Sleep left
+                        16,17,18,19, #Moving animation left
+                        23, # Sleep down
+                        24,25,26,27, # Moving animation down
+                        31] # Sleep right
+
+    elif tiling == "2" and sprite == "robot": # No sleep sprite for robot
+        spriteNumbers = [0,1,2,3, # Moving animation to the right
+                        8,9,10, 11, # Moving animation up
+                        16,17,18,19, #Moving animation left
+                        24,25,26,27] # Moving animation down
+
+    elif tiling == "1": # "Tiling" objects
+        spriteNumbers = [i for i in range(16)]
+
+    elif tiling == "0": # "Directional" objects have these sprite variations: 
+        spriteNumbers = [0,8,16,24]
+
+    else: # No tiling
+        spriteNumbers = [0]
+    
+    return spriteNumbers
     
 def insert_returns(body):
     # insert return stmt if the last expression is a expression statement
@@ -274,6 +339,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         alternateFile.truncate()
         json.dump(self.alternateTiles, alternateFile, indent=3)
         alternateFile.close()
+
+        await self.bot.send(ctx, "Done.")
         self.bot.loading = False
 
     @commands.command()
@@ -405,6 +472,45 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         json.dump(self.tileColors, emotefile, indent=3)
         emotefile.close()
 
+        await self.bot.send(ctx, "Done.")
+
+        self.bot.loading = False
+
+    @commands.command()
+    @commands.is_owner()
+    async def loadtile(self, ctx, tile, palette):
+        self.bot.loading = True
+        # Some checks
+        if self.tileColors.get(tile) is None:
+            return await self.bot.send(ctx, f"\"{tile}\" is not in the list of tiles.")
+        palettes = [palette]
+        if palette == "all":
+            palettes = [pal[:-4] for pal in listdir("palettes")]
+        elif palette + ".png" not in listdir("palettes"):
+            return await self.bot.send(ctx, f"\"{palette}\" is not a valid palette.")
+        
+        for pal in palettes:
+            # Palette RGB values
+            paletteImg = Image.open(f"palettes/{pal}.png").convert("RGB")
+            paletteColors = [[(paletteImg.getpixel((x,y))) for y in range(5)] for x in range(7)]
+
+            # Fetches the tile data
+            obj = self.tileColors[tile]
+            sprite = obj["sprite"]
+            tiling = obj["tiling"]
+            color = obj["color"]
+            # For convenience
+            x,y = [int(n) for n in color]
+            spriteVariants = getSpriteVariants(sprite, tiling)
+
+            # Saves the tile sprites
+            for variant in spriteVariants:
+                files = ["sprites/%s_%s_%s.png" % (sprite, variant, i + 1) for i in range(3)]
+                # Changes the color of each image
+                framesColor = [multiplyColor(fp, paletteColors[x][y]) for fp in files]
+                # Saves the colored images to /color/[palette]/
+                [framesColor[i].save(f"color/{pal}/{tile}-{variant}-{i}-.png", format="PNG") for i in range(len(framesColor))]
+        await self.bot.send(ctx, "Done.")
         self.bot.loading = False
 
     @commands.command()
@@ -440,68 +546,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 color = obj["color"]
                 # For convenience
                 x,y = [int(n) for n in color]
-            
-                # Opens the associated sprites from sprites/
-                # Use every sprite variant, the amount based on the tiling type
-    
-                # Sprite variants follow this scheme:
-        
-                # == IF NOT TILING TYPE 1 ==
-                # Change by 1 := Change in animation
-                # -> 0,1,2,3 := Regular animation
-                # -> 7 := Sleeping animation
-                # Change by 8 := Change in direction
-        
-                # == IF TYLING TYPE 1 ==
-                # 0  := None adjacent
-                # 1  := Right
-                # 2  := Up
-                # 3  := Up & Right
-                # 4  := Left
-                # 5  := Left & Right
-                # 6  := Left & Up
-                # 7  := Left & Right & Up
-                # 8  := Down
-                # 9  := Down & Right
-                # 10 := Down & Up
-                # 11 := Down & Right & Up
-                # 12 := Down & Left
-                # 13 := Down & Left & Right
-                # 14 := Down & Left & Up
-                # 15 := Down & Left & Right & Up
 
-                if tiling == "4": # Animated, non-directional
-                    spriteNumbers = [0,1,2,3] # Animation
-                if tiling == "3": # Basically for belts only (anim + dirs)
-                    spriteNumbers = [0,1,2,3, # Animation right
-                                    8,9,10,11, # Animation up
-                                    16,17,18,19, # Animation left
-                                    24,25,26,27] # Animation down
-
-                elif tiling == "2" and sprite != "robot": # Baba, Keke, Me and Anni have some wonky sprite variations
-                    spriteNumbers = [0,1,2,3, # Moving animation to the right
-                                    7, # Sleep up
-                                    8,9,10, 11, # Moving animation up
-                                    15, # Sleep left
-                                    16,17,18,19, #Moving animation left
-                                    23, # Sleep down
-                                    24,25,26,27, # Moving animation down
-                                    31] # Sleep right
-
-                elif tiling == "2" and sprite == "robot": # No sleep sprite for robot
-                    spriteNumbers = [0,1,2,3, # Moving animation to the right
-                                    8,9,10, 11, # Moving animation up
-                                    16,17,18,19, #Moving animation left
-                                    24,25,26,27] # Moving animation down
-
-                elif tiling == "1": # "Tiling" objects
-                    spriteNumbers = [i for i in range(16)]
-
-                elif tiling == "0": # "Directional" objects have these sprite variations: 
-                    spriteNumbers = [0,8,16,24]
-
-                else: # No tiling
-                    spriteNumbers = [0]
+                # Get a list of valid variants
+                spriteNumbers = getSpriteVariants(sprite, tiling)
 
                 # For each sprite, saves the frames
                 for spr in spriteNumbers:
