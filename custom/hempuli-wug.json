@@ -25,11 +25,11 @@
        ]
    },
    {
-    "name":"text_wug",
-    "sprite":"text_wug",
-    "color":[
-        "2",
-        "4"
+      "name":"text_wug",
+      "sprite":"text_wug",
+      "color":[
+         "2",
+         "4"
     ]
 }
 ]

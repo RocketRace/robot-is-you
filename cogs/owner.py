@@ -540,7 +540,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             for name,obj in self.tileColors.items():
                 # Fetches the tile data
                 sprite = obj["sprite"]
-                tiling = obj.get("tiling")
+                tiling = obj["tiling"]
                 if tiling == None:
                     tiling = "-1" # Custom tiles will probably not have the tiling property
                 color = obj["color"]
