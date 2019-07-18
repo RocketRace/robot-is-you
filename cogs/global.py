@@ -81,20 +81,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         matches = []
         # How many results will be shown
         limit = 10
-        # For substrings
-        cutoff = len(query)
         try:
             # Searches through a list of the names of each tile
             for name in self.bot.get_cog("Admin").tileColors:
-                match = False
-                # If the name starts with {query}, match succeeds
-                if name[:cutoff] == query:
-                    match = True
-                # If the name starts with "text_{query}", match succeeds
-                if name[:5] == "text_":
-                    if name[5:cutoff + 5] == query:
-                        match = True
-                if match:
+                if query in name:
                     if len(matches) >= limit:
                         raise OverflowError
                     else:
@@ -104,11 +94,11 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         else:
             count = len(matches)
             if count == 0:
-                await self.bot.send(ctx, f"Found no results for \"{sanitizedQuery}\".")
+                matches.insert(0, f"Found no results for \"{sanitizedQuery}\".")
             else:
                 matches.insert(0, f"Found {len(matches)} results for \"{sanitizedQuery}\":")
-                content = "\n".join(matches)
-                await self.bot.send(ctx, content)
+        content = "\n".join(matches)
+        await self.bot.send(ctx, content)
 
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
     @commands.command(name="list")
