@@ -119,6 +119,7 @@
   {
     "sprite":"island",
     "name":"island",
+    "tiling":"1",
     "color":
       [
         "6",
@@ -191,6 +192,7 @@
   {
     "sprite":"wall_map",
     "name":"wall_map",
+    "tiling":"1",
     "color":
       [
         "1",

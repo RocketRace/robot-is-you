@@ -18,17 +18,18 @@
    {
        "name":"wug",
        "sprite":"wug",
+       "tiling":"3",
        "color":[
            "2",
            "4"
        ]
    },
    {
-    "name":"text_wug",
-    "sprite":"text_wug",
-    "color":[
-        "2",
-        "4"
+      "name":"text_wug",
+      "sprite":"text_wug",
+      "color":[
+         "2",
+         "4"
     ]
 }
 ]
