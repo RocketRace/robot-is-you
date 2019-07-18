@@ -190,7 +190,14 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
         If any part of the command is hidden behind spoiler tags (like ||this||), the resulting gif will be marked as a spoiler. 
 
-
+        You may render a variant of a sprite by appending a suffix to the tile name. Valid suffixes are based on the tiling type of the object.
+        Examples: 
+        `baba:3` - The fourth animation frame of a baba moving right
+        `bug:8` - A bug facing up
+        `keke:31` - A keke facing right, sleeping
+        Shorthands:
+        `object:direction (up / down / left / right)` - The object facing the specified direction, if available.
+        `object:sleep` - The object in a sleeping animation (facing right), if available.
         """
         async with ctx.typing():
             # The parameters of this command are a lie to appease the help command: here's what actually happens            
@@ -285,6 +292,19 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 segments = word.split(":")
                                 tile = segments[0]
                                 variant = segments[1]
+
+                            # Shorthand
+                            if variant == "right":
+                                variant = "0"
+                            elif variant == "up":
+                                variant = "8"
+                            elif variant == "left":
+                                variant = "16"
+                            elif variant == "down":
+                                variant = "24"
+                            elif variant == "sleep":
+                                variant = "31"
+                            
                             
                             # Is this a tiling object (e.g. wall, water)?
                             if self.bot.get_cog("Admin").tileColors.get(tile) is not None:
@@ -340,19 +360,23 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 tile = segments[0]
                             # Checks for the word by attempting to open
                             if not isfile(f"color/{pal}/{tile}-{variant}-0-.png"):
+                                if variant == "0":
+                                    x = tile
+                                else:
+                                    x = word
                                 # Is the variant faulty?
                                 if isfile(f"color/{pal}/{tile}-{0}-0-.png"):
-                                    return await self.bot.send(ctx, f"⚠️ The sprite variant \"{variant}\"for \"{word}\" doesn't seem to be valid.")
+                                    return await self.bot.send(ctx, f"⚠️ The sprite variant \"{variant}\"for \"{x}\" doesn't seem to be valid.")
                                 # Does a text counterpart exist?
                                 suggestion = "text_" + tile
                                 if isfile(f"color/{pal}/{suggestion}-{variant}-0-.png"):
-                                    return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{word}\". Did you mean \"{suggestion}\"?")
+                                    return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{x}\". Did you mean \"{suggestion}\"?")
                                 # Did the user accidentally prepend "text_" via hand or using +rule?
                                 suggestion = tile[5:]
                                 if isfile(f"color/{pal}/{suggestion}-{variant}-0-.png"):
-                                    return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{word}\". Did you mean \"{suggestion}\"?")
+                                    return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{x}\". Did you mean \"{suggestion}\"?")
                                 # Answer to both of those: No
-                                return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{word}\".")
+                                return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{x}\".")
                 
             # Gathers statistics on the tiles, now that the grid is "pure"
             for row in wordGrid:
