@@ -7,8 +7,9 @@ from json         import load
 from time         import time
 
 # Sets up the configuration
-configFile = open("setup.json")
-configuration = load(configFile)
+configuration = None
+with open("setup.json") as configFile:
+    configuration = load(configFile)
 
 BOT_TOKEN = configuration.get("token")
 DEFAULT_ACTIVITY = discord.Game(name=configuration.get("activity"))
@@ -23,9 +24,8 @@ class BabaBot(commands.Bot):
     def __init__(self, command_prefix, webhook_id, embed_color, help_command=None, description=None, **options):
         self.loading = False
         
-        fp = open("tilestats.json")
-        self.tileStats = load(fp)
-        fp.close
+        with open("tilestats.json") as fp:
+            self.tileStats = load(fp)
         
         self.embedColor = embed_color
         self.webhookId = webhook_id
