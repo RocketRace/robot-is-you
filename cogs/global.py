@@ -42,9 +42,8 @@ async def magickImages(wordGrid, width, height, palette):
         renderFrame.save(f"renders/{fr}.png")
 
     # Joins each frame into a .gif
-    fp = open(f"renders/render.gif", "w")
-    fp.truncate(0)
-    fp.close()
+    with open(f"renders/render.gif", "w") as fp:
+        fp.truncate(0)
     call(["magick", "convert", "renders/*.png", "-scale", "200%", "-set", "delay", "20", 
         "-set", "dispose", "2", "renders/render.gif"])
 
@@ -109,7 +108,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         Tiles may be used in the `tile` (and subsequently `rule`) commands.
         """
         fp = discord.File("tilelist.txt")
-        await self.bot.send(ctx, "List of all valid tiles:", file=fp)
+        await ctx.send( "List of all valid tiles:", file=fp)
 
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
     @commands.command()
