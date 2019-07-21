@@ -2,7 +2,7 @@ dirs = {{1,0},{0,1},{-1,0},{0,-1},{0,0}}
 ndirs = {{1,0},{0,-1},{-1,0},{0,1},{0,0}}
 dirs_diagonals = {{1,0},{0,-1},{-1,0},{0,1},{1,1},{1,-1},{-1,-1},{-1,1},{0,0}}
 
-colours = {	
+colours = {
 	default = {0, 3},
 	background = {0, 4},
 	edge = {1, 0},
@@ -38,15 +38,6 @@ colours = {
 	},
 }
 
-operators = 
-{
-	all = {},
-	cond_arg = {},
-	cond_simple = {},
-	cond_start = {},
-	verb = {},
-	verb_all = {},
-}
 conditions = {}
 
 keys = 
@@ -141,7 +132,7 @@ binds =
 		"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
 		"1","2","3","4","5","6","7","8","9","0",
 		"Right","Up","Left","Down",
-		".",",","-","+","ï¿½","'","ï¿½","ï¿½","<",
+		".",",","-","+","´","'","¨","§","<",
 		"Control","Shift","Return","Esc","Space","Backspace",
 	},
 }
@@ -185,6 +176,9 @@ soundnames =
 	{
 		name = "done",
 		count = 4,
+	},
+	{
+		name = "silent",
 	},
 }
 
@@ -298,7 +292,6 @@ tileslist =
 		unittype = "text",
 		tiling = -1,
 		type = 1,
-		operatortype = "verb",
 		colour = {5, 0},
 		active = {5, 2},
 		tile = {8, 0},
@@ -327,7 +320,6 @@ tileslist =
 		unittype = "text",
 		tiling = -1,
 		type = 3,
-		operatortype = "cond_start",
 		colour = {2, 1},
 		active = {2, 2},
 		tile = {10, 0},
@@ -423,7 +415,6 @@ tileslist =
 		unittype = "text",
 		tiling = -1,
 		type = 7,
-		operatortype = "cond_arg",
 		colour = {0, 1},
 		active = {0, 3},
 		tile = {5, 1},
@@ -698,7 +689,7 @@ tileslist =
 		unittype = "text",
 		tiling = -1,
 		type = 1,
-		operatortype = "verb_all",
+		argtype = {0, 2},
 		colour = {0, 1},
 		active = {0, 3},
 		tile = {1, 3},
@@ -1360,7 +1351,6 @@ tileslist =
 		unittype = "text",
 		tiling = -1,
 		type = 1,
-		operatortype = "verb",
 		colour = {0, 1},
 		active = {0, 3},
 		tile = {1, 7},
@@ -1415,7 +1405,6 @@ tileslist =
 		unittype = "text",
 		tiling = -1,
 		type = 1,
-		operatortype = "verb",
 		colour = {0, 1},
 		active = {0, 3},
 		tile = {5, 7},
@@ -1540,7 +1529,6 @@ tileslist =
 		unittype = "text",
 		tiling = -1,
 		type = 7,
-		operatortype = "cond_arg",
 		colour = {0, 1},
 		active = {0, 3},
 		tile = {4, 8},
@@ -1760,7 +1748,6 @@ tileslist =
 		unittype = "text",
 		tiling = -1,
 		type = 1,
-		operatortype = "verb",
 		colour = {2, 1},
 		active = {2, 2},
 		tile = {0, 10},
@@ -1802,7 +1789,6 @@ tileslist =
 		unittype = "text",
 		tiling = -1,
 		type = 7,
-		operatortype = "cond_arg",
 		argextra = {"right","up","left","down"},
 		colour = {0, 2},
 		active = {0, 3},
@@ -1831,7 +1817,6 @@ tileslist =
 		unittype = "text",
 		tiling = -1,
 		type = 1,
-		operatortype = "verb",
 		colour = {2, 1},
 		active = {2, 2},
 		tile = {7, 10},
@@ -1852,9 +1837,24 @@ tileslist =
 		grid = {10, 1},
 		layer = 20,
 	},
+	
+	-- Level cursor!
+	object150 =
+	{
+		name = "cursor",
+		sprite = "cursor",
+		sprite_in_root = true,
+		unittype = "object",
+		tiling = -1,
+		type = 0,
+		colour = {4, 2},
+		tile = {5, 10},
+		grid = {11, 0},
+		layer = 20,
+	},
 }
 
--- abcdefghijklmnopqrstuvwxyz0123456789-.?!,':_><()&+@ï¿½ï¿½{}/$ï¿½ï¿½ï¿½ï¿½ï¿½
+-- abcdefghijklmnopqrstuvwxyz0123456789-.?!,':_><()&+@¤£{}/$äöšªæ
 
 lookup_table =
 {
