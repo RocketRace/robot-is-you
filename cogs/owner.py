@@ -433,6 +433,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 for key,value in tile.items():
                     if key != "name":
                         rewritten[key] = value
+                # The sprite source (which folder to draw from)
+                rewritten["source"] = f[:-5] # Trim ".json"
                 if name is not None:
                     self.tileColors[name] = rewritten
 
@@ -470,13 +472,15 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             sprite = obj["sprite"]
             tiling = obj["tiling"]
             color = obj["color"]
+            source = obj.get("source")
+            if source is None: source = "vanilla"
             # For convenience
             x,y = [int(n) for n in color]
             spriteVariants = getSpriteVariants(sprite, tiling)
 
             # Saves the tile sprites
             for variant in spriteVariants:
-                files = ["sprites/%s_%s_%s.png" % (sprite, variant, i + 1) for i in range(3)]
+                files = [f"sprites/{source}/{sprite}_{variant}_{i + 1}" for i in range(3)]
                 # Changes the color of each image
                 framesColor = [multiplyColor(fp, paletteColors[x][y]) for fp in files]
                 # Saves the colored images to /color/[palette]/
@@ -492,7 +496,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
         # Tests for a supplied palette
         if arg not in [str[:-4] for str in listdir("palettes")]:
-            await self.bot.send(ctx, "Supply a palette to load.")
+            await self.bot.send(ctx, "Supply a palett to load.")
         else: 
             # The palette name
             palette = arg
@@ -511,10 +515,13 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             for name,obj in self.tileColors.items():
                 # Fetches the tile data
                 sprite = obj["sprite"]
-                tiling = obj["tiling"]
-                if tiling == None:
-                    tiling = "-1" # Custom tiles will probably not have the tiling property
+                tiling = obj.get("tiling")
+                # Custom tiles will probably not have the tiling property unless specified
+                if tiling == None: tiling = "-1" 
                 color = obj["color"]
+                source = obj.get("source")
+                # If not specified, it's a vanilla sprite
+                if source is None: source = "vanilla"
                 # For convenience
                 x,y = [int(n) for n in color]
 
@@ -526,7 +533,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                     if name.startswith("icon"):
                         paths = [f"sprites&{sprite}_1" for i in range(3)]
                     else:
-                        paths = [f"sprites/{sprite}_{spr}_{i + 1}.png" for i in range(3)]
+                        paths = [f"sprites/{source}/{sprite}_{spr}_{i + 1}.png" for i in range(3)]
                     # Changes the color of each image
                     framesColor = [multiplyColor(fp, paletteColors[x][y]) for fp in paths]
                     # Saves the colored images to /color/[palette]/
