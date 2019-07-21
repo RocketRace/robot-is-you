@@ -224,7 +224,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             if firstarg.startswith("palette:"):
                 pal = firstarg[8:] 
                 if pal + ".png" not in listdir("palettes"):
-                    return await self.bot.send(ctx, f"⚠️ Could not find a palette with name {pal}).")
+                    return await self.bot.send(ctx, f"⚠️ Could not find a palette with name \"{pal}\".")
                 wordGrid[0].pop(0)
                 if not wordGrid[0]:
                     wordGrid[0].append("-")
@@ -365,7 +365,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     x = word
                                 # Is the variant faulty?
                                 if isfile(f"color/{pal}/{tile}-{0}-0-.png"):
-                                    return await self.bot.send(ctx, f"⚠️ The sprite variant \"{variant}\"for \"{x}\" doesn't seem to be valid.")
+                                    return await self.bot.send(ctx, f"⚠️ The sprite variant \"{variant}\"for \"{tile}\" doesn't seem to be valid.")
                                 # Does a text counterpart exist?
                                 suggestion = "text_" + tile
                                 if isfile(f"color/{pal}/{suggestion}-{variant}-0-.png"):
