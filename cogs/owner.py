@@ -346,7 +346,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         self.bot.loading = True
         # values.lua contains the data about which color (on the palette) is associated with each tile.
         lines = ""
-        with open("values.lua") as colorvalues:
+        with open("values.lua", errors="replace") as colorvalues:
             lines = colorvalues.readlines()
         # Skips the parts we don't need
         tileslist = False
@@ -531,7 +531,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 # For each sprite, saves the frames
                 for spr in spriteNumbers:
                     if name.startswith("icon"):
-                        paths = [f"sprites&{sprite}_1" for i in range(3)]
+                        paths = [f"sprites/{sprite}_1" for i in range(3)]
                     else:
                         paths = [f"sprites/{source}/{sprite}_{spr}_{i + 1}.png" for i in range(3)]
                     # Changes the color of each image
