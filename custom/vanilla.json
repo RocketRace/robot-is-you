@@ -1,5 +1,13 @@
 [
   {
+    "name":"text_fire",
+    "sprite":"text_fire",
+    "color":[
+      "2",
+      "3"
+    ]
+  },
+  {
     "sprite":"text_idle",
     "name":"text_idle",
     "color":
@@ -222,7 +230,7 @@
     "name":"icon",
     "sprite":"icon",
     "color":[
-      "1",
+      "0",
       "3"
     ]
   },
@@ -230,7 +238,7 @@
     "name":"icon_abc",
     "sprite":"icon_abc",
     "color":[
-      "1",
+      "0",
       "3"
     ]
   },
@@ -238,7 +246,7 @@
     "name":"icon_abstract",
     "sprite":"icon_abstract",
     "color":[
-      "1",
+      "0",
       "3"
     ]
   },
@@ -246,7 +254,7 @@
     "name":"icon_cave",
     "sprite":"icon_cave",
     "color":[
-      "1",
+      "0",
       "3"
     ]
   },
@@ -254,7 +262,7 @@
     "name":"icon_dust",
     "sprite":"icon_dust",
     "color":[
-      "1",
+      "0",
       "3"
     ]
   },
@@ -262,7 +270,7 @@
     "name":"icon_fall",
     "sprite":"icon_fall",
     "color":[
-      "1",
+      "0",
       "3"
     ]
   },
@@ -270,7 +278,7 @@
     "name":"icon_forest",
     "sprite":"icon_forest",
     "color":[
-      "1",
+      "0",
       "3"
     ]
   },
@@ -278,7 +286,7 @@
     "name":"icon_garden",
     "sprite":"icon_garden",
     "color":[
-      "1",
+      "0",
       "3"
     ]
   },
@@ -286,7 +294,7 @@
     "name":"icon_island",
     "sprite":"icon_island",
     "color":[
-      "1",
+      "0",
       "3"
     ]
   },
@@ -294,7 +302,7 @@
     "name":"icon_lake",
     "sprite":"icon_lake",
     "color":[
-      "1",
+      "0",
       "3"
     ]
   },
@@ -302,7 +310,7 @@
     "name":"icon_level",
     "sprite":"icon_level",
     "color":[
-      "1",
+      "0",
       "3"
     ]
   },
@@ -310,7 +318,7 @@
     "name":"icon_meta",
     "sprite":"icon_meta",
     "color":[
-      "1",
+      "0",
       "3"
     ]
   },
@@ -318,7 +326,7 @@
     "name":"icon_mountain",
     "sprite":"icon_mountain",
     "color":[
-      "1",
+      "0",
       "3"
     ]
   },
@@ -326,7 +334,7 @@
     "name":"icon_ruins",
     "sprite":"icon_ruins",
     "color":[
-      "1",
+      "0",
       "3"
     ]
   },
@@ -334,7 +342,7 @@
     "name":"icon_space",
     "sprite":"icon_space",
     "color":[
-      "1",
+      "0",
       "3"
     ]
   },
@@ -342,8 +350,8 @@
     "name":"cursor",
     "sprite":"cursor",
     "color":[
-      "0",
-      "0"
+      "4",
+      "2"
     ]
   },
   {
@@ -366,7 +374,7 @@
       "name":"text_a",
       "sprite":"text_a",
       "color":[
-      "1",
+      "0",
       "3"
       ]
   },
@@ -374,7 +382,7 @@
       "name":"text_b",
       "sprite":"text_b",
       "color":[
-      "1",
+      "0",
       "3"
       ]
   },
@@ -382,7 +390,7 @@
       "name":"text_c",
       "sprite":"text_c",
       "color":[
-      "1",
+      "0",
       "3"
       ]
   },
@@ -390,7 +398,7 @@
       "name":"text_d",
       "sprite":"text_d",
       "color":[
-      "1",
+      "0",
       "3"
       ]
   },
@@ -398,7 +406,7 @@
       "name":"text_e",
       "sprite":"text_e",
       "color":[
-      "1",
+      "0",
       "3"
       ]
   },
@@ -406,7 +414,7 @@
       "name":"text_f",
       "sprite":"text_f",
       "color":[
-      "1",
+      "0",
       "3"
       ]
   },
@@ -414,7 +422,7 @@
       "name":"text_g",
       "sprite":"text_g",
       "color":[
-      "1",
+      "0",
       "3"
       ]
   },
@@ -422,7 +430,7 @@
       "name":"text_h",
       "sprite":"text_h",
       "color":[
-      "1",
+      "0",
       "3"
       ]
   },
@@ -430,7 +438,7 @@
       "name":"text_i",
       "sprite":"text_i",
       "color":[
-      "1",
+      "0",
       "3"
       ]
   },
@@ -438,7 +446,7 @@
       "name":"text_l",
       "sprite":"text_l",
       "color":[
-      "1",
+      "0",
       "3"
       ]
   },
@@ -446,7 +454,7 @@
       "name":"text_m",
       "sprite":"text_m",
       "color":[
-      "1",
+      "0",
       "3"
       ]
   },
@@ -454,7 +462,7 @@
       "name":"text_n",
       "sprite":"text_n",
       "color":[
-      "1",
+      "0",
       "3"
       ]
   },
@@ -462,7 +470,7 @@
       "name":"text_o",
       "sprite":"text_o",
       "color":[
-      "1",
+      "0",
       "3"
       ]
   },
@@ -470,7 +478,7 @@
       "name":"text_r",
       "sprite":"text_r",
       "color":[
-      "1",
+      "0",
       "3"
       ]
   },
@@ -478,7 +486,7 @@
       "name":"text_s",
       "sprite":"text_s",
       "color":[
-      "1",
+      "0",
       "3"
       ]
   },
@@ -486,7 +494,7 @@
       "name":"text_t",
       "sprite":"text_t",
       "color":[
-      "1",
+      "0",
       "3"
       ]
   },
@@ -494,7 +502,7 @@
       "name":"text_u",
       "sprite":"text_u",
       "color":[
-      "1",
+      "0",
       "3"
       ]
   },
@@ -502,7 +510,7 @@
       "name":"text_v",
       "sprite":"text_v",
       "color":[
-      "1",
+      "0",
       "3"
       ]
   },
@@ -510,7 +518,7 @@
       "name":"text_w",
       "sprite":"text_w",
       "color":[
-      "1",
+      "0",
       "3"
       ]
   },
@@ -518,7 +526,7 @@
       "name":"text_x",
       "sprite":"text_x",
       "color":[
-      "1",
+      "0",
       "3"
       ]
   }
