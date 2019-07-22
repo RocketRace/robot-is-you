@@ -34,7 +34,12 @@ async def magickImages(wordGrid, width, height, palette):
             xOffset = 0
             for stack in row:
                 for tile in stack:
-                    renderFrame.paste(tile, (xOffset, yOffset), tile)
+                    width = tile.width
+                    height = tile.height
+                    # For tiles that don't adhere to the 24x24 sprite size
+                    offset = (xOffset + (24 - width) // 2, yOffset + (24 - height) // 2)
+
+                    renderFrame.paste(tile, offset, tile)
                 xOffset += 24
             yOffset += 24
 
@@ -42,9 +47,8 @@ async def magickImages(wordGrid, width, height, palette):
         renderFrame.save(f"renders/{fr}.png")
 
     # Joins each frame into a .gif
-    fp = open(f"renders/render.gif", "w")
-    fp.truncate(0)
-    fp.close()
+    with open(f"renders/render.gif", "w") as fp:
+        fp.truncate(0)
     call(["magick", "convert", "renders/*.png", "-scale", "200%", "-set", "delay", "20", 
         "-set", "dispose", "2", "renders/render.gif"])
 
@@ -109,7 +113,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         Tiles may be used in the `tile` (and subsequently `rule`) commands.
         """
         fp = discord.File("tilelist.txt")
-        await self.bot.send(ctx, "List of all valid tiles:", file=fp)
+        await ctx.send( "List of all valid tiles:", file=fp)
 
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
     @commands.command()
@@ -225,7 +229,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             if firstarg.startswith("palette:"):
                 pal = firstarg[8:] 
                 if pal + ".png" not in listdir("palettes"):
-                    return await self.bot.send(ctx, f"⚠️ Could not find a palette with name {pal}).")
+                    return await self.bot.send(ctx, f"⚠️ Could not find a palette with name \"{pal}\".")
                 wordGrid[0].pop(0)
                 if not wordGrid[0]:
                     wordGrid[0].append("-")
@@ -366,7 +370,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     x = word
                                 # Is the variant faulty?
                                 if isfile(f"color/{pal}/{tile}-{0}-0-.png"):
-                                    return await self.bot.send(ctx, f"⚠️ The sprite variant \"{variant}\"for \"{x}\" doesn't seem to be valid.")
+                                    return await self.bot.send(ctx, f"⚠️ The sprite variant \"{variant}\"for \"{tile}\" doesn't seem to be valid.")
                                 # Does a text counterpart exist?
                                 suggestion = "text_" + tile
                                 if isfile(f"color/{pal}/{suggestion}-{variant}-0-.png"):
