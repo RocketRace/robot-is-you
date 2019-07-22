@@ -321,25 +321,25 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                         # Is there the same tile adjacent right?
                                         if x == width - 1:
                                             pass
-                                        elif tile in cloneGrid[y][x + 1]:
+                                        elif tile in cloneGrid[y][x + 1] or "level" in cloneGrid[y][x + 1]:
                                             variant += 1
 
                                         # Is there the same tile adjacent above?
                                         if y == 0:
                                             pass
-                                        elif tile in cloneGrid[y - 1][x]:
+                                        elif tile in cloneGrid[y - 1][x] or "level" in cloneGrid[y - 1][x]:
                                             variant += 2
 
                                         # Is there the same tile adjacent left?
                                         if x == 0:
                                             pass
-                                        elif tile in cloneGrid[y][x - 1]:
+                                        elif tile in cloneGrid[y][x - 1] or "level" in cloneGrid[y][x - 1]:
                                             variant += 4
 
                                         # Is there the same tile adjacent below?
                                         if y == height - 1:
                                             pass
-                                        elif tile in cloneGrid[y + 1][x]:
+                                        elif tile in cloneGrid[y + 1][x] or "level" in cloneGrid[y + 1][x]:
                                             variant += 8
                                         
                                         # Stringify
