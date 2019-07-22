@@ -113,12 +113,10 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     async def statSaver(self):
         await self.bot.wait_until_ready()
         while self.keepSaving and self.bot.is_ready():
-            await asyncio.sleep(600)
-            to_dump = self.bot.tileStats
-            fp = open("tilestats.json", "wt")
-            fp.truncate(0)
-            json.dump(to_dump, fp)
-            fp.close()
+            await asyncio.sleep(3600)
+            with open("tilestats.json", "wt") as fp:
+                to_dump = self.bot.tileStats
+                json.dump(to_dump, fp)
             print("Saved tile stats.")
     
     def __init__(self, bot):
@@ -141,6 +139,34 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
         # Are assets loading?
         self.bot.loading = False
+
+    def generateTileSprites(self, tile, obj, palette, paletteColors):
+        # Fetches the tile data
+        sprite = obj["sprite"]
+        tiling = obj.get("tiling")
+        # Custom tiles will probably not have the tiling property unless specified
+        if tiling is None: tiling = "-1"
+        color = obj["color"]
+        source = obj.get("source")
+        # If not specified, it's a vanilla sprite
+        if source is None: source = "vanilla"
+        # For convenience
+        x,y = [int(n) for n in color]
+        spriteVariants = getSpriteVariants(sprite, tiling)
+
+        # Saves the tile sprites
+        for variant in spriteVariants:
+            if tile.startswith("icon"):
+                if tile == "icon":
+                    paths = [f"sprites/{source}/icon.png" for i in range(3)]
+                else:
+                    paths = [f"sprites/{source}/{sprite}_1.png" for i in range(3)]
+            else:
+                paths = [f"sprites/{source}/{sprite}_{variant}_{i + 1}.png" for i in range(3)]
+            # Changes the color of each image
+            framesColor = [multiplyColor(fp, paletteColors[x][y]) for fp in paths]
+            # Saves the colored images to /color/[palette]/
+            [framesColor[i].save(f"color/{palette}/{tile}-{variant}-{i}-.png", format="PNG") for i in range(len(framesColor))]
 
     @commands.command()
     @commands.is_owner()
@@ -173,10 +199,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         
         creationInAJar["eternity in a pocket"] = lore
 
-        repositoryOfTheGods = open("data.json", "wt")
-        repositoryOfTheGods.truncate(0)
-        json.dump(creationInAJar, repositoryOfTheGods, indent=1)
-        repositoryOfTheGods.close()
+        with open("data.json", "wt") as repositoryOfTheGods:
+            json.dump(creationInAJar, repositoryOfTheGods, indent=1)
         
         await self.bot.send(ctx, "All of history is within me.")
                  
@@ -271,9 +295,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         levels = listdir("levels")
         for level in levels:
             # Reads each line of the level file
-            fp = open("levels/%s" % level)
-            lines = fp.readlines()
-            fp.close()
+            lines = ""
+            with open("levels/%s" % level) as fp:
+                lines = fp.readlines()
 
             IDs = []
             alts = {}
@@ -334,13 +358,10 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                         self.alternateTiles[key].extend([alts[key]])
         
         # Saves the data of ALL the themes to alternatetiles.json
-        alternateFile = open("alternatetiles.json", "wt")
-        alternateFile.seek(0)
-        alternateFile.truncate()
-        json.dump(self.alternateTiles, alternateFile, indent=3)
-        alternateFile.close()
+        with open("alternatetiles.json", "wt") as alternateFile:
+            json.dump(self.alternateTiles, alternateFile, indent=3)
 
-        await self.bot.send(ctx, "Done.")
+        await ctx.send("Done.")
         self.bot.loading = False
 
     @commands.command()
@@ -352,8 +373,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
         self.bot.loading = True
         # values.lua contains the data about which color (on the palette) is associated with each tile.
-        colorvalues = open("values.lua")
-        lines = colorvalues.readlines()
+        lines = ""
+        with open("values.lua", errors="replace") as colorvalues:
+            lines = colorvalues.readlines()
         # Skips the parts we don't need
         tileslist = False
         # The name, ID and sprite of the currently handled tile
@@ -427,15 +449,11 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             elif line == "tileslist =\n":
                 tileslist = True
 
-        # Custom and missing sprites added:
-        # Missing letter tiles
-        letters = "djkpqyz"
-        for c in letters:
-            self.tileColors[f"text_{c}"] = {"sprite":f"text_{c}", "tiling":"-1", "color":["0","3"]}
         # Load custom tile data from a json files
         for f in listdir("custom"):
-            fp = open(f"custom/{f}")
-            dat = json.load(fp)
+            dat = None
+            with open(f"custom/{f}") as fp:
+                dat = json.load(fp)
             for tile in dat:
                 name = tile["name"]
                 # Rewrites the objects slightly
@@ -443,36 +461,19 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 for key,value in tile.items():
                     if key != "name":
                         rewritten[key] = value
+                # The sprite source (which folder to draw from)
+                rewritten["source"] = f[:-5] # Trim ".json"
                 if name is not None:
                     self.tileColors[name] = rewritten
 
-        # Manual patches to the tile list for overall enjoyment.
-        # Not all the information could be scrapped automatically, at least reliably.
-
-        letters = ascii_lowercase
-
-        for c in letters:
-            # Set all letter tiles to the same color
-            if self.tileColors.get(f"text_{c}") is not None:
-                self.tileColors[f"text_{c}"]["color"] = ["0", "3"]
-        # Sets text_ba and text_ab to the same color as text_baba
-        for key in ["text_ba", "text_ab"]:
-            if self.tileColors.get(key) is not None:
-                self.tileColors[key]["color"] = ["4", "1"]
-            
-        allTiles = open("tilelist.txt", "wt")
-        allTiles.truncate(0)
-        allTiles.write("\n".join([tile for tile in self.tileColors]))
+        with open("tilelist.txt", "wt") as allTiles:
+            allTiles.write("\n".join([tile for tile in self.tileColors]))
 
         # Dumps the gathered data to tilecolors.json
-        emotefile = open("tilecolors.json", "wt")
-        # Clears the file first
-        emotefile.seek(0)
-        emotefile.truncate()
-        json.dump(self.tileColors, emotefile, indent=3)
-        emotefile.close()
+        with open("tilecolors.json", "wt") as emoteFile:
+            json.dump(self.tileColors, emoteFile, indent=3)
 
-        await self.bot.send(ctx, "Done.")
+        await ctx.send("Done.")
 
         self.bot.loading = False
 
@@ -488,29 +489,22 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             palettes = [pal[:-4] for pal in listdir("palettes")]
         elif palette + ".png" not in listdir("palettes"):
             return await self.bot.send(ctx, f"\"{palette}\" is not a valid palette.")
-        
+            
         for pal in palettes:
-            # Palette RGB values
-            paletteImg = Image.open(f"palettes/{pal}.png").convert("RGB")
+            # Creates the directories for the palettes if they don't exist
+            try:
+                mkdir("color/%s" % pal)
+            except FileExistsError:
+                pass
+
+            # The palette image 
+            paletteImg = Image.open("palettes/%s.png" % pal).convert("RGB")
+            # The RGB values of the palette
             paletteColors = [[(paletteImg.getpixel((x,y))) for y in range(5)] for x in range(7)]
 
-            # Fetches the tile data
             obj = self.tileColors[tile]
-            sprite = obj["sprite"]
-            tiling = obj["tiling"]
-            color = obj["color"]
-            # For convenience
-            x,y = [int(n) for n in color]
-            spriteVariants = getSpriteVariants(sprite, tiling)
-
-            # Saves the tile sprites
-            for variant in spriteVariants:
-                files = ["sprites/%s_%s_%s.png" % (sprite, variant, i + 1) for i in range(3)]
-                # Changes the color of each image
-                framesColor = [multiplyColor(fp, paletteColors[x][y]) for fp in files]
-                # Saves the colored images to /color/[palette]/
-                [framesColor[i].save(f"color/{pal}/{tile}-{variant}-{i}-.png", format="PNG") for i in range(len(framesColor))]
-        await self.bot.send(ctx, "Done.")
+            self.generateTileSprites(tile, obj, pal, paletteColors)
+        await ctx.send("Done.")
         self.bot.loading = False
 
     @commands.command()
@@ -537,33 +531,15 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 pass
             
             # Goes through each tile object in the tileColors array
-            for name,obj in self.tileColors.items():
-                # Fetches the tile data
-                sprite = obj["sprite"]
-                tiling = obj["tiling"]
-                if tiling == None:
-                    tiling = "-1" # Custom tiles will probably not have the tiling property
-                color = obj["color"]
-                # For convenience
-                x,y = [int(n) for n in color]
-
-                # Get a list of valid variants
-                spriteNumbers = getSpriteVariants(sprite, tiling)
-
-                # For each sprite, saves the frames
-                for spr in spriteNumbers:
-                    files = ["sprites/%s_%s_%s.png" % (sprite, spr, i + 1) for i in range(3)]
-                    # Changes the color of each image
-                    framesColor = [multiplyColor(fp, paletteColors[x][y]) for fp in files]
-                    # Saves the colored images to /color/[palette]/
-                    [framesColor[i].save(f"color/{palette}/{name}-{spr}-{i}-.png", format="PNG") for i in range(len(framesColor))]
+            for tile,obj in self.tileColors.items():
+                self.generateTileSprites(tile, obj, palette, paletteColors)
 
         self.bot.loading = False
 
     @commands.command()
     @commands.is_owner()
     async def pull(self, ctx):
-        await self.bot.send(ctx, "Pulling the new version from github...")
+        await ctx.send("Pulling the new version from github...")
         puller = Popen(["git", "pull"], cwd="/home/pi/Desktop/robot-private/", stdout=PIPE, stderr=STDOUT, universal_newlines=True)
         process = True
         # Checks if the process has completed every half a second
@@ -583,10 +559,10 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         # stderr is always None
         if stderr is None:
             if i > 30:
-                await self.bot.send(ctx, "`git pull` took more than 30 seconds to execute. Aborting.")
+                await ctx.send("`git pull` took more than 30 seconds to execute. Aborting.")
                 puller.terminate()
             else:
-                await self.bot.send(ctx, f"`git pull` exited with code {returncode}. Output: ```\n{stdout}\n```")
+                await ctx.send(f"`git pull` exited with code {returncode}. Output: ```\n{stdout}\n```")
     
 
     @commands.command()
@@ -594,11 +570,11 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     async def loadall(self, ctx):
         # Sends some feedback messages
 
-        await self.bot.send(ctx, "Loading objects...")
+        await ctx.send("Loading objects...")
         await ctx.invoke(self.bot.get_command("loadchanges"))
-        await self.bot.send(ctx, "Done. Loading colors...")
+        await ctx.send("Loading colors...")
         await ctx.invoke(self.bot.get_command("loadcolors"))
-        await self.bot.send(ctx, "Done. Loading palettes...")
+        await ctx.send("Loading palettes...")
         
 
         # Loads every palette
@@ -607,11 +583,11 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
         i = 0
         for palette in [fp[:-4] for fp in palettes]:
-            await self.bot.send(ctx, f" {i}/{total}")
+            await ctx.send(f" {i}/{total}")
             await ctx.invoke(self.bot.get_command("loadpalette"), palette)
             i += 1
-        await self.bot.send(ctx, f" {total}/{total}")
-        await self.bot.send(ctx, f"{ctx.author.mention} Finished loading tiles.")
+        await ctx.send(f"Loading palettes... {total}/{total}")
+        await ctx.send(f"{ctx.author.mention} Done.")
 
     def _clear_gateway_data(self):
         weekAgo = datetime.utcnow() - timedelta(days=7)
