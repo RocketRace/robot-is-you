@@ -34,7 +34,12 @@ async def magickImages(wordGrid, width, height, palette):
             xOffset = 0
             for stack in row:
                 for tile in stack:
-                    renderFrame.paste(tile, (xOffset, yOffset), tile)
+                    width = tile.width
+                    height = tile.height
+                    # For tiles that don't adhere to the 24x24 sprite size
+                    offset = (xOffset + (24 - width) // 2, yOffset + (24 - height) // 2)
+
+                    renderFrame.paste(tile, offset, tile)
                 xOffset += 24
             yOffset += 24
 

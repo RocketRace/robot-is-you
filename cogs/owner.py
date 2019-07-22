@@ -531,7 +531,10 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 # For each sprite, saves the frames
                 for spr in spriteNumbers:
                     if name.startswith("icon"):
-                        paths = [f"sprites/{sprite}_1" for i in range(3)]
+                        if name == "icon":
+                            paths = [f"sprites/{source}/icon.png" for i in range(3)]
+                        else:
+                            paths = [f"sprites/{source}/{sprite}_1.png" for i in range(3)]
                     else:
                         paths = [f"sprites/{source}/{sprite}_{spr}_{i + 1}.png" for i in range(3)]
                     # Changes the color of each image
