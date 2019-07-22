@@ -1,5 +1,21 @@
 [
    {
+      "name":"fox",
+      "sprite":"fox",
+      "color":[
+         "4",
+         "2"
+      ]
+   },
+   {
+      "name":"text_fox",
+      "sprite":"text_fox",
+      "color":[
+         "4",
+         "1"
+      ]
+   },
+   {
       "name":"hempuli",
       "sprite":"hempuli",
       "color":[
