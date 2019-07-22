@@ -3,7 +3,7 @@
         "name":"text_j",
         "sprite":"text_j",
         "color":[
-        "1",
+        "0",
         "3"
         ]
     },
@@ -11,7 +11,7 @@
         "name":"text_k",
         "sprite":"text_k",
         "color":[
-        "1",
+        "0",
         "3"
         ]
     },
@@ -19,7 +19,7 @@
         "name":"text_p",
         "sprite":"text_p",
         "color":[
-        "1",
+        "0",
         "3"
         ]
     },
@@ -27,7 +27,7 @@
         "name":"text_q",
         "sprite":"text_q",
         "color":[
-        "1",
+        "0",
         "3"
         ]
     },
@@ -35,7 +35,7 @@
         "name":"text_y",
         "sprite":"text_y",
         "color":[
-        "1",
+        "0",
         "3"
         ]
     },
@@ -43,7 +43,7 @@
         "name":"text_z",
         "sprite":"text_z",
         "color":[
-        "1",
+        "0",
         "3"
         ]
     },
