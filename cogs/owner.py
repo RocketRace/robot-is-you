@@ -140,6 +140,34 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         # Are assets loading?
         self.bot.loading = False
 
+    def generateTileSprites(self, tile, obj, palette, paletteColors):
+        # Fetches the tile data
+        sprite = obj["sprite"]
+        tiling = obj.get("tiling")
+        # Custom tiles will probably not have the tiling property unless specified
+        if tiling is None: tiling = "-1"
+        color = obj["color"]
+        source = obj.get("source")
+        # If not specified, it's a vanilla sprite
+        if source is None: source = "vanilla"
+        # For convenience
+        x,y = [int(n) for n in color]
+        spriteVariants = getSpriteVariants(sprite, tiling)
+
+        # Saves the tile sprites
+        for variant in spriteVariants:
+            if tile.startswith("icon"):
+                if tile == "icon":
+                    paths = [f"sprites/{source}/icon.png" for i in range(3)]
+                else:
+                    paths = [f"sprites/{source}/{sprite}_1.png" for i in range(3)]
+            else:
+                paths = [f"sprites/{source}/{sprite}_{variant}_{i + 1}.png" for i in range(3)]
+            # Changes the color of each image
+            framesColor = [multiplyColor(fp, paletteColors[x][y]) for fp in paths]
+            # Saves the colored images to /color/[palette]/
+            [framesColor[i].save(f"color/{palette}/{tile}-{variant}-{i}-.png", format="PNG") for i in range(len(framesColor))]
+
     @commands.command()
     @commands.is_owner()
     async def compileSurrealMemes(self, ctx):
@@ -461,30 +489,21 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             palettes = [pal[:-4] for pal in listdir("palettes")]
         elif palette + ".png" not in listdir("palettes"):
             return await self.bot.send(ctx, f"\"{palette}\" is not a valid palette.")
-        
+            
         for pal in palettes:
-            # Palette RGB values
-            paletteImg = Image.open(f"palettes/{pal}.png").convert("RGB")
+            # Creates the directories for the palettes if they don't exist
+            try:
+                mkdir("color/%s" % pal)
+            except FileExistsError:
+                pass
+
+            # The palette image 
+            paletteImg = Image.open("palettes/%s.png" % pal).convert("RGB")
+            # The RGB values of the palette
             paletteColors = [[(paletteImg.getpixel((x,y))) for y in range(5)] for x in range(7)]
 
-            # Fetches the tile data
             obj = self.tileColors[tile]
-            sprite = obj["sprite"]
-            tiling = obj["tiling"]
-            color = obj["color"]
-            source = obj.get("source")
-            if source is None: source = "vanilla"
-            # For convenience
-            x,y = [int(n) for n in color]
-            spriteVariants = getSpriteVariants(sprite, tiling)
-
-            # Saves the tile sprites
-            for variant in spriteVariants:
-                files = [f"sprites/{source}/{sprite}_{variant}_{i + 1}" for i in range(3)]
-                # Changes the color of each image
-                framesColor = [multiplyColor(fp, paletteColors[x][y]) for fp in files]
-                # Saves the colored images to /color/[palette]/
-                [framesColor[i].save(f"color/{pal}/{tile}-{variant}-{i}-.png", format="PNG") for i in range(len(framesColor))]
+            self.generateTileSprites(tile, obj, pal, paletteColors)
         await ctx.send("Done.")
         self.bot.loading = False
 
@@ -496,7 +515,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
         # Tests for a supplied palette
         if arg not in [str[:-4] for str in listdir("palettes")]:
-            await self.bot.send(ctx, "Supply a palett to load.")
+            await self.bot.send(ctx, "Supply a palette to load.")
         else: 
             # The palette name
             palette = arg
@@ -512,35 +531,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 pass
             
             # Goes through each tile object in the tileColors array
-            for name,obj in self.tileColors.items():
-                # Fetches the tile data
-                sprite = obj["sprite"]
-                tiling = obj.get("tiling")
-                # Custom tiles will probably not have the tiling property unless specified
-                if tiling == None: tiling = "-1" 
-                color = obj["color"]
-                source = obj.get("source")
-                # If not specified, it's a vanilla sprite
-                if source is None: source = "vanilla"
-                # For convenience
-                x,y = [int(n) for n in color]
-
-                # Get a list of valid variants
-                spriteNumbers = getSpriteVariants(sprite, tiling)
-
-                # For each sprite, saves the frames
-                for spr in spriteNumbers:
-                    if name.startswith("icon"):
-                        if name == "icon":
-                            paths = [f"sprites/{source}/icon.png" for i in range(3)]
-                        else:
-                            paths = [f"sprites/{source}/{sprite}_1.png" for i in range(3)]
-                    else:
-                        paths = [f"sprites/{source}/{sprite}_{spr}_{i + 1}.png" for i in range(3)]
-                    # Changes the color of each image
-                    framesColor = [multiplyColor(fp, paletteColors[x][y]) for fp in paths]
-                    # Saves the colored images to /color/[palette]/
-                    [framesColor[i].save(f"color/{palette}/{name}-{spr}-{i}-.png", format="PNG") for i in range(len(framesColor))]
+            for tile,obj in self.tileColors.items():
+                self.generateTileSprites(tile, obj, palette, paletteColors)
 
         self.bot.loading = False
 
