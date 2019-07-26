@@ -450,7 +450,10 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 tileslist = True
 
         # Load custom tile data from a json files
-        for f in listdir("custom"):
+        customData = listdir("custom")
+        # In alphabetical order, to make sure Patashu's redux mod overwrites the old mod
+        customData.sort() 
+        for f in customData:
             dat = None
             with open(f"custom/{f}") as fp:
                 dat = json.load(fp)
