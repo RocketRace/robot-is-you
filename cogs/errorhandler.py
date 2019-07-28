@@ -55,7 +55,11 @@ class CommandErrorHandler(commands.Cog):
         if hasattr(ctx.command, 'on_error'):
             return
         
-        ignored = (commands.CommandNotFound) # commands.CommandNotFound, 
+        ignored = (commands.CommandNotFound, 
+                    commands.NotOwner, 
+                    commands.BotMissingPermissions, 
+                    commands.MissingPermissions
+                ) 
         
         # Allows us to check for original exceptions raised and sent to CommandInvokeError.
         # If nothing is found. We keep the exception passed to on_command_error.
