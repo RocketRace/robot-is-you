@@ -121,12 +121,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         altFile = "alternatetiles.json"
         if stat(altFile).st_size != 0:
             self.alternateTiles = json.load(open(altFile))
-        self.bot.loop.create_task(self.statSaver())
 
         self.identifies = []
         self.resumes = []
-        self.keepSaving = True
-
         # Are assets loading?
         self.bot.loading = False
 
