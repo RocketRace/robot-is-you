@@ -56,9 +56,7 @@ class CommandErrorHandler(commands.Cog):
             return
         
         ignored = (commands.CommandNotFound, 
-                    commands.NotOwner, 
-                    commands.BotMissingPermissions, 
-                    commands.MissingPermissions
+                    commands.NotOwner
                 ) 
         
         # Allows us to check for original exceptions raised and sent to CommandInvokeError.
