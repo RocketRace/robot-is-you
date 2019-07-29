@@ -156,7 +156,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             # Changes the color of each image
             framesColor = [multiplyColor(fp, paletteColors[x][y]) for fp in paths]
             # Saves the colored images to /color/[palette]/
-            [framesColor[i].save(f"color/{palette}/{tile}-{variant}-{i}-.png", format="PNG") for i in range(len(framesColor))             
+            [framesColor[i].save(f"color/{palette}/{tile}-{variant}-{i}-.png", format="PNG") for i in range(len(framesColor))]            
             
     @commands.command()
     @commands.is_owner()
