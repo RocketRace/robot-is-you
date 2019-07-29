@@ -115,50 +115,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         fp = discord.File("tilelist.txt")
         await ctx.send( "List of all valid tiles:", file=fp)
 
-    @commands.cooldown(2, 10, type=commands.BucketType.channel)
-    @commands.command()
-    async def top(self, ctx, n: int = 10):
-        """
-        Returns the most commonly rendered tiles.
-        If `n` is provided, returns up to 10 tiles, starting with the tile with rank `n` and counting down to rank `n - 10`.
-        If `n` is 10 or less, returns the `n` most common tiles.
-        """
-        maxTiles = len(self.bot.tileStats["tiles"])
-        # Tidies up input
-        if type(n) != int:
-            return await self.bot.send(ctx, "⚠️ Please input only numbers.")
-        if n < 1 or n > maxTiles:
-            return await self.bot.send(ctx, f"⚠️ That value ({n}) is out of range ({maxTiles} max).")
-
-        # Total tiles
-        totalCount = self.bot.tileStats.get("total")
-        # Gets the values requested
-        totals = {key:value for key, value in self.bot.tileStats["tiles"].items()}
-        sortedKeys = sorted(totals, key=totals.get, reverse=True)
-        if n <= 10:
-            returnedKeys = sortedKeys[:n]
-            ranks = ["#" + str(i + 1) for i in range(n)]
-        else:
-            returnedKeys = sortedKeys[(n - 10):n]
-            ranks = ["#" + str(i + 1) for i in range(n - 10, n, 1)]
-        returnedValues = [totals[key] for key in returnedKeys]
-
-        # Calculates the percentage the values are worth
-        percentages = [round(value / totalCount * 100, 1) for value in returnedValues]
-
-        # Neat lists (for embed columns)
-        tileNames = ["`" + key + "`" for key in returnedKeys]
-        neatPercentages = [str(pc) + " %" for pc in percentages]
-
-        # Adds columns to an embed
-        embed = discord.Embed(title="Most Commonly Used Tiles", color=self.bot.embedColor)
-        embed.add_field(name="Rank", value="\n".join(ranks))
-        embed.add_field(name="Tile", value="\n".join(tileNames))
-        embed.add_field(name="Usage", value="\n".join(neatPercentages))
-
-        # Send it
-        await self.bot.send(ctx, " ", embed=embed)
-
     @commands.cooldown(2,10,type=commands.BucketType.channel)
     @commands.command(name="palettes")
     async def listPalettes(self, ctx):
@@ -380,17 +336,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 if isfile(f"color/{pal}/{suggestion}-{variant}-0-.png"):
                                     return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{x}\". Did you mean \"{suggestion}\"?")
                                 # Answer to both of those: No
-                                return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{x}\".")
-                
-            # Gathers statistics on the tiles, now that the grid is "pure"
-            for row in wordGrid:
-                for stack in row:
-                    for word in stack:
-                        if self.bot.tileStats["tiles"].get(word) is None:
-                            self.bot.tileStats["tiles"][word] = 1
-                        else:
-                            self.bot.tileStats["tiles"][word] += 1
-                        self.bot.tileStats["total"] += 1               
+                                return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{x}\".")     
 
             # Merges the images found
             await magickImages(wordGrid, width, height, pal) # Previously used mergeImages()

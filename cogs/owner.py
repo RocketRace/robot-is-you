@@ -109,16 +109,6 @@ def insert_returns(body):
         insert_returns(body[-1].body)
     
 class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
-    # A task to save the tile stats
-    async def statSaver(self):
-        await self.bot.wait_until_ready()
-        while self.keepSaving and self.bot.is_ready():
-            await asyncio.sleep(3600)
-            with open("tilestats.json", "wt") as fp:
-                to_dump = self.bot.tileStats
-                json.dump(to_dump, fp)
-            print("Saved tile stats.")
-    
     def __init__(self, bot):
         self.bot = bot
         self.tileColors = {}
@@ -166,46 +156,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             # Changes the color of each image
             framesColor = [multiplyColor(fp, paletteColors[x][y]) for fp in paths]
             # Saves the colored images to /color/[palette]/
-            [framesColor[i].save(f"color/{palette}/{tile}-{variant}-{i}-.png", format="PNG") for i in range(len(framesColor))]
-
-    @commands.command()
-    @commands.is_owner()
-    async def compileSurrealMemes(self, ctx):
-        '''
-        Life is a mystery, and death is the clearest.
-        '''
-        await self.bot.send(ctx, "This is going to take a while...")
-        surrealLore = self.bot.get_guild(294479294040768524).get_channel(358813638519422976)
-        lore = []
-
-        creationInAJar = {"from before":"history began its way"}
-
-        year = 0
-        async for fragment in surrealLore.history(limit=None):
-            if year == 0:
-                creationInAJar["from before"] = fragment.id
-            measure = 0
-            worthy = False
-            for one in fragment.content:
-                if measure > 20 or one == "\n":
-                    worthy = True
-                    break
-                measure += 1
-            if worthy:
-                lore.append(fragment.content)
-            year += 1
-            if year % 50 == 0:
-                await self.bot.send(ctx, "50 years have been acquiesced.")
-        
-        creationInAJar["eternity in a pocket"] = lore
-
-        with open("data.json", "wt") as repositoryOfTheGods:
-            json.dump(creationInAJar, repositoryOfTheGods, indent=1)
-        
-        await self.bot.send(ctx, "All of history is within me.")
-                 
+            [framesColor[i].save(f"color/{palette}/{tile}-{variant}-{i}-.png", format="PNG") for i in range(len(framesColor))             
             
-
     @commands.command()
     @commands.is_owner()
     async def debug(self, ctx):
