@@ -98,7 +98,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
         Displays bot information.
         """
         aboutEmbed = discord.Embed(title="About", type="rich", colour=self.bot.embedColor, description="ROBOT - Bot for Discord based on the indie game Baba Is You." \
-            + f"\nWritten by {self.bot.get_user(156021301654454272).mention}.")
+            + f"\nWritten by RocketRace#0798 ({self.bot.get_user(156021301654454272).mention}).")
         aboutEmbed.add_field(name="Github", value="[GitHub repository](https://github.com/RocketRace/robot-is-you)")
         stats = "".join([
             f"\nGuilds: {len(self.bot.guilds)}",
