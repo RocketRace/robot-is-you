@@ -109,16 +109,6 @@ def insert_returns(body):
         insert_returns(body[-1].body)
     
 class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
-    # A task to save the tile stats
-    async def statSaver(self):
-        await self.bot.wait_until_ready()
-        while self.keepSaving and self.bot.is_ready():
-            await asyncio.sleep(3600)
-            with open("tilestats.json", "wt") as fp:
-                to_dump = self.bot.tileStats
-                json.dump(to_dump, fp)
-            print("Saved tile stats.")
-    
     def __init__(self, bot):
         self.bot = bot
         self.tileColors = {}
