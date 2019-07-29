@@ -380,17 +380,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 if isfile(f"color/{pal}/{suggestion}-{variant}-0-.png"):
                                     return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{x}\". Did you mean \"{suggestion}\"?")
                                 # Answer to both of those: No
-                                return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{x}\".")
-                
-            # Gathers statistics on the tiles, now that the grid is "pure"
-            for row in wordGrid:
-                for stack in row:
-                    for word in stack:
-                        if self.bot.tileStats["tiles"].get(word) is None:
-                            self.bot.tileStats["tiles"][word] = 1
-                        else:
-                            self.bot.tileStats["tiles"][word] += 1
-                        self.bot.tileStats["total"] += 1               
+                                return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{x}\".")     
 
             # Merges the images found
             await magickImages(wordGrid, width, height, pal) # Previously used mergeImages()
