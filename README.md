@@ -36,11 +36,11 @@ The bot requires a `setup.json` file to boot up. This includes the following fie
 
 * `token`: str
 
-* `prefixes`: List<str>
+* `prefixes`: List\<str\>
 
 * `activity`: str
 
-* `cogs`: List<str> [Each file in the cogs folder, in python import format]
+* `cogs`: List\<str\> [Each file in the cogs folder, in python import format]
 
 * `webhook`: int [A webhook ID used for error logging]
 
