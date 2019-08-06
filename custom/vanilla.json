@@ -8,6 +8,14 @@
     ]
   },
   {
+      "name":"seastar",
+      "sprite":"seastar",
+      "color":[
+      "2",
+      "3"
+      ]
+  },
+  {
     "sprite":"text_idle",
     "name":"text_idle",
     "color":
@@ -536,6 +544,38 @@
       "color":[
       "0",
       "3"
+      ]
+  },
+  {
+      "name":"text_stick",
+      "sprite":"text_stick",
+      "color":[
+      "5",
+      "3"
+      ]
+  },
+  {
+      "name":"text_ok",
+      "sprite":"text_ok",
+      "color":[
+      "0",
+      "3"
+      ]
+  },
+  {
+      "name":"text_p1",
+      "sprite":"text_p1",
+      "color":[
+      "4",
+      "1"
+      ]
+  },
+  {
+      "name":"text_p2",
+      "sprite":"text_p2",
+      "color":[
+      "4",
+      "1"
       ]
   }
 ]

@@ -109,6 +109,14 @@ class MetaCog(commands.Cog, name="Other Commands"):
         await self.bot.send(ctx, " ", embed=aboutEmbed)
 
     @commands.command()
+    @commands.cooldown(2, 2, commands.BucketType.channel)
+    async def ping(self, ctx):
+        '''
+        Returns bot latency.
+        '''
+        await self.bot.send(ctx, f"Latency: {round(self.bot.latency, 3)} ms")
+
+    @commands.command()
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
     async def invite(self, ctx):
         '''
