@@ -579,8 +579,8 @@
       ]
   },
   {
-      "name":"text_hi",
-      "sprite":"text_hi",
+      "name":"hi",
+      "sprite":"hi",
       "color":[
       "0",
       "3"
