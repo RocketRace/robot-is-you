@@ -18,12 +18,14 @@ PREFIXES = configuration.get("prefixes")
 WEBHOOK_ID = configuration.get("webhook")
 WEBHOOK_TOKEN = configuration.get("webhook-token")
 EMBED_COLOR = configuration.get("color")
+VANILLA = configuration.get("vanilla")
 
 # Uses a custom bot class
 class BabaBot(commands.Bot):
-    def __init__(self, command_prefix, webhook_id, embed_color, help_command=None, description=None, **options):
+    def __init__(self, command_prefix, webhook_id, embed_color, vanilla, help_command=None, description=None, **options):
         self.loading = False
         
+        self.vanillaOnly = bool(vanilla)
         self.embedColor = embed_color
         self.webhookId = webhook_id
         super().__init__(command_prefix, help_command=help_command, description=description, **options)
@@ -48,7 +50,7 @@ class BabaBot(commands.Bot):
 
 
 # Establishes the bot
-bot = BabaBot(PREFIXES, WEBHOOK_ID, EMBED_COLOR, case_insensitive=True, activity=DEFAULT_ACTIVITY, owner_id = 156021301654454272)
+bot = BabaBot(PREFIXES, WEBHOOK_ID, EMBED_COLOR, VANILLA, case_insensitive=True, activity=DEFAULT_ACTIVITY, owner_id = 156021301654454272)
 
 # Loads the modules of the bot
 if __name__ == "__main__":

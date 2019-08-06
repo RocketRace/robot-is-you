@@ -20,18 +20,18 @@ async def magickImages(wordGrid, width, height, palette):
         imgs = [[[Image.open(fp) for fp in stack] for stack in row] for row in paths]
 
         # Get new image dimensions
-        totalWidth = len(paths[0]) * 24
-        totalHeight = len(paths) * 24
+        totalWidth = (len(paths[0]) + 1) * 24 # +1 for padding
+        totalHeight = (len(paths) + 1) * 24 # +1 for padding
 
         # Montage image
         renderFrame = Image.new("RGBA", (totalWidth, totalHeight))
 
         # Pastes each image onto the image
         # For each row
-        yOffset = 0
+        yOffset = 12 # For padding-the cursor for example doesn't render fully when alone
         for row in imgs:
             # For each image
-            xOffset = 0
+            xOffset = 12 # Padding
             for stack in row:
                 for tile in stack:
                     width = tile.width
