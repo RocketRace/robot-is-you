@@ -577,5 +577,29 @@
       "4",
       "1"
       ]
+  },
+  {
+      "name":"text_hi",
+      "sprite":"text_hi",
+      "color":[
+      "0",
+      "3"
+      ]
+  },
+  {
+      "name":"smiley",
+      "sprite":"smiley",
+      "color":[
+      "0",
+      "3"
+      ]
+  },
+  {
+      "name":"default",
+      "sprite":"default",
+      "color":[
+      "0",
+      "3"
+      ]
   }
 ]
