@@ -21,12 +21,14 @@ async def magickImages(wordGrid, width, height, palette):
         sizes = [[[(image.width, image.height) for image in stack] for stack in row] for row in imgs]
         needsPadding = 0
         try:
-            for row in sizes:
-                for stack in row:
-                    for size in stack:
-                        if size[0] > 24 or size[1] > 24:
-                            needsPadding = 1
-                            raise Exception
+            for y,row in enumerate(sizes):
+                if y == 0 or y == len(sizes) - 1:
+                    for x,stack in enumerate(row):
+                        if x == 0 or y == len(row) - 1:
+                            for size in stack:
+                                if size[0] > 24 or size[1] > 24:
+                                    needsPadding = 1
+                                    raise Exception
         except Exception:
             pass
         
