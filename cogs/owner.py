@@ -142,12 +142,16 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         spriteVariants = getSpriteVariants(sprite, tiling)
 
         # Saves the tile sprites
+        singleFrame = ["smiley", "hi"] # Filename is of the format "smiley_1.png"
+        noVariants = ["default"] # Filenames are of the format "default_<1/2/3>.png"
         for variant in spriteVariants:
-            if tile.startswith("icon"):
+            if tile in singleFrame or tile.startswith("icon"): # Icons have a single frame
                 if tile == "icon":
                     paths = [f"sprites/{source}/icon.png" for i in range(3)]
                 else:
                     paths = [f"sprites/{source}/{sprite}_1.png" for i in range(3)]
+            elif tile in noVariants:
+                paths = [f"sprites/{source}/{sprite}_{i + 1}.png" for i in range(3)]
             else:
                 paths = [f"sprites/{source}/{sprite}_{variant}_{i + 1}.png" for i in range(3)]
             # Changes the color of each image
@@ -403,6 +407,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         # In alphabetical order, to make sure Patashu's redux mod overwrites the old mod
         customData.sort() 
         for f in customData:
+            if f != "vanilla.json" and self.bot.vanillaOnly: break
             dat = None
             with open(f"custom/{f}") as fp:
                 dat = json.load(fp)
