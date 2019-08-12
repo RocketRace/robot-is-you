@@ -50,19 +50,19 @@ async def magickImages(wordGrid, width, height, palette):
             for size in stack:
                 if size is not None:
                     if y == 0:
-                        diff = 24 - size[1]
+                        diff = size[1] - 24
                         if diff > upPad:
                             upPad = diff
                     if y == len(sizes) - 1:
-                        diff = 24 - size[1]
+                        diff = size[1] - 24
                         if diff > downPad:
                             downPad = diff
                     if x == 0:
-                        diff = 24 - size[0]
+                        diff = size[0] - 24
                         if diff > leftPad:
                             leftPad = diff
-                    if x == len(sizes) - 1:
-                        diff = 24 - size[0]
+                    if x == len(row) - 1:
+                        diff = size[0] - 24
                         if diff > rightPad:
                             rightPad = diff
 
