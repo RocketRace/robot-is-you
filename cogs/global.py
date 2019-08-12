@@ -8,11 +8,9 @@ from os          import listdir
 from os.path     import isfile
 from PIL         import Image
 from subprocess  import call
-from time        import time
 
 # Takes a list of tile names and generates a gif with the associated sprites
 async def magickImages(wordGrid, width, height, palette):
-    t = time()
     # For each animation frame
     paths = [
         [
@@ -100,7 +98,6 @@ async def magickImages(wordGrid, width, height, palette):
         fp.truncate(0)
     call(["magick", "convert", "renders/*.png", "-scale", "200%", "-set", "delay", "20", 
         "-set", "dispose", "2", "renders/render.gif"])
-    print(time() - t)
 
 
 class GlobalCog(commands.Cog, name="Baba Is You"):
