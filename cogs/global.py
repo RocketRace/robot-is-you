@@ -8,63 +8,99 @@ from os          import listdir
 from os.path     import isfile
 from PIL         import Image
 from subprocess  import call
+from time        import time
 
 # Takes a list of tile names and generates a gif with the associated sprites
 async def magickImages(wordGrid, width, height, palette):
+    t = time()
     # For each animation frame
-    for fr in range(3):
-        # Efficiently converts the grid back into a list of words
-        # wordList = chain.from_iterable(wordGrid)
-        # Opens each image
-        paths = [[["empty.png" if word == "-" else f"color/{palette}/{word.split(':')[0]}-{word.split(':')[1]}-{fr}-.png" for word in stack] for stack in row] for row in wordGrid]
-        imgs = [[[Image.open(fp) for fp in stack] for stack in row] for row in paths]
-        sizes = [[[(image.width, image.height) for image in stack] for stack in row] for row in imgs]
-        needsPadding = 0
-        try:
-            for y,row in enumerate(sizes):
-                if y == 0 or y == len(sizes) - 1:
-                    for x,stack in enumerate(row):
-                        if x == 0 or y == len(row) - 1:
-                            for size in stack:
-                                if size[0] > 24 or size[1] > 24:
-                                    needsPadding = 1
-                                    raise Exception
-        except Exception:
-            pass
-        
+    paths = [
+        [
+            [
+                [
+                    None if word == "-" else f"color/{palette}/{word.split(':')[0]}-{word.split(':')[1]}-{fr}-.png" for word in stack
+                ] for stack in row
+            ] for row in wordGrid
+        ] for fr in range(3)
+    ]
+    imgs = [
+        [
+            [
+                [
+                    None if fp is None else Image.open(fp) for fp in stack
+                ] for stack in row
+            ] for row in fr
+        ] for fr in paths
+    ]
+    # Only the first frame sizes matter
+    sizes = [
+        [
+            [
+                None if image is None else (image.width, image.height) for image in stack
+            ] for stack in row
+        ] for row in imgs[0]
+    ]
+    # Calculates padding based on image sizes
+    leftPad = 0
+    rightPad = 0
+    upPad = 0
+    downPad = 0
+    for y,row in enumerate(sizes):
+        for x,stack in enumerate(row):
+            for size in stack:
+                if size is not None:
+                    if y == 0:
+                        diff = size[1] - 24
+                        if diff > upPad:
+                            upPad = diff
+                    if y == len(sizes) - 1:
+                        diff = size[1] - 24
+                        if diff > downPad:
+                            downPad = diff
+                    if x == 0:
+                        diff = size[0] - 24
+                        if diff > leftPad:
+                            leftPad = diff
+                    if x == len(row) - 1:
+                        diff = size[0] - 24
+                        if diff > rightPad:
+                            rightPad = diff
 
-        # Get new image dimensions
-        totalWidth = (len(paths[0]) + needsPadding) * 24 # +1 for padding
-        totalHeight = (len(paths) + needsPadding) * 24 # +1 for padding
+    for i,frame in enumerate(imgs):
+        # Get new image dimensions, with appropriate padding
+        totalWidth = len(frame[0]) * 24 + leftPad + rightPad 
+        totalHeight = len(frame) * 24 + upPad + downPad 
 
         # Montage image
         renderFrame = Image.new("RGBA", (totalWidth, totalHeight))
 
         # Pastes each image onto the image
         # For each row
-        yOffset = 12 * needsPadding # For padding: the cursor for example doesn't render fully when alone
-        for row in imgs:
+        yOffset = upPad # For padding: the cursor for example doesn't render fully when alone
+        for row in frame:
             # For each image
-            xOffset = 12 * needsPadding # Padding
+            xOffset = leftPad # Padding
             for stack in row:
                 for tile in stack:
-                    width = tile.width
-                    height = tile.height
-                    # For tiles that don't adhere to the 24x24 sprite size
-                    offset = (xOffset + (24 - width) // 2, yOffset + (24 - height) // 2)
+                    if tile is not None:
+                        width = tile.width
+                        height = tile.height
+                        # For tiles that don't adhere to the 24x24 sprite size
+                        offset = (xOffset + (24 - width) // 2, yOffset + (24 - height) // 2)
 
-                    renderFrame.paste(tile, offset, tile)
+                        renderFrame.paste(tile, offset, tile)
                 xOffset += 24
             yOffset += 24
 
         # Saves the final image
-        renderFrame.save(f"renders/{fr}.png")
+        renderFrame.save(f"renders/{i}.png")
 
     # Joins each frame into a .gif
     with open(f"renders/render.gif", "w") as fp:
         fp.truncate(0)
     call(["magick", "convert", "renders/*.png", "-scale", "200%", "-set", "delay", "20", 
         "-set", "dispose", "2", "renders/render.gif"])
+    print(time() - t)
 
 
 class GlobalCog(commands.Cog, name="Baba Is You"):
