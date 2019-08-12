@@ -29,7 +29,7 @@ async def magickImages(wordGrid, width, height, palette):
                 [
                     None if fp is None else Image.open(fp) for fp in stack
                 ] for stack in row
-            ] for row in paths
+            ] for row in fr
         ] for fr in paths
     ]
     # Only the first frame sizes matter
