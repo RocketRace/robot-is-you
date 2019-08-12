@@ -48,22 +48,23 @@ async def magickImages(wordGrid, width, height, palette):
     for y,row in enumerate(sizes):
         for x,stack in enumerate(row):
             for size in stack:
-                if y == 0:
-                    diff = 24 - size[1]
-                    if diff > upPad:
-                        upPad = diff
-                if y == len(sizes) - 1:
-                    diff = 24 - size[1]
-                    if diff > downPad:
-                        downPad = diff
-                if x == 0:
-                    diff = 24 - size[0]
-                    if diff > leftPad:
-                        leftPad = diff
-                if x == len(sizes) - 1:
-                    diff = 24 - size[0]
-                    if diff > rightPad:
-                        rightPad = diff
+                if size is not None:
+                    if y == 0:
+                        diff = 24 - size[1]
+                        if diff > upPad:
+                            upPad = diff
+                    if y == len(sizes) - 1:
+                        diff = 24 - size[1]
+                        if diff > downPad:
+                            downPad = diff
+                    if x == 0:
+                        diff = 24 - size[0]
+                        if diff > leftPad:
+                            leftPad = diff
+                    if x == len(sizes) - 1:
+                        diff = 24 - size[0]
+                        if diff > rightPad:
+                            rightPad = diff
 
     for i,frame in enumerate(imgs):
         # Get new image dimensions, with appropriate padding
