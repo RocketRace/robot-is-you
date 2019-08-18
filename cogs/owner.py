@@ -10,7 +10,6 @@ from os           import listdir, mkdir, stat
 from PIL          import Image
 from string       import ascii_lowercase
 from subprocess   import Popen, PIPE, STDOUT
-from time         import time
 
 def multiplyColor(fp, palettes, pixels):
     # fp: file path of the sprite
@@ -178,7 +177,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             
             # Changes the color of each image, then saves it
             for i,fp in enumerate(paths):
-                pixels = [img[x][y] for img in colors]
+                pixels = [img.getpixel((x,y)) for img in colors]
                 recolored = multiplyColor(fp, palettes, pixels)
                 # Saves the colored images to /color/[palette]/ given that the image may be identical for some palettes
                 # Recolored images, palettes each image is associated with
@@ -490,7 +489,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             paletteColors = [[(paletteImg.getpixel((x,y))) for y in range(5)] for x in range(7)]
 
             obj = self.tileColors[tile]
-            self.generateTileSprites(tile, obj, palettes, paletteColors)
+            self.generateTileSprites(tile, obj, pal, paletteColors)
         await ctx.send("Done.")
         self.bot.loading = False
 
@@ -521,14 +520,12 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         
         # Goes through each tile object in the tileColors array
         i = 0
-        t = time()
         total = len(self.tileColors)
         for tile,obj in self.tileColors.items():
-            if i % 20 == 0:
+            if i % 100 == 0:
                 await ctx.send(f"{i} / {total}...")
             self.generateTileSprites(tile, obj, palettes, colors)
             i += 1
-        await ctx.send(str(t - time()) + " seconds taken")
 
         self.bot.loading = False
 
@@ -577,8 +574,11 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         palettes = listdir("palettes")
         total = len(palettes)
 
-        await ctx.invoke(self.bot.get_command("loadpalettes"), [fp[:-4] for fp in palettes])
-
+        i = 0
+        for palette in [fp[:-4] for fp in palettes]:
+            await ctx.send(f" {i}/{total}")
+            await ctx.invoke(self.bot.get_command("loadpalette"), palette)
+            i += 1
         await ctx.send(f"Loading palettes... {total}/{total}")
         await ctx.send(f"{ctx.author.mention} Done.")
 
