@@ -11,22 +11,38 @@ from PIL          import Image
 from string       import ascii_lowercase
 from subprocess   import Popen, PIPE, STDOUT
 
-def multiplyColor(fp, RGB):
-    newR, newG, newB = RGB
-    
-    # Saves the alpha channel
-    img = Image.open(fp).convert("RGBA")
-    A = img.getchannel("A")
+def multiplyColor(fp, palettes, pixels):
+    # fp: file path of the sprite
+    # palettes: each palette name
+    # pixels: the colors the tile should be recolored with
 
-    # Multiplies the R,G,B channels with the input RGB values
-    R,G,B = img.convert("RGB").split()
-    R = R.point(lambda px: int(px * newR / 255))
-    G = G.point(lambda px: int(px * newG / 255))
-    B = B.point(lambda px: int(px * newB / 255))
+    uniquePixels = {}
+    for palette,pixel in zip(palettes, pixels):
+        uniquePixels.setdefault(pixel, []).append(palette)
     
-    # Merges the channels and returns the RGBA image
-    RGBA = Image.merge("RGBA", (R, G, B, A))
-    return RGBA
+    # Output images
+    recolored = []
+    outputPalettes = uniquePixels.values()
+
+    # Image to recolor from
+    base = Image.open(fp).convert("RGBA")
+    A = base.getchannel("A")
+    R,G,B = base.convert("RGB").split()
+
+    # Multiplies the R,G,B channel for each pixel value
+    for pixel in uniquePixels:
+        # New values
+        newR, newG, newB = pixel
+        # New channels
+        R = R.point(lambda px: int(px * newR / 255))
+        G = G.point(lambda px: int(px * newG / 255))
+        B = B.point(lambda px: int(px * newB / 255))
+        # Merges
+        RGBA = Image.merge("RGBA", (R, G, B, A))
+        # Adds to list
+        recolored.append(RGBA)
+
+    return zip(recolored, outputPalettes)
 
 def getSpriteVariants(sprite, tiling):
     # Opens the associated sprites from sprites/
@@ -127,7 +143,10 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         # Are assets loading?
         self.bot.loading = False
 
-    def generateTileSprites(self, tile, obj, palette, paletteColors):
+    def cachedTileLoader(self, tile, palettes):
+        pass
+
+    def generateTileSprites(self, tile, obj, palettes, colors):
         # Fetches the tile data
         sprite = obj["sprite"]
         tiling = obj.get("tiling")
@@ -153,11 +172,21 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             elif tile in noVariants:
                 paths = [f"sprites/{source}/{sprite}_{i + 1}.png" for i in range(3)]
             else:
+                # Paths should only be of length 3
                 paths = [f"sprites/{source}/{sprite}_{variant}_{i + 1}.png" for i in range(3)]
-            # Changes the color of each image
-            framesColor = [multiplyColor(fp, paletteColors[x][y]) for fp in paths]
-            # Saves the colored images to /color/[palette]/
-            [framesColor[i].save(f"color/{palette}/{tile}-{variant}-{i}-.png", format="PNG") for i in range(len(framesColor))]            
+            
+            # Changes the color of each image, then saves it
+            for i,fp in enumerate(paths):
+                pixels = [img.getpixel((x,y)) for img in colors]
+                recolored = multiplyColor(fp, palettes, pixels)
+                # Saves the colored images to /color/[palette]/ given that the image may be identical for some palettes
+                # Recolored images, palettes each image is associated with
+                for img,uses in recolored:
+                    # Each associated palette
+                    for use in uses:
+                        # This saves some redundant computing time spent recoloring the same image multiple times
+                        # (up to >10 for certain color indices)
+                        img.save(f"color/{use}/{tile}-{variant}-{i}-.png", format="PNG")
             
     @commands.command()
     @commands.is_owner()
@@ -466,30 +495,37 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
     @commands.command()
     @commands.is_owner()
-    async def loadpalette(self, ctx, arg):
+    async def loadpalettes(self, ctx, args):
         
         self.bot.loading = True
 
         # Tests for a supplied palette
-        if arg not in [str[:-4] for str in listdir("palettes")]:
-            await self.bot.send(ctx, "Supply a palette to load.")
-        else: 
-            # The palette name
-            palette = arg
-            # The palette image 
-            paletteImg = Image.open("palettes/%s.png" % palette).convert("RGB")
-            # The RGB values of the palette
-            paletteColors = [[(paletteImg.getpixel((x,y))) for y in range(5)] for x in range(7)]
+        for arg in args:
+            if arg not in [str[:-4] for str in listdir("palettes")]:
+                return await self.bot.send(ctx, "Supply a palette to load.")
 
-            # Creates the directories for the palettes if they don't exist
+        # The palette names
+        palettes = args
+        # The palette images
+        imgs = [Image.open("palettes/%s.png" % palette).convert("RGB") for palette in palettes]
+        # The RGB values of the palette
+        colors = [[[(img.getpixel((x,y))) for y in range(5)] for x in range(7)] for img in imgs]
+
+        # Creates the directories for the palettes if they don't exist
+        for palette in palettes:
             try:
                 mkdir("color/%s" % palette)
             except FileExistsError:
                 pass
-            
-            # Goes through each tile object in the tileColors array
-            for tile,obj in self.tileColors.items():
-                self.generateTileSprites(tile, obj, palette, paletteColors)
+        
+        # Goes through each tile object in the tileColors array
+        i = 0
+        total = len(self.tileColors)
+        for tile,obj in self.tileColors.items():
+            if i % 100 == 0:
+                await ctx.send(f"{i} / {total}...")
+            self.generateTileSprites(tile, obj, palettes, colors)
+            i += 1
 
         self.bot.loading = False
 
