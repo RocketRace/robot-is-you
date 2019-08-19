@@ -131,7 +131,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         sanitizedQuery = discord.utils.escape_mentions(query)
         matches = []
         # How many results will be shown
-        limit = 10
+        limit = 30
         try:
             # Searches through a list of the names of each tile
             for name in self.bot.get_cog("Admin").tileColors:
