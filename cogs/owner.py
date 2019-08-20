@@ -27,13 +27,13 @@ def multiplyColor(fp, palettes, pixels):
     # Image to recolor from
     base = Image.open(fp).convert("RGBA")
     A = base.getchannel("A")
-    R,G,B = base.convert("RGB").split()
 
     # Multiplies the R,G,B channel for each pixel value
     for pixel in uniquePixels:
         # New values
         newR, newG, newB = pixel
         # New channels
+        R,G,B = base.convert("RGB").split()
         R = R.point(lambda px: int(px * newR / 255))
         G = G.point(lambda px: int(px * newG / 255))
         B = B.point(lambda px: int(px * newB / 255))
@@ -177,7 +177,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             
             # Changes the color of each image, then saves it
             for i,fp in enumerate(paths):
-                pixels = [img.getpixel((x,y)) for img in colors]
+                pixels = [img[x][y] for img in colors]
                 recolored = multiplyColor(fp, palettes, pixels)
                 # Saves the colored images to /color/[palette]/ given that the image may be identical for some palettes
                 # Recolored images, palettes each image is associated with
@@ -476,8 +476,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         elif palette + ".png" not in listdir("palettes"):
             return await self.bot.send(ctx, f"\"{palette}\" is not a valid palette.")
             
+        # Creates the directories for the palettes if they don't exist
+        paletteColors = []
         for pal in palettes:
-            # Creates the directories for the palettes if they don't exist
             try:
                 mkdir("color/%s" % pal)
             except FileExistsError:
@@ -486,10 +487,10 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             # The palette image 
             paletteImg = Image.open("palettes/%s.png" % pal).convert("RGB")
             # The RGB values of the palette
-            paletteColors = [[(paletteImg.getpixel((x,y))) for y in range(5)] for x in range(7)]
+            paletteColors.append([[(paletteImg.getpixel((x,y))) for y in range(5)] for x in range(7)])
 
-            obj = self.tileColors[tile]
-            self.generateTileSprites(tile, obj, pal, paletteColors)
+        obj = self.tileColors[tile]
+        self.generateTileSprites(tile, obj, palettes, paletteColors)
         await ctx.send("Done.")
         self.bot.loading = False
 
