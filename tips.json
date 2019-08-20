@@ -1,0 +1,21 @@
+[
+    "You can search for any tiles with `search <query>`.",
+    "You can add level icons to renders. You can find these with `search icon`.",
+    "You can stack multiple objects on top of each other by joining them with `&`.",
+    "You can find a list of all valid rendering tiles in the `list` command.",
+    "You can simplify chains of text tiles using commas like this:\n`text_baba text_is text_you` => `text_baba,is,you`",
+    "You can render many modded tiles and rules. A list of tiles is shown in the `list` command.",
+    "If you render tileable objects (like walls) adjacent to each other, their sprites will join together.",
+    "You can render an image using any in-game color palette with the `tile` and `rule` like so:\n `palette:<palette> baba keke [etc.]`",
+    "Many tiles have alternate sprites you can use, such as different sprites for each facing direction. These can be rendered using a `:<variant>` suffix like this:\n`baba:2 keke:16 [etc.]`",
+    "A list of all the color palettes open for rendering can be seen in the `palettes` command.",
+    "Love the bot? You can invite it to your own server with the `invite` command!",
+    "Have suggestions or bug reports about me? You can drop those off in my official support server using the `invite` command!",
+    "Some tiles, such as Baba, have sleeping animations you can render. You can invoke them with, for example, sprite variant `baba:31`, but you can also use the much simpler `baba:sleep`!",
+    "Sime tiles have special sprites for each direction they face. These can be rendered by suffixing `:<direction>` to the object, like this:\n`ghost:right baba:left`",
+    "You can render empty tiles using hyphens in `tile` and `rule` commands.",
+    "If you put any spoiler tags (like ||this||) in your input for the `tile` and `rule` commands, the output image will be marked as a spoiler.",
+    "Rendered level tiles will join together with any adjacent tileable objects, like lines. For an example, try to render:\n`line level line`",
+    "You can render the in-game cursor like any other object!",
+    "You can read more information on commands under their entry in the `help` command. For more specific help, use the `help <command name>` subcommand."
+]

@@ -7,6 +7,7 @@ from json        import load
 from os          import listdir
 from os.path     import isfile
 from PIL         import Image
+from random      import choice
 from subprocess  import call
 
 # Takes a list of tile names and generates a gif with the associated sprites
@@ -103,6 +104,8 @@ async def magickImages(wordGrid, width, height, palette):
 class GlobalCog(commands.Cog, name="Baba Is You"):
     def __init__(self, bot):
         self.bot = bot
+        with open("tips.json") as tips:
+            self.tips = load(tips)
 
     # Check if the bot is loading
     async def cog_check(self, ctx):
@@ -150,6 +153,15 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 matches.insert(0, f"Found {len(matches)} results for \"{sanitizedQuery}\":")
         content = "\n".join(matches)
         await self.bot.send(ctx, content)
+    
+    @commands.command()
+    @commands.cooldown(2, 5, type=commands.BucketType.channel)
+    async def tip(self, ctx):
+        '''
+        Gives a random helpful tip regarding this bot's functionality.
+        '''
+        randomTip = choice(self.tips)
+        await self.bot.send(ctx, f"Here's a tip:\n*{randomTip}*")
 
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
     @commands.command(name="list")
