@@ -192,7 +192,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     async def tile(self, ctx, *, palette: str, content: str = ""):
         """
         Renders the tiles provided, with many options. `help tile` for more...
-        Returns a grid of 24 x 24 animated pixel sprites associated with each input tile. Up to 50 tiles may be rendered per command.
+        Returns a grid of 24 x 24 animated pixel sprites associated with each input tile. Up to 64 tiles may be rendered per command.
         
         The optional `<palette>` argument will recolor the output based on the color data of the palette. 
         `<palette>` must be of the format `palette:palette_name`. Valid palette names can be seen using the `palettes` command.
@@ -221,7 +221,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         async with ctx.typing():
             # The parameters of this command are a lie to appease the help command: here's what actually happens            
             tiles = palette
-            
+            renderLimit = 64
+
             # Determines if this should be a spoiler
             spoiler = tiles.replace("|", "") != tiles
 
@@ -291,8 +292,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             # Don't proceed if the request is too large.
             # (It shouldn't be that long to begin with because of Discord's 2000 character limit)
             area = width * height
-            if area > 50 and ctx.author.id != self.bot.owner_id:
-                return await self.bot.send(ctx, f"⚠️ Too many tiles ({area}). You may only render up to 50 tiles at once, including empty tiles.")
+            if area > renderLimit and ctx.author.id != self.bot.owner_id:
+                return await self.bot.send(ctx, f"⚠️ Too many tiles ({area}). You may only render up to {renderLimit} tiles at once, including empty tiles.")
 
             # Pad the word rows from the end to fit the dimensions
             [row.extend([["-"]] * (width - len(row))) for row in wordGrid]
