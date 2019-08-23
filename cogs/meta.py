@@ -1,6 +1,7 @@
 import discord
 import itertools
 
+from datetime     import datetime
 from discord.ext  import commands
 from discord.http import asyncio
 from json         import load
@@ -111,8 +112,55 @@ class MetaCog(commands.Cog, name="Other Commands"):
 
     @commands.command()
     @commands.cooldown(1, 10, commands.BucketType.channel)
-    async def patchnotes(self, ctx):
-        pass
+    async def patchnotes(self, ctx, offset: int = 0):
+        if offset < 0:
+            return await self.bot.send(ctx, "⚠️ Offset must be positive.")
+        with open(".git/logs/refs/heads/master") as logfile:
+            commitLimit = 5
+
+            # Gets the relevant commits. Discards any that are too old.
+            includedCommits = []
+            line = logfile.readline()
+            while line != "":
+                if "[PATCH]" in line:
+                    includedCommits.append(line)
+                line = logfile.readline() # Full commit data
+                # Gets the 10 most recent commits, plus the provided commit offset
+                if len(includedCommits) > commitLimit + offset: 
+                    includedCommits.pop(0)
+            
+            # Discards the commits within the provided offset range, 
+            # leaving only the 10 most recent commits after the <offset>th one
+            includedCommits = includedCommits[:10]
+            
+            finalCommits = [
+                "Recent Git Commits" + (f" ({offset} offset) " if offset else "") + ":"
+            ]
+            # Parses the commit information
+            for commit in includedCommits: 
+            
+                # commit contains the full commit data
+                commit = commit[82:] # Trim parent hash + commit hash
+                
+                dateStartIndex = commit.find(">") # Find end of author email
+                commit = commit[dateStartIndex + 2 :] # Trim author + author email
+                
+                dateEndIndex = commit.find(" ") # Find end of date timestamp
+                timestamp = commit[:dateEndIndex]
+                timezone = commit[dateEndIndex : dateEndIndex + 6]
+                date = datetime.fromtimestamp(int(timestamp)) # The commit datetime
+                iso = date.isoformat(" ") + timezone # Datetime string
+
+                messageStartIndex = commit.find(":")
+                message = commit[messageStartIndex + 2:-1] # Commit message
+                message = message.strip("[PATCH]")
+
+                finalCommits.append("`" + iso + "`")
+                finalCommits.append("> " + message )
+            
+            patches = "\n".join(finalCommits)
+            await self.bot.send(ctx, patches)
+
     
     @commands.command()
     @commands.cooldown(2, 2, commands.BucketType.channel)
