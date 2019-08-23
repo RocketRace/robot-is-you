@@ -117,6 +117,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
             return await self.bot.send(ctx, "⚠️ Offset must be positive.")
         with open(".git/logs/refs/heads/master") as logfile:
             commitLimit = 5
+            discarded = offset
 
             # Gets the relevant commits. Discards any that are too old.
             includedCommits = []
@@ -131,10 +132,11 @@ class MetaCog(commands.Cog, name="Other Commands"):
             
             # Discards the commits within the provided offset range, 
             # leaving only the 10 most recent commits after the <offset>th one
+            discarded = len(includedCommits[10:])
             includedCommits = includedCommits[:10]
             
             finalCommits = [
-                "Recent Git Commits" + (f" ({offset} offset) " if offset else "") + ":"
+                "Recent Git Commits" + (f" ({discarded} offset) " if discarded else "") + ":"
             ]
             # Parses the commit information
             for commit in includedCommits: 
