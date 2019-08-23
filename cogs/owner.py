@@ -10,6 +10,7 @@ from os           import listdir, mkdir, stat
 from PIL          import Image
 from string       import ascii_lowercase
 from subprocess   import Popen, PIPE, STDOUT
+from time         import time
 
 def multiplyColor(fp, palettes, pixels):
     # fp: file path of the sprite
@@ -557,7 +558,26 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 puller.terminate()
             else:
                 await ctx.send(f"`git pull` exited with code {returncode}. Output: ```\n{stdout}\n```")
+
+    @commands.command()
+    @commands.is_owner()
+    async def benchmark(self, ctx, command, *args):
+        # Tries to match each argument provided with the command parameters
+        functionParams = self.bot.get_command(command).clean_params.keys()
+        kwargs = {}
+        for arg,param in zip(args, functionParams):
+            kwargs[param] = arg
+        t = time()
+        await ctx.send(f"Invoking command \"{command}\"...")
+        await ctx.invoke(self.bot.get_command(command), **kwargs)
+        await ctx.send(f"Done. Took {time() - t} seconds.")
     
+    @commands.command()
+    @commands.is_owner()
+    async def getparams(self, ctx, command):
+        # Returns the parameters of a given command
+        params = self.bot.get_command(command).clean_params
+        await self.bot.send(ctx, f"Parameters for command {command}:\n{params}")
 
     @commands.command()
     @commands.is_owner()
@@ -569,18 +589,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         await ctx.send("Loading colors...")
         await ctx.invoke(self.bot.get_command("loadcolors"))
         await ctx.send("Loading palettes...")
-        
-
-        # Loads every palette
-        palettes = listdir("palettes")
-        total = len(palettes)
-
-        i = 0
-        for palette in [fp[:-4] for fp in palettes]:
-            await ctx.send(f" {i}/{total}")
-            await ctx.invoke(self.bot.get_command("loadpalette"), palette)
-            i += 1
-        await ctx.send(f"Loading palettes... {total}/{total}")
+        palettes = [palette[:-4] for palette in listdir("palettes")] # Strip ".png"
+        await ctx.invoke(self.bot.get_command("loadpalettes"), args=palettes)
         await ctx.send(f"{ctx.author.mention} Done.")
 
     def _clear_gateway_data(self):
