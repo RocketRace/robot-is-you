@@ -4,6 +4,7 @@ import itertools
 from discord.ext  import commands
 from discord.http import asyncio
 from json         import load
+from subprocess   import Popen, PIPE, STDOUT
 from time         import time
 
 # Custom help command implementation
@@ -109,12 +110,17 @@ class MetaCog(commands.Cog, name="Other Commands"):
         await self.bot.send(ctx, " ", embed=aboutEmbed)
 
     @commands.command()
+    @commands.cooldown(1, 10, commands.BucketType.channel)
+    async def patchnotes(self, ctx):
+        pass
+    
+    @commands.command()
     @commands.cooldown(2, 2, commands.BucketType.channel)
     async def ping(self, ctx):
         '''
         Returns bot latency.
         '''
-        await self.bot.send(ctx, f"Latency: {round(self.bot.latency, 3)} ms")
+        await self.bot.send(ctx, f"Latency: {round(self.bot.latency, 3)} seconds")
 
     @commands.command()
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
