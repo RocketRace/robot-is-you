@@ -327,36 +327,46 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                             
                             
                             # Is this a tiling object (e.g. wall, water)?
-                            if self.bot.get_cog("Admin").tileColors.get(tile) is not None:
-                                if self.bot.get_cog("Admin").tileColors[tile].get("tiling") is not None:
-                                    if self.bot.get_cog("Admin").tileColors[tile]["tiling"] == "1":
+                            tileData = self.bot.get_cog("Admin").tileColors.get(tile)
+                            if tileData is not None:
+                                if tileData.get("tiling") is not None:
+                                    if tileData["tiling"] == "1":
 
                                         #  The final variation stace of the tile
                                         variant = 0
 
+                                        # Tiles that join together
+                                        def doesTile(stack):
+                                            tileable = ["level", tile]
+                                            for t in tileable:
+                                                if t in stack:
+                                                    return True
+                                            return False
+
                                         # Is there the same tile adjacent right?
-                                        if x == width - 1:
-                                            pass
-                                        elif tile in cloneGrid[y][x + 1] or "level" in cloneGrid[y][x + 1]:
-                                            variant += 1
+                                        if x != width - 1:
+                                            # The tiles right of this (with variants stripped)
+                                            adjacentRight = [t.split(":")[0] for t in cloneGrid[y][x + 1]]
+                                            if doesTile(adjacentRight):
+                                                variant += 1
 
                                         # Is there the same tile adjacent above?
-                                        if y == 0:
-                                            pass
-                                        elif tile in cloneGrid[y - 1][x] or "level" in cloneGrid[y - 1][x]:
-                                            variant += 2
+                                        if y != 0:
+                                            adjacentUp = [t.split(":")[0] for t in cloneGrid[y - 1][x]]
+                                            if doesTile(adjacentUp):
+                                                variant += 2
 
                                         # Is there the same tile adjacent left?
-                                        if x == 0:
-                                            pass
-                                        elif tile in cloneGrid[y][x - 1] or "level" in cloneGrid[y][x - 1]:
-                                            variant += 4
+                                        if x != 0:
+                                            adjacentLeft = [t.split(":")[0] for t in cloneGrid[y][x - 1]]
+                                            if doesTile(adjacentLeft):
+                                                variant += 4
 
                                         # Is there the same tile adjacent below?
-                                        if y == height - 1:
-                                            pass
-                                        elif tile in cloneGrid[y + 1][x] or "level" in cloneGrid[y + 1][x]:
-                                            variant += 8
+                                        if y != height - 1:
+                                            adjacentDown = [t.split(":")[0] for t in cloneGrid[y + 1][x]]
+                                            if doesTile(adjacentDown):
+                                                variant += 8
                                         
                                         # Stringify
                                         variant = str(variant)

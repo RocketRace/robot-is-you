@@ -104,7 +104,7 @@ class CommandErrorHandler(commands.Cog):
             await self.logger.send(embed=emb)
             if ctx.command.name == "tile":  # Checks the 
                 return await self.bot.send(ctx, "Invalid palette argument provided.")
-            return await self.bot.send(ctx, "Invalid function argumetns provided.")
+            return await self.bot.send(ctx, "Invalid function arguments provided.")
 
         elif isinstance(error, commands.MissingRequiredArgument):
             return await self.bot.send(ctx, "Required arguments are missing.")
