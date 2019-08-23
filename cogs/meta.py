@@ -132,6 +132,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
             
             # Discards the commits within the provided offset range, 
             # leaving only the 10 most recent commits after the <offset>th one
+            includedCommits.reverse()
             discarded = len(includedCommits[10:])
             includedCommits = includedCommits[:10]
             
