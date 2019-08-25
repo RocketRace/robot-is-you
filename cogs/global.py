@@ -10,8 +10,14 @@ from PIL         import Image
 from random      import choice
 from subprocess  import call
 
+def flatten(items, seqtypes=(list, tuple)):
+    for i, x in enumerate(items):
+        while i < len(items) and isinstance(items[i], seqtypes):
+            items[i:i+1] = items[i]
+    return items
+
 # Takes a list of tile names and generates a gif with the associated sprites
-async def magickImages(wordGrid, width, height, palette):
+def magickImages(wordGrid, width, height, palette):
     # For each animation frame
     paths = [
         [
@@ -22,11 +28,16 @@ async def magickImages(wordGrid, width, height, palette):
             ] for row in wordGrid
         ] for fr in range(3)
     ]
+    # Minimize IO by only opening each image once
+    uniquePaths = set(flatten(paths.copy()))
+    uniquePaths.discard(None)
+    uniqueImages = {path:Image.open(path) for path in uniquePaths}
+    
     imgs = [
         [
             [
                 [
-                    None if fp is None else Image.open(fp) for fp in stack
+                    None if fp is None else uniqueImages[fp] for fp in stack
                 ] for stack in row
             ] for row in fr
         ] for fr in paths
@@ -65,7 +76,8 @@ async def magickImages(wordGrid, width, height, palette):
                         if diff > rightPad:
                             rightPad = diff
 
-    for i,frame in enumerate(imgs):
+    frames = []
+    for frame in imgs:
         # Get new image dimensions, with appropriate padding
         totalWidth = len(frame[0]) * 24 + leftPad + rightPad 
         totalHeight = len(frame) * 24 + upPad + downPad 
@@ -91,14 +103,21 @@ async def magickImages(wordGrid, width, height, palette):
                 xOffset += 24
             yOffset += 24
 
+        # Resizes to 200%
+        renderFrame = renderFrame.resize((2 * totalWidth, 2 * totalHeight))
         # Saves the final image
-        renderFrame.save(f"renders/{i}.png")
+        frames.append(renderFrame)
 
-    # Joins each frame into a .gif
-    with open(f"renders/render.gif", "w") as fp:
-        fp.truncate(0)
-    call(["magick", "convert", "renders/*.png", "-scale", "200%", "-set", "delay", "20", 
-        "-set", "dispose", "2", "renders/render.gif"])
+    frames[0].save("renders/render.gif", "GIF",
+        save_all=True,
+        append_images=frames[1:],
+        loop=0,
+        duration=200,
+        disposal=2, # Frames don't overlap
+        transparency=255,
+        background=255,
+        optimize=False # Important in order to keep the color palettes from being unpredictable
+    )
 
 
 class GlobalCog(commands.Cog, name="Baba Is You"):
@@ -409,7 +428,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{x}\".")     
 
             # Merges the images found
-            await magickImages(wordGrid, width, height, pal) # Previously used mergeImages()
+            magickImages(wordGrid, width, height, pal) # Previously used mergeImages()
         # Sends the image through discord
         await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif", spoiler=spoiler))
 
