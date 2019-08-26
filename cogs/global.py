@@ -272,20 +272,29 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 pal = "default"
             
             # Splits the "text_x,y,z..." shortcuts into "text_x", "text_y", ...
-            if not rule:
-                for row in wordGrid:
+            def splitCommas(grid, prefix):
+                for row in grid:
                     toAdd = []
                     for i, word in enumerate(row):
                         if "," in word:
-                            if word.startswith("text_"):
+                            if word.startswith(prefix):
                                 each = word.split(",")
                                 expanded = [each[0]]
-                                expanded.extend(["text_" + segment for segment in each[1:]])
+                                expanded.extend([prefix + segment for segment in each[1:]])
                                 toAdd.append((i, expanded))
                             else:
-                                return await self.bot.send(ctx, f"⚠️ I'm afraid I couldn't parse the following input: \"{word}\".")
+                                raise Exception(word)
                     for change in reversed(toAdd):
                         row[change[0]:change[0] + 1] = change[1]
+                return grid
+            try:
+                if rule:
+                    wordGrid = splitCommas(wordGrid, "tile_")
+                else:
+                    wordGrid = splitCommas(wordGrid, "text_")
+            except Exception as e:
+                sourceOfException = e.args[0]
+                return await self.bot.send(ctx, f"⚠️ I'm afraid I couldn't parse the following input: \"{sourceOfException}\".")
 
             # Splits "&"-joined words into stacks
             for row in wordGrid:
@@ -301,7 +310,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
             # Prepends "text_" to words if invoked under the rule command
             if rule:
-                wordGrid = [[[word if word == "-" else "text_" + word for word in stack] for stack in row] for row in wordGrid]
+                wordGrid = [[[word if word == "-" else word[5:] if word.startswith("tile_") else "text_" + word for word in stack] for stack in row] for row in wordGrid]
 
             # Get the dimensions of the grid
             lengths = [len(row) for row in wordGrid]
