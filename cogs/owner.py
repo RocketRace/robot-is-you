@@ -142,9 +142,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         # Are assets loading?
         self.bot.loading = False
 
-    def cachedTileLoader(self, tile, palettes):
-        pass
-
     def generateTileSprites(self, tile, obj, palettes, colors):
         # Fetches the tile data
         sprite = obj["sprite"]
@@ -201,7 +198,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             description="".join([f"IDENTIFYs in the past 24 hours: {identifiesDay}\n",
                 f"RESUMEs in the past 24 hours: {resumesDay}\n",
                 f"Global rate limit: {globalRateLimit}"]),
-            color=0x00ffff
+            color=self.bot.embedColor
         )
 
         await self.bot.send(ctx, " ", embed=msg)

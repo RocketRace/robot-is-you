@@ -69,6 +69,12 @@ async def reloadcog(ctx, cog: str):
     elif cog in bot.extensions.keys():
         bot.reload_extension("cogs." + cog)
         await ctx.send(f"Reloaded extension `{cog}` from `cogs/{cog}.py`.")
-    
+
+def prefix_whitelist(ctx):
+    if ctx.prefix == "+" and ctx.guild.id == 264445053596991498:
+        return False
+    return True
+
+bot.add_check(prefix_whitelist)
 
 bot.run(BOT_TOKEN, bot = True, reconnect = True)
