@@ -113,6 +113,10 @@ class MetaCog(commands.Cog, name="Other Commands"):
     @commands.command()
     @commands.cooldown(1, 10, commands.BucketType.channel)
     async def patchnotes(self, ctx, offset: int = 0):
+        '''
+        Most recent major bot updates.
+        Visit the github page (in the `about` command) for a full list of commits.
+        '''
         if offset < 0:
             return await self.bot.send(ctx, "⚠️ Offset must be positive.")
         with open(".git/logs/refs/heads/master") as logfile:
