@@ -55,9 +55,7 @@ class CommandErrorHandler(commands.Cog):
         if hasattr(ctx.command, 'on_error'):
             return
         
-        ignored = (commands.CommandNotFound, 
-                    commands.NotOwner
-                ) 
+        ignored = (commands.CommandNotFound, commands.NotOwner, commands.CheckFailure) 
         
         # Allows us to check for original exceptions raised and sent to CommandInvokeError.
         # If nothing is found. We keep the exception passed to on_command_error.
@@ -70,10 +68,10 @@ class CommandErrorHandler(commands.Cog):
         if isinstance(ctx.channel, discord.TextChannel):
             chan = ctx.channel.name
         emb.add_field(name="Error Context", 
-                    value="".join([f"Message: `{ctx.message.content}` (ID: {ctx.message.id})\n",
-                             f"User: {ctx.author.name}#{ctx.author.discriminator} (ID: {ctx.author.id}\n",
-                             f"Channel: #{chan} (ID: {ctx.channel.id})\n", 
-                             f"Guild: {ctx.guild.name} (ID:{ctx.guild.id})"]))
+            value="".join([f"Message: `{ctx.message.content}` (ID: {ctx.message.id})\n",
+                f"User: {ctx.author.name}#{ctx.author.discriminator} (ID: {ctx.author.id}\n",
+                f"Channel: #{chan} (ID: {ctx.channel.id})\n", 
+                f"Guild: {ctx.guild.name} (ID:{ctx.guild.id})"]))
 
         # Anything in ignored will return and prevent anything happening.
         if isinstance(error, ignored):
@@ -87,7 +85,7 @@ class CommandErrorHandler(commands.Cog):
             if ctx.author.id == self.bot.owner_id:
                 return await ctx.reinvoke()
             else:
-                await self.bot.send(ctx, error)
+                await self.bot.send(ctx, str(error))
                 return await self.logger.send(embed=emb)
 
         elif isinstance(error, commands.NoPrivateMessage):
@@ -104,7 +102,7 @@ class CommandErrorHandler(commands.Cog):
             await self.logger.send(embed=emb)
             if ctx.command.name == "tile":  # Checks the 
                 return await self.bot.send(ctx, "Invalid palette argument provided.")
-            return await self.bot.send(ctx, "Invalid function argumetns provided.")
+            return await self.bot.send(ctx, "Invalid function arguments provided.")
 
         elif isinstance(error, commands.MissingRequiredArgument):
             return await self.bot.send(ctx, "Required arguments are missing.")
