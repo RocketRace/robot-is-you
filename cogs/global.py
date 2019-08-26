@@ -7,10 +7,17 @@ from json        import load
 from os          import listdir
 from os.path     import isfile
 from PIL         import Image
+from random      import choice
 from subprocess  import call
 
+def flatten(items, seqtypes=(list, tuple)):
+    for i, x in enumerate(items):
+        while i < len(items) and isinstance(items[i], seqtypes):
+            items[i:i+1] = items[i]
+    return items
+
 # Takes a list of tile names and generates a gif with the associated sprites
-async def magickImages(wordGrid, width, height, palette):
+def magickImages(wordGrid, width, height, palette):
     # For each animation frame
     paths = [
         [
@@ -21,11 +28,16 @@ async def magickImages(wordGrid, width, height, palette):
             ] for row in wordGrid
         ] for fr in range(3)
     ]
+    # Minimize IO by only opening each image once
+    uniquePaths = set(flatten(paths.copy()))
+    uniquePaths.discard(None)
+    uniqueImages = {path:Image.open(path) for path in uniquePaths}
+    
     imgs = [
         [
             [
                 [
-                    None if fp is None else Image.open(fp) for fp in stack
+                    None if fp is None else uniqueImages[fp] for fp in stack
                 ] for stack in row
             ] for row in fr
         ] for fr in paths
@@ -64,7 +76,8 @@ async def magickImages(wordGrid, width, height, palette):
                         if diff > rightPad:
                             rightPad = diff
 
-    for i,frame in enumerate(imgs):
+    frames = []
+    for frame in imgs:
         # Get new image dimensions, with appropriate padding
         totalWidth = len(frame[0]) * 24 + leftPad + rightPad 
         totalHeight = len(frame) * 24 + upPad + downPad 
@@ -90,19 +103,28 @@ async def magickImages(wordGrid, width, height, palette):
                 xOffset += 24
             yOffset += 24
 
+        # Resizes to 200%
+        renderFrame = renderFrame.resize((2 * totalWidth, 2 * totalHeight))
         # Saves the final image
-        renderFrame.save(f"renders/{i}.png")
+        frames.append(renderFrame)
 
-    # Joins each frame into a .gif
-    with open(f"renders/render.gif", "w") as fp:
-        fp.truncate(0)
-    call(["magick", "convert", "renders/*.png", "-scale", "200%", "-set", "delay", "20", 
-        "-set", "dispose", "2", "renders/render.gif"])
+    frames[0].save("renders/render.gif", "GIF",
+        save_all=True,
+        append_images=frames[1:],
+        loop=0,
+        duration=200,
+        disposal=2, # Frames don't overlap
+        transparency=255,
+        background=255,
+        optimize=False # Important in order to keep the color palettes from being unpredictable
+    )
 
 
 class GlobalCog(commands.Cog, name="Baba Is You"):
     def __init__(self, bot):
         self.bot = bot
+        with open("tips.json") as tips:
+            self.tips = load(tips)
 
     # Check if the bot is loading
     async def cog_check(self, ctx):
@@ -131,7 +153,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         sanitizedQuery = discord.utils.escape_mentions(query)
         matches = []
         # How many results will be shown
-        limit = 10
+        limit = 30
         try:
             # Searches through a list of the names of each tile
             for name in self.bot.get_cog("Admin").tileColors:
@@ -150,6 +172,15 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 matches.insert(0, f"Found {len(matches)} results for \"{sanitizedQuery}\":")
         content = "\n".join(matches)
         await self.bot.send(ctx, content)
+    
+    @commands.command()
+    @commands.cooldown(2, 5, type=commands.BucketType.channel)
+    async def tip(self, ctx):
+        '''
+        Gives a random helpful tip regarding this bot's functionality.
+        '''
+        randomTip = choice(self.tips)
+        await self.bot.send(ctx, f"Here's a tip:\n*{randomTip}*")
 
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
     @commands.command(name="list")
@@ -180,7 +211,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     async def tile(self, ctx, *, palette: str, content: str = ""):
         """
         Renders the tiles provided, with many options. `help tile` for more...
-        Returns a grid of 24 x 24 animated pixel sprites associated with each input tile. Up to 50 tiles may be rendered per command.
+        Returns a grid of 24 x 24 animated pixel sprites associated with each input tile. Up to 64 tiles may be rendered per command.
         
         The optional `<palette>` argument will recolor the output based on the color data of the palette. 
         `<palette>` must be of the format `palette:palette_name`. Valid palette names can be seen using the `palettes` command.
@@ -209,7 +240,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         async with ctx.typing():
             # The parameters of this command are a lie to appease the help command: here's what actually happens            
             tiles = palette
-            
+            renderLimit = 64
+
             # Determines if this should be a spoiler
             spoiler = tiles.replace("|", "") != tiles
 
@@ -240,20 +272,29 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 pal = "default"
             
             # Splits the "text_x,y,z..." shortcuts into "text_x", "text_y", ...
-            if not rule:
-                for row in wordGrid:
+            def splitCommas(grid, prefix):
+                for row in grid:
                     toAdd = []
                     for i, word in enumerate(row):
                         if "," in word:
-                            if word.startswith("text_"):
+                            if word.startswith(prefix):
                                 each = word.split(",")
                                 expanded = [each[0]]
-                                expanded.extend(["text_" + segment for segment in each[1:]])
+                                expanded.extend([prefix + segment for segment in each[1:]])
                                 toAdd.append((i, expanded))
                             else:
-                                return await self.bot.send(ctx, f"⚠️ I'm afraid I couldn't parse the following input: \"{word}\".")
+                                raise Exception(word)
                     for change in reversed(toAdd):
                         row[change[0]:change[0] + 1] = change[1]
+                return grid
+            try:
+                if rule:
+                    wordGrid = splitCommas(wordGrid, "tile_")
+                else:
+                    wordGrid = splitCommas(wordGrid, "text_")
+            except Exception as e:
+                sourceOfException = e.args[0]
+                return await self.bot.send(ctx, f"⚠️ I'm afraid I couldn't parse the following input: \"{sourceOfException}\".")
 
             # Splits "&"-joined words into stacks
             for row in wordGrid:
@@ -269,7 +310,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
             # Prepends "text_" to words if invoked under the rule command
             if rule:
-                wordGrid = [[[word if word == "-" else "text_" + word for word in stack] for stack in row] for row in wordGrid]
+                wordGrid = [[[word if word == "-" else word[5:] if word.startswith("tile_") else "text_" + word for word in stack] for stack in row] for row in wordGrid]
 
             # Get the dimensions of the grid
             lengths = [len(row) for row in wordGrid]
@@ -279,8 +320,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             # Don't proceed if the request is too large.
             # (It shouldn't be that long to begin with because of Discord's 2000 character limit)
             area = width * height
-            if area > 50 and ctx.author.id != self.bot.owner_id:
-                return await self.bot.send(ctx, f"⚠️ Too many tiles ({area}). You may only render up to 50 tiles at once, including empty tiles.")
+            if area > renderLimit and ctx.author.id != self.bot.owner_id:
+                return await self.bot.send(ctx, f"⚠️ Too many tiles ({area}). You may only render up to {renderLimit} tiles at once, including empty tiles.")
 
             # Pad the word rows from the end to fit the dimensions
             [row.extend([["-"]] * (width - len(row))) for row in wordGrid]
@@ -314,36 +355,46 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                             
                             
                             # Is this a tiling object (e.g. wall, water)?
-                            if self.bot.get_cog("Admin").tileColors.get(tile) is not None:
-                                if self.bot.get_cog("Admin").tileColors[tile].get("tiling") is not None:
-                                    if self.bot.get_cog("Admin").tileColors[tile]["tiling"] == "1":
+                            tileData = self.bot.get_cog("Admin").tileColors.get(tile)
+                            if tileData is not None:
+                                if tileData.get("tiling") is not None:
+                                    if tileData["tiling"] == "1":
 
                                         #  The final variation stace of the tile
                                         variant = 0
 
+                                        # Tiles that join together
+                                        def doesTile(stack):
+                                            tileable = ["level", tile]
+                                            for t in tileable:
+                                                if t in stack:
+                                                    return True
+                                            return False
+
                                         # Is there the same tile adjacent right?
-                                        if x == width - 1:
-                                            pass
-                                        elif tile in cloneGrid[y][x + 1] or "level" in cloneGrid[y][x + 1]:
-                                            variant += 1
+                                        if x != width - 1:
+                                            # The tiles right of this (with variants stripped)
+                                            adjacentRight = [t.split(":")[0] for t in cloneGrid[y][x + 1]]
+                                            if doesTile(adjacentRight):
+                                                variant += 1
 
                                         # Is there the same tile adjacent above?
-                                        if y == 0:
-                                            pass
-                                        elif tile in cloneGrid[y - 1][x] or "level" in cloneGrid[y - 1][x]:
-                                            variant += 2
+                                        if y != 0:
+                                            adjacentUp = [t.split(":")[0] for t in cloneGrid[y - 1][x]]
+                                            if doesTile(adjacentUp):
+                                                variant += 2
 
                                         # Is there the same tile adjacent left?
-                                        if x == 0:
-                                            pass
-                                        elif tile in cloneGrid[y][x - 1] or "level" in cloneGrid[y][x - 1]:
-                                            variant += 4
+                                        if x != 0:
+                                            adjacentLeft = [t.split(":")[0] for t in cloneGrid[y][x - 1]]
+                                            if doesTile(adjacentLeft):
+                                                variant += 4
 
                                         # Is there the same tile adjacent below?
-                                        if y == height - 1:
-                                            pass
-                                        elif tile in cloneGrid[y + 1][x] or "level" in cloneGrid[y + 1][x]:
-                                            variant += 8
+                                        if y != height - 1:
+                                            adjacentDown = [t.split(":")[0] for t in cloneGrid[y + 1][x]]
+                                            if doesTile(adjacentDown):
+                                                variant += 8
                                         
                                         # Stringify
                                         variant = str(variant)
@@ -386,7 +437,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{x}\".")     
 
             # Merges the images found
-            await magickImages(wordGrid, width, height, pal) # Previously used mergeImages()
+            magickImages(wordGrid, width, height, pal) # Previously used mergeImages()
         # Sends the image through discord
         await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif", spoiler=spoiler))
 

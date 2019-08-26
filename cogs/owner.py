@@ -10,6 +10,7 @@ from os           import listdir, mkdir, stat
 from PIL          import Image
 from string       import ascii_lowercase
 from subprocess   import Popen, PIPE, STDOUT
+from time         import time
 
 def multiplyColor(fp, palettes, pixels):
     # fp: file path of the sprite
@@ -26,19 +27,17 @@ def multiplyColor(fp, palettes, pixels):
 
     # Image to recolor from
     base = Image.open(fp).convert("RGBA")
-    A = base.getchannel("A")
-    R,G,B = base.convert("RGB").split()
 
     # Multiplies the R,G,B channel for each pixel value
     for pixel in uniquePixels:
         # New values
         newR, newG, newB = pixel
         # New channels
-        R = R.point(lambda px: int(px * newR / 255))
-        G = G.point(lambda px: int(px * newG / 255))
-        B = B.point(lambda px: int(px * newB / 255))
-        # Merges
-        RGBA = Image.merge("RGBA", (R, G, B, A))
+        arr = np.asarray(base, dtype='uint16')
+        rC, gC, bC, aC = arr.T
+        rC, gC, bC = newR*rC / 256, newG*gC / 256, newB*bC / 256
+        out = np.stack((rC.T,gC.T,bC.T,aC.T),axis=2).astype('uint8')
+        RGBA = Image.fromarray(out)
         # Adds to list
         recolored.append(RGBA)
 
@@ -143,9 +142,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         # Are assets loading?
         self.bot.loading = False
 
-    def cachedTileLoader(self, tile, palettes):
-        pass
-
     def generateTileSprites(self, tile, obj, palettes, colors):
         # Fetches the tile data
         sprite = obj["sprite"]
@@ -177,7 +173,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             
             # Changes the color of each image, then saves it
             for i,fp in enumerate(paths):
-                pixels = [img.getpixel((x,y)) for img in colors]
+                pixels = [img[x][y] for img in colors]
                 recolored = multiplyColor(fp, palettes, pixels)
                 # Saves the colored images to /color/[palette]/ given that the image may be identical for some palettes
                 # Recolored images, palettes each image is associated with
@@ -202,7 +198,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             description="".join([f"IDENTIFYs in the past 24 hours: {identifiesDay}\n",
                 f"RESUMEs in the past 24 hours: {resumesDay}\n",
                 f"Global rate limit: {globalRateLimit}"]),
-            color=0x00ffff
+            color=self.bot.embedColor
         )
 
         await self.bot.send(ctx, " ", embed=msg)
@@ -476,8 +472,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         elif palette + ".png" not in listdir("palettes"):
             return await self.bot.send(ctx, f"\"{palette}\" is not a valid palette.")
             
+        # Creates the directories for the palettes if they don't exist
+        paletteColors = []
         for pal in palettes:
-            # Creates the directories for the palettes if they don't exist
             try:
                 mkdir("color/%s" % pal)
             except FileExistsError:
@@ -486,10 +483,10 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             # The palette image 
             paletteImg = Image.open("palettes/%s.png" % pal).convert("RGB")
             # The RGB values of the palette
-            paletteColors = [[(paletteImg.getpixel((x,y))) for y in range(5)] for x in range(7)]
+            paletteColors.append([[(paletteImg.getpixel((x,y))) for y in range(5)] for x in range(7)])
 
-            obj = self.tileColors[tile]
-            self.generateTileSprites(tile, obj, pal, paletteColors)
+        obj = self.tileColors[tile]
+        self.generateTileSprites(tile, obj, palettes, paletteColors)
         await ctx.send("Done.")
         self.bot.loading = False
 
@@ -556,7 +553,26 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 puller.terminate()
             else:
                 await ctx.send(f"`git pull` exited with code {returncode}. Output: ```\n{stdout}\n```")
+
+    @commands.command()
+    @commands.is_owner()
+    async def benchmark(self, ctx, command, *args):
+        # Tries to match each argument provided with the command parameters
+        functionParams = self.bot.get_command(command).clean_params.keys()
+        kwargs = {}
+        for arg,param in zip(args, functionParams):
+            kwargs[param] = arg
+        t = time()
+        await ctx.send(f"Invoking command \"{command}\"...")
+        await ctx.invoke(self.bot.get_command(command), **kwargs)
+        await ctx.send(f"Done. Took {time() - t} seconds.")
     
+    @commands.command()
+    @commands.is_owner()
+    async def getparams(self, ctx, command):
+        # Returns the parameters of a given command
+        params = self.bot.get_command(command).clean_params
+        await self.bot.send(ctx, f"Parameters for command {command}:\n{params}")
 
     @commands.command()
     @commands.is_owner()
@@ -568,18 +584,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         await ctx.send("Loading colors...")
         await ctx.invoke(self.bot.get_command("loadcolors"))
         await ctx.send("Loading palettes...")
-        
-
-        # Loads every palette
-        palettes = listdir("palettes")
-        total = len(palettes)
-
-        i = 0
-        for palette in [fp[:-4] for fp in palettes]:
-            await ctx.send(f" {i}/{total}")
-            await ctx.invoke(self.bot.get_command("loadpalette"), palette)
-            i += 1
-        await ctx.send(f"Loading palettes... {total}/{total}")
+        palettes = [palette[:-4] for palette in listdir("palettes")] # Strip ".png"
+        await ctx.invoke(self.bot.get_command("loadpalettes"), args=palettes)
         await ctx.send(f"{ctx.author.mention} Done.")
 
     def _clear_gateway_data(self):

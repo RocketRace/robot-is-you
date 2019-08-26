@@ -601,5 +601,21 @@
       "0",
       "3"
       ]
+  },
+  {
+      "name":"rain",
+      "sprite":"rain",
+      "color":[
+      "1",
+      "3"
+      ]
+  },
+  {
+      "name":"text_rain",
+      "sprite":"text_rain",
+      "color":[
+      "1",
+      "3"
+      ]
   }
 ]
