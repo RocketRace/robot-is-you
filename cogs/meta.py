@@ -119,53 +119,30 @@ class MetaCog(commands.Cog, name="Other Commands"):
         '''
         if offset < 0:
             return await self.bot.send(ctx, "⚠️ Offset must be positive.")
-        with open(".git/logs/refs/heads/master") as logfile:
-            commitLimit = 5
+        with open("patchnotes.txt") as logfile:
+            limit = 5
             discarded = offset
 
             # Gets the relevant commits. Discards any that are too old.
-            includedCommits = []
+            included = []
             line = logfile.readline()
             while line != "":
-                if "[PATCH]" in line:
-                    includedCommits.append(line)
+                included.append(line)
                 line = logfile.readline() # Full commit data
                 # Gets the 10 most recent commits, plus the provided commit offset
-                if len(includedCommits) > commitLimit + offset: 
-                    includedCommits.pop(0)
+                if len(included) > limit + offset: 
+                    included.pop(0)
             
             # Discards the commits within the provided offset range, 
             # leaving only the 10 most recent commits after the <offset>th one
-            includedCommits.reverse()
-            discarded = len(includedCommits[10:])
-            includedCommits = includedCommits[:10]
+            included.reverse()
+            discarded = len(included[limit:])
+            included = included[:limit]
             
-            finalCommits = [
-                "Recent Git Commits" + (f" ({discarded} offset) " if discarded else "") + ":"
-            ]
+            included.insert(0, "Recent Changes" + (f" ({discarded} offset) " if discarded else "") + ":")
+
             # Parses the commit information
-            for commit in includedCommits: 
-            
-                # commit contains the full commit data
-                commit = commit[82:] # Trim parent hash + commit hash
-                
-                dateStartIndex = commit.find(">") # Find end of author email
-                commit = commit[dateStartIndex + 2 :] # Trim author + author email
-                
-                dateEndIndex = commit.find(" ") # Find end of date timestamp
-                timestamp = commit[:dateEndIndex]
-                timezone = commit[dateEndIndex : dateEndIndex + 6]
-                date = datetime.fromtimestamp(int(timestamp)) # The commit datetime
-                iso = date.isoformat(" ") + timezone # Datetime string
-
-                messageStartIndex = commit.find(":")
-                message = commit[messageStartIndex + 2:-1] # Commit message
-                message = message.strip("[PATCH]")
-
-                finalCommits.append("`" + iso + "`")
-                finalCommits.append("> " + message )
-            
-            patches = "\n".join(finalCommits)
+            patches = "\n".join(included)
             await self.bot.send(ctx, patches)
 
     
