@@ -127,7 +127,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
             included = []
             line = logfile.readline()
             while line != "":
-                included.append(line)
+                included.append(line[:-1])
                 line = logfile.readline() # Full commit data
                 # Gets the 10 most recent commits, plus the provided commit offset
                 if len(included) > limit + offset: 
