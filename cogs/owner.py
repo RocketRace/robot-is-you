@@ -27,19 +27,17 @@ def multiplyColor(fp, palettes, pixels):
 
     # Image to recolor from
     base = Image.open(fp).convert("RGBA")
-    A = base.getchannel("A")
 
     # Multiplies the R,G,B channel for each pixel value
     for pixel in uniquePixels:
         # New values
         newR, newG, newB = pixel
         # New channels
-        R,G,B = base.convert("RGB").split()
-        R = R.point(lambda px: int(px * newR / 255))
-        G = G.point(lambda px: int(px * newG / 255))
-        B = B.point(lambda px: int(px * newB / 255))
-        # Merges
-        RGBA = Image.merge("RGBA", (R, G, B, A))
+        arr = np.asarray(base, dtype='uint16')
+        rC, gC, bC, aC = arr.T
+        rC, gC, bC = newR*rC / 256, newG*gC / 256, newB*bC / 256
+        out = np.stack((rC.T,gC.T,bC.T,aC.T),axis=2).astype('uint8')
+        RGBA = Image.fromarray(out)
         # Adds to list
         recolored.append(RGBA)
 
