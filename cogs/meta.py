@@ -32,7 +32,7 @@ class PrettyHelpCommand(commands.DefaultHelpCommand):
 
         for command in commands:
             name = command.name
-            self.paginator.add_line(self.shorten_text("\u00a0\u00a0\u00a0`" + name + "`"))
+            self.paginator.add_line(self.shorten_text("\u200b  `" + name + "`"))
             self.paginator.add_line(self.shorten_text(command.short_doc))
 
     async def send_bot_help(self, mapping):
