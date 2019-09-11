@@ -3,3 +3,4 @@ Increase tile limit to 64 (from 50)
 Add `tip` command
 Add `patchnotes` command
 Render regular tiles in `rule` command with `tile_` prefix
+Add new `text_turn` sprite
