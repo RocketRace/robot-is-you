@@ -617,5 +617,13 @@
       "1",
       "3"
       ]
-  }
+  },
+  {
+    "sprite":"text_turn",
+    "name":"text_turn",
+    "color":[
+       "1",
+       "4"
+    ]
+ }
 ]
