@@ -32,6 +32,8 @@ Support is not provided for self-hosting. You may run the code yourself given th
 
 ~
 
+The bot uses the discord.py >= 1.0.0 and Pillow >= 6.1.0 modules from pip.
+
 The bot requires a `setup.json` file to boot up. This includes the following fields:
 
 * `token`: str
@@ -69,5 +71,3 @@ Tile data is stored in `tiledata.json`.
 Scraped data is stored in `alternatetiles.json`.
 
 ~
-
-ImageMagick command-line tools (`magick convert`) are used to join frames into a gif.
