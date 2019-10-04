@@ -64,14 +64,51 @@ class CommandErrorHandler(commands.Cog):
         # Constructs the error embed for logging
         emb = discord.Embed(title="Command Error", color=0xffff00)
         emb.description = str(error)
-        chan = "`Direct Message`"
+
+        # Adds embed fields
+        # Bot
+        if self.bot.user: # tautology but fits the scheme
+            ID = self.bot.user.id
+            name = self.bot.user.display_name
+        # Message
+        if ctx.message:
+            ID = ctx.message.id
+            content = ctx.message.content 
+            if len(content) > 1024: # Only use the first 1000 characters, avoid 1024 char value limits
+                content = content[1000] + "`...`"
+            formatted = f"ID: {ID}\nContent: `{content}`" 
+            emb.add_field(name="Message", value=formatted)
+        # Channel
         if isinstance(ctx.channel, discord.TextChannel):
-            chan = ctx.channel.name
-        emb.add_field(name="Error Context", 
-            value="".join([f"Message: `{ctx.message.content}` (ID: {ctx.message.id})\n",
-                f"User: {ctx.author.name}#{ctx.author.discriminator} (ID: {ctx.author.id}\n",
-                f"Channel: #{chan} (ID: {ctx.channel.id})\n", 
-                f"Guild: {ctx.guild.name} (ID:{ctx.guild.id})"]))
+            ID = ctx.channel.id
+            name = ctx.channel.name
+            nsfw = "[NSFW Channel]" if ctx.channel.is_nsfw() else ""
+            news = "[News Channel]" if ctx.channel.is_news() else ""
+            formatted = f"ID: {ID}\nName: {name}\n{nsfw} {news}"
+            emb.add_field(name="Channel",value=formatted)
+        # Guild (if in a guild)
+        if ctx.guild:
+            ID = ctx.guild.id
+            name = ctx.guild.name
+            member_count = ctx.guild.member_count
+            formatted = f"ID: {ID}\nName: {name}\nMember count: {member_count}"
+            emb.add_field(name="Guild", value=formatted)
+        # Author (DM information if any)
+        if ctx.author:
+            ID = ctx.author.id
+            name = ctx.author.name
+            discriminator = ctx.author.discriminator
+            nick = f"({ctx.author.nick})" if ctx.author.nick else ""
+            DM = "Message Author" if ctx.guild else "Direct Message"
+            formatted = f"ID: {ID}\nName: {name}#{discriminator} {nick}"
+            emb.add_field(name=DM, value=formatted)
+        # Message link
+        if all([ctx.guild, ctx.channel, ctx.message]):
+            guild_ID = ctx.guild.id
+            channel_ID = ctx.channel.id
+            message_ID = ctx.message.id
+            formatted = f"[Jump to message](https://discordapp.com/channels/{guild_ID}/{channel_ID}/{message_ID})"
+            emb.add_field(name="Jump", value=formatted)
 
         # Anything in ignored will return and prevent anything happening.
         if isinstance(error, ignored):
