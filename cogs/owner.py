@@ -587,7 +587,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         await ctx.send("Loading palettes...")
         palettes = [palette[:-4] for palette in listdir("palettes") if palette not in [".DS_Store"]] 
         # Strip ".png", ignore some files
-        await ctx.invoke(self.bot.get_command("loadpalettes"), args=palettes)
+        await ctx.invoke(self.bot.get_command("loadpalettes"), palettes)
         await ctx.send(f"{ctx.author.mention} Done.")
 
     def _clear_gateway_data(self):
