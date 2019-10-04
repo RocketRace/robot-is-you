@@ -4,4 +4,5 @@ Add Sword, Trident, Rain
     Add `patchnotes` command
     Render regular tiles in `rule` command with `tile_` prefix
     Add new `text_turn` sprite
+    Add new `red`, `blue` and `hide` palettes
     

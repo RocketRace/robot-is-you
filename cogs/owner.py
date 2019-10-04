@@ -504,7 +504,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         # The palette names
         palettes = args
         # The palette images
-        imgs = [Image.open("palettes/%s.png" % palette).convert("RGB") for palette in palettes]
+        # "hide" is a joke palette that doesn't render anything
+        imgs = [Image.open("palettes/%s.png" % palette).convert("RGB") for palette in palettes if palette != "hide"]
         # The RGB values of the palette
         colors = [[[(img.getpixel((x,y))) for y in range(5)] for x in range(7)] for img in imgs]
 
@@ -584,7 +585,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         await ctx.send("Loading colors...")
         await ctx.invoke(self.bot.get_command("loadcolors"))
         await ctx.send("Loading palettes...")
-        palettes = [palette[:-4] for palette in listdir("palettes")] # Strip ".png"
+        palettes = [palette[:-4] for palette in listdir("palettes") if palette not in [".DS_Store"]] 
+        # Strip ".png", ignore some files
         await ctx.invoke(self.bot.get_command("loadpalettes"), args=palettes)
         await ctx.send(f"{ctx.author.mention} Done.")
 
