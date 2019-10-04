@@ -18,6 +18,22 @@ def flatten(items, seqtypes=(list, tuple)):
 
 # Takes a list of tile names and generates a gif with the associated sprites
 def magickImages(wordGrid, width, height, palette):
+    frames = []
+    if palette == "hide":
+        renderFrame = Image.new("RGBA", (48 * width, 48 * height))
+        for i in range(3):
+            frames.append(renderFrame)
+        frames[0].save("renders/render.gif", "GIF",
+            save_all=True,
+            append_images=frames[1:],
+            loop=0,
+            duration=200,
+            disposal=2, # Frames don't overlap
+            transparency=255,
+            background=255,
+            optimize=False # Important in order to keep the color palettes from being unpredictable
+        )
+        return
     # For each animation frame
     paths = [
         [
@@ -75,8 +91,6 @@ def magickImages(wordGrid, width, height, palette):
                         diff = size[0] - 24
                         if diff > rightPad:
                             rightPad = diff
-
-    frames = []
     for frame in imgs:
         # Get new image dimensions, with appropriate padding
         totalWidth = len(frame[0]) * 24 + leftPad + rightPad 
@@ -202,7 +216,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         """
         msg = ["Valid palettes:"]
         for palette in listdir("palettes"):
-            msg.append(palette[:-4])
+            if not palette in [".DS_Store"]:
+                msg.append(palette[:-4])
         await self.bot.send(ctx, "\n".join(msg))
 
     # Generates an animated gif of the tiles provided, using (TODO) the default palette
@@ -322,6 +337,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             area = width * height
             if area > renderLimit and ctx.author.id != self.bot.owner_id:
                 return await self.bot.send(ctx, f"⚠️ Too many tiles ({area}). You may only render up to {renderLimit} tiles at once, including empty tiles.")
+
+            # Now that we have width and height, we can accurately render the "hide" palette entries :^)
+            if pal == "hide":
+                wordGrid = [[["-" for tile in stack] for stack in row] for row in wordGrid]
 
             # Pad the word rows from the end to fit the dimensions
             [row.extend([["-"]] * (width - len(row))) for row in wordGrid]
