@@ -59,8 +59,8 @@
         "name":"level",
         "sprite":"level",
         "color":[
-            "1",
-            "2"
+            "0",
+            "3"
         ]
     },
     {
@@ -86,6 +86,14 @@
         "color":[
             "0",
             "3"
+        ]
+    },
+    {
+        "name":"edge",
+        "sprite":"edge",
+        "color":[
+            "1",
+            "0"
         ]
     }
 ]
