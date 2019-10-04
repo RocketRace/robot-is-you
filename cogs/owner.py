@@ -492,7 +492,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
     @commands.command()
     @commands.is_owner()
-    async def loadpalettes(self, ctx, args):
+    async def loadpalettes(self, ctx, *args):
         
         self.bot.loading = True
 
