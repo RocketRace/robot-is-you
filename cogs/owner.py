@@ -492,17 +492,19 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
     @commands.command()
     @commands.is_owner()
-    async def loadpalettes(self, ctx, *args):
+    async def loadpalettes(self, ctx, args):
         
         self.bot.loading = True
 
+        if isinstance(args, str):
+            palettes = args.split(" ")
+        else:
+            palettes = args
         # Tests for a supplied palette
-        for arg in args:
-            if arg not in [str[:-4] for str in listdir("palettes")]:
+        for arg in palettes:
+            if arg not in [s[:-4] for s in listdir("palettes")]:
                 return await self.bot.send(ctx, "Supply a palette to load.")
 
-        # The palette names
-        palettes = args
         # The palette images
         # "hide" is a joke palette that doesn't render anything
         imgs = [Image.open("palettes/%s.png" % palette).convert("RGB") for palette in palettes if palette != "hide"]
@@ -524,6 +526,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 await ctx.send(f"{i} / {total}...")
             self.generateTileSprites(tile, obj, palettes, colors)
             i += 1
+        await ctx.send(f"{total} / {total}.")
 
         self.bot.loading = False
 
