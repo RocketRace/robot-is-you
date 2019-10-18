@@ -1,9 +1,5 @@
-sprites/
 color/
 renders/
-palettes/
-themes/
-levels/
 *.json
 tilelist.txt
 !custom/*
