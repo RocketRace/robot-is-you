@@ -5,4 +5,5 @@ Add Sword, Trident, Rain
     Render regular tiles in `rule` command with `tile_` prefix
     Add new `text_turn` sprite
     Add new `red`, `blue` and `hide` palettes
+    Improve `search` command
     

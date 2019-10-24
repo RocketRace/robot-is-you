@@ -5,7 +5,8 @@
       "color":[
          "4",
          "1"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_multiply",
@@ -13,7 +14,8 @@
       "color":[
          "4",
          "1"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_complete",
@@ -21,7 +23,8 @@
       "color":[
          "2",
          "4"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_copy",
@@ -29,7 +32,8 @@
       "color":[
          "2",
          "2"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_saccade",
@@ -37,7 +41,8 @@
       "color":[
          "1",
          "2"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_maybe",
@@ -45,7 +50,8 @@
       "color":[
          "0",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_inner",
@@ -53,7 +59,8 @@
       "color":[
          "0",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_topple",
@@ -61,7 +68,8 @@
       "color":[
          "3",
          "1"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_lure",
@@ -69,7 +77,8 @@
       "color":[
          "2",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_untwist",
@@ -77,7 +86,8 @@
       "color":[
          "1",
          "4"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_persist",
@@ -85,7 +95,8 @@
       "color":[
          "0",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_faceside",
@@ -93,7 +104,8 @@
       "color":[
          "0",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_oddturn",
@@ -101,7 +113,8 @@
       "color":[
          "3",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_reset",
@@ -109,7 +122,8 @@
       "color":[
          "3",
          "1"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_resend",
@@ -117,7 +131,8 @@
       "color":[
          "4",
          "1"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_collide",
@@ -125,7 +140,8 @@
       "color":[
          "5",
          "1"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_bounce",
@@ -133,7 +149,8 @@
       "color":[
          "1",
          "4"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_1st1",
@@ -141,7 +158,8 @@
       "color":[
          "2",
          "2"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_means",
@@ -149,7 +167,8 @@
       "color":[
          "0",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_stuck",
@@ -157,7 +176,8 @@
       "color":[
          "2",
          "1"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_faceaway",
@@ -165,7 +185,8 @@
       "color":[
          "0",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_less",
@@ -173,7 +194,8 @@
       "color":[
          "2",
          "2"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_destroy",
@@ -181,7 +203,8 @@
       "color":[
          "2",
          "2"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_funnel",
@@ -189,7 +212,8 @@
       "color":[
          "1",
          "4"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_auto",
@@ -197,7 +221,8 @@
       "color":[
          "0",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_phase",
@@ -205,7 +230,8 @@
       "color":[
          "3",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_timeless",
@@ -213,7 +239,8 @@
       "color":[
          "2",
          "2"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_nearest",
@@ -221,7 +248,8 @@
       "color":[
          "0",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_straight",
@@ -229,7 +257,8 @@
       "color":[
          "0",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_strong",
@@ -237,7 +266,8 @@
       "color":[
          "5",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_dizzy",
@@ -245,7 +275,8 @@
       "color":[
          "1",
          "2"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_send",
@@ -253,7 +284,8 @@
       "color":[
          "4",
          "1"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_gravity",
@@ -261,7 +293,8 @@
       "color":[
          "3",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_cute",
@@ -269,7 +302,8 @@
       "color":[
          "4",
          "2"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_megarare",
@@ -277,7 +311,8 @@
       "color":[
          "0",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_corner",
@@ -285,7 +320,8 @@
       "color":[
          "0",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_any",
@@ -293,7 +329,8 @@
       "color":[
          "0",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_gigarare",
@@ -301,7 +338,8 @@
       "color":[
          "0",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_collect",
@@ -309,7 +347,8 @@
       "color":[
          "2",
          "4"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_cross",
@@ -317,7 +356,8 @@
       "color":[
          "1",
          "4"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_edge",
@@ -325,7 +365,8 @@
       "color":[
          "0",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_strafe",
@@ -333,7 +374,8 @@
       "color":[
          "1",
          "2"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_with",
@@ -341,7 +383,8 @@
       "color":[
          "0",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_divide",
@@ -349,7 +392,8 @@
       "color":[
          "2",
          "2"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_bait",
@@ -357,7 +401,8 @@
       "color":[
          "3",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_split",
@@ -365,7 +410,8 @@
       "color":[
          "1",
          "4"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_slide",
@@ -373,7 +419,8 @@
       "color":[
          "1",
          "4"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_capped",
@@ -381,7 +428,8 @@
       "color":[
          "0",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_clear",
@@ -389,7 +437,8 @@
       "color":[
          "2",
          "4"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_unwin",
@@ -397,7 +446,8 @@
       "color":[
          "1",
          "2"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_rarely",
@@ -405,7 +455,8 @@
       "color":[
          "0",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_eventurn",
@@ -413,7 +464,8 @@
       "color":[
          "3",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_reset_odd",
@@ -421,7 +473,8 @@
       "color":[
          "3",
          "1"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_still",
@@ -429,7 +482,8 @@
       "color":[
          "0",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_flinch",
@@ -437,7 +491,8 @@
       "color":[
          "1",
          "2"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_touch",
@@ -445,7 +500,8 @@
       "color":[
          "0",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_twist",
@@ -453,7 +509,8 @@
       "color":[
          "1",
          "4"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_won",
@@ -461,7 +518,8 @@
       "color":[
          "2",
          "4"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_reset_even",
@@ -469,7 +527,8 @@
       "color":[
          "3",
          "1"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_crash",
@@ -477,7 +536,8 @@
       "color":[
          "1",
          "1"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_reset_cond",
@@ -485,7 +545,8 @@
       "color":[
          "3",
          "1"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_reset_count",
@@ -493,7 +554,8 @@
       "color":[
          "3",
          "1"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_beam",
@@ -501,7 +563,8 @@
       "color":[
          "0",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_soft",
@@ -509,7 +572,8 @@
       "color":[
          "0",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_last1",
@@ -517,7 +581,8 @@
       "color":[
          "2",
          "2"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_sticky",
@@ -525,7 +590,8 @@
       "color":[
          "5",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_reflect",
@@ -533,7 +599,8 @@
       "color":[
          "1",
          "4"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "sprite":"text_singlet",
@@ -541,6 +608,7 @@
       "color":[
          "0",
          "3"
-      ]
+      ],
+        "tiling":"-1"
    }
 ]

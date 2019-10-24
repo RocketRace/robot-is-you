@@ -5,7 +5,8 @@
       "color":[
          "4",
          "2"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "name":"text_fox",
@@ -13,7 +14,8 @@
       "color":[
          "4",
          "1"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "name":"hempuli",
@@ -21,7 +23,8 @@
       "color":[
          "4",
          "2"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "name":"text_hempuli",
@@ -29,7 +32,8 @@
       "color":[
          "4",
          "2"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
        "name":"wug",
@@ -46,7 +50,8 @@
       "color":[
          "2",
          "4"
-      ]
+      ],
+        "tiling":"-1"
    },
    {
       "name":"sword",
