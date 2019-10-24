@@ -1,5 +1,6 @@
 import discord
 import numpy     as np
+import re
 
 from discord.ext import commands
 from itertools   import chain
@@ -11,7 +12,7 @@ from random      import choice
 from subprocess  import call
 
 def flatten(items, seqtypes=(list, tuple)):
-    for i, x in enumerate(items):
+    for i, _ in enumerate(items):
         while i < len(items) and isinstance(items[i], seqtypes):
             items[i:i+1] = items[i]
     return items
@@ -21,7 +22,7 @@ def magickImages(wordGrid, width, height, palette):
     frames = []
     if palette == "hide":
         renderFrame = Image.new("RGBA", (48 * width, 48 * height))
-        for i in range(3):
+        for _ in range(3):
             frames.append(renderFrame)
         frames[0].save("renders/render.gif", "GIF",
             save_all=True,
@@ -161,30 +162,96 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         """
         Searches tiles for rendering from a query.
         Returns a list of tile names that matche the query.
-        Can return up to 10 tiles per search.
+        Can return up to 30 tiles per search.
         Tiles may be used in the `tile` (and subsequently `rule`) commands.
         """
         sanitizedQuery = discord.utils.escape_mentions(query)
-        matches = []
+        # Pattern to match flags in the format (flag):(value)
+        pattern = r"([\d\w_]+):([\d\w,-_]+)"
+        match = re.search(pattern, query)
+        plainQuery = ""
+
+        # Whether or not to use simple string matching
+        hasFlags = bool(match)
+
+        if hasFlags:
+            flags = []
+            if match:
+                flags = re.findall(pattern, query)
+            # Nasty regex to match words that are not flags
+            pattern = r"(?<![:\w\d,-])([\w\d,_]+)(?![:\d\w,-])"
+            plainMatch = re.findall(pattern, query)
+            plainQuery = " ".join(plainMatch)
+
         # How many results will be shown
-        limit = 30
-        try:
-            # Searches through a list of the names of each tile
-            for name in self.bot.get_cog("Admin").tileColors:
-                if query in name:
-                    if len(matches) >= limit:
-                        raise OverflowError
-                    else:
-                        matches.append(name)
-        except OverflowError:
-            matches.insert(0, f"Found more than {limit} results, showing only first {limit}:")
-        else:
-            count = len(matches)
-            if count == 0:
-                matches.insert(0, f"Found no results for \"{sanitizedQuery}\".")
+        limit = 20
+        results = 0
+        matches = []
+
+       # Searches through a list of the names of each tile
+        data = self.bot.get_cog("Admin").tileColors
+        for name,tile in data.items():
+            if hasFlags:
+                # Checks if the object matches all the flag parameters
+                passed = {f:False for f,v in flags}
+                # Process flags for one object
+                for flag,value in flags:
+                    # Object name starts with "text_"
+                    if flag.lower() == "text":
+                        
+                        if value.lower() == "true":
+                            if name.startswith("text_"): passed[flag] = True
+
+                        elif value.lower() == "false":
+                            if not name.startswith("text_"): passed[flag] = True
+                    
+                    # Object source is vanilla, modded or (specific mod)
+                    elif flag == "source":
+                        if value.lower() == "modded":
+                            if tile["source"] not in ["vanilla", "vanilla-extensions"]:
+                                passed[flag] = True
+                        else:
+                            if tile["source"] == value.lower():
+                                passed[flag] = True
+
+                    # Object uses a specific color index ("x,y" is parsed to ["x", "y"])
+                    elif flag == "color":
+                        index = value.lower().split(",")
+                        if tile["color"] == index:
+                            passed[flag] = True
+
+                    # For all other flags: Check that the specified object attribute has a certain value
+                    else:  
+                        if tile.get(flag) == value.lower():
+                            passed[flag] = True
+                
+                # If we pass all flags (and there are more than 0 passed flags)
+                if len(flags) != 0 and all(passed.values()):
+                    if plainQuery in name:
+                        results += 1
+                        # Add our object to our results, and append its name (originally a key)
+                        obj = tile
+                        obj["name"] = name
+                        matches.append(obj)
+
+            # If we have no flags, simply use a substring search
             else:
-                matches.insert(0, f"Found {len(matches)} results for \"{sanitizedQuery}\":")
-        content = "\n".join(matches)
+                if query in name:
+                    results += 1
+                    obj = tile
+                    obj["name"] = name
+                    matches.append(obj)
+        
+        # What message to prefix our output with
+        if results == 0:
+            matches.insert(0, f"Found no results for \"{sanitizedQuery}\".")
+        elif results > limit:
+            matches.insert(0, f"Found {results} results using query \"{sanitizedQuery}\". Showing only {limit}:")
+        else:
+            matches.insert(0, f"Found {results} results using query \"{sanitizedQuery}\":")
+        
+        # Tidy up our output with this mess
+        content = "\n".join([f"**{x.get('name')}** : {', '.join([f'{k}: `{v}`' for k, v in sorted(x.items(), key=lambda λ: λ[0]) if k != 'name'])}" if not isinstance(x, str) else x for x in [matches[0]] + sorted(matches[1:], key=lambda λ: λ["name"])[:20]])
         await self.bot.send(ctx, content)
     
     @commands.command()

@@ -34,8 +34,8 @@ class BabaBot(commands.Bot):
     # Sanitizes input, so no mention abuse can occur
     async def send(self, ctx, content, embed=None, tts=False, file=None):
         sanitized = discord.utils.escape_mentions(content)
-        if len(sanitized) > 1000:
-            sanitized = sanitized[:1000] + " [...] \n\n (Character limit reached!)"
+        if len(sanitized) > 2000:
+            sanitized = sanitized[:1963] + " [...] \n\n (Character limit reached!)"
         if embed is not None:
             await ctx.send(sanitized, embed=embed)
         else:

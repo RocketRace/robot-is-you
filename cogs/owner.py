@@ -394,7 +394,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                     # bool("") == False, but True for any other string
                     if bool(name) and bool(sprite) and bool(colorRaw) and bool(tiling):
                         # Alternate tile data (initialized with the original)
-                        alts = {name:{"sprite":sprite, "color":color, "tiling":tiling}}
+                        alts = {name:{"sprite":sprite, "color":color, "tiling":tiling, "source":"vanilla"}}
                         # Looks for object replacements in the alternateTiles dict
                         if self.alternateTiles.get(ID) is not None:
                             # Each replacement for the object ID:
@@ -416,7 +416,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                                 if name != altName:
                                     # If the name matches the name of an object already in the alt list
                                     if self.tileColors.get(altName) is None:
-                                        alts[altName] = {"sprite":altSprite, "tiling":altTiling, "color":altColor}
+                                        alts[altName] = {"sprite":altSprite, "tiling":altTiling, "color":altColor, "source":"vanilla"}
                         # Adds each unique name-color pairs to the tileColors dict
                         for key,value in alts.items():
                             self.tileColors[key] = value

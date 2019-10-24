@@ -5,7 +5,8 @@
         "color":[
             "0",
             "3"
-        ]
+        ],
+        "tiling":"-1"
     },
     {
         "name":"text_wrap",
@@ -13,7 +14,8 @@
         "color":[
         "0",
             "3"
-        ]
+        ],
+        "tiling":"-1"
     },
     {
         "name":"text_slant",
@@ -21,7 +23,8 @@
         "color":[
             "0",
             "3"
-        ]
+        ],
+        "tiling":"-1"
     },
     {
         "name":"text_repent",
@@ -29,7 +32,8 @@
         "color":[
             "0",
             "3"
-        ]
+        ],
+        "tiling":"-1"
     },
     {
         "name":"text_portal",
@@ -37,7 +41,8 @@
         "color":[
             "0",
             "3"
-        ]
+        ],
+        "tiling":"-1"
     },
     {
         "name":"text_paradox",
@@ -45,7 +50,8 @@
         "color":[
             "0",
             "3"
-        ]
+        ],
+        "tiling":"-1"
     },
     {
         "name":"text_if",
@@ -53,7 +59,8 @@
         "color":[
             "0",
             "3"
-        ]
+        ],
+        "tiling":"-1"
     },
     {
         "name":"text_find",
@@ -61,7 +68,8 @@
         "color":[
             "0",
             "3"
-        ]
+        ],
+        "tiling":"-1"
     },
     {
         "name":"text_false",
@@ -69,7 +77,8 @@
         "color":[
             "0",
             "3"
-        ]
+        ],
+        "tiling":"-1"
     },
     {
         "name":"text_evil",
@@ -77,7 +86,8 @@
         "color":[
             "0",
             "3"
-        ]
+        ],
+        "tiling":"-1"
     },
     {
         "name":"text_every",
@@ -85,7 +95,8 @@
         "color":[
             "0",
             "3"
-        ]
+        ],
+        "tiling":"-1"
     },
     {
         "name":"text_clickbait",
@@ -93,7 +104,8 @@
         "color":[
             "0",
             "3"
-        ]
+        ],
+        "tiling":"-1"
     },
     {
         "name":"text_caveman",
@@ -101,7 +113,8 @@
         "color":[
             "0",
             "3"
-        ]
+        ],
+        "tiling":"-1"
     },
     {
         "name":"text_blocked",
@@ -109,7 +122,8 @@
         "color":[
             "0",
             "3"
-        ]
+        ],
+        "tiling":"-1"
     },
     {
         "name":"text_active",
@@ -117,7 +131,8 @@
         "color":[
             "0",
             "3"
-        ]
+        ],
+        "tiling":"-1"
     },
     {
         "name":"text_one",
@@ -125,7 +140,8 @@
         "color":[
             "0",
             "3"
-        ]
+        ],
+        "tiling":"-1"
     },
     {
         "name":"text_those",
