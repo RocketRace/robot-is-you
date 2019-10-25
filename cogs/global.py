@@ -161,9 +161,19 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     async def search(self, ctx, *, query: str):
         """
         Searches tiles for rendering from a query.
-        Returns a list of tile names that matche the query.
+        Returns a list of tile names that match the query.
         Can return up to 30 tiles per search.
         Tiles may be used in the `tile` (and subsequently `rule`) commands.
+
+        Queries may contain the following flags to filter results. Multiple flags may be used.
+        * `sprite`: The name of the sprite. Will return only tiles that use that sprite.
+        * `text`: May be `true` or `false`. With `true`, this will only return text tiles.
+        * `source`: The source of the sprite. Valid values for this are `vanilla`, `vanilla-extensions`, `cg5-mods`, `lily-and-patashu-mods`, `patasuhu-redux`, `misc`, and `modded`. Using `modded` will return any non-vanilla tiles.
+        * `color`: The color index of the sprite. Must be two positive integers. Example: `1,2`
+        * `tiling`: The tiling type of the object. This must be either `-1` (non-tiling objects), `0` (directional objects), `1` (tiling objects), `2` (character objects), `3` (directional & animated objects) or `4` (animated objects). 
+
+        Example search command:
+        `search text:true color:0,3 source:modded beam`
         """
         sanitizedQuery = discord.utils.escape_mentions(query)
         # Pattern to match flags in the format (flag):(value)
