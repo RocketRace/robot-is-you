@@ -614,7 +614,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         )
         embed.add_field(name="ID", value=str(guild.id))
         embed.add_field(name="Member Count", value=str(guild.member_count))
-        await webhook.send()
+        await webhook.send(embed)
 
     @commands.Cog.listener()
     async def on_socket_raw_send(self, data):
