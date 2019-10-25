@@ -603,6 +603,18 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         to_remove = [index for index, dt in enumerate(self.resumes) if dt < weekAgo]
         for index in reversed(to_remove):
             del self.identifies[index]
+    
+    @commands.Cog.listener()
+    async def on_guild_goin(self, guild):
+        webhook = await self.bot.fetch_webhook(self.bot.webhookId)
+        embed = discord.Embed(
+            color = self.bot.embedColor,
+            title = "Joined Guild",
+            description = f"Joined {guild.name}."
+        )
+        embed.add_field(name="ID", value=str(guild.id))
+        embed.add_field(name="Member Count", value=str(guild.member_count))
+        await webhook.send()
 
     @commands.Cog.listener()
     async def on_socket_raw_send(self, data):
