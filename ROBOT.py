@@ -71,9 +71,9 @@ async def reloadcog(ctx, cog: str):
         await ctx.send(f"Reloaded extension `{cog}` from `cogs/{cog}.py`.")
 
 def prefix_whitelist(ctx):
-    if ctx.guild:
+    if not ctx.guild:
         return True
-    if ctx.prefix == "+" and ctx.guild.id == 264445053596991498:
+    elif ctx.prefix == "+" and ctx.guild.id == 264445053596991498:
         return False
     return True
 
