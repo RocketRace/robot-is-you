@@ -261,7 +261,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             matches.insert(0, f"Found {results} results using query \"{sanitizedQuery}\":")
         
         # Tidy up our output with this mess
-        content = "\n".join([f"**{x.get('name')}** : {', '.join([f'{k}: `{v}`' for k, v in sorted(x.items(), key=lambda λ: λ[0]) if k != 'name'])}" if not isinstance(x, str) else x for x in [matches[0]] + sorted(matches[1:], key=lambda λ: λ["name"])[:20]])
+        content = "\n".join([f"**{x.get('name')}** : {', '.join([f'{k}: `{v[0]},{v[1]}`' if isinstance(v, list) else f'{k}: `{v}`' for k, v in sorted(x.items(), key=lambda λ: λ[0]) if k != 'name'])}" if not isinstance(x, str) else x for x in [matches[0]] + sorted(matches[1:], key=lambda λ: λ["name"])[:20]])
         await self.bot.send(ctx, content)
     
     @commands.command()
