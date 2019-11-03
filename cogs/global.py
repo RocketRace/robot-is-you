@@ -193,8 +193,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         hasFlags = bool(match)
         
         # Determine which flags to filter with
+        flags = {}
         if hasFlags:
-            flags = []
             if match:
                 flags = dict(re.findall(flagPattern, query)) # Returns "flag":"value" pairs
             # Nasty regex to match words that are not flags
