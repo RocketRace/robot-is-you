@@ -172,26 +172,54 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         * `color`: The color index of the sprite. Must be two positive integers. Example: `1,2`
         * `tiling`: The tiling type of the object. This must be either `-1` (non-tiling objects), `0` (directional objects), `1` (tiling objects), `2` (character objects), `3` (directional & animated objects) or `4` (animated objects). 
 
-        Example search command:
-        `search text:true color:0,3 source:modded beam`
+        You may use these additional flags to navigate the output:
+        * `page`: Which page of output you wish to view.
+        * `sort`: Which value to sort by. Defaults to `name`.
+        * `reverse`: Whether or not the output should be in descending order or not. This may be `true` or `false`.
+
+        Example search commands:
+        `search baba`
+        `search text:false source:vanilla sta`
+        `search source:modded sort:color page:4`
+        `search text:true color:0,3 reverse:true`
         """
         sanitizedQuery = discord.utils.escape_mentions(query)
         # Pattern to match flags in the format (flag):(value)
-        pattern = r"([\d\w_]+):([\d\w,-_]+)"
-        match = re.search(pattern, query)
+        flagPattern = r"([\d\w_]+):([\d\w,-_]+)"
+        match = re.search(flagPattern, query)
         plainQuery = ""
 
         # Whether or not to use simple string matching
         hasFlags = bool(match)
-
+        
+        # Determine which flags to filter with
         if hasFlags:
             flags = []
             if match:
-                flags = re.findall(pattern, query)
+                flags = dict(re.findall(flagPattern, query)) # Returns "flag":"value" pairs
             # Nasty regex to match words that are not flags
-            pattern = r"(?<![:\w\d,-])([\w\d,_]+)(?![:\d\w,-])"
-            plainMatch = re.findall(pattern, query)
+            nonFlagPattern = r"(?<![:\w\d,-])([\w\d,_]+)(?![:\d\w,-])"
+            plainMatch = re.findall(nonFlagPattern, query)
             plainQuery = " ".join(plainMatch)
+        
+        # Which value to sort output by
+        sortBy = "name"
+        secondarySortBy = "name" # This is constant
+        if flags.get("sort") is not None:
+            sortBy = flags["sort"]
+            flags.pop("sort")
+        
+        reverse = False
+        reverseFlag = flags.get("reverse")
+        if reverseFlag is not None and reverseFlag.lower() == "true":
+            reverse = True
+            flags.pop("reverse")
+
+        page = 0
+        pageFlag = flags.get("page")
+        if pageFlag is not None and pageFlag.isnumeric():
+            page = int(flags["page"]) - 1
+            flags.pop("page")
 
         # How many results will be shown
         limit = 20
@@ -203,9 +231,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         for name,tile in data.items():
             if hasFlags:
                 # Checks if the object matches all the flag parameters
-                passed = {f:False for f,v in flags}
+                passed = {f:False for f,v in flags.items()}
                 # Process flags for one object
-                for flag,value in flags:
+                for flag,value in flags.items():
                     # Object name starts with "text_"
                     if flag.lower() == "text":
                         
@@ -236,7 +264,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                             passed[flag] = True
                 
                 # If we pass all flags (and there are more than 0 passed flags)
-                if len(flags) != 0 and all(passed.values()):
+                if hasFlags and all(passed.values()):
                     if plainQuery in name:
                         results += 1
                         # Add our object to our results, and append its name (originally a key)
@@ -251,17 +279,32 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     obj = tile
                     obj["name"] = name
                     matches.append(obj)
+
+        # Determine our output pagination
+        firstResult = page * limit
+        lastResult = (page + 1) * limit
+        # Some sanitization to avoid negative indices
+        if firstResult < 0: 
+            firstResult = 0
+        if lastResult < 0:
+            lastResult = limit
+        # If we try to go over the limit, just show the last page
+        lastPage = results // limit
+        if firstResult > results:
+            firstResult = lastPage
+        if lastResult > results:
+            lastResult = results - 1
         
         # What message to prefix our output with
         if results == 0:
             matches.insert(0, f"Found no results for \"{sanitizedQuery}\".")
         elif results > limit:
-            matches.insert(0, f"Found {results} results using query \"{sanitizedQuery}\". Showing only {limit}:")
+            matches.insert(0, f"Found {results} results using query \"{sanitizedQuery}\". Showing page {page + 1} of {lastPage}:")
         else:
             matches.insert(0, f"Found {results} results using query \"{sanitizedQuery}\":")
         
         # Tidy up our output with this mess
-        content = "\n".join([f"**{x.get('name')}** : {', '.join([f'{k}: `{v[0]},{v[1]}`' if isinstance(v, list) else f'{k}: `{v}`' for k, v in sorted(x.items(), key=lambda λ: λ[0]) if k != 'name'])}" if not isinstance(x, str) else x for x in [matches[0]] + sorted(matches[1:], key=lambda λ: λ["name"])[:20]])
+        content = "\n".join([f"**{x.get('name')}** : {', '.join([f'{k}: `{v[0]},{v[1]}`' if isinstance(v, list) else f'{k}: `{v}`' for k, v in sorted(x.items(), key=lambda λ: λ[0]) if k != 'name'])}" if not isinstance(x, str) else x for x in [matches[0]] + sorted(matches[1:], key=lambda λ: (λ[sortBy], λ[secondarySortBy]), reverse=reverse)[firstResult:lastResult + 1]])
         await self.bot.send(ctx, content)
     
     @commands.command()
