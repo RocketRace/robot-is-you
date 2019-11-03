@@ -17,5 +17,7 @@
     "If you put any spoiler tags (like ||this||) in your input for the `tile` and `rule` commands, the output image will be marked as a spoiler.",
     "Rendered level tiles will join together with any adjacent tileable objects, like lines. For an example, try to render:\n`line level line`",
     "You can render the in-game cursor like any other object!",
-    "You can read more information on commands under their entry in the `help` command. For more specific help, use the `help <command name>` subcommand."
+    "You can read more information on commands under their entry in the `help` command. For more specific help, use the `help <command name>` subcommand.",
+    "You can view multiple pages of search results using the `page` flag. See `help search` for more...",
+    "You can customize and filter search results using flags. These are shown in `help search`."
 ]
