@@ -1,9 +1,9 @@
 Add Sword, Trident, Rain
-    Increase tile limit to 64 (from 50)
-    Add `tip` command
-    Add `patchnotes` command
-    Render regular tiles in `rule` command with `tile_` prefix
-    Add new `text_turn` sprite
-    Add new `red`, `blue` and `hide` palettes
-    Improve `search` command
-    
+Increase tile limit to 64 (from 50)
+Add `tip` command
+Add `patchnotes` command
+Render regular tiles in `rule` command with `tile_` prefix
+Add new `text_turn` sprite
+Add new `red`, `blue` and `hide` palettes
+Implement flags to filter output of `search` command
+Add Ant, Border, Bulb
