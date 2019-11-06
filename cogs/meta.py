@@ -117,9 +117,8 @@ class MetaCog(commands.Cog, name="Other Commands"):
         Most recent major bot updates.
         Visit the github page (in the `about` command) for a full list of commits.
         '''
-        with open("patchnotes.txt") as patchnotesFile:
-            content = patchnotesFile.read()
-            await self.bot.send(ctx, "Recent updates:" + content)
+        with open("patchnotes.txt") as fp:
+            await self.bot.send(ctx, "\n".join(["Recent Updates:"] + list(reversed(fp.read().splitlines()))))
 
     
     @commands.command()
