@@ -112,38 +112,14 @@ class MetaCog(commands.Cog, name="Other Commands"):
 
     @commands.command()
     @commands.cooldown(1, 10, commands.BucketType.channel)
-    async def patchnotes(self, ctx, offset: int = 0):
+    async def patchnotes(self, ctx):
         '''
         Most recent major bot updates.
         Visit the github page (in the `about` command) for a full list of commits.
         '''
-        if offset < 0:
-            return await self.bot.send(ctx, "⚠️ Offset must be positive.")
-        with open("patchnotes.txt") as logfile:
-            limit = 5
-            discarded = offset
-
-            # Gets the relevant commits. Discards any that are too old.
-            included = []
-            line = logfile.readline()
-            while line != "":
-                included.append(line[:-1])
-                line = logfile.readline() # Full commit data
-                # Gets the 10 most recent commits, plus the provided commit offset
-                if len(included) > limit + offset: 
-                    included.pop(0)
-            
-            # Discards the commits within the provided offset range, 
-            # leaving only the 10 most recent commits after the <offset>th one
-            included.reverse()
-            discarded = len(included[limit:])
-            included = included[:limit]
-            
-            included.insert(0, "Recent Changes" + (f" ({discarded} offset) " if discarded else "") + ":")
-
-            # Parses the commit information
-            patches = "\n".join(included)
-            await self.bot.send(ctx, patches)
+        with open("patchnotes.txt") as patchnotesFile:
+            content = patchnotesFile.read()
+            await self.bot.send(ctx, "Recent updates:" + content)
 
     
     @commands.command()

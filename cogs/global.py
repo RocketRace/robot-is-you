@@ -342,7 +342,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
     # Generates an animated gif of the tiles provided, using (TODO) the default palette
     @commands.command(aliases=["rule"])
-    @commands.cooldown(2, 10, type=commands.BucketType.channel)
+    @commands.cooldown(4, 10, type=commands.BucketType.channel)
     async def tile(self, ctx, *, palette: str, content: str = ""):
         """
         Renders the tiles provided, with many options. `help tile` for more...
