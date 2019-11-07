@@ -299,7 +299,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         if results == 0:
             matches.insert(0, f"Found no results for \"{sanitizedQuery}\".")
         elif results > limit:
-            matches.insert(0, f"Found {results} results using query \"{sanitizedQuery}\". Showing page {page + 1} of {lastPage}:")
+            matches.insert(0, f"Found {results} results using query \"{sanitizedQuery}\". Showing page {page + 1} of {lastPage + 1}:")
         else:
             matches.insert(0, f"Found {results} results using query \"{sanitizedQuery}\":")
         
