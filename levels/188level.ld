@@ -11,4 +11,5 @@ paletteroot=1
 customparent=
 specials=0
 [tiles]
-changed=
+changed=object070,
+object070_layer=13

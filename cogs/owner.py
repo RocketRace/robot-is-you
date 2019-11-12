@@ -75,9 +75,15 @@ def getSpriteVariants(sprite, tiling):
 
     if tiling == "4": # Animated, non-directional
         spriteNumbers = [0,1,2,3] # Animation
-    if tiling == "3": # Basically for belts only (anim + dirs)
+    if tiling == "3" and sprite != "goose": # Basically for belts only (anim + dirs)
         spriteNumbers = [0,1,2,3, # Animation right
                         8,9,10,11, # Animation up
+                        16,17,18,19, # Animation left
+                        24,25,26,27] # Animation down
+
+    if tiling == "3" and sprite == "goose": # Basically for belts only (anim + dirs)
+        spriteNumbers = [0,1,2,3, # Animation right
+                        # Goose has no up animations
                         16,17,18,19, # Animation left
                         24,25,26,27] # Animation down
 
