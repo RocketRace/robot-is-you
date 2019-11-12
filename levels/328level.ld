@@ -13,7 +13,7 @@ specials=0
 music=cave
 particles=sparks
 [tiles]
-changed=object055,object043,object067,object101,object018,object102,object079,
+changed=object055,object043,object067,object101,object102,object079,
 object055_image=bat
 object055_name=bat
 object055_tiling=4
@@ -29,7 +29,6 @@ object067_colour=2,0
 object101_image=cliff
 object101_name=cliff
 object101_colour=6,1
-object018_colour=1,0
 object102_image=text_cliff
 object102_name=text_cliff
 object102_activecolour=6,2

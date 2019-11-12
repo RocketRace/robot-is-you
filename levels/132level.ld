@@ -13,5 +13,13 @@ specials=0
 music=forest
 particles=pollen
 [tiles]
-changed=object110,
+changed=object022,object023,object000,object020,object110,
+object022_activecolour=2,4
+object022_colour=6,1
+object023_activecolour=0,3
+object023_colour=2,4
+object000_activecolour=0,3
+object000_colour=0,3
+object020_activecolour=4,1
+object020_colour=4,0
 object110_colour=1,0

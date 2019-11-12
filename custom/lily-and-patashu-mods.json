@@ -477,15 +477,6 @@
         "tiling":"-1"
    },
    {
-      "sprite":"text_still",
-      "name":"text_still",
-      "color":[
-         "0",
-         "3"
-      ],
-        "tiling":"-1"
-   },
-   {
       "sprite":"text_flinch",
       "name":"text_flinch",
       "color":[

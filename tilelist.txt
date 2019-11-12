@@ -50,7 +50,6 @@ text_all
 text_right
 text_minusthree
 text_cloud
-text_sha
 text_o
 text_pillar
 text_g
@@ -122,6 +121,7 @@ text_minusten
 text_you
 text_not
 text_sink
+text_turn
 love
 door
 text_hand
@@ -143,6 +143,7 @@ ghost
 bug
 letter_w
 text_defeat
+text_still
 skull
 grass
 text_skull
@@ -150,6 +151,7 @@ text_love
 text_door
 text_text
 text_sleep
+text_chill
 text_ten
 text_dust
 text_blue
@@ -171,10 +173,8 @@ text_spike
 belt
 text_make
 text_fall
-text_powered
 text_seven
 flower
-cursor
 violet
 text_fence
 text_h
@@ -185,6 +185,7 @@ text_me
 text_swap
 text_fourteen
 text_pull
+text_deturn
 text_on
 text_unused
 moon
@@ -195,7 +196,6 @@ blossom
 wait
 text_ghost
 text_bug
-text_ha
 fence
 hedge
 pipe
@@ -218,9 +218,9 @@ text_b
 text_wonder
 text_nine
 text_eat
+text_mimic
 text_statue
 text_robot
-text_sa
 statue
 robot
 movehelp
@@ -230,6 +230,7 @@ line
 text_fear
 text_sad
 text_one
+cursor
 text_yoda
 text_wrap
 text_slant
@@ -301,7 +302,6 @@ text_unwin
 text_rarely
 text_eventurn
 text_reset_odd
-text_still
 text_flinch
 text_touch
 text_twist
@@ -325,13 +325,18 @@ text_wug
 sword
 text_sword
 trident
+ant
+text_ant
+bulb
+text_bulb
+border
+text_border
 text_slip
 text_likes
 text_hates
 text_sidekick
 text_lazy
 text_lean
-text_turn
 text_spin
 text_moonwalk
 text_drunk
@@ -359,7 +364,7 @@ text_idle
 text_without
 text_play
 text_power
-text_chill
+text_powered
 error
 what
 cup
@@ -403,3 +408,4 @@ smiley
 default
 rain
 text_rain
+goose
