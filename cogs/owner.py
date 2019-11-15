@@ -455,7 +455,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                     self.tileColors[name] = rewritten
 
         with open("tilelist.txt", "wt") as allTiles:
-            allTiles.write("\n".join([tile for tile in self.tileColors]))
+            allTiles.write("\n".join(sorted([tile for tile in self.tileColors])))
 
         # Dumps the gathered data to tilecolors.json
         with open("tilecolors.json", "wt") as emoteFile:
