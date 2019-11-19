@@ -480,18 +480,24 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 tile = segments[0]
                                 variant = segments[1]
 
-                            # Shorthand
-                            if variant == "right":
+                            # Shorthands for sprite variants
+                            if variant in ["r", "right"]:
                                 variant = "0"
-                            elif variant == "up":
+                            elif variant in ["u", "up"]:
                                 variant = "8"
-                            elif variant == "left":
+                            elif variant in ["l", "left"]:
                                 variant = "16"
-                            elif variant == "down":
+                            elif variant in ["d", "down"]:
                                 variant = "24"
-                            elif variant == "sleep":
+                            # Sleep variants
+                            elif variant in ["s", "rs", "sleep"]: 
                                 variant = "31"
-                            
+                            elif variant in ["us"]:
+                                variant = "7"
+                            elif variant in ["ls"]:
+                                variant = "15"
+                            elif variant in ["ds"]:
+                                variant = "23"
                             
                             # Is this a tiling object (e.g. wall, water)?
                             tileData = self.bot.get_cog("Admin").tileColors.get(tile)
@@ -547,7 +553,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 # Each stack
                 for stack in row:
                     # Each word
-                    for word in stack:
+                    for i, word in enumerate(stack): 
                         if word != "-":
                             tile = word
                             variant = "0"
@@ -563,7 +569,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     x = word
                                 # Is the variant faulty?
                                 if isfile(f"color/{pal}/{tile}-{0}-0-.png"):
-                                    return await self.bot.send(ctx, f"⚠️ The sprite variant \"{variant}\"for \"{tile}\" doesn't seem to be valid.")
+                                    # return await self.bot.send(ctx, f"⚠️ The sprite variant \"{variant}\"for \"{tile}\" doesn't seem to be valid.")
+                                    # Replace bad variants with the default sprite 
+                                    stack[i] = "default:0" 
+                                    break
                                 # Does a text counterpart exist?
                                 suggestion = "text_" + tile
                                 if isfile(f"color/{pal}/{suggestion}-{variant}-0-.png"):

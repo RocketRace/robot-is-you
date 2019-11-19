@@ -7,3 +7,4 @@ Add new `text_turn` sprite
 Add new `red`, `blue` and `hide` palettes
 Implement flags to filter output of `search` command
 Add Ant, Border, Bulb
+Add Dune, Cactus, Sand, Hawke
