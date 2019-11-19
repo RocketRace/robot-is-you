@@ -129,7 +129,7 @@
          "0"
      ]
  },
- {
+  {
     "name":"text_border",
     "sprite":"text_border",
     "tiling":"-1",
@@ -155,5 +155,77 @@
           "0",
           "3"
       ]
-    }
+    },
+  {
+    "name":"sand",
+    "sprite":"sand",
+    "tiling":"1",
+    "color":[
+        "2",
+        "4"
+    ]
+  },
+  {
+    "name":"text_sand",
+    "sprite":"text_sand",
+    "tiling":"-1",
+    "color":[
+        "2",
+        "4"
+    ]
+  },
+  {
+    "name":"cactus",
+    "sprite":"cactus",
+    "tiling":"-1",
+    "color":[
+        "5",
+        "2"
+    ]
+  },
+  {
+    "name":"text_cactus",
+    "sprite":"text_cactus",
+    "tiling":"-1",
+    "color":[
+        "5",
+        "2"
+    ]
+  },
+  {
+    "name":"dune",
+    "sprite":"dune",
+    "tiling":"-1",
+    "color":[
+        "6",
+        "2"
+    ]
+  },
+  {
+    "name":"text_dune",
+    "sprite":"text_dune",
+    "tiling":"-1",
+    "color":[
+        "6",
+        "2"
+    ]
+  },
+  {
+    "name":"hawke",
+    "sprite":"hawke",
+    "tiling":"0",
+    "color":[
+        "0",
+        "3"
+    ]
+  },
+  {
+    "name":"text_hawke",
+    "sprite":"text_hawke",
+    "tiling":"-1",
+    "color":[
+        "1",
+        "4"
+    ]
+  }
 ]
