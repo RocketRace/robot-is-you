@@ -128,12 +128,32 @@ def insert_returns(body):
     # for with blocks, again we insert returns into the body
     if isinstance(body[-1], ast.With):
         insert_returns(body[-1].body)
+
+def load_with_datetime(pairs, format='%Y-%m-%dT%H:%M:%S.%f'):
+    """Load json with dates"""
+    d = {}
+    for k, l in pairs:
+        if isinstance(l, list):
+            t = []
+            for v in l:
+                try:
+                    x = datetime.strptime(v, format)
+                except ValueError:
+                    x = v
+                finally:
+                    t.append(x)
+            d[k] = t
+        else:
+            d[k] = l             
+    return d
     
 class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     def __init__(self, bot):
         self.bot = bot
         self.tileColors = {}
         self.alternateTiles = {}
+        self.identifies = []
+        self.resumes = []
         # Loads the tile colors, if it exists
         colorsFile = "tilecolors.json"
         if stat(colorsFile).st_size != 0:
@@ -142,11 +162,17 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         altFile = "alternatetiles.json"
         if stat(altFile).st_size != 0:
             self.alternateTiles = json.load(open(altFile))
-
-        self.identifies = []
-        self.resumes = []
+        # Loads debug data, if any
+        debugFile = "debug.json"
+        if stat(debugFile).st_size != 0:
+            debugData = json.load(open(debugFile), object_pairs_hook=load_with_datetime)
+            self.identifies = debugData.get("identifies")
+            self.resumes = debugData.get("resumes")
+        
         # Are assets loading?
         self.bot.loading = False
+
+    
 
     def generateTileSprites(self, tile, obj, palettes, colors):
         # Fetches the tile data
@@ -193,9 +219,13 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.command()
     @commands.is_owner()
     async def debug(self, ctx):
+        '''
+        Gives some debug stats.
+        '''
         yesterday = datetime.utcnow() - timedelta(days=1)
-        identifiesDay = sum([1 for event in self.identifies if event > yesterday])
-        resumesDay = sum([1 for event in self.resumes if event > yesterday])
+        f = "%Y-%m-%dT%H:%M:%S.%f"
+        identifiesDay = sum([1 for event in self.identifies if datetime.strptime(event, f) > yesterday])
+        resumesDay = sum([1 for event in self.resumes if datetime.strptime(event, f) > yesterday])
 
         globalRateLimit = not self.bot.http._global_over.is_set()
 
@@ -272,6 +302,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.command()
     @commands.is_owner()
     async def loadchanges(self, ctx):
+        '''
+        Scrapes additional tile data from level metadata files.
+        '''
         self.bot.loading = True
         
         self.alternateTiles = {}
@@ -351,6 +384,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.command()
     @commands.is_owner()
     async def loadcolors(self, ctx):
+        '''
+        Loads initial tile data from values.lua.
+        '''
         # Reads values.lua and scrapes the tile data from there
 
         self.tileColors = {}
@@ -464,10 +500,32 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         await ctx.send("Done.")
 
         self.bot.loading = False
+    
+    @commands.command()
+    @commands.is_owner()
+    async def hidden(self, ctx):
+        '''
+        Lists all hidden commands.
+        '''
+        cmds = "\n".join([cmd.name for cmd in self.bot.commands if cmd.hidden])
+        await self.bot.send(ctx, f"All hidden commands:\n{cmds}")
+
+
+    @commands.command()
+    @commands.is_owner()
+    async def doc(self, ctx, command):
+        '''
+        Check a command's doc.
+        '''
+        description = self.bot.get_command(command).help
+        await self.bot.send(ctx, f"Command doc for {command}:\n{description}")
 
     @commands.command()
     @commands.is_owner()
     async def loadtile(self, ctx, tile, palette):
+        '''
+        Load a single tile, given a single palette (or alternatively 'all' for all palettes)
+        '''
         self.bot.loading = True
         # Some checks
         if self.tileColors.get(tile) is None:
@@ -499,6 +557,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.command()
     @commands.is_owner()
     async def loadpalettes(self, ctx, args):
+        '''
+        Loads all tile sprites for the palettes given.
+        '''
         
         self.bot.loading = True
 
@@ -540,6 +601,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.command()
     @commands.is_owner()
     async def pull(self, ctx):
+        '''
+        Update the bot from the master branch of github.
+        '''
         await ctx.send("Pulling the new version from github...")
         puller = Popen(["git", "pull"], cwd="/home/pi/Desktop/robot-private/", stdout=PIPE, stderr=STDOUT, universal_newlines=True)
         process = True
@@ -550,7 +614,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             returncode = puller.poll()
             i += 0.5
             if returncode is None:
-                if i > 30:
+                if i > 120:
                     process = False
                 else:
                     await asyncio.sleep(0.5)
@@ -568,6 +632,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.command()
     @commands.is_owner()
     async def benchmark(self, ctx, command, *args):
+        '''
+        Runs a command, given arguments, and measures the time taken for it to complete.
+        '''
         # Tries to match each argument provided with the command parameters
         functionParams = self.bot.get_command(command).clean_params.keys()
         kwargs = {}
@@ -581,6 +648,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.command()
     @commands.is_owner()
     async def getparams(self, ctx, command):
+        '''
+        Returns the parameters / arguments of a given command
+        '''
         # Returns the parameters of a given command
         params = self.bot.get_command(command).clean_params
         await self.bot.send(ctx, f"Parameters for command {command}:\n{params}")
@@ -588,6 +658,10 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.command()
     @commands.is_owner()
     async def loadall(self, ctx):
+        '''
+        Reloads absolutely everything. (tile data, tile sprites)
+        Avoid using this, as it takes minutes to complete.
+        '''
         # Sends some feedback messages
 
         await ctx.send("Loading objects...")
@@ -600,6 +674,14 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         await ctx.invoke(self.bot.get_command("loadpalettes"), palettes)
         await ctx.send(f"{ctx.author.mention} Done.")
 
+    def updateDebug(self):
+        # Updates the debug file
+        debugFile = "debug.json"
+        debugData = {"identifies":None,"resumes":None}
+        debugData["identifies"] = self.identifies
+        debugData["resumes"] = self.resumes
+        json.dump(debugData, open(debugFile, "w"), indent=2, default=lambda obj:obj.isoformat() if hasattr(obj, 'isoformat') else obj)
+
     def _clear_gateway_data(self):
         weekAgo = datetime.utcnow() - timedelta(days=7)
         to_remove = [index for index, dt in enumerate(self.resumes) if dt < weekAgo]
@@ -609,9 +691,12 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         to_remove = [index for index, dt in enumerate(self.resumes) if dt < weekAgo]
         for index in reversed(to_remove):
             del self.identifies[index]
+        
+        # update debug data file
+        self.updateDebug()
     
     @commands.Cog.listener()
-    async def on_guild_goin(self, guild):
+    async def on_guild_join(self, guild):
         webhook = await self.bot.fetch_webhook(self.bot.webhookId)
         embed = discord.Embed(
             color = self.bot.embedColor,
@@ -630,12 +715,15 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
         back_to_json = json.loads(data)
         if back_to_json['op'] == 2:
-            self.identifies.append(datetime.utcnow())
+            self.identifies.append(datetime.utcnow().isoformat())
         else:
-            self.resumes.append(datetime.utcnow())
+            self.resumes.append(datetime.utcnow().isoformat())
 
         # don't want to permanently grow memory
         self._clear_gateway_data()   
+
+        # update debug data file
+        self.updateDebug()
 
 def setup(bot):
     bot.add_cog(OwnerCog(bot))
