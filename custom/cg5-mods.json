@@ -135,15 +135,6 @@
         "tiling":"-1"
     },
     {
-        "name":"text_one",
-        "sprite":"text_1",
-        "color":[
-            "0",
-            "3"
-        ],
-        "tiling":"-1"
-    },
-    {
         "name":"text_those",
         "sprite":"text_those",
         "tiling":"2",
