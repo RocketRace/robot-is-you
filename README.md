@@ -56,8 +56,6 @@ Tile colors are gathered from the in-game palette images, from a top-level folde
 
 Tile sprites are taken from `sprites/[source]/`, where `source` is `vanilla` for regular tiles and otherwise specified for custom tiles. Sprites should be in the same format that they are stored in Baba Is You.
 
-`empty.png`, a fully transparent 24x24 image is used for blank tiles.
-
 ~
 
 *[Files/directories empty by default]*
