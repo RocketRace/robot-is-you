@@ -139,6 +139,24 @@
     ]
   },
   {
+     "name":"oatmeal",
+     "sprite":"oatmeal",
+     "tiling":"-1",
+     "color":[
+         "0",
+         "3"
+     ]
+   },
+   {
+      "name":"text_oatmeal",
+      "sprite":"text_oatmeal",
+      "tiling":"-1",
+      "color":[
+          "0",
+          "3"
+      ]
+    },
+  {
     "name":"sand",
     "sprite":"sand",
     "tiling":"1",
