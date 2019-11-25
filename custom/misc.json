@@ -143,8 +143,8 @@
      "sprite":"oatmeal",
      "tiling":"-1",
      "color":[
-         "0",
-         "3"
+         "6",
+         "2"
      ]
    },
    {
@@ -152,8 +152,8 @@
       "sprite":"text_oatmeal",
       "tiling":"-1",
       "color":[
-          "0",
-          "3"
+          "6",
+          "2"
       ]
     },
   {
