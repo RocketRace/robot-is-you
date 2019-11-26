@@ -172,8 +172,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         # Are assets loading?
         self.bot.loading = False
 
-    
-
     def generateTileSprites(self, tile, obj, palettes, colors):
         # Fetches the tile data
         sprite = obj["sprite"]
