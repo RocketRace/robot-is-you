@@ -18,12 +18,28 @@ def flatten(items, seqtypes=(list, tuple)):
     return items
 
 # Takes a list of tile names and generates a gif with the associated sprites
-def magickImages(wordGrid, width, height, palette):
+def magickImages(wordGrid, width, height, *, palette="default", images=None, imageSource=None):
     frames = []
     if palette == "hide":
-        renderFrame = Image.new("RGBA", (48 * width, 48 * height))
-        for _ in range(3):
-            frames.append(renderFrame)
+        if images is None:
+            # Don't use a background image
+            renderFrame = Image.new("RGBA", (48 * width, 48 * height))
+            for _ in range(3):
+                frames.append(renderFrame)
+        else:
+            for i in range(3):
+                # Use a background image
+                imageFrame = Image.open(f"images/{imageSource}/{images[0]}_{i}.png")
+                # In case multiple background images are used (i.e. baba's world map)
+                if len(images) > 1:
+                    for image in images[1]:
+                        overlap = Image.open(f"images/{imageSource}/{image}_{i}.png")
+                        mask = overlap.getchannel("A")
+                        imageFrame.paste(overlap, mask=mask)
+                # Back on track
+                frames.append(imageFrame)
+
+        
         frames[0].save("renders/render.gif", "GIF",
             save_all=True,
             append_images=frames[1:],
@@ -92,13 +108,22 @@ def magickImages(wordGrid, width, height, palette):
                         diff = size[0] - 24
                         if diff > rightPad:
                             rightPad = diff
-    for frame in imgs:
+    
+    for i,frame in enumerate(imgs):
         # Get new image dimensions, with appropriate padding
         totalWidth = len(frame[0]) * 24 + leftPad + rightPad 
         totalHeight = len(frame) * 24 + upPad + downPad 
 
         # Montage image
-        renderFrame = Image.new("RGBA", (totalWidth, totalHeight))
+        if images is None or imageSource is None:
+            renderFrame = Image.new("RGBA", (totalWidth, totalHeight))
+        else: 
+            renderFrame = Image.new("RGBA", (totalWidth, totalHeight))
+            # for loop in case multiple background images are used (i.e. baba's world map)
+            for image in images:
+                overlap = Image.open(f"images/{imageSource}/{image}_{i + 1}.png")
+                mask = overlap.getchannel("A")
+                renderFrame.paste(overlap, box=(24,24), mask=mask)
 
         # Pastes each image onto the image
         # For each row
@@ -144,6 +169,102 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     # Check if the bot is loading
     async def cog_check(self, ctx):
         return not self.bot.loading
+
+    def handleVariants(self, grid):
+        '''
+        Appends variants to tiles in a grid.
+        Example:
+        [[["baba", "keke:left"], ["flag:0"]], [["wall:0"], ["wall"]]]
+        -> [[["baba:0", "keke:16"], ["flag:0"]], [["wall:1"], ["wall:4"]]]
+        Explanation:
+        * No variant -> :0
+        * Shortcut variant -> The associated variant
+        * Given variant -> untouched
+        * Anything for a tiling object (given or not) -> variants generated according to adjacent tiles
+        '''
+
+        width = len(grid[0])
+        height = len(grid)
+
+        cloneGrid = [[[word for word in stack] for stack in row] for row in grid]
+        for y, row in enumerate(cloneGrid):
+            for x, stack in enumerate(row):
+                for z, word in enumerate(stack):
+                    if word != "-":
+                        tile = word
+                        variant = "0"
+                        if ":" in word:
+                            segments = word.split(":")
+                            tile = segments[0]
+                            variant = segments[1]
+
+                        # Shorthands for sprite variants
+                        if variant in ["r", "right"]:
+                            variant = "0"
+                        elif variant in ["u", "up"]:
+                            variant = "8"
+                        elif variant in ["l", "left"]:
+                            variant = "16"
+                        elif variant in ["d", "down"]:
+                            variant = "24"
+                        # Sleep variants
+                        elif variant in ["s", "rs", "sleep"]: 
+                            variant = "31"
+                        elif variant in ["us"]:
+                            variant = "7"
+                        elif variant in ["ls"]:
+                            variant = "15"
+                        elif variant in ["ds"]:
+                            variant = "23"
+                        
+                        # Is this a tiling object (e.g. wall, water)?
+                        tileData = self.bot.get_cog("Admin").tileColors.get(tile)
+                        if tileData is not None:
+                            if tileData.get("tiling") is not None:
+                                if tileData["tiling"] == "1":
+
+                                    #  The final variation stace of the tile
+                                    variant = 0
+
+                                    # Tiles that join together
+                                    def doesTile(stack):
+                                        tileable = ["level", tile]
+                                        for t in tileable:
+                                            if t in stack:
+                                                return True
+                                        return False
+
+                                    # Is there the same tile adjacent right?
+                                    if x != width - 1:
+                                        # The tiles right of this (with variants stripped)
+                                        adjacentRight = [t.split(":")[0] for t in cloneGrid[y][x + 1]]
+                                        if doesTile(adjacentRight):
+                                            variant += 1
+
+                                    # Is there the same tile adjacent above?
+                                    if y != 0:
+                                        adjacentUp = [t.split(":")[0] for t in cloneGrid[y - 1][x]]
+                                        if doesTile(adjacentUp):
+                                            variant += 2
+
+                                    # Is there the same tile adjacent left?
+                                    if x != 0:
+                                        adjacentLeft = [t.split(":")[0] for t in cloneGrid[y][x - 1]]
+                                        if doesTile(adjacentLeft):
+                                            variant += 4
+
+                                    # Is there the same tile adjacent below?
+                                    if y != height - 1:
+                                        adjacentDown = [t.split(":")[0] for t in cloneGrid[y + 1][x]]
+                                        if doesTile(adjacentDown):
+                                            variant += 8
+                                    
+                                    # Stringify
+                                    variant = str(variant)
+
+                        # Finally, append the variant to the grid
+                        grid[y][x][z] = tile + ":" + variant
+        return grid
 
     @commands.command(hidden=True)
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
@@ -340,7 +461,16 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 msg.append(palette[:-4])
         await self.bot.send(ctx, "\n".join(msg))
 
-    # Generates an animated gif of the tiles provided, using (TODO) the default palette
+    @commands.command()
+    @commands.is_owner()
+    async def testing(self, ctx):
+        print("ha")
+        x = load(open("test.json"))
+        x = [[["-" if item == "-" else item + ":0" for item in stack] for stack in row] for row in x]
+        magickImages(x, 35, 20, palette="default", imageSource="vanilla", images=["island", "island_decor"])
+        await self.bot.send(ctx, "welp\nlooks like I did it")
+
+    # Generates an animated gif of the tiles provided, using the default palette
     @commands.command(aliases=["rule"])
     @commands.cooldown(4, 10, type=commands.BucketType.channel)
     async def tile(self, ctx, *, palette: str, content: str = ""):
@@ -468,85 +598,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             # Throws an exception which sends an error message if a word is not found.
             
             # Appends ":0" to sprites without specified variants, and sets (& overrides) the suffix for tiled objects
-            cloneGrid = [[[word for word in stack] for stack in row] for row in wordGrid]
-            for y, row in enumerate(cloneGrid):
-                for x, stack in enumerate(row):
-                    for z, word in enumerate(stack):
-                        if word != "-":
-                            tile = word
-                            variant = "0"
-                            if ":" in word:
-                                segments = word.split(":")
-                                tile = segments[0]
-                                variant = segments[1]
-
-                            # Shorthands for sprite variants
-                            if variant in ["r", "right"]:
-                                variant = "0"
-                            elif variant in ["u", "up"]:
-                                variant = "8"
-                            elif variant in ["l", "left"]:
-                                variant = "16"
-                            elif variant in ["d", "down"]:
-                                variant = "24"
-                            # Sleep variants
-                            elif variant in ["s", "rs", "sleep"]: 
-                                variant = "31"
-                            elif variant in ["us"]:
-                                variant = "7"
-                            elif variant in ["ls"]:
-                                variant = "15"
-                            elif variant in ["ds"]:
-                                variant = "23"
-                            
-                            # Is this a tiling object (e.g. wall, water)?
-                            tileData = self.bot.get_cog("Admin").tileColors.get(tile)
-                            if tileData is not None:
-                                if tileData.get("tiling") is not None:
-                                    if tileData["tiling"] == "1":
-
-                                        #  The final variation stace of the tile
-                                        variant = 0
-
-                                        # Tiles that join together
-                                        def doesTile(stack):
-                                            tileable = ["level", tile]
-                                            for t in tileable:
-                                                if t in stack:
-                                                    return True
-                                            return False
-
-                                        # Is there the same tile adjacent right?
-                                        if x != width - 1:
-                                            # The tiles right of this (with variants stripped)
-                                            adjacentRight = [t.split(":")[0] for t in cloneGrid[y][x + 1]]
-                                            if doesTile(adjacentRight):
-                                                variant += 1
-
-                                        # Is there the same tile adjacent above?
-                                        if y != 0:
-                                            adjacentUp = [t.split(":")[0] for t in cloneGrid[y - 1][x]]
-                                            if doesTile(adjacentUp):
-                                                variant += 2
-
-                                        # Is there the same tile adjacent left?
-                                        if x != 0:
-                                            adjacentLeft = [t.split(":")[0] for t in cloneGrid[y][x - 1]]
-                                            if doesTile(adjacentLeft):
-                                                variant += 4
-
-                                        # Is there the same tile adjacent below?
-                                        if y != height - 1:
-                                            adjacentDown = [t.split(":")[0] for t in cloneGrid[y + 1][x]]
-                                            if doesTile(adjacentDown):
-                                                variant += 8
-                                        
-                                        # Stringify
-                                        variant = str(variant)
-
-                            # Finally, append the variant to the grid
-                            wordGrid[y][x][z] = tile + ":" + variant
-            del cloneGrid
+            wordGrid = self.handleVariants(wordGrid)
 
             # Each row
             for row in wordGrid:
@@ -585,7 +637,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{x}\".")     
 
             # Merges the images found
-            magickImages(wordGrid, width, height, pal) # Previously used mergeImages()
+            magickImages(wordGrid, width, height, palette=pal) # Previously used mergeImages()
         # Sends the image through discord
         await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif", spoiler=spoiler))
 
