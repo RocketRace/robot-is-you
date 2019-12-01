@@ -1,5 +1,6 @@
 import discord
 import itertools
+import jishaku
 
 from discord.ext  import commands
 from discord.http import asyncio
@@ -56,6 +57,9 @@ bot = BabaBot(PREFIXES, WEBHOOK_ID, EMBED_COLOR, VANILLA, case_insensitive=True,
 if __name__ == "__main__":
     for cog in COGS:
         bot.load_extension(cog)
+
+# Loads Jishaku
+jishaku.setup(bot)
 
 # Allows for the code to be reloaded without reloading the bot
 @bot.command(hidden=True)
