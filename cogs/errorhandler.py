@@ -98,9 +98,9 @@ class CommandErrorHandler(commands.Cog):
             ID = ctx.author.id
             name = ctx.author.name
             discriminator = ctx.author.discriminator
-            nick = f"({ctx.author.nick})" if ctx.author.nick else ""
+            nick = f"({ctx.author.nick})" if ctx.guild else ""
             DM = "Message Author" if ctx.guild else "Direct Message"
-            formatted = f"ID: {ID}\nName: {name}#{discriminator} {nick}"
+            formatted = f"ID: {ID}\nName: {name}#{discriminator} ({nick})"
             emb.add_field(name=DM, value=formatted)
         # Message link
         if all([ctx.guild, ctx.channel, ctx.message]):
