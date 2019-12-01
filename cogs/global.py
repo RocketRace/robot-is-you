@@ -463,12 +463,14 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
     @commands.command()
     @commands.is_owner()
-    async def testing(self, ctx):
-        print("ha")
+    async def testing(self, ctx, arg = ""):
         x = load(open("test.json"))
-        x = [[["-" if item == "-" else item + ":0" for item in stack] for stack in row] for row in x]
-        magickImages(x, 35, 20, palette="default", imageSource="vanilla", images=["island", "island_decor"])
-        await self.bot.send(ctx, "welp\nlooks like I did it")
+        grid = x["objects"]
+        images = x["images"]
+        grid = [[["-" if item["ID"] == -1 else item["name"] for item in stack] for stack in row] for row in grid]
+        grid = self.handleVariants(grid)
+        magickImages(grid, 35, 20, palette="default", imageSource="vanilla", images=images)
+        await self.bot.send(ctx, "welp\nlooks like I did it", file=discord.File("renders/render.gif"))
 
     # Generates an animated gif of the tiles provided, using the default palette
     @commands.command(aliases=["rule"])
@@ -505,7 +507,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         async with ctx.typing():
             # The parameters of this command are a lie to appease the help command: here's what actually happens            
             tiles = palette
-            renderLimit = 64
+            renderLimit = 100
 
             # Determines if this should be a spoiler
             spoiler = tiles.replace("|", "") != tiles
