@@ -507,7 +507,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         async with ctx.typing():
             # The parameters of this command are a lie to appease the help command: here's what actually happens            
             tiles = palette
-            renderLimit = 100
+            renderLimit = 64
 
             # Determines if this should be a spoiler
             spoiler = tiles.replace("|", "") != tiles
