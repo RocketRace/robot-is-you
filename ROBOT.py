@@ -58,9 +58,6 @@ if __name__ == "__main__":
     for cog in COGS:
         bot.load_extension(cog)
 
-# Loads Jishaku
-jishaku.setup(bot)
-
 # Allows for the code to be reloaded without reloading the bot
 @bot.command(hidden=True)
 @commands.is_owner()

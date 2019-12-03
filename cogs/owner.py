@@ -307,7 +307,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         
         self.alternateTiles = {}
 
-        levels = listdir("levels")
+        levels = [l for l in listdir("levels") if l.endswith(".ld")]
         for level in levels:
             # Reads each line of the level file
             lines = ""
