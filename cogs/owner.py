@@ -154,16 +154,17 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         self.alternateTiles = {}
         self.identifies = []
         self.resumes = []
+        # Loads the caches
         # Loads the tile colors, if it exists
-        colorsFile = "tilecolors.json"
+        colorsFile = "cache/tilecolors.json"
         if stat(colorsFile).st_size != 0:
             self.tileColors = json.load(open(colorsFile))
         # Loads the alternate tiles if possible
-        altFile = "alternatetiles.json"
+        altFile = "cache/alternatetiles.json"
         if stat(altFile).st_size != 0:
             self.alternateTiles = json.load(open(altFile))
         # Loads debug data, if any
-        debugFile = "debug.json"
+        debugFile = "cache/debug.json"
         if stat(debugFile).st_size != 0:
             debugData = json.load(open(debugFile), object_pairs_hook=load_with_datetime)
             self.identifies = debugData.get("identifies")
@@ -237,57 +238,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
         await self.bot.send(ctx, " ", embed=msg)
         
-
-    @commands.is_owner()
-    @commands.command(name="eval")
-    async def _eval(self, ctx, *, cmd):
-        """Evaluates input.
-        Input is interpreted as newline seperated statements.
-        If the last statement is an expression, that is the return value.
-        Usable globals:
-          - `bot`: the bot instance
-          - `discord`: the discord module
-          - `commands`: the discord.ext.commands module
-          - `ctx`: the invokation context
-          - `__import__`: the builtin `__import__` function
-        Such that `>eval 1 + 1` gives `2` as the result.
-        The following invokation will cause the bot to send the text '9'
-        to the channel of invokation and return '3' as the result of evaluating
-        >eval ```
-        a = 1 + 2
-        b = a * 2
-        await ctx.send(a + b)
-        a
-        ```
-        """
-        fn_name = "_eval_expr"
-
-        cmd = cmd.strip("` ")
-
-        # add a layer of indentation
-        cmd = "\n".join(f"    {i}" for i in cmd.splitlines())
-
-        # wrap in async def body
-        body = f"async def {fn_name}():\n{cmd}"
-
-        parsed = ast.parse(body)
-        body = parsed.body[0].body
-
-        insert_returns(body)
-
-        env = {
-            'bot': ctx.bot,
-            'discord': discord,
-            'commands': commands,
-            'ctx': ctx,
-            '__import__': __import__
-        }
-        exec(compile(parsed, filename="<ast>", mode="exec"), env)
-
-        result = (await eval(f"{fn_name}()", env))
-        await self.bot.send(ctx, "Result:\n" + str(result))
-
-
     # Sends a message in the specified channel
     @commands.command()
     @commands.is_owner()
@@ -373,11 +323,21 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                         self.alternateTiles[key].extend([alts[key]])
         
         # Saves the data of ALL the themes to alternatetiles.json
-        with open("alternatetiles.json", "wt") as alternateFile:
+        with open("cache/alternatetiles.json", "wt") as alternateFile:
             json.dump(self.alternateTiles, alternateFile, indent=3)
 
-        await ctx.send("Done.")
+        await ctx.send("Loaded additional tile data from .ld files.")
         self.bot.loading = False
+    
+    @commands.command()
+    @commands.is_owner()
+    async def loaddata(self, ctx):
+        '''
+        Reloads tile data from values.lua and .ld files.
+        '''
+        await ctx.invoke(self.bot.get_command("loadcolors"))
+        await ctx.invoke(self.bot.get_command("loadchanges"))
+        return await ctx.send("Done. Loaded all tile data.")
 
     @commands.command()
     @commands.is_owner()
@@ -492,10 +452,10 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             allTiles.write("\n".join(sorted([tile for tile in self.tileColors])))
 
         # Dumps the gathered data to tilecolors.json
-        with open("tilecolors.json", "wt") as emoteFile:
+        with open("cache/tilecolors.json", "wt") as emoteFile:
             json.dump(self.tileColors, emoteFile, indent=3)
 
-        await ctx.send("Done.")
+        await ctx.send("Loaded initial tile data.")
 
         self.bot.loading = False
     
@@ -549,7 +509,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
         obj = self.tileColors[tile]
         self.generateTileSprites(tile, obj, palettes, paletteColors)
-        await ctx.send("Done.")
+        await ctx.send(f"Generated tile sprites for {tile}.")
         self.bot.loading = False
 
     @commands.command()
@@ -592,72 +552,15 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 await ctx.send(f"{i} / {total}...")
             self.generateTileSprites(tile, obj, palettes, colors)
             i += 1
-        await ctx.send(f"{total} / {total}.")
+        await ctx.send(f"{total} / {total} palettes loaded.")
 
         self.bot.loading = False
-
-    @commands.command()
-    @commands.is_owner()
-    async def pull(self, ctx):
-        '''
-        Update the bot from the master branch of github.
-        '''
-        await ctx.send("Pulling the new version from github...")
-        puller = Popen(["git", "pull"], cwd="/home/pi/Desktop/robot-private/", stdout=PIPE, stderr=STDOUT, universal_newlines=True)
-        process = True
-        # Checks if the process has completed every half a second
-        i = 0
-        returncode = None
-        while process:
-            returncode = puller.poll()
-            i += 0.5
-            if returncode is None:
-                if i > 120:
-                    process = False
-                else:
-                    await asyncio.sleep(0.5)
-            else:
-                process = False
-        stdout, stderr = puller.communicate()
-        # stderr is always None
-        if stderr is None:
-            if i > 30:
-                await ctx.send("`git pull` took more than 30 seconds to execute. Aborting.")
-                puller.terminate()
-            else:
-                await ctx.send(f"`git pull` exited with code {returncode}. Output: ```\n{stdout}\n```")
-
-    @commands.command()
-    @commands.is_owner()
-    async def benchmark(self, ctx, command, *args):
-        '''
-        Runs a command, given arguments, and measures the time taken for it to complete.
-        '''
-        # Tries to match each argument provided with the command parameters
-        functionParams = self.bot.get_command(command).clean_params.keys()
-        kwargs = {}
-        for arg,param in zip(args, functionParams):
-            kwargs[param] = arg
-        t = time()
-        await ctx.send(f"Invoking command \"{command}\"...")
-        await ctx.invoke(self.bot.get_command(command), **kwargs)
-        await ctx.send(f"Done. Took {time() - t} seconds.")
     
-    @commands.command()
-    @commands.is_owner()
-    async def getparams(self, ctx, command):
-        '''
-        Returns the parameters / arguments of a given command
-        '''
-        # Returns the parameters of a given command
-        params = self.bot.get_command(command).clean_params
-        await self.bot.send(ctx, f"Parameters for command {command}:\n{params}")
-
     @commands.command()
     @commands.is_owner()
     async def loadall(self, ctx):
         '''
-        Reloads absolutely everything. (tile data, tile sprites)
+        Reloads absolutely everything. (tile data, tile sprites, TODO levels)
         Avoid using this, as it takes minutes to complete.
         '''
         # Sends some feedback messages
@@ -674,7 +577,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
     def updateDebug(self):
         # Updates the debug file
-        debugFile = "debug.json"
+        debugFile = "cache/debug.json"
         debugData = {"identifies":None,"resumes":None}
         debugData["identifies"] = self.identifies
         debugData["resumes"] = self.resumes
