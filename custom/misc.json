@@ -227,5 +227,23 @@
         "1",
         "4"
     ]
+  },
+  {
+    "name":"text_badbad",
+    "sprite":"text_badbad",
+    "tiling":"-1",
+    "color":[
+        "1",
+        "4"
+    ]
+  },
+  {
+    "name":"badbad",
+    "sprite":"badbad",
+    "tiling":"2",
+    "color":[
+        "1",
+        "4"
+    ]
   }
 ]
