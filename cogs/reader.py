@@ -1,5 +1,14 @@
-import zlib
+import discord
 import json
+import zlib
+
+from discord.ext import commands
+
+def flatten(x, y, width):
+    '''
+    Return the flattened position of a coordinate in a grid of specified width
+    '''
+    return int(y) * width + int(x)
 
 class Grid:
     '''
@@ -76,35 +85,36 @@ class Item:
         self.extra = extra
 
     @classmethod
-    def edge(self):
+    def edge(cls):
         '''
         Returns an Item representing an edge tile.
         '''
         return Item(ID=0, obj="edge", name="edge")
     
     @classmethod
-    def empty(self):
+    def empty(cls):
         '''
         Returns an Item representing an empty tile.
         '''
         return Item(ID=-1, obj="empty", name="empty")
     
     @classmethod
-    def level(self):
+    def level(cls):
         '''
         Returns an Item representing a level object.
         '''
         return Item(ID=-2, obj="level", name="level")
 
-class Reader:
+class Reader(commands.Cog, command_attrs=dict(hidden=True)):
     '''
     A class for parsing the contents of level files.
     '''
-    def __init__(self):
+    def __init__(self, bot):
         '''
-        Initializes a Reader object.
+        Initializes the Reader cog.
         Populates the default objects cache from a "values.lua" file.
         '''
+        self.bot = bot
         self.defaultsById = {}
         self.defaultsByObject = {}
 
@@ -113,12 +123,21 @@ class Reader:
             while line != "":
                 line = reader.readline()
                 try:
-                    # This is where parsing begins
-                    if line.index("tileslist =") == 0:
-                        self.readObjects(reader)
-                        break
+                    # Raises ValueError if we're not at the relevant section yet
+                    index = line.index("tileslist =")
                 except ValueError:
                     continue
+                else:
+                    if index == 0:
+                        # Parsing begins
+                        self.readObjects(reader)
+                        break
+
+    @commands.command()
+    @commands.is_owner()
+    async def parseMap(self, ctx, level):
+        safe = self.readMap(f"levels/{level}.l")
+        return await self.bot.send(ctx, "Done.")
 
     def readObjects(self, reader):
         '''
@@ -211,42 +230,33 @@ class Reader:
         '''
         Sets an Item's attribute to a value.
         '''
+        # Most of these attributes are commented out.
+        # They may be implemented later, if necessary.
         if obj == "name":
             item.name = value[1:len(value) - 1]
-        elif obj == "sprite":
-            pass
+        # elif obj == "sprite":
             # item.sprite = value[1:len(value) - 2]
-        elif obj == "sprite_in_root":
-            pass
+        # elif obj == "sprite_in_root":
             # item.spriteInRoot = int(value)
-        elif obj == "unittype":
-            pass
+        # elif obj == "unittype":
             # item.isObject = value == "\"object\""
-        elif obj == "type":
-            pass
+        # elif obj == "type":
             # item.type = int(value)
-        elif obj == "layer":
-            pass
+        # elif obj == "layer":
             # item.layer = int(value)
-        elif obj == "colour":
-            pass
+        # elif obj == "colour":
             # item.color = self.CTS(value)
-        elif obj == "active":
-            pass
+        # elif obj == "active":
             # item.activeColor = self.CTS(value)
-        elif obj == "tiling":
-            pass
+        # elif obj == "tiling":
             # item.tiling = int(value)
         elif obj == "tile":
             item.ID = self.CTS(value)
-        elif obj == "argextra":
-            pass
+        # elif obj == "argextra":
             # item.argExtra = value[1:len(value) - 2].replace("\"", "")
-        elif obj == "argtype":
-            pass
+        # elif obj == "argtype":
             # item.argType = value[1:len(value) - 2].replace("\"", "")
-        elif obj == "grid":
-            pass
+        # elif obj == "grid":
             # item.grid = self.CTS(value)
 
     def CTS(self, value):
@@ -271,7 +281,7 @@ class Reader:
         y = int(value[index + 1: endIndex].strip())
         return (y << 8) | x
 
-    def readMap(self, fp):
+    async def readMap(self, fp):
         '''
         Parses a .l file's content, given its file path.
         Returns a Grid object containing the level data.
@@ -316,8 +326,14 @@ class Reader:
         grid = self.addSpecials(grid)
 
         # For debugging, delete this 
-        # m = grid.serialize()
-        # json.dump(m, open("/Users/Ben/Code/Pythons/robot-is-you/test.json", "w"), indent=1)
+        m = grid.serialize()
+        tileData = self.bot.get_cog("Admin").tileColors
+        safe = []
+        for row in m["objects"]:
+            x = [[f"{obj['name']}:{8 * obj['direction']}" if tileData[obj['name']]['tiling'] in ['0', '2', '3'] else obj['name'] for obj in cell] for cell in row]
+            safe.append(x)
+        
+        return safe
 
     def addLevels(self, grid):
         '''
@@ -380,12 +396,9 @@ class Reader:
                                 # Store the level position
                                 levels[key][param] = data[index + 1:]
 
-            # Flatten "x","y" to single coordinate given width w
-            flat = lambda x,y,w: int(y) * w + int(x)
-
             # Update our grid object with the levels
             for data in levels.values():
-                position = flat(data["X"], data["Y"], grid.width)
+                position = flatten(data["X"], data["Y"], grid.width)
                 level = Item.level()
                 level.position = position
                 # Levels are (sort of) like any other object
@@ -462,13 +475,10 @@ class Reader:
                                 # Store the path position, dir & object
                                 paths[key][param] = data[index + 1:]
 
-            # Flatten "x","y" to single coordinate given width w
-            flat = lambda x,y,w: int(y) * w + int(x)
-
             # Update our grid object with the levels
             for data in paths.values():
                 path = Item()
-                position = flat(data["X"], data["Y"], grid.width)
+                position = flatten(data["X"], data["Y"], grid.width)
 
                 path.position  = position
                 path.direction = int(data["dir"])
@@ -527,7 +537,6 @@ class Reader:
         # Update our grid
         grid.images = sortedList
         return grid
-
 
     def addSpecials(self, grid):
         '''
@@ -593,18 +602,15 @@ class Reader:
                                     specials[key] = {}
                                 # Store the special position & data
                                 specials[key][param] = data[index + 1:]
-        
-        # Flatten "x","y" to single coordinate given width w
-        flat = lambda x,y,w: int(y) * w + int(x)
-
+    
         # Handle the actual special information
         for special in specials.values():
             split = special["data"].split(",") 
             if split[0] == "level":
-                position = flat(special["X"], special["Y"], grid.width)
+                position = flatten(special["X"], special["Y"], grid.width)
                 level = Item.level()
                 level.position = position
-            #     grid.cells[position].objects.append(level)
+                # grid.cells[position].objects.append(level)
 
         return grid
             
@@ -690,8 +696,5 @@ class Reader:
                 item = items[j]
                 item.direction = mapBuffer[j]
 
-r = Reader()
-
-level = input("Level to read: ")
-
-r.readMap(f"levels/{level}.l")
+def setup(bot):
+    bot.add_cog(Reader(bot))

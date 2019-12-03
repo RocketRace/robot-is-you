@@ -17,29 +17,147 @@ def flatten(items, seqtypes=(list, tuple)):
             items[i:i+1] = items[i]
     return items
 
-# Takes a list of tile names and generates a gif with the associated sprites
-def magickImages(wordGrid, width, height, *, palette="default", images=None, imageSource=None):
-    frames = []
-    if palette == "hide":
-        if images is None:
-            # Don't use a background image
-            renderFrame = Image.new("RGBA", (48 * width, 48 * height))
-            for _ in range(3):
-                frames.append(renderFrame)
-        else:
-            for i in range(3):
-                # Use a background image
-                imageFrame = Image.open(f"images/{imageSource}/{images[0]}_{i}.png")
-                # In case multiple background images are used (i.e. baba's world map)
-                if len(images) > 1:
-                    for image in images[1]:
-                        overlap = Image.open(f"images/{imageSource}/{image}_{i}.png")
-                        mask = overlap.getchannel("A")
-                        imageFrame.paste(overlap, mask=mask)
-                # Back on track
-                frames.append(imageFrame)
+class GlobalCog(commands.Cog, name="Baba Is You"):
+    def __init__(self, bot):
+        self.bot = bot
+        with open("tips.json") as tips:
+            self.tips = load(tips)
 
+    # Check if the bot is loading
+    async def cog_check(self, ctx):
+        return not self.bot.loading
+
+    # Takes a list of tile names and generates a gif with the associated sprites
+    def magickImages(self, wordGrid, width, height, *, palette="default", images=None, imageSource=None):
+        frames = []
+        if palette == "hide":
+            if images is None:
+                # Don't use a background image
+                renderFrame = Image.new("RGBA", (48 * width, 48 * height))
+                for _ in range(3):
+                    frames.append(renderFrame)
+            else:
+                for i in range(3):
+                    # Use a background image
+                    imageFrame = Image.open(f"images/{imageSource}/{images[0]}_{i}.png")
+                    # In case multiple background images are used (i.e. baba's world map)
+                    if len(images) > 1:
+                        for image in images[1]:
+                            overlap = Image.open(f"images/{imageSource}/{image}_{i}.png")
+                            mask = overlap.getchannel("A")
+                            imageFrame.paste(overlap, mask=mask)
+                    # Back on track
+                    frames.append(imageFrame)
+
+            
+            frames[0].save("renders/render.gif", "GIF",
+                save_all=True,
+                append_images=frames[1:],
+                loop=0,
+                duration=200,
+                disposal=2, # Frames don't overlap
+                transparency=255,
+                background=255,
+                optimize=False # Important in order to keep the color palettes from being unpredictable
+            )
+            return
+        # For each animation frame
+        paths = [
+            [
+                [
+                    [
+                        None if word == "-" else f"color/{palette}/{word.split(':')[0]}-{word.split(':')[1]}-{fr}-.png" for word in stack
+                    ] for stack in row
+                ] for row in wordGrid
+            ] for fr in range(3)
+        ]
+        # Minimize IO by only opening each image once
+        uniquePaths = set(flatten(paths.copy()))
+        uniquePaths.discard(None)
+        uniqueImages = {path:Image.open(path) for path in uniquePaths}
         
+        imgs = [
+            [
+                [
+                    [
+                        None if fp is None else uniqueImages[fp] for fp in stack
+                    ] for stack in row
+                ] for row in fr
+            ] for fr in paths
+        ]
+        # Only the first frame sizes matter
+        sizes = [
+            [
+                [
+                    None if image is None else (image.width, image.height) for image in stack
+                ] for stack in row
+            ] for row in imgs[0]
+        ]
+        # Calculates padding based on image sizes
+        leftPad = 0
+        rightPad = 0
+        upPad = 0
+        downPad = 0
+        for y,row in enumerate(sizes):
+            for x,stack in enumerate(row):
+                for size in stack:
+                    if size is not None:
+                        if y == 0:
+                            diff = size[1] - 24
+                            if diff > upPad:
+                                upPad = diff
+                        if y == len(sizes) - 1:
+                            diff = size[1] - 24
+                            if diff > downPad:
+                                downPad = diff
+                        if x == 0:
+                            diff = size[0] - 24
+                            if diff > leftPad:
+                                leftPad = diff
+                        if x == len(row) - 1:
+                            diff = size[0] - 24
+                            if diff > rightPad:
+                                rightPad = diff
+        
+        for i,frame in enumerate(imgs):
+            # Get new image dimensions, with appropriate padding
+            totalWidth = len(frame[0]) * 24 + leftPad + rightPad 
+            totalHeight = len(frame) * 24 + upPad + downPad 
+
+            # Montage image
+            if images is None or imageSource is None:
+                renderFrame = Image.new("RGBA", (totalWidth, totalHeight))
+            else: 
+                renderFrame = Image.new("RGBA", (totalWidth, totalHeight))
+                # for loop in case multiple background images are used (i.e. baba's world map)
+                for image in images:
+                    overlap = Image.open(f"images/{imageSource}/{image}_{i + 1}.png")
+                    mask = overlap.getchannel("A")
+                    renderFrame.paste(overlap, box=(24,24), mask=mask)
+
+            # Pastes each image onto the image
+            # For each row
+            yOffset = upPad # For padding: the cursor for example doesn't render fully when alone
+            for row in frame:
+                # For each image
+                xOffset = leftPad # Padding
+                for stack in row:
+                    for tile in stack:
+                        if tile is not None:
+                            width = tile.width
+                            height = tile.height
+                            # For tiles that don't adhere to the 24x24 sprite size
+                            offset = (xOffset + (24 - width) // 2, yOffset + (24 - height) // 2)
+
+                            renderFrame.paste(tile, offset, tile)
+                    xOffset += 24
+                yOffset += 24
+
+            # Resizes to 200%
+            renderFrame = renderFrame.resize((2 * totalWidth, 2 * totalHeight))
+            # Saves the final image
+            frames.append(renderFrame)
+
         frames[0].save("renders/render.gif", "GIF",
             save_all=True,
             append_images=frames[1:],
@@ -50,125 +168,6 @@ def magickImages(wordGrid, width, height, *, palette="default", images=None, ima
             background=255,
             optimize=False # Important in order to keep the color palettes from being unpredictable
         )
-        return
-    # For each animation frame
-    paths = [
-        [
-            [
-                [
-                    None if word == "-" else f"color/{palette}/{word.split(':')[0]}-{word.split(':')[1]}-{fr}-.png" for word in stack
-                ] for stack in row
-            ] for row in wordGrid
-        ] for fr in range(3)
-    ]
-    # Minimize IO by only opening each image once
-    uniquePaths = set(flatten(paths.copy()))
-    uniquePaths.discard(None)
-    uniqueImages = {path:Image.open(path) for path in uniquePaths}
-    
-    imgs = [
-        [
-            [
-                [
-                    None if fp is None else uniqueImages[fp] for fp in stack
-                ] for stack in row
-            ] for row in fr
-        ] for fr in paths
-    ]
-    # Only the first frame sizes matter
-    sizes = [
-        [
-            [
-                None if image is None else (image.width, image.height) for image in stack
-            ] for stack in row
-        ] for row in imgs[0]
-    ]
-    # Calculates padding based on image sizes
-    leftPad = 0
-    rightPad = 0
-    upPad = 0
-    downPad = 0
-    for y,row in enumerate(sizes):
-        for x,stack in enumerate(row):
-            for size in stack:
-                if size is not None:
-                    if y == 0:
-                        diff = size[1] - 24
-                        if diff > upPad:
-                            upPad = diff
-                    if y == len(sizes) - 1:
-                        diff = size[1] - 24
-                        if diff > downPad:
-                            downPad = diff
-                    if x == 0:
-                        diff = size[0] - 24
-                        if diff > leftPad:
-                            leftPad = diff
-                    if x == len(row) - 1:
-                        diff = size[0] - 24
-                        if diff > rightPad:
-                            rightPad = diff
-    
-    for i,frame in enumerate(imgs):
-        # Get new image dimensions, with appropriate padding
-        totalWidth = len(frame[0]) * 24 + leftPad + rightPad 
-        totalHeight = len(frame) * 24 + upPad + downPad 
-
-        # Montage image
-        if images is None or imageSource is None:
-            renderFrame = Image.new("RGBA", (totalWidth, totalHeight))
-        else: 
-            renderFrame = Image.new("RGBA", (totalWidth, totalHeight))
-            # for loop in case multiple background images are used (i.e. baba's world map)
-            for image in images:
-                overlap = Image.open(f"images/{imageSource}/{image}_{i + 1}.png")
-                mask = overlap.getchannel("A")
-                renderFrame.paste(overlap, box=(24,24), mask=mask)
-
-        # Pastes each image onto the image
-        # For each row
-        yOffset = upPad # For padding: the cursor for example doesn't render fully when alone
-        for row in frame:
-            # For each image
-            xOffset = leftPad # Padding
-            for stack in row:
-                for tile in stack:
-                    if tile is not None:
-                        width = tile.width
-                        height = tile.height
-                        # For tiles that don't adhere to the 24x24 sprite size
-                        offset = (xOffset + (24 - width) // 2, yOffset + (24 - height) // 2)
-
-                        renderFrame.paste(tile, offset, tile)
-                xOffset += 24
-            yOffset += 24
-
-        # Resizes to 200%
-        renderFrame = renderFrame.resize((2 * totalWidth, 2 * totalHeight))
-        # Saves the final image
-        frames.append(renderFrame)
-
-    frames[0].save("renders/render.gif", "GIF",
-        save_all=True,
-        append_images=frames[1:],
-        loop=0,
-        duration=200,
-        disposal=2, # Frames don't overlap
-        transparency=255,
-        background=255,
-        optimize=False # Important in order to keep the color palettes from being unpredictable
-    )
-
-
-class GlobalCog(commands.Cog, name="Baba Is You"):
-    def __init__(self, bot):
-        self.bot = bot
-        with open("tips.json") as tips:
-            self.tips = load(tips)
-
-    # Check if the bot is loading
-    async def cog_check(self, ctx):
-        return not self.bot.loading
 
     def handleVariants(self, grid):
         '''
@@ -469,7 +468,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         images = x["images"]
         grid = [[["-" if item["ID"] == -1 else item["name"] for item in stack] for stack in row] for row in grid]
         grid = self.handleVariants(grid)
-        magickImages(grid, 35, 20, palette="default", imageSource="vanilla", images=images)
+        self.magickImages(grid, 35, 20, palette="default", imageSource="vanilla", images=images)
         await self.bot.send(ctx, "welp\nlooks like I did it", file=discord.File("renders/render.gif"))
 
     # Generates an animated gif of the tiles provided, using the default palette
@@ -639,7 +638,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{x}\".")     
 
             # Merges the images found
-            magickImages(wordGrid, width, height, palette=pal) # Previously used mergeImages()
+            self.magickImages(wordGrid, width, height, palette=pal) # Previously used mergeImages()
         # Sends the image through discord
         await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif", spoiler=spoiler))
 
