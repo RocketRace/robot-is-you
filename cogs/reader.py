@@ -3,6 +3,7 @@ import json
 import zlib
 
 from discord.ext import commands
+from os          import listdir, stat
 
 def flatten(x, y, width):
     '''
@@ -117,6 +118,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         self.bot = bot
         self.defaultsById = {}
         self.defaultsByObject = {}
+        self.levelData = {}
 
         with open("values.lua") as reader:
             line = None
@@ -132,6 +134,11 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                         # Parsing begins
                         self.readObjects(reader)
                         break
+        
+        # Level data cache
+        levelcache = "cache/leveldata.json"
+        if stat(levelcache).st_size != 0:
+            self.levelData = json.load(open(levelcache))
 
     @commands.command()
     @commands.is_owner()
