@@ -255,11 +255,11 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         
         alternateTiles = {}
 
-        levels = [l for l in listdir("levels") if l.endswith(".ld")]
+        levels = [l for l in listdir("levels/vanilla") if l.endswith(".ld")]
         for level in levels:
             # Reads each line of the level file
             lines = ""
-            with open("levels/%s" % level) as fp:
+            with open("levels/vanilla/%s" % level) as fp:
                 lines = fp.readlines()
 
             IDs = []

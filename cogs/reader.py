@@ -11,20 +11,38 @@ def flatten(x, y, width):
     '''
     return int(y) * width + int(x)
 
+def tryIndex(string, value):
+    '''
+    Returns the index of a substring within a string.
+    Returns -1 if not found.
+    '''
+    index = -1
+    try:
+        index = string.index(value)
+    except:
+        pass
+    return index
+
 class Grid:
     '''
     This stores the information of a single Baba level, in a format readable by the renderer.
     '''
-    def __init__(self, fp):
+    def __init__(self, filename, source):
         '''
         Initializes a blank grid, given a path to the level file. 
         This should not be used; you should use Reader.readMap() instead to generate a filled grid.
         '''
         self.images = []
+        self.name = ""
+        self.parent = ""
+        self.subtitle = ""
+        self.palette = ""
         self.width = 0
         self.height = 0
         self.cells = []
-        self.fp = fp
+        self.fp = f"levels/{source}/{filename}.l"
+        self.filename = filename
+        self.source = source
     
     def serialize(self):
         '''
@@ -53,8 +71,16 @@ class Grid:
             m.append(a)
         # Handle level images as well
         final = {
-            "objects":m,
-            "images":self.images
+            "objects" : m,
+            "data" : {
+                "images"   : self.images,
+                "palette"  : self.palette,
+                "name"     : self.name,
+                "subtitle" : self.subtitle,
+                "parent"   : self.parent,
+                "width"    : self.width,
+                "height"   : self.height
+            }
         }
         return final
 
@@ -118,22 +144,22 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         self.bot = bot
         self.defaultsById = {}
         self.defaultsByObject = {}
+        self.defaultsByName = {}
         self.levelData = {}
+        # Intermediary, please don't access
+        self._levels = {}
 
         with open("values.lua") as reader:
             line = None
             while line != "":
                 line = reader.readline()
-                try:
-                    # Raises ValueError if we're not at the relevant section yet
-                    index = line.index("tileslist =")
-                except ValueError:
+                index = tryIndex(line, "tileslist =")
+                if index == -1:
                     continue
-                else:
-                    if index == 0:
-                        # Parsing begins
-                        self.readObjects(reader)
-                        break
+                elif index == 0:
+                    # Parsing begins
+                    self.readObjects(reader)
+                    break
         
         # Level data cache
         levelcache = "cache/leveldata.json"
@@ -143,8 +169,26 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
     @commands.command()
     @commands.is_owner()
     async def parseMap(self, ctx, level):
-        safe = self.readMap(f"levels/{level}.l")
-        return await self.bot.send(ctx, "Done.")
+        safe = await self.readMap(level, "vanilla")
+        cells = self.bot.get_cog("Baba Is You").handleVariants(safe[0])
+        width = safe[1]["width"]
+        height = safe[1]["height"]
+        palette = safe[1]["palette"]
+        images = safe[1]["images"]
+        self.bot.get_cog("Baba Is You").magickImages(cells, width, height, palette=palette, images=images)
+        return await ctx.send(file=discord.File("renders/render.gif"))
+
+    @commands.command()
+    @commands.is_owner()
+    async def loadmaps(self, ctx):
+        '''
+        Loads all levels. Initializes the level tree.
+        '''
+        levels = [l for l in listdir("levels") if l.endswith(".l")]
+        for i,level in enumerate(levels):
+            await self.readMap(f"levels/{level}", initialize=True)
+            print(i)
+        print("woot")
 
     def readObjects(self, reader):
         '''
@@ -152,18 +196,16 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         Returns the largest valid object ID for in-level objects.
         '''
         maxID = 0
-        data = None
-        while data != "":
-            data = reader.readline().strip()
+        rawline = None
+        while rawline != "":
+            rawline = reader.readline()
+            data = rawline.strip()
             # Done parsing, end of the relevant section
             if data == "}":
                 break
             
-            try:
-                # Looking for "key=value" pairs
-                index = data.index("=")
-            except:
-                index = -1
+            index = tryIndex(data, "=")
+            # Looking for "key=value" pairs
 
             # If those are not found, move on
             if len(data) < 2 or index < 0:
@@ -173,10 +215,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             item = Item()
             # Determine the object ID of what we're parsing
             data = data[:index].strip()
-            try:
-                o = data.index("object")
-            except:
-                o = -1
+            o = tryIndex(data, "object")
             if o == 0:
                 temp = 0
                 try:
@@ -189,20 +228,17 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             item.obj = data
             
             # Now start parsing the actual data of the object
-            obj = None
-            while obj != "":
-                obj = reader.readline().strip()
+            raw = None
+            while raw != "":
+                raw = reader.readline()
+                obj = raw.strip()
                 # We're done parsing, move on
                 if obj == "},":
                     break
                 
-                try:
-                    # "value=obj" pairs, please
-                    index = obj.index("=")
-                except:
-                    # Not found? move on
-                    index = -1
-                    continue
+                # "value=obj" pairs, please
+                index = tryIndex(obj, "=")
+                if index == -1: continue
                 
                 # Isolate the two sides of the equals sign
                 value = obj[index + 1: len(obj) - 1].strip()
@@ -219,6 +255,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             # Now we add the item to out cache.
             self.defaultsById[item.ID] = item
             self.defaultsByObject[data] = item
+            self.defaultsByName[item.name] = item
 
         # We've parsed and stored all objects from "values.lua" in cache.
         # Now we only need to add the special cases:
@@ -226,10 +263,12 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         empty = Item.empty()
         self.defaultsByObject[empty.obj] = empty
         self.defaultsById[empty.ID] = empty
+        self.defaultsByName[empty.name] = empty
         # Level tiles
         level = Item.level()
         self.defaultsByObject[level.obj] = level
         self.defaultsById[level.ID] = level
+        self.defaultsByName[level.name] = level
         # The largest valid ID we found
         return maxID
 
@@ -288,15 +327,13 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         y = int(value[index + 1: endIndex].strip())
         return (y << 8) | x
 
-    async def readMap(self, fp):
+    async def readMap(self, filename, source, initialize = False):
         '''
         Parses a .l file's content, given its file path.
         Returns a Grid object containing the level data.
         '''
-        print(f"Level: {fp}")
-        # mapBuffer = bytearray()
-        grid = Grid(fp)
-        with open(fp, "rb") as stream:
+        grid = Grid(filename, source)
+        with open(grid.fp, "rb") as stream:
             header = int.from_bytes(stream.read(8), byteorder="little") & (2**64 - 1)
             # ACHTUNG
             assert header == 0x21474e5554484341
@@ -315,7 +352,6 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                     buffer = stream.read(2)
                     # The layer count
                     layerCount = int.from_bytes(buffer, byteorder="little") & (2**16 - 1)
-                    print(f"Layers: {layerCount}")
                     # Mysterious off-by-one magic
                     for _ in range(layerCount + 1):
                         self.readLayer(stream, grid, version)
@@ -326,32 +362,85 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         # Paths
         grid = self.addPaths(grid)
         # Levels
-        grid = self.addLevels(grid)
+        grid = self.addLevels(grid, initialize=initialize) # If we want to also initialize the level tree
         # Images
         grid = self.addImages(grid)
         # Special objects
         grid = self.addSpecials(grid)
+        # Level metadata
+        grid = self.addMetadata(grid)
 
         # For debugging, delete this 
         m = grid.serialize()
         tileData = self.bot.get_cog("Admin").tileColors
         safe = []
         for row in m["objects"]:
-            x = [[f"{obj['name']}:{8 * obj['direction']}" if tileData[obj['name']]['tiling'] in ['0', '2', '3'] else obj['name'] for obj in cell] for cell in row]
+            x = [[f"{obj['name']}:{8 * obj['direction']}" if tileData[obj['name']]['tiling'] in ['0', '2', '3'] else obj['name'] + ":0" for obj in cell] for cell in row]
             safe.append(x)
         
-        return safe
+        return (safe, m["data"])
 
-    def addLevels(self, grid):
+    def addMetadata(self, grid):
+        '''
+        Adds level metadata from a level's .ld file to the given Grid.
+        Adds the following information:
+        * Level name 
+        * Subtitle
+        * TODO: Level parent
+        * Palette
+        * Cursor position
+        '''
+        # the .ld file
+        info = grid.fp + "d"
+        # Our data
+        name = subtitle = palette = cursorX = cursorY = None
+        with open(info) as ld:
+            # Go through each line of the file
+            line = None
+            while line != "":
+                line = ld.readline().strip()
+                # Level name
+                if line.startswith("name="):
+                    name = line[5:]
+                # Palette (strip .png)
+                if line.startswith("palette="):
+                    palette = line[8:-4]
+                # Level subtitle
+                if line.startswith("subtitle="):
+                    subtitle = line[9:]
+                # Cursor position
+                if line.startswith("selectorX="):
+                    pos = line[10:]
+                    if pos != -1:
+                        cursorX = int(pos)
+                if line.startswith("selectorY="):
+                    pos = line[10:]
+                    if pos != -1:
+                        cursorY = int(pos)
+        # Add cursor
+        if cursorX is not None:
+            cursorPosition = flatten(cursorX, cursorY, grid.width)
+            grid.cells[cursorPosition].objects.append(self.defaultsByName["cursor"])
+
+        # Add other data
+        grid.name = name
+        grid.subtitle = subtitle
+        grid.palette = palette
+
+        return grid
+
+    def addLevels(self, grid, initialize=False):
         '''
         Adds raw level objects from within a level to the given Grid.
         Data is parsed from the .ld file associated with the level.
+        if `initialize` is True, adds levels to the global level tree.
         '''
         # the .ld file
         info = grid.fp + "d"
         with open(info) as ld:
             levels = {}
             levelCount = 0
+            mapID = ""
 
             # Go through each line of the file
             line = None
@@ -360,6 +449,9 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                 # How many levels are there in the map??
                 if line.startswith("levels="):
                     levelCount = int(line[7:])
+                # When initializing the level tree:
+                if initialize and line.startswith("mapid="):
+                    mapID = line[6:]
                 
                 # We're starting parsing levels
                 if line == "[levels]":
@@ -380,15 +472,19 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                         index = data.index("=")
 
                         # These are the bits of information we care about
-                        try:
-                            paramIndex = data.index("X")
-                        except ValueError:
-                            try:
-                                paramIndex = data.index("Y")
-                            except ValueError:
-                                # we don't need the line anymore, move on
-                                continue 
-                        # This will be "X" or "Y"
+                        if initialize:
+                            values = ["X", "Y", "file", "number"]
+                        else:
+                            values = ["X", "Y"]
+                        for v in values:
+                            paramIndex = tryIndex(data, v)
+                            if paramIndex != -1:
+                                break
+                            # Don't need the line anymore, move on
+                        if paramIndex == -1:
+                            continue
+                        
+                        # This will be an element of `values`
                         param = data[paramIndex:index]
 
                         # The number prefixing the line
@@ -410,7 +506,25 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                 level.position = position
                 # Levels are (sort of) like any other object
                 grid.cells[position].objects.append(level)
-            
+
+                # Handle the level tree
+                if initialize:
+                    # The parent node
+                    node = {
+                        "mapID"  : mapID,
+                        "levels" : {}
+                    }
+                    # Key
+                    parent = grid.filename
+                    # Each level within
+                    for l in levels.values():
+                        child = {
+                            "number" : l["number"]
+                        }
+                        # nice nested file paths
+                        node["levels"][l["file"]] = child
+                                                
+                    self._levels[parent] = node
             
             return grid
     
@@ -453,20 +567,14 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                         # Parsing
                         index = data.index("=")
                         # These are the bits of information we care about
-                        try:
-                            paramIndex = data.index("X")
-                        except ValueError:
-                            try:
-                                paramIndex = data.index("Y")
-                            except ValueError:
-                                try:
-                                    paramIndex = data.index("object")
-                                except ValueError:
-                                    try:
-                                        paramIndex = data.index("dir")
-                                    except ValueError:
-                                        # we don't need the line anymore, move on
-                                        continue 
+                        values = ["X", "Y", "object", "dir"]
+                        for v in values:
+                            paramIndex = tryIndex(data, v)
+                            if paramIndex != -1:
+                                break
+                        if paramIndex == -1:
+                            continue
+
                         # This will be "X", "Y", "object" or "dir"
                         param = data[paramIndex:index]
 
@@ -583,17 +691,13 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                         # Parsing
                         index = data.index("=")
                         # These are the bits of information we care about
-                        try:
-                            paramIndex = data.index("X")
-                        except ValueError:
-                            try:
-                                paramIndex = data.index("Y")
-                            except ValueError:
-                                try:
-                                    paramIndex = data.index("data")
-                                except ValueError:
-                                    # we don't need the line anymore, move on
-                                    continue 
+                        values = ["X", "Y", "data"]
+                        for v in values:
+                            paramIndex = tryIndex(data, v)
+                            if paramIndex != -1:
+                                break
+                        if paramIndex == -1:
+                            continue
                         
                         # This will be "X", or "Y" or "data"
                         param = data[paramIndex:index]
@@ -649,7 +753,6 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         dataBlocks = int.from_bytes(stream.read(1), byteorder="little") & (2**8 - 1)
         assert not (dataBlocks < 1 and dataBlocks > 2)
 
-        print(f"Data blocks: {dataBlocks}")
         # MAIN
         stream.read(4)
         buffer = stream.read(4)
@@ -662,7 +765,6 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         
         read >>= 1
         
-        print(f"Length (Block 1): {read}")
 
         stream.seek(nextPosition)
 
@@ -695,7 +797,6 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             zobj = zlib.decompressobj()
             mapBuffer = zobj.decompress(stream.read(size))
             read = len(mapBuffer)
-            print(f"Length (Block 2): {read}")
 
             stream.seek(nextPosition)
 
