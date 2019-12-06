@@ -49,7 +49,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             optimize=False # Important in order to keep the color palettes from being unpredictable
         )
 
-    def magickImages(self, wordGrid, width, height, *, palette="default", images=None, imageSource=None):
+    def magickImages(self, wordGrid, width, height, *, palette="default", images=None, imageSource="vanilla"):
         '''
         Takes a list of tile names and generates a gif with the associated sprites. 
         Saves the gif to `renders/render.gif`.
