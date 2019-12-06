@@ -130,7 +130,10 @@ def insert_returns(body):
         insert_returns(body[-1].body)
 
 def load_with_datetime(pairs, format='%Y-%m-%dT%H:%M:%S.%f'):
-    """Load json with dates"""
+    '''
+    Load json + datetime objects, in the speficied format.
+    Via https://stackoverflow.com/a/14996040
+    '''
     d = {}
     for k, l in pairs:
         if isinstance(l, list):
@@ -151,7 +154,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     def __init__(self, bot):
         self.bot = bot
         self.tileColors = {}
-        self.alternateTiles = {}
         self.identifies = []
         self.resumes = []
         # Loads the caches
@@ -160,9 +162,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         if stat(colorsFile).st_size != 0:
             self.tileColors = json.load(open(colorsFile))
         # Loads the alternate tiles if possible
-        altFile = "cache/alternatetiles.json"
-        if stat(altFile).st_size != 0:
-            self.alternateTiles = json.load(open(altFile))
         # Loads debug data, if any
         debugFile = "cache/debug.json"
         if stat(debugFile).st_size != 0:
@@ -222,9 +221,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         Gives some debug stats.
         '''
         yesterday = datetime.utcnow() - timedelta(days=1)
-        f = "%Y-%m-%dT%H:%M:%S.%f"
-        identifiesDay = sum([1 for event in self.identifies if datetime.strptime(event, f) > yesterday])
-        resumesDay = sum([1 for event in self.resumes if datetime.strptime(event, f) > yesterday])
+        identifiesDay = sum([1 for event in self.identifies if event > yesterday])
+        resumesDay = sum([1 for event in self.resumes if event > yesterday])
 
         globalRateLimit = not self.bot.http._global_over.is_set()
 
@@ -255,13 +253,13 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         '''
         self.bot.loading = True
         
-        self.alternateTiles = {}
+        alternateTiles = {}
 
-        levels = [l for l in listdir("levels") if l.endswith(".ld")]
+        levels = [l for l in listdir("levels/vanilla") if l.endswith(".ld")]
         for level in levels:
             # Reads each line of the level file
             lines = ""
-            with open("levels/%s" % level) as fp:
+            with open("levels/vanilla/%s" % level) as fp:
                 lines = fp.readlines()
 
             IDs = []
@@ -310,24 +308,25 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                     
             # Adds the data to the list of changed objects
             for key in alts:
-                if self.alternateTiles.get(key) is None:
-                    self.alternateTiles[key] = [alts[key]]
+                if alternateTiles.get(key) is None:
+                    alternateTiles[key] = [alts[key]]
                 else:
                     duplicate = False
-                    for tile in self.alternateTiles[key]:
+                    for tile in alternateTiles[key]:
                         a = tile.get("name")
                         b = alts[key].get("name")
                         if a == b:
                             duplicate = True
                     if not duplicate:
-                        self.alternateTiles[key].extend([alts[key]])
+                        alternateTiles[key].extend([alts[key]])
         
         # Saves the data of ALL the themes to alternatetiles.json
         with open("cache/alternatetiles.json", "wt") as alternateFile:
-            json.dump(self.alternateTiles, alternateFile, indent=3)
+            json.dump(alternateTiles, alternateFile, indent=3)
 
         await ctx.send("Loaded additional tile data from .ld files.")
         self.bot.loading = False
+        return alternateTiles
     
     @commands.command()
     @commands.is_owner()
@@ -335,19 +334,20 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         '''
         Reloads tile data from values.lua and .ld files.
         '''
-        await ctx.invoke(self.bot.get_command("loadcolors"))
-        await ctx.invoke(self.bot.get_command("loadchanges"))
+        altTiles = await ctx.invoke(self.bot.get_command("loadchanges"))
+        await ctx.invoke(self.bot.get_command("loadcolors"), alternateTiles = altTiles)
         return await ctx.send("Done. Loaded all tile data.")
 
     @commands.command()
     @commands.is_owner()
-    async def loadcolors(self, ctx):
+    async def loadcolors(self, ctx, alternateTiles):
         '''
         Loads initial tile data from values.lua.
         '''
         # Reads values.lua and scrapes the tile data from there
 
         self.tileColors = {}
+        altTiles = alternateTiles
 
         self.bot.loading = True
         # values.lua contains the data about which color (on the palette) is associated with each tile.
@@ -396,9 +396,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                         # Alternate tile data (initialized with the original)
                         alts = {name:{"sprite":sprite, "color":color, "tiling":tiling, "source":"vanilla"}}
                         # Looks for object replacements in the alternateTiles dict
-                        if self.alternateTiles.get(ID) is not None:
+                        if altTiles.get(ID) is not None:
                             # Each replacement for the object ID:
-                            for value in self.alternateTiles[ID]:
+                            for value in altTiles[ID]:
                                 # Sets fields to the alternate fields, if specified
                                 altName = name
                                 altSprite = sprite
@@ -566,9 +566,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         # Sends some feedback messages
 
         await ctx.send("Loading objects...")
-        await ctx.invoke(self.bot.get_command("loadchanges"))
+        altTiles = await ctx.invoke(self.bot.get_command("loadchanges"))
         await ctx.send("Loading colors...")
-        await ctx.invoke(self.bot.get_command("loadcolors"))
+        await ctx.invoke(self.bot.get_command("loadcolors"), alternateTiles=altTiles)
         await ctx.send("Loading palettes...")
         palettes = [palette[:-4] for palette in listdir("palettes") if palette not in [".DS_Store"]] 
         # Strip ".png", ignore some files
@@ -616,9 +616,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
         back_to_json = json.loads(data)
         if back_to_json['op'] == 2:
-            self.identifies.append(datetime.utcnow().isoformat())
+            self.identifies.append(datetime.utcnow())
         else:
-            self.resumes.append(datetime.utcnow().isoformat())
+            self.resumes.append(datetime.utcnow())
 
         # don't want to permanently grow memory
         self._clear_gateway_data()   

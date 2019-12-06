@@ -12,6 +12,10 @@ from random      import choice
 from subprocess  import call
 
 def flatten(items, seqtypes=(list, tuple)):
+    '''
+    Flattens nested iterables, of speficied types.
+    Via https://stackoverflow.com/a/10824086
+    '''
     for i, _ in enumerate(items):
         while i < len(items) and isinstance(items[i], seqtypes):
             items[i:i+1] = items[i]
@@ -25,10 +29,31 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
     # Check if the bot is loading
     async def cog_check(self, ctx):
+        '''
+        Only if the bot is not loading assets
+        '''
         return not self.bot.loading
 
-    # Takes a list of tile names and generates a gif with the associated sprites
-    def magickImages(self, wordGrid, width, height, *, palette="default", images=None, imageSource=None):
+    def saveFrames(self, frames, fp):
+        '''
+        Saves a list of images as a gif to the specified file path.
+        '''
+        frames[0].save(fp, "GIF",
+            save_all=True,
+            append_images=frames[1:],
+            loop=0,
+            duration=200,
+            disposal=2, # Frames don't overlap
+            transparency=255,
+            background=255,
+            optimize=False # Important in order to keep the color palettes from being unpredictable
+        )
+
+    def magickImages(self, wordGrid, width, height, *, palette="default", images=None, imageSource="vanilla"):
+        '''
+        Takes a list of tile names and generates a gif with the associated sprites. 
+        Saves the gif to `renders/render.gif`.
+        '''
         frames = []
         if palette == "hide":
             if images is None:
@@ -49,18 +74,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     # Back on track
                     frames.append(imageFrame)
 
-            
-            frames[0].save("renders/render.gif", "GIF",
-                save_all=True,
-                append_images=frames[1:],
-                loop=0,
-                duration=200,
-                disposal=2, # Frames don't overlap
-                transparency=255,
-                background=255,
-                optimize=False # Important in order to keep the color palettes from being unpredictable
-            )
-            return
+            return self.saveFrames(frames, "renders/render.gif")
+
         # For each animation frame
         paths = [
             [
@@ -158,16 +173,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             # Saves the final image
             frames.append(renderFrame)
 
-        frames[0].save("renders/render.gif", "GIF",
-            save_all=True,
-            append_images=frames[1:],
-            loop=0,
-            duration=200,
-            disposal=2, # Frames don't overlap
-            transparency=255,
-            background=255,
-            optimize=False # Important in order to keep the color palettes from being unpredictable
-        )
+        self.saveFrames(frames, "renders/render.gif")
 
     def handleVariants(self, grid):
         '''
