@@ -79,7 +79,9 @@ class Grid:
                 "subtitle" : self.subtitle,
                 "parent"   : self.parent,
                 "width"    : self.width,
-                "height"   : self.height
+                "height"   : self.height,
+                "source"   : self.source,
+                "filename" : self.filename
             }
         }
         return final
@@ -100,7 +102,7 @@ class Item:
     Represents an object within a level.
     This may be a regular object, a path object, a level object, a special object or empty.
     '''
-    def __init__(self, *, ID=None, obj=None, name=None, position=None, direction=None, extra=None):
+    def __init__(self, *, ID=None, obj=None, name=None, position=None, direction=None, extra=None, layer=0):
         '''
         Returns an Item with the given parameters.
         '''
@@ -110,27 +112,34 @@ class Item:
         self.position = position
         self.direction = direction
         self.extra = extra
+        self.layer = layer
+
+    def copy(self):
+        '''
+        Returns a copy of the item.
+        '''
+        return Item(ID=self.ID, obj=self.obj, name=self.name, position=self.position, direction=self.direction, extra=self.extra, layer=self.layer)
 
     @classmethod
     def edge(cls):
         '''
         Returns an Item representing an edge tile.
         '''
-        return Item(ID=0, obj="edge", name="edge")
+        return Item(ID=0, obj="edge", name="edge", layer=20)
     
     @classmethod
     def empty(cls):
         '''
         Returns an Item representing an empty tile.
         '''
-        return Item(ID=-1, obj="empty", name="empty")
+        return Item(ID=-1, obj="empty", name="empty", layer=0)
     
     @classmethod
     def level(cls):
         '''
         Returns an Item representing a level object.
         '''
-        return Item(ID=-2, obj="level", name="level")
+        return Item(ID=-2, obj="level", name="level", layer=20)
 
 class Reader(commands.Cog, command_attrs=dict(hidden=True)):
     '''
@@ -166,29 +175,94 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         if stat(levelcache).st_size != 0:
             self.levelData = json.load(open(levelcache))
 
+    async def renderMap(self, filename, source, initialize=False, dirs=None, renderer=None, removeBorders=False):
+        '''
+        Loads and renders a level, given its file path and source. 
+        Shaves off the borders if specified.
+        '''
+        # Data
+        grid = await self.readMap(filename, source=source, initialize=initialize)
+
+        # Serialize the grid
+        m = grid.serialize()
+        images = m["data"]["images"]
+        palette = m["data"]["palette"]
+        source = m["data"]["source"]
+        width = m["data"]["width"]
+        height = m["data"]["height"]
+        filename = m["data"]["filename"]
+        out = f"renders/{source}/{filename}.gif"
+
+        # Shave off the borders:
+        if removeBorders:
+            # First and last rows
+            m["objects"].pop(height - 1)
+            m["objects"].pop(0)
+            # First and last columns of each row
+            for row in m["objects"]:
+                row.pop(width - 1)
+                row.pop(0)
+
+        # Handle sprite variants
+        tiles = [[[f'{obj["name"]}:{dirs(obj)}' for obj in cell] for cell in row] for row in m["objects"]]
+        tiles = renderer.handleVariants(tiles)
+
+        # Render the level
+        renderer.magickImages(tiles, width, height, images=images, palette=palette, imageSource=source, out=out)
+    
     @commands.command()
     @commands.is_owner()
-    async def parseMap(self, ctx, level):
-        safe = await self.readMap(level, "vanilla")
-        cells = self.bot.get_cog("Baba Is You").handleVariants(safe[0])
-        width = safe[1]["width"]
-        height = safe[1]["height"]
-        palette = safe[1]["palette"]
-        images = safe[1]["images"]
-        self.bot.get_cog("Baba Is You").magickImages(cells, width, height, palette=palette, images=images)
-        return await ctx.send(file=discord.File("renders/render.gif"))
+    async def loadmap(self, ctx, source, filename, initialize: bool =False):
+        '''
+        Loads a given level. Initializes the level tree if so specified.
+        '''
+        # For managing the directions of the items
+        tileData = self.bot.get_cog("Admin").tileColors
+        dirs = lambda o: o["direction"] * 8 if tileData[o["name"]]["tiling"] in ["0","2","3"] else 0
+        renderer = self.bot.get_cog("Baba Is You")
+        # Parse and render
+        await self.renderMap(filename, source=source, dirs=dirs, renderer=renderer, initialize=initialize, removeBorders=True)
+        # This should mostly just be false
+        if initialize:
+            self.cleanMetadata()
+        await ctx.send(f"Rendered level at `{source}/{filename}`.")
+
+    def cleanMetadata(self):
+        '''
+        Cleans up level metadata from self._levels, and populates the cleaned data into self.levelData.
+        '''
+        # Clean up level metadata 
+        for children in self._levels.values():
+            remove = []
+            for child in children["levels"]:
+                if self._levels.get(child) is not None:
+                    remove.append(child)
+            for child in remove:
+                children["levels"].pop(child)
+        self.levelData = self._levels
+        self._levels = {}
 
     @commands.command()
     @commands.is_owner()
-    async def loadmaps(self, ctx):
+    async def loadmaps(self, ctx, initialize=True, removeBorders=True):
         '''
-        Loads all levels. Initializes the level tree.
+        Loads and renders all levels.
+        Initializes the level tree unless otherwise specified.
+        Cuts off borders from rendered levels unless otherwise specified.
         '''
-        levels = [l for l in listdir("levels") if l.endswith(".l")]
+        levels = [l[:-2] for l in listdir("levels/vanilla") if l.endswith(".l")]
+
+        # For managing the directions of the items
+        tileData = self.bot.get_cog("Admin").tileColors
+        dirs = lambda o: o["direction"] * 8 if tileData[o["name"]]["tiling"] in ["0","2","3"] else 0
+        renderer = self.bot.get_cog("Baba Is You")
+
+        # Parse and render the level map
         for i,level in enumerate(levels):
-            await self.readMap(f"levels/{level}", initialize=True)
+            await self.renderMap(level, source="vanilla", dirs=dirs, renderer=renderer, initialize=True, removeBorders=True)
             print(i)
-        print("woot")
+
+        self.cleanMetadata()
 
     def readObjects(self, reader):
         '''
@@ -288,8 +362,8 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             # item.isObject = value == "\"object\""
         # elif obj == "type":
             # item.type = int(value)
-        # elif obj == "layer":
-            # item.layer = int(value)
+        elif obj == "layer":
+            item.layer = int(value)
         # elif obj == "colour":
             # item.color = self.CTS(value)
         # elif obj == "active":
@@ -369,16 +443,88 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         grid = self.addSpecials(grid)
         # Level metadata
         grid = self.addMetadata(grid)
+        # Object changes
+        grid = self.addChanges(grid)
 
-        # For debugging, delete this 
-        m = grid.serialize()
-        tileData = self.bot.get_cog("Admin").tileColors
-        safe = []
-        for row in m["objects"]:
-            x = [[f"{obj['name']}:{8 * obj['direction']}" if tileData[obj['name']]['tiling'] in ['0', '2', '3'] else obj['name'] + ":0" for obj in cell] for cell in row]
-            safe.append(x)
+        # Makes sure objects within a single cell are rendered in the right order
+        grid = self.sortLayers(grid)
         
-        return (safe, m["data"])
+        return grid
+
+    def sortLayers(self, grid):
+        '''
+        Sorts the items within each cell of the grid.
+        Items are sorted according to their layer attribute, in ascending order.
+        '''
+        for cell in grid.cells:
+            cell.objects.sort(key=lambda x: x.layer)
+
+        return grid
+
+    def addChanges(self, grid):
+        '''
+        Modifies the objects in the level according to the changes proposed in the level's .ld file.
+        '''
+        # the .ld file
+        info = grid.fp + "d"
+        with open(info) as ld:
+            changes = {}
+
+            # Go through each line of the file
+            raw = None
+            while raw != "":
+                raw = ld.readline()
+                line = raw.strip()
+                
+                # We're starting parsing the object changes section
+                if line == "[tiles]":
+                    rawl = None
+                    while rawl != "":
+                        rawl = ld.readline()
+                        data = rawl.strip()
+
+                        # Which objects are changed?
+                        if data.startswith("changed="):
+                            changes = dict.fromkeys(line[8:].split(","), None)
+                            continue
+                        
+                        # We're done parsing
+                        # We've exited [tiles] and entered a new "group"
+                        if data.startswith("["):
+                            break
+
+                        # Parsing
+                        index = tryIndex(data, "=")
+                        if index == -1: continue
+
+                        # These are the bits of information we care about
+                        values = ["_name"]
+                        for v in values:
+                            paramIndex = tryIndex(data, v)
+                            if paramIndex != -1:
+                                break
+                            # Don't need the line anymore, move on
+                        if paramIndex == -1:
+                            continue
+                        
+                        # This will be an element of `values`
+                        # param = data[paramIndex:index]
+
+                        # The object ID prefixing the line
+                        key = data[:paramIndex]
+                        changes[key] = data[index + 1:]
+        
+        # Updates the grid:
+        # Replaces old object names with new object names.
+        # This is a shallow change; only the name is updated.
+        if changes:
+            for cell in grid.cells:
+                for item in cell.objects:
+                    new = changes.get(item.obj)
+                    if new is not None:
+                        item.name = new
+        
+        return grid
 
     def addMetadata(self, grid):
         '''
@@ -386,7 +532,6 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         Adds the following information:
         * Level name 
         * Subtitle
-        * TODO: Level parent
         * Palette
         * Cursor position
         '''
@@ -425,7 +570,10 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         # Add other data
         grid.name = name
         grid.subtitle = subtitle
-        grid.palette = palette
+        if palette is None:
+            grid.palette = "default"
+        else:
+            grid.palette = palette
 
         return grid
 
@@ -473,7 +621,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
 
                         # These are the bits of information we care about
                         if initialize:
-                            values = ["X", "Y", "file", "number"]
+                            values = ["X", "Y", "file", "number", "name"]
                         else:
                             values = ["X", "Y"]
                         for v in values:
@@ -519,9 +667,10 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                     # Each level within
                     for l in levels.values():
                         child = {
-                            "number" : l["number"]
+                            "number" : l["number"],
+                            "name"   : l["name"]
                         }
-                        # nice nested file paths
+                        # nice nested level ids
                         node["levels"][l["file"]] = child
                                                 
                     self._levels[parent] = node
@@ -773,12 +922,9 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             cell = grid.cells[j]
             ID = int.from_bytes(mapBuffer[k : k + 16], byteorder="little") & (2**16 - 1)
 
-
-            if ID in self.defaultsById:
-                item = Item()
-                item.ID = ID
-                item.name = self.defaultsById[ID].name
-                item.obj = self.defaultsById[ID].obj
+            item = self.defaultsById.get(ID)
+            if item is not None:
+                item = item.copy()
             else:
                 item = Item.empty()
                 ID = -1

@@ -49,7 +49,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             optimize=False # Important in order to keep the color palettes from being unpredictable
         )
 
-    def magickImages(self, wordGrid, width, height, *, palette="default", images=None, imageSource="vanilla"):
+    def magickImages(self, wordGrid, width, height, *, palette="default", images=None, imageSource="vanilla", out="renders/render.gif"):
         '''
         Takes a list of tile names and generates a gif with the associated sprites. 
         Saves the gif to `renders/render.gif`.
@@ -74,7 +74,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     # Back on track
                     frames.append(imageFrame)
 
-            return self.saveFrames(frames, "renders/render.gif")
+            return self.saveFrames(frames, out)
 
         # For each animation frame
         paths = [
@@ -148,7 +148,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 for image in images:
                     overlap = Image.open(f"images/{imageSource}/{image}_{i + 1}.png")
                     mask = overlap.getchannel("A")
-                    renderFrame.paste(overlap, box=(24,24), mask=mask)
+                    renderFrame.paste(overlap, mask=mask)
 
             # Pastes each image onto the image
             # For each row
@@ -173,7 +173,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             # Saves the final image
             frames.append(renderFrame)
 
-        self.saveFrames(frames, "renders/render.gif")
+        self.saveFrames(frames, out)
 
     def handleVariants(self, grid):
         '''
