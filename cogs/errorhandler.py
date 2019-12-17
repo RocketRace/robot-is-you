@@ -56,6 +56,7 @@ class CommandErrorHandler(commands.Cog):
             return
         
         ignored = (commands.CommandNotFound, commands.NotOwner, commands.CheckFailure) 
+        whitelist = (commands.CommandOnCooldown)
         
         # Allows us to check for original exceptions raised and sent to CommandInvokeError.
         # If nothing is found. We keep the exception passed to on_command_error.
@@ -111,8 +112,13 @@ class CommandErrorHandler(commands.Cog):
             emb.add_field(name="Jump", value=formatted)
 
         # Anything in ignored will return and prevent anything happening.
-        if isinstance(error, ignored):
+        if isinstance(error, whitelist):
+            pass
+        elif isinstance(error, ignored):
             return
+
+        if isinstance(error, commands.CommandOnCooldown):
+            return await self.bot.send(ctx, str(error))
 
         elif isinstance(error, commands.DisabledCommand):
             await self.bot.send(ctx, f'{ctx.command} has been disabled.')
