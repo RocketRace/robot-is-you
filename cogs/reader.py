@@ -4,6 +4,7 @@ import zlib
 
 from discord.ext import commands
 from os          import listdir, stat
+from string      import ascii_lowercase
 
 def flatten(x, y, width):
     '''
@@ -32,17 +33,24 @@ class Grid:
         Initializes a blank grid, given a path to the level file. 
         This should not be used; you should use Reader.readMap() instead to generate a filled grid.
         '''
-        self.images = []
-        self.name = ""
-        self.parent = ""
-        self.subtitle = ""
-        self.palette = ""
-        self.width = 0
-        self.height = 0
-        self.cells = []
+        # The location of the level
         self.fp = f"levels/{source}/{filename}.l"
         self.filename = filename
         self.source = source
+        # Basic level information
+        self.name = ""
+        self.subtitle = ""
+        self.palette = ""
+        self.images = []
+        # Object information
+        self.width = 0
+        self.height = 0
+        self.cells = []
+        # Parent level and map identification
+        self.parent = None
+        self.mapID = None
+        self.style = None
+        self.number = None
     
     def serialize(self):
         '''
@@ -73,15 +81,18 @@ class Grid:
         final = {
             "objects" : m,
             "data" : {
-                "images"   : self.images,
-                "palette"  : self.palette,
-                "name"     : self.name,
-                "subtitle" : self.subtitle,
-                "parent"   : self.parent,
-                "width"    : self.width,
-                "height"   : self.height,
-                "source"   : self.source,
-                "filename" : self.filename
+                "images"     : self.images,
+                "palette"    : self.palette,
+                "name"       : self.name,
+                "subtitle"   : self.subtitle,
+                "mapID"      : self.mapID,
+                "parent"     : self.parent,
+                "width"      : self.width,
+                "height"     : self.height,
+                "source"     : self.source,
+                "filename"   : self.filename,
+                "number"     : self.number,
+                "style"      : self.style
             }
         }
         return final
@@ -135,11 +146,14 @@ class Item:
         return Item(ID=-1, obj="empty", name="empty", layer=0)
     
     @classmethod
-    def level(cls):
+    def level(cls, color=[0,3]):
         '''
         Returns an Item representing a level object.
         '''
-        return Item(ID=-2, obj="level", name="level", layer=20)
+        if color == [0,3]:
+            return Item(ID=-2, obj="level", name="level", layer=20)
+        else:
+            return Item(ID=-2, obj="level", name=f"level_{color[0]}_{color[1]}", layer=20)
 
 class Reader(commands.Cog, command_attrs=dict(hidden=True)):
     '''
@@ -175,7 +189,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         if stat(levelcache).st_size != 0:
             self.levelData = json.load(open(levelcache))
 
-    async def renderMap(self, filename, source, initialize=False, dirs=None, renderer=None, removeBorders=False):
+    async def renderMap(self, filename, source, initialize=False, tileData=None, dirs=None, renderer=None, removeBorders=False):
         '''
         Loads and renders a level, given its file path and source. 
         Shaves off the borders if specified.
@@ -204,12 +218,25 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                 row.pop(0)
 
         # Handle sprite variants
-        tiles = [[[f'{obj["name"]}:{dirs(obj)}' for obj in cell] for cell in row] for row in m["objects"]]
+        tiles = [[[dirs(obj) for obj in cell] for cell in row] for row in m["objects"]]
         tiles = renderer.handleVariants(tiles)
 
         # Render the level
         renderer.magickImages(tiles, width, height, images=images, palette=palette, imageSource=source, out=out)
-    
+        
+        # Return level metadata
+        return {grid.filename: m["data"]}
+
+    def preMapLoad(self):
+        '''
+        Prerequisites for level rendering
+        '''
+        tileData = self.bot.get_cog("Admin").tileColors
+        # If the objects for some reason aren't well formed, they're replaced with error tiles
+        dirs = lambda o: f'error:0' if tileData.get(o["name"]) is None else f'{o["name"]}:{o["direction"] * 8 if tileData[o["name"]]["tiling"] in ["0","2","3"] else 0}'
+        renderer = self.bot.get_cog("Baba Is You")
+        return tileData, dirs, renderer
+
     @commands.command()
     @commands.is_owner()
     async def loadmap(self, ctx, source, filename, initialize: bool =False):
@@ -217,21 +244,23 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         Loads a given level. Initializes the level tree if so specified.
         '''
         # For managing the directions of the items
-        tileData = self.bot.get_cog("Admin").tileColors
-        dirs = lambda o: o["direction"] * 8 if tileData[o["name"]]["tiling"] in ["0","2","3"] else 0
-        renderer = self.bot.get_cog("Baba Is You")
+        tileData, dirs, renderer = self.preMapLoad()
         # Parse and render
-        await self.renderMap(filename, source=source, dirs=dirs, renderer=renderer, initialize=initialize, removeBorders=True)
+        metadata = await self.renderMap(filename, source=source, tileData=tileData, dirs=dirs, renderer=renderer, initialize=initialize, removeBorders=True)
         # This should mostly just be false
         if initialize:
-            self.cleanMetadata()
+            self.cleanMetadata(metadata)
         await ctx.send(f"Rendered level at `{source}/{filename}`.")
 
-    def cleanMetadata(self):
+    def cleanMetadata(self, metadata):
         '''
-        Cleans up level metadata from self._levels, and populates the cleaned data into self.levelData.
+        Cleans up level metadata from self._levels as well as the given dict, and populates the cleaned data into self.levelData.
         '''
-        # Clean up level metadata 
+        # Clean up basic level data
+        for level,data in metadata.items():
+            self.levelData[level] = data
+
+        # Clean up level parents
         for children in self._levels.values():
             remove = []
             for child in children["levels"]:
@@ -239,8 +268,18 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                     remove.append(child)
             for child in remove:
                 children["levels"].pop(child)
-        self.levelData = self._levels
+        for children in self._levels.values():
+            for child in children["levels"]:
+                self.levelData[child]["parent"] = children["mapID"]
+                self.levelData[child]["number"] = children["levels"][child]["number"]
+                self.levelData[child]["style"] = children["levels"][child]["style"]
+
+        # Clear
         self._levels = {}
+
+        # Saves the level data to leveldata.json
+        with open("cache/leveldata.json", "wt") as metadataFile:
+            json.dump(self.levelData, metadataFile, indent=3)
 
     @commands.command()
     @commands.is_owner()
@@ -253,16 +292,20 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         levels = [l[:-2] for l in listdir("levels/vanilla") if l.endswith(".l")]
 
         # For managing the directions of the items
-        tileData = self.bot.get_cog("Admin").tileColors
-        dirs = lambda o: o["direction"] * 8 if tileData[o["name"]]["tiling"] in ["0","2","3"] else 0
-        renderer = self.bot.get_cog("Baba Is You")
+        tileData, dirs, renderer = self.preMapLoad()
 
         # Parse and render the level map
+        metadatas = {}
+        total = len(levels)
         for i,level in enumerate(levels):
-            await self.renderMap(level, source="vanilla", dirs=dirs, renderer=renderer, initialize=True, removeBorders=True)
-            print(i)
+            metadata = await self.renderMap(level, source="vanilla", tileData=tileData, dirs=dirs, renderer=renderer, initialize=True, removeBorders=True)
+            metadatas.update(metadata)
+            if i % 50 == 49:
+                await ctx.send(f"{i + 1} / {total}")
+        await ctx.send(f"{total} / {total}")
+        await ctx.send("Done.")
 
-        self.cleanMetadata()
+        self.cleanMetadata(metadatas)
 
     def readObjects(self, reader):
         '''
@@ -390,7 +433,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         '''
         startIndex = 0
         endIndex = len(value)
-        if value.index("{") == 0:
+        if tryIndex(value, "{") == 0:
             startIndex += 1
             endIndex -= 1
         try:
@@ -439,10 +482,10 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         grid = self.addLevels(grid, initialize=initialize) # If we want to also initialize the level tree
         # Images
         grid = self.addImages(grid)
-        # Special objects
-        grid = self.addSpecials(grid)
-        # Level metadata
+        # Level metadata (must be below addSpecials)
         grid = self.addMetadata(grid)
+        # Special objects
+        grid = self.addSpecials(grid, initialize=initialize)
         # Object changes
         grid = self.addChanges(grid)
 
@@ -498,7 +541,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                         if index == -1: continue
 
                         # These are the bits of information we care about
-                        values = ["_name"]
+                        values = ["_name", "_image"]
                         for v in values:
                             paramIndex = tryIndex(data, v)
                             if paramIndex != -1:
@@ -508,11 +551,13 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                             continue
                         
                         # This will be an element of `values`
-                        # param = data[paramIndex:index]
+                        param = data[paramIndex:index]
 
                         # The object ID prefixing the line
                         key = data[:paramIndex]
-                        changes[key] = data[index + 1:]
+                        if changes.get(key) is None:
+                            changes[key] = {}
+                        changes[key][param] = data[index + 1:]
         
         # Updates the grid:
         # Replaces old object names with new object names.
@@ -522,7 +567,10 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                 for item in cell.objects:
                     new = changes.get(item.obj)
                     if new is not None:
-                        item.name = new
+                        if new.get("_name") is not None:
+                            item.name = new["_name"]
+                        else:
+                            item.name = new["_image"]
         
         return grid
 
@@ -538,7 +586,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         # the .ld file
         info = grid.fp + "d"
         # Our data
-        name = subtitle = palette = cursorX = cursorY = None
+        name = subtitle = palette = cursorX = cursorY = mapID = None
         with open(info) as ld:
             # Go through each line of the file
             line = None
@@ -553,6 +601,9 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                 # Level subtitle
                 if line.startswith("subtitle="):
                     subtitle = line[9:]
+                # Custom level parent
+                if line.startswith("mapid="):
+                    mapID = line[6:]
                 # Cursor position
                 if line.startswith("selectorX="):
                     pos = line[10:]
@@ -567,13 +618,17 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             cursorPosition = flatten(cursorX, cursorY, grid.width)
             grid.cells[cursorPosition].objects.append(self.defaultsByName["cursor"])
 
-        # Add other data
+        # Apply level data
         grid.name = name
         grid.subtitle = subtitle
+        # Palette
         if palette is None:
             grid.palette = "default"
         else:
             grid.palette = palette
+        # Personal map ID
+        if mapID is not None:
+            grid.mapID = mapID
 
         return grid
 
@@ -587,6 +642,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         info = grid.fp + "d"
         with open(info) as ld:
             levels = {}
+            icons = {}
             levelCount = 0
             mapID = ""
 
@@ -621,9 +677,9 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
 
                         # These are the bits of information we care about
                         if initialize:
-                            values = ["X", "Y", "file", "number", "name"]
+                            values = ["X", "Y", "style", "colour", "number", "file", "name"]
                         else:
-                            values = ["X", "Y"]
+                            values = ["X", "Y", "style", "colour", "number"]
                         for v in values:
                             paramIndex = tryIndex(data, v)
                             if paramIndex != -1:
@@ -640,20 +696,106 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                         if key.isnumeric():
                             # Ignore levels with IDs above the levelcount
                             # Because those are not actual levels???
-                            if int(key) <= levelCount:
+                            if int(key) <= levelCount - 1:
                                 # If the level is new
                                 if levels.get(key) is None:
                                     levels[key] = {}
-                                # Store the level position
+                                # Store the level data
                                 levels[key][param] = data[index + 1:]
+                    
+                # We're starting parsing level icons
+                if line == "[icons]":
+                    data = None
+                    while data != "":
+                        data = ld.readline().strip()
+                        
+                        # We're done parsing
+                        # We've exited [icons] and entered a new "group"
+                        if data.startswith("["):
+                            break
+                        
+                        # not what we're looking for
+                        if not data[:1].isnumeric():
+                            continue
+
+                        # Parsing
+                        index = data.index("=")
+
+                        # These are the bits of information we care about
+                        values = ["file"]
+                        for v in values:
+                            paramIndex = tryIndex(data, v)
+                            if paramIndex != -1:
+                                break
+                            # Don't need the line anymore, move on
+                        if paramIndex == -1:
+                            continue
+                        
+                        param = "file"
+
+                        # The number prefixing the line
+                        key = data[:paramIndex]
+                        if key.isnumeric():
+                            # Ignore levels with IDs above the levelcount
+                            # Because those are not visible when playing the game
+                            if int(key) <= levelCount - 1:
+                                # If the level icon is new
+                                if icons.get(key) is None:
+                                    icons[key] = {}
+                                # Store the level icon
+                                icons[key][param] = data[index + 1:]
 
             # Update our grid object with the levels
             for data in levels.values():
+                # Level position
                 position = flatten(data["X"], data["Y"], grid.width)
-                level = Item.level()
+
+                # Level color
+                if data.get("colour") is not None:
+                    color = [int(data["colour"][0]), int(data["colour"][2])]
+                else:
+                    color = [0,3]
+
+                # Level object
+                # This is a hacky workaround to allow for multicolored levels.
+                # "level" is a plain level with color index (0,3).
+                # "level_x_y" is a colored level with color index (x,y).
+                level = Item.level(color=color)
                 level.position = position
+
                 # Levels are (sort of) like any other object
                 grid.cells[position].objects.append(level)
+                # Levels that use custom icons:
+                if data["style"] == "-1":
+                    # The number of the level is the icon key
+                    number = data["number"]
+                    iconFile = icons[number]["file"]
+
+                    icon = Item()
+                    icon.position = position
+                    # This is a hack to work around the fact that 
+                    # the game does not consider level icons objects, but 
+                    # our rendering framework does:
+                    # Remove _1 from the file name if
+                    if iconFile.startswith("icon"):
+                        icon.name = iconFile[:-2]
+                    else:
+                        icon.name = iconFile[:-4]
+                    # Bring to the front layer whenever possible
+                    icon.layer = 30
+                    grid.cells[position].objects.append(icon)
+                # Levels using the dot icons + the default level icon
+                elif data["style"] == "2":
+                    icon = Item()
+                    icon.position = position
+                    # This is a hack to work around the fact that 
+                    # the game does not consider level icons objects, but 
+                    # our rendering framework does:
+                    # Create an item with the name "icon"
+                    icon.name = "icon"
+                    # Bring to the front layer whenever possible
+                    icon.layer = 30
+                    grid.cells[position].objects.append(icon)
 
                 # Handle the level tree
                 if initialize:
@@ -668,7 +810,8 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                     for l in levels.values():
                         child = {
                             "number" : l["number"],
-                            "name"   : l["name"]
+                            "name"   : l["name"],
+                            "style"  : l["style"]
                         }
                         # nice nested level ids
                         node["levels"][l["file"]] = child
@@ -732,7 +875,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                         if key.isnumeric():
                             # Ignore paths with IDs above the pathcount
                             # Because those are not actual paths???
-                            if int(key) <= pathCount:
+                            if int(key) <= pathCount - 1:
                                 # If the path is new
                                 if paths.get(key) is None:
                                     paths[key] = {}
@@ -802,7 +945,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         grid.images = sortedList
         return grid
 
-    def addSpecials(self, grid):
+    def addSpecials(self, grid, initialize=False):
         '''
         Adds special objects from within a level to the given Grid.
         Data is parsed from the .ld file associated with the level.
@@ -856,7 +999,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                         if key.isnumeric():
                             # Ignore specials with IDs above the pathcount
                             # Because those are not actual specials???
-                            if int(key) <= specialCount:
+                            if int(key) <= specialCount - 1:
                                 # If the special is new
                                 if specials.get(key) is None:
                                     specials[key] = {}
@@ -871,6 +1014,25 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                 level = Item.level()
                 level.position = position
                 # grid.cells[position].objects.append(level)
+
+                # Handle the level tree
+                if initialize:
+                    # The parent node
+                    mapID = grid.mapID
+                    for parentID,children in self._levels.items():
+                        if children["mapID"] == mapID:
+                            parent = parentID
+                    
+                    # Relevant fields
+                    levelID = split[1]
+                    style = split[2]
+                    number = split[3]
+                                                
+                    self._levels[parent]["levels"][levelID] = {
+                        "number" : number,
+                        "style"  : style,
+                        "name"   : None
+                    }
 
         return grid
             
@@ -949,6 +1111,124 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             for j in range(read):
                 item = items[j]
                 item.direction = mapBuffer[j]
+
+    @commands.cooldown(2, 10, commands.BucketType.channel)
+    @commands.command(name="level")
+    async def _level(self, ctx, *, query):
+        '''
+        Shows a render of a Baba Is You level.
+        Levels are searched for in the following order:
+        * Checks if the input matches the level ID (e.g. "106level")
+        * Checks if the input matches the level number (e.g. "space-3" or "lake-extra 1")
+        * Checks if the input matches the level name (e.g. "further fields")
+        '''
+        # User feedback
+        await ctx.trigger_typing()
+
+        levelID = None
+        level = None
+        # Lower case, make the query all nice
+        fineQuery = query.lower().strip()
+        # Is it the level ID?
+        if self.levelData.get(fineQuery) is not None:
+            levelID = fineQuery
+            level = self.levelData[fineQuery]
+
+        # Does the query match a level tree?
+        if level is None:
+            # Separates the map and the number / letter / extra number from the query.
+            tree = [string.strip() for string in fineQuery.split("-")]
+            # There should only be two parts to the query.
+            if len(tree) == 2:
+                # The two parts
+                mapID = tree[0]
+                identifier = tree[1]
+                # What style of level identifier are we given?
+                # Style: 0 -> "extra" + number
+                # Style: 1 -> number
+                # Style: 2 -> letter
+                style = None
+                # What "number" is the level?
+                # .ld files use "number" to refer to both numbers, letters and extra numbers.
+                number = None
+                if identifier.isnumeric():
+                    # Numbers
+                    style = "0"
+                    number = identifier
+                elif len(identifier) == 1 and identifier.isalpha():
+                    # Letters (only 1 letter)
+                    style = "1"
+                    # 0 <--> a
+                    # 1 <--> b
+                    # ...
+                    # 25 <--> z
+                    rawNumber = tryIndex(ascii_lowercase, identifier)
+                    # If the identifier is a lowercase letter, set "number"
+                    if rawNumber != -1: number = str(rawNumber)
+                elif identifier.startswith("extra") and identifier[5:].strip().isnumeric():
+                    # Extra numbers:
+                    # Starting with "extra", ending with numbers
+                    style = "2"
+                    number = str(int(identifier[5:].strip()) - 1)
+                if style is not None and number is not None:
+                    # Check for the mapID & identifier combination
+                    for filename,data in self.levelData.items():
+                        if data["style"] == style and data["number"] == number and data["parent"] == mapID:
+                            levelID = filename
+                            level = data
+
+        # Is the query a real level name?
+        if level is None: 
+            for filename,data in self.levelData.items():
+                # Matches an existing level name
+                if data["name"] == fineQuery:
+                    # Guaranteed
+                    level = data
+                    levelID = filename
+
+        # If not found: error message
+        if level is None:
+            return await self.bot.send(ctx, f'⚠️ Could not find a level matching the query "{fineQuery}".')
+
+        # If found:
+        if level is not None and levelID is not None:
+            # The embedded file
+            gif = discord.File(f"renders/{level['source']}/{levelID}.gif", spoiler=True)
+            
+            # Level name
+            name = level["name"]
+
+            # Level parent 
+            parent = level.get("parent")
+            mapID = level.get("mapID")
+            tree = ""
+            if parent is not None:
+                if mapID is not None:
+                    tree = parent + "-" + mapID + ": "
+                else:
+                    style = level["style"]
+                    number = level["number"]
+                    identifier = None
+                    if style == "0":
+                        identifier = number
+                    elif style == "1":
+                        identifier = ascii_lowercase[int(number)]
+                    elif style == "2":
+                        identifier = "extra " + str(int(number) + 1)
+                    else: 
+                        identifier = mapID
+                    tree = parent + "-" + identifier + ": "
+            
+            # Level subtitle
+            subtitle = ""
+            if level.get("subtitle") is not None:
+                subtitle = "\nSubtitle: `" + level["subtitle"] + "`"
+
+            # Formatted output
+            formatted = f"{ctx.author.mention}\nName: `{tree}{name}`\nID: `{levelID}`{subtitle}"
+
+            # Send the result
+            await ctx.send(formatted, file=gif)
 
 def setup(bot):
     bot.add_cog(Reader(bot))
