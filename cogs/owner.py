@@ -552,7 +552,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 await ctx.send(f"{i} / {total}...")
             self.generateTileSprites(tile, obj, palettes, colors)
             i += 1
-        await ctx.send(f"{total} / {total} palettes loaded.")
+        await ctx.send(f"{total} / {total} tiles loaded.")
 
         self.bot.loading = False
     
