@@ -295,15 +295,16 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         tileData, dirs, renderer = self.preMapLoad()
 
         # Parse and render the level map
+        await ctx.send("Loading maps...")
         metadatas = {}
         total = len(levels)
         for i,level in enumerate(levels):
             metadata = await self.renderMap(level, source="vanilla", tileData=tileData, dirs=dirs, renderer=renderer, initialize=True, removeBorders=True)
             metadatas.update(metadata)
-            if i % 50 == 49:
+            if i % 50 == 0:
                 await ctx.send(f"{i + 1} / {total}")
-        await ctx.send(f"{total} / {total}")
-        await ctx.send("Done.")
+        await ctx.send(f"{total} / {total} maps loaded.")
+        await ctx.send(f"{ctx.author.mention} Done.")
 
         self.cleanMetadata(metadatas)
 
