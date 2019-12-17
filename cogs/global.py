@@ -233,9 +233,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
                                     # Tiles that join together
                                     def doesTile(stack):
-                                        tileable = ["level", tile]
-                                        for t in tileable:
-                                            if t in stack:
+                                        for t in stack:
+                                            if t == tile or t.startswith("level"):
                                                 return True
                                         return False
 
