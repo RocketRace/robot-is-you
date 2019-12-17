@@ -51,7 +51,15 @@ class BabaBot(commands.Bot):
 
 
 # Establishes the bot
-bot = BabaBot(PREFIXES, WEBHOOK_ID, EMBED_COLOR, VANILLA, case_insensitive=True, activity=DEFAULT_ACTIVITY, owner_id = 156021301654454272)
+bot = BabaBot(PREFIXES, 
+    WEBHOOK_ID, 
+    EMBED_COLOR, 
+    VANILLA, 
+    case_insensitive=True, 
+    activity=DEFAULT_ACTIVITY, 
+    owner_id = 156021301654454272,
+    description="*An entertainment bot for rendering levels and custom scenes based on the indie game Baba Is You.*"
+)
 
 # Loads the modules of the bot
 if __name__ == "__main__":
