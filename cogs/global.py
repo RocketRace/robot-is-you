@@ -8,8 +8,6 @@ from json        import load
 from os          import listdir
 from os.path     import isfile
 from PIL         import Image
-from random      import choice
-from subprocess  import call
 
 def flatten(items, seqtypes=(list, tuple)):
     '''
@@ -24,8 +22,6 @@ def flatten(items, seqtypes=(list, tuple)):
 class GlobalCog(commands.Cog, name="Baba Is You"):
     def __init__(self, bot):
         self.bot = bot
-        with open("tips.json") as tips:
-            self.tips = load(tips)
 
     # Check if the bot is loading
     async def cog_check(self, ctx):
@@ -285,24 +281,21 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
     async def search(self, ctx, *, query: str):
         """
-        Searches tiles for rendering from a query.
-        Returns a list of tile names that match the query.
-        Can return up to 30 tiles per search.
-        Tiles may be used in the `tile` (and subsequently `rule`) commands.
+        Searches for tiles based on a query.
 
-        Queries may contain the following flags to filter results. Multiple flags may be used.
+        **You may use these flags to navigate the output:**
+        * `page`: Which page of output you wish to view. (Example usage: `search text page:2`)
+        * `sort`: Which value to sort by. Defaults to `name`.
+        * `reverse`: Whether or not the output should be in descending order or not. This may be `true` or `false`.
+
+        **Queries may contain the following flags to filter results.**
         * `sprite`: The name of the sprite. Will return only tiles that use that sprite.
         * `text`: May be `true` or `false`. With `true`, this will only return text tiles.
         * `source`: The source of the sprite. Valid values for this are `vanilla`, `vanilla-extensions`, `cg5-mods`, `lily-and-patashu-mods`, `patasuhu-redux`, `misc`, and `modded`. Using `modded` will return any non-vanilla tiles.
         * `color`: The color index of the sprite. Must be two positive integers. Example: `1,2`
         * `tiling`: The tiling type of the object. This must be either `-1` (non-tiling objects), `0` (directional objects), `1` (tiling objects), `2` (character objects), `3` (directional & animated objects) or `4` (animated objects). 
 
-        You may use these additional flags to navigate the output:
-        * `page`: Which page of output you wish to view.
-        * `sort`: Which value to sort by. Defaults to `name`.
-        * `reverse`: Whether or not the output should be in descending order or not. This may be `true` or `false`.
-
-        Example search commands:
+        **Example commands:**
         `search baba`
         `search text:false source:vanilla sta`
         `search source:modded sort:color page:4`
@@ -431,15 +424,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         # Tidy up our output with this mess
         content = "\n".join([f"**{x.get('name')}** : {', '.join([f'{k}: `{v[0]},{v[1]}`' if isinstance(v, list) else f'{k}: `{v}`' for k, v in sorted(x.items(), key=lambda λ: λ[0]) if k != 'name'])}" if not isinstance(x, str) else x for x in [matches[0]] + sorted(matches[1:], key=lambda λ: (λ[sortBy], λ[secondarySortBy]), reverse=reverse)[firstResult:lastResult + 1]])
         await self.bot.send(ctx, content)
-    
-    @commands.command()
-    @commands.cooldown(2, 5, type=commands.BucketType.channel)
-    async def tip(self, ctx):
-        '''
-        Gives a random helpful tip regarding this bot's functionality.
-        '''
-        randomTip = choice(self.tips)
-        await self.bot.send(ctx, f"Here's a tip:\n*{randomTip}*")
 
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
     @commands.command(name="list")
@@ -465,48 +449,123 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 msg.append(palette[:-4])
         await self.bot.send(ctx, "\n".join(msg))
 
-    @commands.command()
-    @commands.is_owner()
-    async def testing(self, ctx, arg = ""):
-        x = load(open("test.json"))
-        grid = x["objects"]
-        images = x["images"]
-        grid = [[["-" if item["ID"] == -1 else item["name"] for item in stack] for stack in row] for row in grid]
-        grid = self.handleVariants(grid)
-        self.magickImages(grid, 35, 20, palette="default", imageSource="vanilla", images=images)
-        await self.bot.send(ctx, "welp\nlooks like I did it", file=discord.File("renders/render.gif"))
+    @commands.cooldown(2,10,type=commands.BucketType.channel)
+    @commands.command(name="variants")
+    async def listVariants(self, ctx, tile):
+        '''
+        List valid sprite variants for a given tile.
+        '''
+        # Clean the input
+        cleanTile = tile.strip().lower()
+
+        # Does the tile exist?
+        data = self.bot.get_cog("Admin").tileColors.get(cleanTile)
+        if data is None:
+            return await self.bot.send(ctx, f"Could not find a tile with name '{cleanTile}'.")
+        
+        # Determines the tiling type of the tile
+        tiling = data.get("tiling")
+
+        # Possible tiling types and the corresponding available variants
+        output = {
+            None: [
+                "This tile does not exist, or has no tiling data."
+            ],
+            "-1": [
+                "This tile has no extra variants. It supports:",
+                "`(no variant)` / `:0` / `:right` / `:r`"
+            ],
+            "0": [
+                "This is a directional tile. It supports:",
+                "`(no variant)` / `:0` / `:right` / `:r`",
+                "`:8` / `:down` / `:d`",
+                "`:16` / `:left` / `:l`",
+                "`:24` / `:up` / `:u`"
+            ],
+            "1": [
+                "This is a tiling tile. It automatically applies sprite variants to itself.",
+            ],
+            "2": [
+                "This is a character tile. It supports directional and animated sprites, as well as sleeping sprites:",
+                "`(no variant)` / `:0` / `:right` / `:r`",
+                "`:1`",
+                "`:2`",
+                "`:3`",
+                "`:7` / `:ds`",
+                "`:8` / `:down` / `:d`",
+                "`:9`",
+                "`:10`",
+                "`:11`",
+                "`:15` / `:dl`",
+                "`:16` / `:left` / `:l`",
+                "`:17`",
+                "`:18`",
+                "`:19`",
+                "`:23` / `:du`",
+                "`:24` / `:up` / `:u`",
+                "`:25`",
+                "`:26`",
+                "`:27`",
+                "`:31` / `:sleep` / `rs`",
+            ],
+            "3": [
+                "This is an animated & directional tile. It supports:",
+                "`(no variant)` / `:0` / `:right` / `:r`",
+                "`:1`",
+                "`:2`",
+                "`:3`",
+                "`:8` / `:down` / `:d`",
+                "`:9`",
+                "`:10`",
+                "`:11`",
+                "`:16` / `:left` / `:l`",
+                "`:17`",
+                "`:18`",
+                "`:19`",
+                "`:24` / `:up` / `:u`",
+                "`:25`",
+                "`:26`",
+                "`:27`"
+            ],
+            "4": [
+                "This is an animated tile. It supports:",
+                "`(no variant)` / `:0` / `:right` / `:r`",
+                "`:1`",
+                "`:2`",
+                "`:3`"
+            ]
+        }
+
+        # Output
+        await self.bot.send(ctx, f"Valid sprite variants for '{cleanTile}'\n" + "\n".join(output[tiling]) + "\n")
 
     # Generates an animated gif of the tiles provided, using the default palette
     @commands.command(aliases=["rule"])
     @commands.cooldown(4, 10, type=commands.BucketType.channel)
     async def tile(self, ctx, *, palette: str, content: str = ""):
         """
-        Renders the tiles provided, with many options. `help tile` for more...
-        Returns a grid of 24 x 24 animated pixel sprites associated with each input tile. Up to 64 tiles may be rendered per command.
+        Renders the tiles provided.
+
+        **Features:**
+        * `palette` flag : Use this flag to recolor the output gif with the specified color palette. Use this in the format `palette:palette_name`. (See the `palettes` command for valid palettes.)
+        * `rule` alias: Invoking the command with `rule` instead of `tile` will replace every tile with their text variants. Otherwise, render the text version of tiles with `text_object`.
+        * `:variant` sprite variants: You may render a variant of a sprite by suffixing `:variant` to a tile. Valid variants for tiles are detailed in the `variants` command.
+
+        **Special syntax:**
+        * `-` : Renders an empty tile. 
+        * `&` : Separate tiles with this to stack them on top of each other.
+        * `,` : Input of the format `text_x,y...` or `tile_x,y,...` will be expanded into `text_x text_y ...` or `tile_x tile_y ...`
+        * `||` : If you hide any of the input with spoiler tags, the output gif is marked as a spoiler.
+        * `text_` : If this command is invoked using `tile`, you may render text tiles using `text_object`.
+        * `tile_` : If this command is invoked using `rule`, you may render non-text tiles using `tile_object`.
         
-        The optional `<palette>` argument will recolor the output based on the color data of the palette. 
-        `<palette>` must be of the format `palette:palette_name`. Valid palette names can be seen using the `palettes` command.
-        
-        Use hyphens to render empty tiles.
-
-        Invoking this command using `rule` instead of `tile` will cause the "text" counterparts of each tile to be rendered instead.
-        Otherwise, all text tiles are rendered with the format `text_object`.
-        
-        Input of the format `text_x,y,z...` will be expanded into `text_x, text_y, text_z, ...`. This is a convenience measure when working with many text tiles.
-
-        Up to three tiles may be rendered in the same spot, on top of each other. You may stack tiles by separating them with `&`.
-        An example of such stacked tiles: `baba&flag&text_you`
-
-        If any part of the command is hidden behind spoiler tags (like ||this||), the resulting gif will be marked as a spoiler. 
-
-        You may render a variant of a sprite by appending a suffix to the tile name. Valid suffixes are based on the tiling type of the object.
-        Examples: 
-        `baba:3` - The fourth animation frame of a baba moving right
-        `bug:8` - A bug facing up
-        `keke:31` - A keke facing right, sleeping
-        Shorthands:
-        `object:direction (up / down / left / right)` - The object facing the specified direction, if available.
-        `object:sleep` - The object in a sleeping animation (facing right), if available.
+        **Example commands:**
+        `tile baba - keke`
+        `tile palette:marshmallow keke:down baba:sleep`
+        `rule rock is push`
+        `rule tile_baba on baba is word`
+        `tile text_baba,is,you`
+        `tile baba&flag ||cake||`
         """
         async with ctx.typing():
             # The parameters of this command are a lie to appease the help command: here's what actually happens            
