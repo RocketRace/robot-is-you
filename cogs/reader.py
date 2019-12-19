@@ -4,7 +4,6 @@ import zlib
 
 from discord.ext import commands
 from os          import listdir, stat
-from string      import ascii_lowercase
 
 def flatten(x, y, width):
     '''
@@ -1112,124 +1111,6 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             for j in range(read):
                 item = items[j]
                 item.direction = mapBuffer[j]
-
-    @commands.cooldown(2, 10, commands.BucketType.channel)
-    @commands.command(name="level")
-    async def _level(self, ctx, *, query):
-        '''
-        Shows a render of a Baba Is You level.
-        Levels are searched for in the following order:
-        * Checks if the input matches the level ID (e.g. "106level")
-        * Checks if the input matches the level number (e.g. "space-3" or "lake-extra 1")
-        * Checks if the input matches the level name (e.g. "further fields")
-        '''
-        # User feedback
-        await ctx.trigger_typing()
-
-        levelID = None
-        level = None
-        # Lower case, make the query all nice
-        fineQuery = query.lower().strip()
-        # Is it the level ID?
-        if self.levelData.get(fineQuery) is not None:
-            levelID = fineQuery
-            level = self.levelData[fineQuery]
-
-        # Does the query match a level tree?
-        if level is None:
-            # Separates the map and the number / letter / extra number from the query.
-            tree = [string.strip() for string in fineQuery.split("-")]
-            # There should only be two parts to the query.
-            if len(tree) == 2:
-                # The two parts
-                mapID = tree[0]
-                identifier = tree[1]
-                # What style of level identifier are we given?
-                # Style: 0 -> "extra" + number
-                # Style: 1 -> number
-                # Style: 2 -> letter
-                style = None
-                # What "number" is the level?
-                # .ld files use "number" to refer to both numbers, letters and extra numbers.
-                number = None
-                if identifier.isnumeric():
-                    # Numbers
-                    style = "0"
-                    number = identifier
-                elif len(identifier) == 1 and identifier.isalpha():
-                    # Letters (only 1 letter)
-                    style = "1"
-                    # 0 <--> a
-                    # 1 <--> b
-                    # ...
-                    # 25 <--> z
-                    rawNumber = tryIndex(ascii_lowercase, identifier)
-                    # If the identifier is a lowercase letter, set "number"
-                    if rawNumber != -1: number = str(rawNumber)
-                elif identifier.startswith("extra") and identifier[5:].strip().isnumeric():
-                    # Extra numbers:
-                    # Starting with "extra", ending with numbers
-                    style = "2"
-                    number = str(int(identifier[5:].strip()) - 1)
-                if style is not None and number is not None:
-                    # Check for the mapID & identifier combination
-                    for filename,data in self.levelData.items():
-                        if data["style"] == style and data["number"] == number and data["parent"] == mapID:
-                            levelID = filename
-                            level = data
-
-        # Is the query a real level name?
-        if level is None: 
-            for filename,data in self.levelData.items():
-                # Matches an existing level name
-                if data["name"] == fineQuery:
-                    # Guaranteed
-                    level = data
-                    levelID = filename
-
-        # If not found: error message
-        if level is None:
-            return await self.bot.send(ctx, f'⚠️ Could not find a level matching the query "{fineQuery}".')
-
-        # If found:
-        if level is not None and levelID is not None:
-            # The embedded file
-            gif = discord.File(f"renders/{level['source']}/{levelID}.gif", spoiler=True)
-            
-            # Level name
-            name = level["name"]
-
-            # Level parent 
-            parent = level.get("parent")
-            mapID = level.get("mapID")
-            tree = ""
-            if parent is not None:
-                if mapID is not None:
-                    tree = parent + "-" + mapID + ": "
-                else:
-                    style = level["style"]
-                    number = level["number"]
-                    identifier = None
-                    if style == "0":
-                        identifier = number
-                    elif style == "1":
-                        identifier = ascii_lowercase[int(number)]
-                    elif style == "2":
-                        identifier = "extra " + str(int(number) + 1)
-                    else: 
-                        identifier = mapID
-                    tree = parent + "-" + identifier + ": "
-            
-            # Level subtitle
-            subtitle = ""
-            if level.get("subtitle") is not None:
-                subtitle = "\nSubtitle: `" + level["subtitle"] + "`"
-
-            # Formatted output
-            formatted = f"{ctx.author.mention}\nName: `{tree}{name}`\nID: `{levelID}`{subtitle}"
-
-            # Send the result
-            await ctx.send(formatted, file=gif)
 
 def setup(bot):
     bot.add_cog(Reader(bot))
