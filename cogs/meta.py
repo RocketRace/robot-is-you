@@ -6,6 +6,7 @@ from discord.ext  import commands
 from discord.http import asyncio
 from json         import load
 from subprocess   import Popen, PIPE, STDOUT
+from random       import choice
 from time         import time
 
 # Custom help command implementation
@@ -15,11 +16,32 @@ class PrettyHelpCommand(commands.DefaultHelpCommand):
         self.embedColor = embedColor
         super().__init__(**options)
 
-    async def send_pages(self):
+    async def send_pages(self, note="", inline=False):
         # Overwrite the send method to send each page in an embed instead
         destination = self.get_destination()
+
         for page in self.paginator.pages:
-            formatted = discord.Embed(description=page, color=self.embedColor)
+            formatted = discord.Embed(color=self.embedColor)
+            
+            split = page.split("**")
+            if len(split) == 1:
+                formatted.description = page
+            else:
+                split = iter(split)
+                header = next(split)
+                formatted.description = header
+
+                for segment in split:
+                    if segment.strip() == "":
+                        continue
+                    
+                    title = segment
+                    content = next(split)
+
+                    formatted.add_field(name=title, value=content, inline=inline)
+
+            formatted.set_footer(text=note)
+            
             await destination.send(" ", embed=formatted)
 
     def add_indented_commands(self, commands, *, heading, max_size=None):
@@ -57,16 +79,13 @@ class PrettyHelpCommand(commands.DefaultHelpCommand):
             self.add_indented_commands(commands, heading=category, max_size=max_size)
 
         note = self.get_ending_note()
-        if note:
-            self.paginator.add_line()
-            self.paginator.add_line(note)
 
-        await self.send_pages()
+        await self.send_pages(note=note, inline=True)
 
     def get_ending_note(self):
         """Returns help command's ending note. This is mainly useful to override for i18n purposes."""
         command_name = self.invoked_with
-        return "*Type `{0}{1} command` for more info on a command.*".format(self.clean_prefix, command_name)
+        return "Type {0}{1} command for more info on a command.".format(self.clean_prefix, command_name)
 
     def get_command_signature(self, command):
         parent = command.full_parent_name

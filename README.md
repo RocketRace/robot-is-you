@@ -30,9 +30,9 @@ Leave any suggestions, bug reports or questions in the official [support Discord
 
 Support is not provided for self-hosting. You may run the code yourself given that you follow the terms of the license.
 
-~
+---
 
-The bot uses the discord.py >= 1.0.0 and Pillow >= 6.1.0 modules from pip.
+The bot uses the discord.py >= 1.2.5 and Pillow >= 6.1.0 modules from pip.
 
 The bot requires a `setup.json` file to boot up. This includes the following fields:
 
@@ -48,24 +48,30 @@ The bot requires a `setup.json` file to boot up. This includes the following fie
 
 * `embed-color`: int
 
-~
+---
 
-The bot scrapes tile information from Baba Is You level files (`.ld` extension), from a top-level folder `levels`.
+The bot scrapes level & tile information from Baba Is You level files (`.ld` and `.l` extensions), from the directory `levels/vanilla`. Tile data is also taken from `values.lua`, which contains initial tile data as stored by Baba Is You.
+
 
 Tile colors are gathered from the in-game palette images, from a top-level folder `palettes`.
 
 Tile sprites are taken from `sprites/[source]/`, where `source` is `vanilla` for regular tiles and otherwise specified for custom tiles. Sprites should be in the same format that they are stored in Baba Is You.
 
-~
+Custom tile data is loaded from `custom/[source].json`, for each source. Custom tiles' sprites must be stored in `sprites/[source]/`.
+
+Level background images are similarly loaded from `images/[source]/`.
+
+---
 
 *[Files/directories empty by default]*
 
-Renders are stored in `renders/`. Currently, only the most recent are stored (by overwriting).
+Renders (through the `+level` and `+tile` commands) are stored in `renders/`. Currently, only the most recent render from `+tile` is stored.
 
 A list of tiles (for `+list`) is stored in `tilelist.txt`.
 
-Tile data is stored in `tiledata.json`.
+`cache/` contains the following:
 
-Scraped data is stored in `alternatetiles.json`.
-
-~
+`tiledata.json`
+`alternatetiles.json`
+`debug.json`
+`leveldata.json`
