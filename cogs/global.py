@@ -732,18 +732,16 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         # User feedback
         await ctx.trigger_typing()
 
-        levelID = None
-        level = None
+        levels = {}
         # Lower case, make the query all nice
         fineQuery = query.lower().strip()
         # Is it the level ID?
         levelData = self.bot.get_cog("Reader").levelData
         if levelData.get(fineQuery) is not None:
-            levelID = fineQuery
-            level = levelData[fineQuery]
+            levels[fineQuery] = levelData[fineQuery]
 
         # Does the query match a level tree?
-        if level is None:
+        if len(levels) == 0:
             # Separates the map and the number / letter / extra number from the query.
             tree = [string.strip() for string in fineQuery.split("-")]
             # There should only be two parts to the query.
@@ -778,28 +776,44 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     # Starting with "extra", ending with numbers
                     style = "2"
                     number = str(int(identifier[5:].strip()) - 1)
+                else:
+                    number = identifier
+                    style = "-1"
                 if style is not None and number is not None:
-                    # Check for the mapID & identifier combination
-                    for filename,data in levelData.items():
-                        if data["style"] == style and data["number"] == number and data["parent"] == mapID:
-                            levelID = filename
-                            level = data
+                    # Custom map ID?
+                    if style == "-1":
+                        # Check for the mapID & custom identifier combination
+                        for filename,data in levelData.items():
+                            if data["mapID"] == number and data["parent"] == mapID:
+                                levels[filename] = data
+                    else:
+                        # Check for the mapID & identifier combination
+                        for filename,data in levelData.items():
+                            if data["style"] == style and data["number"] == number and data["parent"] == mapID:
+                                levels[filename] = data
 
         # Is the query a real level name?
-        if level is None: 
+        if len(levels) == 0:
             for filename,data in levelData.items():
                 # Matches an existing level name
                 if data["name"] == fineQuery:
                     # Guaranteed
-                    level = data
-                    levelID = filename
+                    levels[filename] = data
 
         # If not found: error message
-        if level is None:
+        if len(levels) == 0:
             return await self.bot.send(ctx, f'⚠️ Could not find a level matching the query "{fineQuery}".')
 
         # If found:
-        if level is not None and levelID is not None:
+        else:
+            # Is there more than 1 match?
+            matches = len(levels)
+
+            # The first match
+            data = list(levels.items())
+            levelID = data[0][0]
+            level = data[0][1]
+
             # The embedded file
             gif = discord.File(f"renders/{level['source']}/{levelID}.gif", spoiler=True)
             
@@ -810,30 +824,42 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             parent = level.get("parent")
             mapID = level.get("mapID")
             tree = ""
+            # Parse the display name
             if parent is not None:
+                # With a custom mapID
                 if mapID is not None:
+                    # Format
                     tree = parent + "-" + mapID + ": "
                 else:
+                    # Parse the level style
                     style = level["style"]
                     number = level["number"]
                     identifier = None
+                    # Regular numbers
                     if style == "0":
                         identifier = number
                     elif style == "1":
+                    # Letters
                         identifier = ascii_lowercase[int(number)]
                     elif style == "2":
+                    # Extra dots
                         identifier = "extra " + str(int(number) + 1)
                     else: 
+                    # In case the custom mapID wasn't already set
                         identifier = mapID
+                    # format
                     tree = parent + "-" + identifier + ": "
             
-            # Level subtitle
+            # Level subtitle, if any
             subtitle = ""
             if level.get("subtitle") is not None:
                 subtitle = "\nSubtitle: `" + level["subtitle"] + "`"
 
+            # Any additional matches
+            matchesText = "" if matches == 1 else f"\nFound {matches} matches: `{', '.join([l for l in levels])}`, showing the first." 
+
             # Formatted output
-            formatted = f"{ctx.author.mention}\nName: `{tree}{name}`\nID: `{levelID}`{subtitle}"
+            formatted = f"{ctx.author.mention}{matchesText}\nName: `{tree}{name}`\nID: `{levelID}`{subtitle}"
 
             # Send the result
             await ctx.send(formatted, file=gif)
