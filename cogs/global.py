@@ -710,7 +710,12 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 # Did the user accidentally prepend "text_" via hand or using +rule?
                                 suggestion = tile[5:]
                                 if isfile(f"color/{pal}/{suggestion}-{variant}-0-.png"):
-                                    return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{x}\". Did you mean \"{suggestion}\"?")
+                                    # Under the `rule` command
+                                    if rule:
+                                        return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{suggestion}\" under \"rule\". Did you mean \"tile_{suggestion}\"?")
+                                    # Under the `tile` command
+                                    else:
+                                        return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{x}\". Did you mean \"{suggestion}\"?")
                                 # Answer to both of those: No
                                 return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{x}\".")     
 
