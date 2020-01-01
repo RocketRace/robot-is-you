@@ -2,6 +2,7 @@ import discord
 import numpy     as np
 import re
 
+from datetime    import datetime
 from discord.ext import commands
 from itertools   import chain
 from io          import BytesIO
@@ -722,10 +723,14 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{x}\".")     
 
             # Merges the images found
-            out = BytesIO()
-            self.magickImages(wordGrid, width, height, palette=pal, out=out) # Previously used mergeImages()
+            buffer = BytesIO()
+            timestamp = datetime.now()
+            formatString = "render_%Y-%m-%d_%H.%M.%S"
+            formatted = timestamp.strftime(formatString)
+            filename = f"{formatted}.gif"
+            self.magickImages(wordGrid, width, height, palette=pal, out=buffer) # Previously used mergeImages()
         # Sends the image through discord
-        await ctx.send(content=ctx.author.mention, file=discord.File(out, filename="render.gif", spoiler=spoiler))
+        await ctx.send(content=ctx.author.mention, file=discord.File(buffer, filename=filename, spoiler=spoiler))
 
     @commands.cooldown(2, 10, commands.BucketType.channel)
     @commands.command(name="level")
