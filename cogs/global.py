@@ -4,6 +4,7 @@ import re
 
 from discord.ext import commands
 from itertools   import chain
+from io          import BytesIO
 from json        import load
 from os          import listdir
 from os.path     import isfile
@@ -57,6 +58,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             background=255,
             optimize=False # Important in order to keep the color palettes from being unpredictable
         )
+        fp.seek(0)
 
     def magickImages(self, wordGrid, width, height, *, palette="default", images=None, imageSource="vanilla", out="renders/render.gif"):
         '''
@@ -720,9 +722,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{x}\".")     
 
             # Merges the images found
-            self.magickImages(wordGrid, width, height, palette=pal) # Previously used mergeImages()
+            out = BytesIO()
+            self.magickImages(wordGrid, width, height, palette=pal, out=out) # Previously used mergeImages()
         # Sends the image through discord
-        await ctx.send(content=ctx.author.mention, file=discord.File("renders/render.gif", spoiler=spoiler))
+        await ctx.send(content=ctx.author.mention, file=discord.File(out, filename="render.gif", spoiler=spoiler))
 
     @commands.cooldown(2, 10, commands.BucketType.channel)
     @commands.command(name="level")
