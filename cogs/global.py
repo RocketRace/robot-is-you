@@ -733,7 +733,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         '''
         Renders the given Baba Is You level.
         Levels are searched for in the following order:
-        * Checks if the input matches the level ID (e.g. "106level")
+        * Checks if the input matches the level ID (e.g. "20level")
         * Checks if the input matches the level number (e.g. "space-3" or "lake-extra 1")
         * Checks if the input matches the level name (e.g. "further fields")
         '''
