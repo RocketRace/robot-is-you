@@ -59,33 +59,28 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             background=255,
             optimize=False # Important in order to keep the color palettes from being unpredictable
         )
-        fp.seek(0)
+        if not isinstance(fp, str): fp.seek(0)
 
-    def magickImages(self, wordGrid, width, height, *, palette="default", images=None, imageSource="vanilla", out="renders/render.gif"):
+    def magickImages(self, wordGrid, width, height, *, palette="default", images=None, imageSource="vanilla", out="renders/render.gif", background=None):
         '''
-        Takes a list of tile names and generates a gif with the associated sprites. 
-        Saves the gif to `renders/render.gif`.
+        Takes a list of tile names and generates a gif with the associated sprites.
+
+        out is a file path or buffer. Renders will be saved there, otherwise to `renders/render.gif`.
+
+        palette is the name of the color palette to refer to when rendering.
+
+        images is a list of background image filenames. Each image is retrieved from `images/{imageSource}/image`.
+
+        background is a palette index. If given, the image background color is set to that color, otherwise transparent. Background images overwrite this. 
+
+        tileBorder sets whether or not tiles stick to the edges of the image.
         '''
         frames = []
         if palette == "hide":
-            if images is None:
-                # Don't use a background image
-                renderFrame = Image.new("RGBA", (48 * width, 48 * height))
-                for _ in range(3):
-                    frames.append(renderFrame)
-            else:
-                for i in range(3):
-                    # Use a background image
-                    imageFrame = Image.open(f"images/{imageSource}/{images[0]}_{i}.png")
-                    # In case multiple background images are used (i.e. baba's world map)
-                    if len(images) > 1:
-                        for image in images[1]:
-                            overlap = Image.open(f"images/{imageSource}/{image}_{i}.png")
-                            mask = overlap.getchannel("A")
-                            imageFrame.paste(overlap, mask=mask)
-                    # Back on track
-                    frames.append(imageFrame)
-
+            # Silly "hide" palette that returns a blank render
+            renderFrame = Image.new("RGBA", (48 * width, 48 * height))
+            for _ in range(3):
+                frames.append(renderFrame)
             return self.saveFrames(frames, out)
 
         # For each animation frame
@@ -152,17 +147,24 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             totalHeight = len(frame) * 24 + upPad + downPad 
 
             # Montage image
-            if images is None or imageSource is None:
-                renderFrame = Image.new("RGBA", (totalWidth, totalHeight))
-            else: 
+            # bg images
+            if bool(images) and imageSource is not None:
                 renderFrame = Image.new("RGBA", (totalWidth, totalHeight))
                 # for loop in case multiple background images are used (i.e. baba's world map)
                 for image in images:
-                    overlap = Image.open(f"images/{imageSource}/{image}_{i + 1}.png")
+                    overlap = Image.open(f"images/{imageSource}/{image}_{i + 1}.png") # i + 1 because 1-indexed
                     mask = overlap.getchannel("A")
                     renderFrame.paste(overlap, mask=mask)
+            # bg color
+            elif background is not None:
+                paletteImg = Image.open(f"palettes/{palette}.png").convert("RGBA") # ensure alpha channel exists, even if blank
+                paletteColor = paletteImg.getpixel(background)
+                renderFrame = Image.new("RGBA", (totalWidth, totalHeight), color=paletteColor)
+            # neither
+            else: 
+                renderFrame = Image.new("RGBA", (totalWidth, totalHeight))
 
-            # Pastes each image onto the image
+            # Pastes each image onto the frame
             # For each row
             yOffset = upPad # For padding: the cursor for example doesn't render fully when alone
             for row in frame:
@@ -187,7 +189,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
         self.saveFrames(frames, out)
 
-    def handleVariants(self, grid):
+    def handleVariants(self, grid, *, tileBorders=False):
         '''
         Appends variants to tiles in a grid.
         Example:
@@ -197,7 +199,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         * No variant -> :0
         * Shortcut variant -> The associated variant
         * Given variant -> untouched
-        * Anything for a tiling object (given or not) -> variants generated according to adjacent tiles
+        * Anything for a tiling object (given or not) -> variants generated according to adjacent tiles. 
+        If tileBorders is given, this also depends on whether the tile is adjacent to the edge of the image.
         '''
 
         width = len(grid[0])
@@ -256,11 +259,17 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                         adjacentRight = [t.split(":")[0] for t in cloneGrid[y][x + 1]]
                                         if doesTile(adjacentRight):
                                             variant += 1
+                                    if tileBorders:
+                                        if x == width - 1:
+                                            variant += 1
 
                                     # Is there the same tile adjacent above?
                                     if y != 0:
                                         adjacentUp = [t.split(":")[0] for t in cloneGrid[y - 1][x]]
                                         if doesTile(adjacentUp):
+                                            variant += 2
+                                    if tileBorders:
+                                        if y == 0:
                                             variant += 2
 
                                     # Is there the same tile adjacent left?
@@ -268,11 +277,17 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                         adjacentLeft = [t.split(":")[0] for t in cloneGrid[y][x - 1]]
                                         if doesTile(adjacentLeft):
                                             variant += 4
+                                    if tileBorders:
+                                        if x == 0:
+                                            variant += 4
 
                                     # Is there the same tile adjacent below?
                                     if y != height - 1:
                                         adjacentDown = [t.split(":")[0] for t in cloneGrid[y + 1][x]]
                                         if doesTile(adjacentDown):
+                                            variant += 8
+                                    if tileBorders:
+                                        if y == height - 1:
                                             variant += 8
                                     
                                     # Stringify

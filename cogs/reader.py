@@ -188,7 +188,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         if stat(levelcache).st_size != 0:
             self.levelData = json.load(open(levelcache))
 
-    async def renderMap(self, filename, source, initialize=False, tileData=None, dirs=None, renderer=None, removeBorders=False):
+    async def renderMap(self, filename, source, initialize=False, tileData=None, dirs=None, renderer=None, removeBorders=False, keepBackground=False, tileBorders=False):
         '''
         Loads and renders a level, given its file path and source. 
         Shaves off the borders if specified.
@@ -218,10 +218,12 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
 
         # Handle sprite variants
         tiles = [[[dirs(obj) for obj in cell] for cell in row] for row in m["objects"]]
-        tiles = renderer.handleVariants(tiles)
+        tiles = renderer.handleVariants(tiles, tileBorders=tileBorders)
 
         # Render the level
-        renderer.magickImages(tiles, width, height, images=images, palette=palette, imageSource=source, out=out)
+        background = None
+        if keepBackground: background = (0,4) # (0,4) is the color index for level backgrounds
+        renderer.magickImages(tiles, width, height, images=images, palette=palette, imageSource=source, out=out, background=background)
         
         # Return level metadata
         return {grid.filename: m["data"]}
@@ -245,7 +247,17 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         # For managing the directions of the items
         tileData, dirs, renderer = self.preMapLoad()
         # Parse and render
-        metadata = await self.renderMap(filename, source=source, tileData=tileData, dirs=dirs, renderer=renderer, initialize=initialize, removeBorders=True)
+        metadata = await self.renderMap(
+            filename, 
+            source=source, 
+            tileData=tileData, 
+            dirs=dirs, 
+            renderer=renderer, 
+            initialize=initialize, 
+            removeBorders=True,
+            keepBackground=True,
+            tileBorders=True
+        )
         # This should mostly just be false
         if initialize:
             self.cleanMetadata(metadata)
@@ -298,7 +310,16 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         metadatas = {}
         total = len(levels)
         for i,level in enumerate(levels):
-            metadata = await self.renderMap(level, source="vanilla", tileData=tileData, dirs=dirs, renderer=renderer, initialize=True, removeBorders=True)
+            metadata = await self.renderMap(
+                level, source="vanilla", 
+                tileData=tileData, 
+                dirs=dirs, 
+                renderer=renderer, 
+                initialize=True, 
+                removeBorders=True,
+                keepBackground=True,
+                tileBorders=True
+                )
             metadatas.update(metadata)
             if i % 50 == 0:
                 await ctx.send(f"{i + 1} / {total}")
