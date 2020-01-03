@@ -573,12 +573,13 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     # Generates an animated gif of the tiles provided, using the default palette
     @commands.command(aliases=["rule"])
     @commands.cooldown(4, 10, type=commands.BucketType.channel)
-    async def tile(self, ctx, *, palette: str, content: str = ""):
+    async def tile(self, ctx, *, objects: str = ""):
         """
         Renders the tiles provided.
 
         **Features:**
         * `palette` flag : Use this flag to recolor the output gif with the specified color palette. Use this in the format `palette:palette_name`. (See the `palettes` command for valid palettes.)
+        * `background` flag: Use this flag to toggle background color. To enable, use `background:True`. By default, this is False.  
         * `rule` alias: Invoking the command with `rule` instead of `tile` will replace every tile with their text variants. Otherwise, render the text version of tiles with `text_object`.
         * `:variant` sprite variants: You may render a variant of a sprite by suffixing `:variant` to a tile. Valid variants for tiles are detailed in the `variants` command.
 
@@ -599,39 +600,38 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         `tile baba&flag ||cake||`
         """
         async with ctx.typing():
-            # The parameters of this command are a lie to appease the help command: here's what actually happens            
-            tiles = palette
             renderLimit = 64
+            tiles = objects.lower()
 
             # Determines if this should be a spoiler
             spoiler = tiles.replace("|", "") != tiles
+            tiles = tiles.replace("|", "")
 
             # Determines if the command should use text tiles.
             rule = ctx.invoked_with == "rule"
 
+            # check flags
+            bgFlags = re.findall(r"background:true", tiles)
+            background = None
+            if bgFlags: background = (0,4)
+            pattern = r"palette:\w+"
+            paletteFlags = re.findall(pattern, tiles)
+            palette = "default"
+            for pal in paletteFlags:
+                palette = pal[8:]
+            if palette + ".png" not in listdir("palettes"):
+                return await self.bot.send(ctx, f"⚠️ Could not find a palette with name \"{pal}\".")
+
+            tiles = "".join(re.split(pattern, tiles))
+            tiles = tiles.replace("background:true", "")
+            tiles = " ".join(re.split(" +", tiles))
+
             # Split input into lines
-            if spoiler:
-                wordRows = tiles.replace("|", "").lower().splitlines()
-            else:
-                wordRows = tiles.lower().splitlines()
+            wordRows = tiles.splitlines()
             
             # Split each row into words
             wordGrid = [row.split() for row in wordRows]
 
-            # Determines which palette to use
-            # If the argument (i.e. the first tile) is of the format "palette:xyz", it is popped from the tile list
-            firstarg = wordGrid[0][0]
-            pal = ""
-            if firstarg.startswith("palette:"):
-                pal = firstarg[8:] 
-                if pal + ".png" not in listdir("palettes"):
-                    return await self.bot.send(ctx, f"⚠️ Could not find a palette with name \"{pal}\".")
-                wordGrid[0].pop(0)
-                if not wordGrid[0]:
-                    wordGrid[0].append("-")
-            else:
-                pal = "default"
-            
             # Splits the "text_x,y,z..." shortcuts into "text_x", "text_y", ...
             def splitCommas(grid, prefix):
                 for row in grid:
@@ -685,7 +685,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 return await self.bot.send(ctx, f"⚠️ Too many tiles ({area}). You may only render up to {renderLimit} tiles at once, including empty tiles.")
 
             # Now that we have width and height, we can accurately render the "hide" palette entries :^)
-            if pal == "hide":
+            if palette == "hide":
                 wordGrid = [[["-" for tile in stack] for stack in row] for row in wordGrid]
 
             # Pad the word rows from the end to fit the dimensions
@@ -710,24 +710,24 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 variant = segments[1]
                                 tile = segments[0]
                             # Checks for the word by attempting to open
-                            if not isfile(f"color/{pal}/{tile}-{variant}-0-.png"):
+                            if not isfile(f"color/{palette}/{tile}-{variant}-0-.png"):
                                 if variant == "0":
                                     x = tile
                                 else:
                                     x = word
                                 # Is the variant faulty?
-                                if isfile(f"color/{pal}/{tile}-{0}-0-.png"):
+                                if isfile(f"color/{palette}/{tile}-{0}-0-.png"):
                                     # return await self.bot.send(ctx, f"⚠️ The sprite variant \"{variant}\"for \"{tile}\" doesn't seem to be valid.")
                                     # Replace bad variants with the default sprite 
                                     stack[i] = "default:0" 
                                     break
                                 # Does a text counterpart exist?
                                 suggestion = "text_" + tile
-                                if isfile(f"color/{pal}/{suggestion}-{variant}-0-.png"):
+                                if isfile(f"color/{palette}/{suggestion}-{variant}-0-.png"):
                                     return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{x}\". Did you mean \"{suggestion}\"?")
                                 # Did the user accidentally prepend "text_" via hand or using +rule?
                                 suggestion = tile[5:]
-                                if isfile(f"color/{pal}/{suggestion}-{variant}-0-.png"):
+                                if isfile(f"color/{palette}/{suggestion}-{variant}-0-.png"):
                                     # Under the `rule` command
                                     if rule:
                                         return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{suggestion}\" under \"rule\". Did you mean \"tile_{suggestion}\"?")
@@ -743,7 +743,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             formatString = "render_%Y-%m-%d_%H.%M.%S"
             formatted = timestamp.strftime(formatString)
             filename = f"{formatted}.gif"
-            self.magickImages(wordGrid, width, height, palette=pal, out=buffer) # Previously used mergeImages()
+            self.magickImages(wordGrid, width, height, palette=palette, background=background, out=buffer) # Previously used mergeImages()
         # Sends the image through discord
         await ctx.send(content=ctx.author.mention, file=discord.File(buffer, filename=filename, spoiler=spoiler))
 
