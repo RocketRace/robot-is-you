@@ -4,6 +4,7 @@ import re
 
 from datetime    import datetime
 from discord.ext import commands
+from inspect     import Parameter
 from itertools   import chain
 from io          import BytesIO
 from json        import load
@@ -601,7 +602,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         """
         async with ctx.typing():
             renderLimit = 64
-            tiles = objects.lower()
+            tiles = objects.lower().strip()
+            if tiles == "":
+                param = Parameter("objects", Parameter.KEYWORD_ONLY)
+                raise commands.MissingRequiredArgument(param)
 
             # Determines if this should be a spoiler
             spoiler = tiles.replace("|", "") != tiles
