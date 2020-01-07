@@ -221,8 +221,10 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         Gives some debug stats.
         '''
         yesterday = datetime.utcnow() - timedelta(days=1)
-        identifiesDay = sum([1 for event in self.identifies if event > yesterday])
-        resumesDay = sum([1 for event in self.resumes if event > yesterday])
+        identifiesDay = [event for event in self.identifies if event > yesterday]
+        resumesDay = [event for event in self.resumes if event > yesterday]
+        iCount = len(identifiesDay)
+        rCount = len(resumesDay)
 
         globalRateLimit = not self.bot.http._global_over.is_set()
 
@@ -579,8 +581,16 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         # Updates the debug file
         debugFile = "cache/debug.json"
         debugData = {"identifies":None,"resumes":None}
-        debugData["identifies"] = self.identifies
-        debugData["resumes"] = self.resumes
+
+        # Prevent leaking
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        identifiesDay = [event for event in self.identifies if event > yesterday]
+        resumesDay = [event for event in self.resumes if event > yesterday]
+        self.identifies = identifiesDay
+        self.resumes = resumesDay
+
+        debugData["identifies"] = identifiesDay
+        debugData["resumes"] = resumesDay
         json.dump(debugData, open(debugFile, "w"), indent=2, default=lambda obj:obj.isoformat() if hasattr(obj, 'isoformat') else obj)
 
     def _clear_gateway_data(self):
