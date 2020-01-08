@@ -475,10 +475,12 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         Lists palettes usable for rendering.
         Palettes can be used as arguments for the `tile` (and subsequently `rule`) commands.
         """
-        msg = ["Valid palettes:"]
+        msg = []
         for palette in listdir("palettes"):
             if not palette in [".DS_Store"]:
                 msg.append(palette[:-4])
+        msg.sort()
+        msg.insert(0, "Valid palettes:")
         await self.bot.send(ctx, "\n".join(msg))
 
     @commands.cooldown(2,10,type=commands.BucketType.channel)
