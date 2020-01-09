@@ -230,8 +230,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
         msg = discord.Embed(
             title="Debug",
-            description="".join([f"IDENTIFYs in the past 24 hours: {identifiesDay}\n",
-                f"RESUMEs in the past 24 hours: {resumesDay}\n",
+            description="".join([f"IDENTIFYs in the past 24 hours: {iCount}\n",
+                f"RESUMEs in the past 24 hours: {rCount}\n",
                 f"Global rate limit: {globalRateLimit}"]),
             color=self.bot.embedColor
         )
