@@ -118,40 +118,35 @@ class CommandErrorHandler(commands.Cog):
             return
 
         if isinstance(error, commands.CommandOnCooldown):
-            return await self.bot.send(ctx, str(error))
-
-        elif isinstance(error, commands.DisabledCommand):
-            await self.bot.send(ctx, f'{ctx.command} has been disabled.')
-            return await self.logger.send(embed=emb)
-        
-        elif isinstance(error, commands.CommandOnCooldown):
             if ctx.author.id == self.bot.owner_id:
                 return await ctx.reinvoke()
             else:
-                await self.bot.send(ctx, str(error))
+                await self.bot.error(ctx, str(error))
                 return await self.logger.send(embed=emb)
 
+        elif isinstance(error, commands.DisabledCommand):
+            await self.bot.error(ctx, f'{ctx.command} has been disabled.')
+            return await self.logger.send(embed=emb)
+
         elif isinstance(error, commands.NoPrivateMessage):
-            msg = None
             try:
-                msg = await ctx.author.send(f'{ctx.command} can not be used in Private Messages.')
+                await self.bot.error(ctx.author, f'{ctx.command} can not be used in Private Messages.')
             except:
                 emb.add_field(name="Notes", value="Could not send private messages to user.")
-            await self.logger.send(embed=emb)
-            return msg
+            return await self.logger.send(embed=emb)
 
         # For this error example we check to see where it came from...
         elif isinstance(error, commands.ArgumentParsingError):
             await self.logger.send(embed=emb)
             if ctx.command.name == "tile":  # Checks the 
-                return await self.bot.send(ctx, "Invalid palette argument provided.")
-            return await self.bot.send(ctx, "Invalid function arguments provided.")
+                return await self.bot.error(ctx, "Invalid palette argument provided.")
+            return await self.bot.error(ctx, "Invalid function arguments provided.")
 
         elif isinstance(error, commands.MissingRequiredArgument):
-            return await self.bot.send(ctx, "Required arguments are missing.")
+            return await self.bot.error(ctx, "Required arguments are missing.")
 
         # All other Errors not returned come here... And we can just print the default TraceBack + log
-        await self.bot.send(ctx, f"An exception occurred while processing your command:\n{type(error)}\n{error}")
+        await self.bot.error(ctx, f"An exception occurred: {type(error)}", f"{error}")
         await self.logger.send(embed=emb)
         print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
