@@ -483,6 +483,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         msg.insert(0, "Valid palettes:")
         await self.bot.send(ctx, "\n".join(msg))
 
+    
+
     @commands.cooldown(2,10,type=commands.BucketType.channel)
     @commands.command(name="variants")
     async def listVariants(self, ctx, tile):
