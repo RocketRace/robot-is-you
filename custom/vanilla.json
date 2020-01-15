@@ -6,7 +6,8 @@
       "2",
       "3"
     ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"0"
   },
   {
       "name":"seastar",
@@ -25,7 +26,8 @@
         "0",
         "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"3"
   },
   {
     "sprite":"text_without",
@@ -35,7 +37,8 @@
         "0",
         "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"7"
   },
   {
     "sprite":"text_play",
@@ -45,7 +48,8 @@
         "0",
         "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"1"
   },
   {
     "sprite":"text_power",
@@ -55,7 +59,8 @@
         "2",
         "4"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"2"
   },
   {
     "sprite":"text_powered",
@@ -65,7 +70,8 @@
         "2",
         "4"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"3"
   },
   {
     "sprite":"text_back",
@@ -75,7 +81,8 @@
         "0",
         "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"2"
   },
   {
     "sprite":"text_chill",
@@ -85,7 +92,8 @@
         "1",
         "4"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"2"
   },
   {
     "sprite":"error",
@@ -185,7 +193,8 @@
         "4",
         "2"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"0"
   },
   {
     "sprite":"text_ladder",
@@ -195,7 +204,8 @@
         "6",
         "1"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"0"
   },
   {
     "sprite":"text_shirt",
@@ -205,7 +215,8 @@
         "0",
         "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"0"
   },
   {
     "sprite":"tree_map",
@@ -255,7 +266,8 @@
         "5",
         "2"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"0"
   },
   
   {
@@ -409,7 +421,8 @@
       "4",
       "1"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"5"
   },
   {
       "name":"text_ba",
@@ -418,7 +431,8 @@
       "4",
       "1"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"5"
   },
   {
       "name":"text_a",
@@ -427,7 +441,8 @@
       "0",
       "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"5"
   },
   {
       "name":"text_b",
@@ -436,7 +451,8 @@
       "0",
       "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"5"
   },
   {
       "name":"text_c",
@@ -445,7 +461,8 @@
       "0",
       "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"5"
   },
   {
       "name":"text_d",
@@ -454,7 +471,8 @@
       "0",
       "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"5"
   },
   {
       "name":"text_e",
@@ -463,7 +481,8 @@
       "0",
       "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"5"
   },
   {
       "name":"text_f",
@@ -472,7 +491,8 @@
       "0",
       "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"5"
   },
   {
       "name":"text_g",
@@ -481,7 +501,8 @@
       "0",
       "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"5"
   },
   {
       "name":"text_h",
@@ -490,7 +511,8 @@
       "0",
       "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"5"
   },
   {
       "name":"text_i",
@@ -499,7 +521,8 @@
       "0",
       "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"5"
   },
   {
       "name":"text_l",
@@ -508,7 +531,8 @@
       "0",
       "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"5"
   },
   {
       "name":"text_m",
@@ -517,7 +541,8 @@
       "0",
       "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"5"
   },
   {
       "name":"text_n",
@@ -526,7 +551,8 @@
       "0",
       "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"5"
   },
   {
       "name":"text_o",
@@ -535,7 +561,8 @@
       "0",
       "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"5"
   },
   {
       "name":"text_r",
@@ -544,7 +571,8 @@
       "0",
       "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"5"
   },
   {
       "name":"text_s",
@@ -553,7 +581,8 @@
       "0",
       "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"5"
   },
   {
       "name":"text_t",
@@ -562,7 +591,8 @@
       "0",
       "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"5"
   },
   {
       "name":"text_u",
@@ -571,7 +601,8 @@
       "0",
       "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"5"
   },
   {
       "name":"text_v",
@@ -580,7 +611,8 @@
       "0",
       "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"5"
   },
   {
       "name":"text_w",
@@ -589,7 +621,8 @@
       "0",
       "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"5"
   },
   {
       "name":"text_x",
@@ -598,7 +631,8 @@
       "0",
       "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"5"
   },
   {
       "name":"text_what",
@@ -607,7 +641,8 @@
       "0",
       "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"0"
   },
   {
       "name":"text_stick",
@@ -616,7 +651,8 @@
       "5",
       "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"2"
   },
   {
       "name":"text_ok",
@@ -625,7 +661,8 @@
       "0",
       "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"0"
   },
   {
       "name":"text_p1",
@@ -634,7 +671,8 @@
       "4",
       "1"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"2"
   },
   {
       "name":"text_p2",
@@ -643,7 +681,8 @@
       "4",
       "1"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"2"
   },
   {
       "name":"hi",
@@ -688,7 +727,8 @@
       "1",
       "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"0"
   },
   {
     "sprite":"text_turn",
@@ -697,7 +737,8 @@
        "1",
        "4"
     ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "type":"2"
  },
  {
    "sprite":"goose",

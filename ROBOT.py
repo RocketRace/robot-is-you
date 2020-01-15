@@ -60,8 +60,13 @@ class BabaBot(commands.Bot):
             color=self.embedColor
         )
         message = await ctx.send(" ", embed=embed)
-        await asyncio.sleep(10)
-        await message.delete()
+        
+        # coro
+        async def deleteLater(message):
+            await asyncio.sleep(10)
+            await message.delete()
+
+        asyncio.create_task(deleteLater(message))
 
 # Establishes the bot
 bot = BabaBot(PREFIXES, 
