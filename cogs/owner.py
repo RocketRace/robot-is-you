@@ -178,23 +178,23 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         '''
         Loads vanilla texts for use with the `random` command. (non-command)
         '''
-        self.texts = {
-            "0" : [], # BABA (object)
-            "1" : [], # IS (verb)
-            "2" : [], # YOU (property)
-            "3" : [], # LONELY (prefix)
-            "4" : [], # NOT (not)
-            "5" : [], # A (letter)
-            "6" : [], # AND (and)
-            "7" : []  # ON (conditional)
-        }
-        for tile, data in self.tileColors.items():
-            if not tile.startswith("text_"):
-                continue
-            if data["source"] not in ("vanilla", "vanilla-extensions"):
-                continue
-            # Add key-value pair to the appropriate type section in self.texts
-            self.texts[data["type"]].append(tile)
+        # self.texts = {
+        #     "0" : [], # BABA (object)
+        #     "1" : [], # IS (verb)
+        #     "2" : [], # YOU (property)
+        #     "3" : [], # LONELY (prefix)
+        #     "4" : [], # NOT (not)
+        #     "5" : [], # A (letter)
+        #     "6" : [], # AND (and)
+        #     "7" : []  # ON (conditional)
+        # }
+        # for tile, data in self.tileColors.items():
+        #     if not tile.startswith("text_"):
+        #         continue
+        #     if data["source"] not in ("vanilla", "vanilla-extensions"):
+        #         continue
+        #     # Add key-value pair to the appropriate type section in self.texts
+        #     self.texts[data["type"]].append(tile)
 
     def generateTileSprites(self, tile, obj, palettes, colors):
         # Fetches the tile data
