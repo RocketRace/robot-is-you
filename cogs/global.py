@@ -11,6 +11,7 @@ from json        import load
 from os          import listdir
 from os.path     import isfile
 from PIL         import Image
+from random      import choices, random
 from string      import ascii_lowercase
 
 def flatten(items, seqtypes=(list, tuple)):
@@ -483,7 +484,32 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         msg.insert(0, "Valid palettes:")
         await self.bot.send(ctx, "\n".join(msg))
 
-    
+    @commands.cooldown(2, 10, type=commands.BucketType.channel)
+    @commands.command(name="random")
+    @commands.is_owner()
+    async def randomRule(self, ctx):
+        '''
+        Generates a random valid rule.
+
+        This command is disabled.
+        '''
+        textTypes = self.bot.get_cog("Admin").texts
+        subject = choices(textTypes["0"], k=1)[0][5:] # strip text_ prefix
+        verb = choices(textTypes["1"], k=1)[0][5:]
+        
+        # conditional statement
+        useConditional = random() <= 0.7
+        if useConditional:
+            condWord = choices(textTypes["7"], k=1)[0][5:]
+            condTarget = choices(textTypes["0"], k=1)[0][5:]
+            conditional = f"{condWord} {condTarget} "
+        else: conditional = " "
+        
+        if verb == "is":
+            target = choices(textTypes[choices(("0", "2"), k=1)])[0][5:]
+        else:
+            target = choices(textTypes["0"], k=1)[0][5:]
+        await self.bot.send(ctx, f"{subject} {conditional}{verb} {target}")
 
     @commands.cooldown(2,10,type=commands.BucketType.channel)
     @commands.command(name="variants")

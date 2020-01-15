@@ -56,7 +56,7 @@ class CommandErrorHandler(commands.Cog):
             return
         
         ignored = (commands.CommandNotFound, commands.NotOwner, commands.CheckFailure) 
-        whitelist = (commands.CommandOnCooldown)
+        whitelist = ()
         
         # Allows us to check for original exceptions raised and sent to CommandInvokeError.
         # If nothing is found. We keep the exception passed to on_command_error.
