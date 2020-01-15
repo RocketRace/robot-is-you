@@ -49,6 +49,24 @@ class BabaBot(commands.Bot):
             container = discord.Embed(title=title, description=description, color=self.embedColor)
             await ctx.send(" ", embed=container, tts=tts, file=file)
 
+    # Custom error message implementation
+    # Sends the error message. Automatically deletes it after 10 seconds.
+    async def error(self, ctx, title, content=None):
+        _title = f"⚠️ {title}"
+        description = content if content else None
+        embed = discord.Embed(
+            title=_title, 
+            description=description,
+            color=self.embedColor
+        )
+        message = await ctx.send(" ", embed=embed)
+        
+        # coro
+        async def deleteLater(message):
+            await asyncio.sleep(10)
+            await message.delete()
+
+        asyncio.create_task(deleteLater(message))
 
 # Establishes the bot
 bot = BabaBot(PREFIXES, 
