@@ -70,7 +70,8 @@ class BabaBot(commands.Bot):
         asyncio.create_task(deleteLater(message))
 
 # Establishes the bot
-bot = BabaBot(PREFIXES, 
+bot = BabaBot(
+    commands.when_mentioned_or(*PREFIXES), 
     WEBHOOK_ID, 
     EMBED_COLOR, 
     VANILLA, 
