@@ -16,6 +16,7 @@ BOT_TOKEN = configuration.get("token")
 DEFAULT_ACTIVITY = discord.Game(name=configuration.get("activity"))
 COGS = configuration.get("cogs")
 PREFIXES = configuration.get("prefixes")
+PREFIXES_MENTION = commands.when_mentioned_or(PREFIXES) if configuration.get("mention") else PREFIXES
 WEBHOOK_ID = configuration.get("webhook")
 WEBHOOK_TOKEN = configuration.get("webhook-token")
 EMBED_COLOR = configuration.get("color")
@@ -70,7 +71,7 @@ class BabaBot(commands.Bot):
         asyncio.create_task(deleteLater(message))
 
 # Establishes the bot
-bot = BabaBot(PREFIXES, 
+bot = BabaBot(PREFIXES_MENTION, 
     WEBHOOK_ID, 
     EMBED_COLOR, 
     VANILLA, 
