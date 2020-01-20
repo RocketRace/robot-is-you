@@ -161,6 +161,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         colorsFile = "cache/tilecolors.json"
         if stat(colorsFile).st_size != 0:
             self.tileColors = json.load(open(colorsFile))
+            self.filterText()
+            
         # Loads the alternate tiles if possible
         # Loads debug data, if any
         debugFile = "cache/debug.json"
@@ -171,6 +173,28 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         
         # Are assets loading?
         self.bot.loading = False
+
+    def filterText(self):
+        '''
+        Loads vanilla texts for use with the `random` command. (non-command)
+        '''
+        # self.texts = {
+        #     "0" : [], # BABA (object)
+        #     "1" : [], # IS (verb)
+        #     "2" : [], # YOU (property)
+        #     "3" : [], # LONELY (prefix)
+        #     "4" : [], # NOT (not)
+        #     "5" : [], # A (letter)
+        #     "6" : [], # AND (and)
+        #     "7" : []  # ON (conditional)
+        # }
+        # for tile, data in self.tileColors.items():
+        #     if not tile.startswith("text_"):
+        #         continue
+        #     if data["source"] not in ("vanilla", "vanilla-extensions"):
+        #         continue
+        #     # Add key-value pair to the appropriate type section in self.texts
+        #     self.texts[data["type"]].append(tile)
 
     def generateTileSprites(self, tile, obj, palettes, colors):
         # Fetches the tile data
@@ -230,8 +254,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
         msg = discord.Embed(
             title="Debug",
-            description="".join([f"IDENTIFYs in the past 24 hours: {identifiesDay}\n",
-                f"RESUMEs in the past 24 hours: {resumesDay}\n",
+            description="".join([f"IDENTIFYs in the past 24 hours: {iCount}\n",
+                f"RESUMEs in the past 24 hours: {rCount}\n",
                 f"Global rate limit: {globalRateLimit}"]),
             color=self.bot.embedColor
         )
@@ -276,7 +300,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                         IDs.extend(line.strip().split(",")[1:-1])
                         alts = dict.fromkeys(IDs[:])
                         for alt in alts:
-                            alts[alt] = {"name":"", "sprite":"", "tiling":"", "color":[]}
+                            alts[alt] = {"name":"", "sprite":"", "tiling":"", "color":[], "type":""}
                 else:
                     if line.startswith("object"):
                         ID = line[:][:9]
@@ -291,8 +315,12 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                         elif line.startswith("image=", 10):
                             sprite = line[:][16:-1]
                             alts[ID]["sprite"] = sprite
+                        # Tiling type
                         elif line.startswith("tiling=", 10):
                             alts[ID]["tiling"] = line[:][17:-1]
+                        # Text type
+                        elif line.startswith("type=", 10):
+                            alts[ID]["type"] = line[:][15:-1]
                         # Sets the changed color (all tiles)
                         elif line.startswith("colour=", 10):
                             colorRaw = line[:][17:-1]
@@ -300,7 +328,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                             # "a,b" -> [a,b]
                             color = colorRaw.split(",")
                             alts[ID]["color"] = color
-                        # Sets the changed color (active text only)
+                        # Sets the changed color (active text only), overrides previous
                         elif line.startswith("activecolour=", 10):
                             colorRaw = line[:][23:-1]
                             # Splits the color into a list 
@@ -326,7 +354,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         with open("cache/alternatetiles.json", "wt") as alternateFile:
             json.dump(alternateTiles, alternateFile, indent=3)
 
-        await ctx.send("Loaded additional tile data from .ld files.")
+        await ctx.send("Loaded preexisting tile data from .ld files.")
         self.bot.loading = False
         return alternateTiles
     
@@ -390,13 +418,15 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                     # "{a,b}" --> [a,b]
                     seg = colorRaw.split(",")
                     color = [seg[i].strip() for i in range(2)]
+                elif line.startswith("\t\ttype = "):
+                    type_ = line[9:-2]
                 # Signifies that the data for the current tile is over
                 elif line == "\t},\n":
                     # Makes sure no fields are empty
                     # bool("") == False, but True for any other string
                     if bool(name) and bool(sprite) and bool(colorRaw) and bool(tiling):
                         # Alternate tile data (initialized with the original)
-                        alts = {name:{"sprite":sprite, "color":color, "tiling":tiling, "source":"vanilla"}}
+                        alts = {name:{"sprite":sprite, "color":color, "tiling":tiling, "source":"vanilla", "type":type_}}
                         # Looks for object replacements in the alternateTiles dict
                         if altTiles.get(ID) is not None:
                             # Each replacement for the object ID:
@@ -406,6 +436,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                                 altSprite = sprite
                                 altTiling = tiling
                                 altColor = color
+                                altType = type_
                                 if value.get("name") != "":
                                     altName = value.get("name")
                                 if value.get("sprite") != "":
@@ -414,11 +445,20 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                                     altColor = value.get("color")
                                 if value.get("tiling") != "":
                                     altTiling = value.get("tiling")
+                                if value.get("type") != "":
+                                    altType = value.get("type")
                                 # Adds the change to the alts, but only if it's the first with that name
                                 if name != altName:
                                     # If the name matches the name of an object already in the alt list
                                     if self.tileColors.get(altName) is None:
-                                        alts[altName] = {"sprite":altSprite, "tiling":altTiling, "color":altColor, "source":"vanilla"}
+                                        alts[altName] = {
+                                            "sprite":altSprite, 
+                                            "tiling":altTiling, 
+                                            "color":altColor, 
+                                            "type":altType,
+                                            "source":"vanilla"
+                                        }
+                                        
                         # Adds each unique name-color pairs to the tileColors dict
                         for key,value in alts.items():
                             self.tileColors[key] = value
@@ -457,9 +497,18 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         with open("cache/tilecolors.json", "wt") as emoteFile:
             json.dump(self.tileColors, emoteFile, indent=3)
 
-        await ctx.send("Loaded initial tile data.")
+        await ctx.send("Loaded default tile data.")
 
         self.bot.loading = False
+
+    @commands.command()
+    @commands.is_owner()
+    async def loadtext(self, ctx):
+        '''
+        Loads vanilla texts for use with the `random` command.
+        '''
+        self.filterText()
+        
     
     @commands.command()
     @commands.is_owner()

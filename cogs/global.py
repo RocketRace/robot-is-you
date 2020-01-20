@@ -11,6 +11,7 @@ from json        import load
 from os          import listdir
 from os.path     import isfile
 from PIL         import Image
+from random      import choices, random
 from string      import ascii_lowercase
 
 def flatten(items, seqtypes=(list, tuple)):
@@ -475,11 +476,40 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         Lists palettes usable for rendering.
         Palettes can be used as arguments for the `tile` (and subsequently `rule`) commands.
         """
-        msg = ["Valid palettes:"]
+        msg = []
         for palette in listdir("palettes"):
             if not palette in [".DS_Store"]:
                 msg.append(palette[:-4])
+        msg.sort()
+        msg.insert(0, "Valid palettes:")
         await self.bot.send(ctx, "\n".join(msg))
+
+    @commands.cooldown(2, 10, type=commands.BucketType.channel)
+    @commands.command(name="random")
+    @commands.is_owner()
+    async def randomRule(self, ctx):
+        '''
+        Generates a random valid rule.
+
+        This command is disabled.
+        '''
+        textTypes = self.bot.get_cog("Admin").texts
+        subject = choices(textTypes["0"], k=1)[0][5:] # strip text_ prefix
+        verb = choices(textTypes["1"], k=1)[0][5:]
+        
+        # conditional statement
+        useConditional = random() <= 0.7
+        if useConditional:
+            condWord = choices(textTypes["7"], k=1)[0][5:]
+            condTarget = choices(textTypes["0"], k=1)[0][5:]
+            conditional = f"{condWord} {condTarget} "
+        else: conditional = " "
+        
+        if verb == "is":
+            target = choices(textTypes[choices(("0", "2"), k=1)])[0][5:]
+        else:
+            target = choices(textTypes["0"], k=1)[0][5:]
+        await self.bot.send(ctx, f"{subject} {conditional}{verb} {target}")
 
     @commands.cooldown(2,10,type=commands.BucketType.channel)
     @commands.command(name="variants")
@@ -493,7 +523,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         # Does the tile exist?
         data = self.bot.get_cog("Admin").tileColors.get(cleanTile)
         if data is None:
-            return await self.bot.send(ctx, f"Could not find a tile with name '{cleanTile}'.")
+            return await self.bot.error(ctx, f"Could not find a tile with name '{cleanTile}'.")
         
         # Determines the tiling type of the tile
         tiling = data.get("tiling")
@@ -624,7 +654,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             for pal in paletteFlags:
                 palette = pal[8:]
             if palette + ".png" not in listdir("palettes"):
-                return await self.bot.send(ctx, f"⚠️ Could not find a palette with name \"{pal}\".")
+                return await self.bot.error(ctx, f"Could not find a palette with name \"{pal}\".")
 
             tiles = "".join(re.split(pattern, tiles))
             tiles = tiles.replace("background:true", "")
@@ -659,7 +689,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     wordGrid = splitCommas(wordGrid, "text_")
             except Exception as e:
                 sourceOfException = e.args[0]
-                return await self.bot.send(ctx, f"⚠️ I'm afraid I couldn't parse the following input: \"{sourceOfException}\".")
+                return await self.bot.error(ctx, f"I couldn't parse the following input: \"{sourceOfException}\".")
 
             # Splits "&"-joined words into stacks
             for row in wordGrid:
@@ -671,7 +701,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     # Limit how many tiles can be rendered in one space
                     height = len(row[i])
                     if height > 3 and ctx.author.id != self.bot.owner_id:
-                        return await self.bot.send(ctx, f"⚠️ Stack too high ({height}). You may only stack up to 3 tiles on one space.")
+                        return await self.bot.error(ctx, f"Stack too high ({height}).", "You may only stack up to 3 tiles on one space.")
 
             # Prepends "text_" to words if invoked under the rule command
             if rule:
@@ -686,7 +716,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             # (It shouldn't be that long to begin with because of Discord's 2000 character limit)
             area = width * height
             if area > renderLimit and ctx.author.id != self.bot.owner_id:
-                return await self.bot.send(ctx, f"⚠️ Too many tiles ({area}). You may only render up to {renderLimit} tiles at once, including empty tiles.")
+                return await self.bot.error(ctx, f"Too many tiles ({area}).", f"You may only render up to {renderLimit} tiles at once, including empty tiles.")
 
             # Now that we have width and height, we can accurately render the "hide" palette entries :^)
             if palette == "hide":
@@ -728,18 +758,18 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 # Does a text counterpart exist?
                                 suggestion = "text_" + tile
                                 if isfile(f"color/{palette}/{suggestion}-{variant}-0-.png"):
-                                    return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{x}\". Did you mean \"{suggestion}\"?")
+                                    return await self.bot.error(ctx, f"Could not find a tile for \"{x}\".", f"Did you mean \"{suggestion}\"?")
                                 # Did the user accidentally prepend "text_" via hand or using +rule?
                                 suggestion = tile[5:]
                                 if isfile(f"color/{palette}/{suggestion}-{variant}-0-.png"):
                                     # Under the `rule` command
                                     if rule:
-                                        return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{suggestion}\" under \"rule\". Did you mean \"tile_{suggestion}\"?")
+                                        return await self.bot.error(ctx, f"Could not find a tile for \"{suggestion}\" under \"rule\".", f"Did you mean \"tile_{suggestion}\"?")
                                     # Under the `tile` command
                                     else:
-                                        return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{x}\". Did you mean \"{suggestion}\"?")
+                                        return await self.bot.error(ctx, f"Could not find a tile for \"{x}\".", f"Did you mean \"{suggestion}\"?")
                                 # Answer to both of those: No
-                                return await self.bot.send(ctx, f"⚠️ Could not find a tile for \"{x}\".")     
+                                return await self.bot.error(ctx, f"Could not find a tile for \"{x}\".")
 
             # Merges the images found
             buffer = BytesIO()
@@ -834,7 +864,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
         # If not found: error message
         if len(levels) == 0:
-            return await self.bot.send(ctx, f'⚠️ Could not find a level matching the query "{fineQuery}".')
+            return await self.bot.error(ctx, f'Could not find a level matching the query "{fineQuery}".')
 
         # If found:
         else:
