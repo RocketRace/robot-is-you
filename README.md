@@ -6,7 +6,9 @@ A fun Discord bot based on the indie game [Baba Is You](https://store.steampower
 
 A list of all commands can be seen using the `help` command. (By default, the bot has a prefix of `+`.)
 
-This bot primarily features rendering and animation of tiles in *Baba Is You*, through the `tile` and `rule` commands, as seen below. The command has many options, detailed in `help tile`.
+This bot primarily features rendering and animation of
+tiles in *Baba Is You* (through the `tile` and `rule` commands), 
+as well as *Baba Is You* levels (using the `level` command).
 
 *Example command:*
 
@@ -36,21 +38,24 @@ The bot uses the discord.py >= 1.2.5 and Pillow >= 6.1.0 modules from pip.
 
 The bot requires a `setup.json` file to boot up. This includes the following fields:
 
-* `token`: str
+* `token`: `str`
 
-* `prefixes`: List\<str\>
+* `prefixes`: `List<str>`
 
-* `activity`: str
+* `mention`: `bool` [Whether or not the bot responds to messages beginning with a @mention]
 
-* `cogs`: List\<str\> [Each file in the cogs folder, in python import format]
+* `activity`: `str`
 
-* `webhook`: int [A webhook ID used for error logging]
+* `cogs`: `List<str>` [Each file in the cogs folder, in python import format]
 
-* `embed-color`: int
+* `webhook`: `int` [A webhook ID used for error logging]
+
+* `embed-color`: `int`
 
 ---
 
-The bot scrapes level & tile information from Baba Is You level files (`.ld` and `.l` extensions), from the directory `levels/vanilla`. Tile data is also taken from `values.lua`, which contains initial tile data as stored by Baba Is You.
+The bot scrapes level & tile information from Baba Is You level files (`.ld` and `.l` extensions), from the directory `levels/vanilla`.
+Tile data is also taken from `values.lua`, which contains initial tile data as stored by Baba Is You.
 
 
 Tile colors are gathered from the in-game palette images, from a top-level folder `palettes`.
