@@ -326,7 +326,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                             colorRaw = line[:][17:-1]
                             # Splits the color into a list 
                             # "a,b" -> [a,b]
-                            color = colorRaw.split(",")
+                            color = colorRaw.split(",") if not color else color
                             alts[ID]["color"] = color
                         # Sets the changed color (active text only), overrides previous
                         elif line.startswith("activecolour=", 10):
@@ -541,7 +541,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             return await self.bot.send(ctx, f"\"{tile}\" is not in the list of tiles.")
         palettes = [palette]
         if palette == "all":
-            palettes = [pal[:-4] for pal in listdir("palettes")]
+            palettes = [pal[:-4] for pal in listdir("palettes") if pal.endswith(".png")]
         elif palette + ".png" not in listdir("palettes"):
             return await self.bot.send(ctx, f"\"{palette}\" is not a valid palette.")
             
