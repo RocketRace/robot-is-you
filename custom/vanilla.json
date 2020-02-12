@@ -19,6 +19,15 @@
       "tiling":"-1"
   },
   {
+    "name":"ufo",
+    "sprite":"ufo",
+    "color":[
+    "4",
+    "2"
+    ],
+    "tiling":"0"
+},
+  {
     "sprite":"text_idle",
     "name":"text_idle",
     "color":
