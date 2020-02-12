@@ -54,12 +54,11 @@ $1,4Turkish$0,3 $4,0-$4,2 Doruk Balci
 $1,4Vietnamese$0,3 $4,0-$4,2 HLongNV
  
 #credits_help
-$4,2BearishMushroom $4,0-$4,2 kadykunde
-$4,2Darling $4,0-$4,2 ForeDaMole $4,0-$4,2 eneb
-$4,2capsulehero $4,0-$4,2 ZantGuy
-$4,2twerps3 $4,0-$4,2 unsinnlos
-$4,2Jmickle $4,0-$4,2 Portponky $4,0-$4,2 FungusDude42
-$4,1#credits_helprest
+$4,2capsulehero $4,0-$4,2 BearishMushroom
+$4,2Darling $4,0-$4,2 DogeisCut $4,0-$4,2 eneb
+$4,2ForeDaMole $4,0-$4,2 FungusDude42
+$4,2Jmickle $4,0-$4,2 kadykunde $4,0-$4,2 Portponky
+$4,2twerps3 $4,0-$4,2 unsinnlos $4,0-$4,2 ZantGuy
  
 #credits_thanks
 $4,2Nordic Game Jam
