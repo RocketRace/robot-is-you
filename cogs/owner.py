@@ -326,8 +326,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                             colorRaw = line[:][17:-1]
                             # Splits the color into a list 
                             # "a,b" -> [a,b]
-                            color = colorRaw.split(",") if not color else color
-                            alts[ID]["color"] = color
+                            color = colorRaw.split(",")
+                            if not alts[ID].get("color"):
+                                alts[ID]["color"] = color
                         # Sets the changed color (active text only), overrides previous
                         elif line.startswith("activecolour=", 10):
                             colorRaw = line[:][23:-1]
