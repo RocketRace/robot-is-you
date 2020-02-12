@@ -466,7 +466,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         Returns all valid tiles in a text file.
         Tiles may be used in the `tile` (and subsequently `rule`) commands.
         """
-        fp = discord.File("tilelist.txt")
+        now = datetime.now().strftime("%Y-%m-%d")
+        fp = discord.File("tilelist.txt", filename=f"tilelist_{now}.txt")
         await ctx.send( "List of all valid tiles:", file=fp)
 
     @commands.cooldown(2,10,type=commands.BucketType.channel)

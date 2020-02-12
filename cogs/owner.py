@@ -491,8 +491,11 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 if name is not None:
                     self.tileColors[name] = rewritten
 
+        maxLength = len(max(self.tileColors, key=lambda x: len(x))) + 1
+
         with open("tilelist.txt", "wt") as allTiles:
-            allTiles.write("\n".join(sorted([tile for tile in self.tileColors])))
+            allTiles.write(f"{'*TILE* '.ljust(maxLength, '-')} *SOURCE*\n")
+            allTiles.write("\n".join(sorted([(f"{(tile + ' ').ljust(maxLength, '-')} {data['source']}") for tile, data in self.tileColors.items()])))
 
         # Dumps the gathered data to tilecolors.json
         with open("cache/tilecolors.json", "wt") as emoteFile:
