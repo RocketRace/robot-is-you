@@ -129,7 +129,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
         aboutEmbed.add_field(name="Statistics", value=stats)
         await self.bot.send(ctx, " ", embed=aboutEmbed)
 
-    @commands.command()
+    # @commands.command()
     @commands.cooldown(1, 10, commands.BucketType.channel)
     async def patchnotes(self, ctx):
         '''
