@@ -610,26 +610,27 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         Renders the tiles provided.
 
         **Features:**
-        * `palette` flag : Use this flag to recolor the output gif with the specified color palette. Use this in the format `palette:palette_name`. (See the `palettes` command for valid palettes.)
-        * `background` flag: Use this flag to toggle background color. To enable, use `background:True`. By default, this is False.  
-        * `rule` alias: Invoking the command with `rule` instead of `tile` will replace every tile with their text variants. Otherwise, render the text version of tiles with `text_object`.
-        * `:variant` sprite variants: You may render a variant of a sprite by suffixing `:variant` to a tile. Valid variants for tiles are detailed in the `variants` command.
+        * `--palette=<palette>` (`-P=<palette>`) flag: Recolors the output gif. (Example: `--palette=abstract`) See the `palettes` command for all valid palettes.
+        * `--background` (`-B`) flag: Enables background color. Color is based on the active palette.
+        * `rule` alias: When using the `rule` command instead of `tile`, every tile is replaced by its text variant.
+        * `:variant` sprite variants: Suffixing `:variant` to a tile renders the specified sprite variant. See the `variants` command for valid variants for a tile.
 
         **Special syntax:**
         * `-` : Renders an empty tile. 
-        * `&` : Separate tiles with this to stack them on top of each other.
-        * `,` : Input of the format `text_x,y...` or `tile_x,y,...` will be expanded into `text_x text_y ...` or `tile_x tile_y ...`
-        * `||` : If you hide any of the input with spoiler tags, the output gif is marked as a spoiler.
-        * `text_` : If this command is invoked using `tile`, you may render text tiles using `text_object`.
-        * `tile_` : If this command is invoked using `rule`, you may render non-text tiles using `tile_object`.
+        * `&` : Stacks tiles on top of each other.
+        * `,` : `text_x,y,...` and `tile_x,y,...` is expanded into `text_x text_y...` and `tile_x tile_y ...`
+        * `||` : Marks the output gif as a spoiler. 
+        * `text_` : `text_object` renders text objects.
+        * `tile_` : `tile_object` renders regular objects, but *only* if using the `rule` command alias.
         
         **Example commands:**
         `tile baba - keke`
-        `tile palette:marshmallow keke:down baba:sleep`
-        `rule rock is push`
-        `rule tile_baba on baba is word`
+        `tile --palette=marshmallow keke:down baba:sleep`
+        `rule -B rock is push`
+        `rule -P=test tile_baba on baba is word`
         `tile text_baba,is,you`
         `tile baba&flag ||cake||`
+        `tile -P=mountain -B baba bird:left`
         """
         async with ctx.typing():
             renderLimit = 64
@@ -646,19 +647,19 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             rule = ctx.invoked_with == "rule"
 
             # check flags
-            bgFlags = re.findall(r"background:true", tiles)
+            bgFlags = re.findall(r"--background|-b", tiles)
             background = None
             if bgFlags: background = (0,4)
-            pattern = r"palette:\w+"
+            pattern = r"--palette=\w+|-p=\w+"
             paletteFlags = re.findall(pattern, tiles)
             palette = "default"
             for pal in paletteFlags:
-                palette = pal[8:]
+                palette = pal[pal.index("=") + 1:]
             if palette + ".png" not in listdir("palettes"):
                 return await self.bot.error(ctx, f"Could not find a palette with name \"{pal}\".")
 
             tiles = "".join(re.split(pattern, tiles))
-            tiles = tiles.replace("background:true", "")
+            tiles = tiles.replace("--background", "").replace("-b", "")
             tiles = " ".join(re.split(" +", tiles))
 
             # Split input into lines
