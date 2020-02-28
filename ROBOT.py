@@ -119,6 +119,8 @@ bot = BabaBot(PREFIXES_MENTION,
     description="*An entertainment bot for rendering levels and custom scenes based on the indie game Baba Is You.*"
 )
 
+bot.prefixes = PREFIXES
+
 # Loads the modules of the bot
 if __name__ == "__main__":
     for cog in COGS:
