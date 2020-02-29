@@ -103,7 +103,7 @@ class BabaBot(commands.Bot):
         
         # coro
         async def deleteLater(message):
-            await asyncio.sleep(10)
+            await asyncio.sleep(15)
             await message.delete()
 
         asyncio.create_task(deleteLater(message))

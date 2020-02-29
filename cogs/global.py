@@ -753,24 +753,48 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     x = word
                                 # Is the variant faulty?
                                 if isfile(f"color/{palette}/{tile}-{0}-0-.png"):
-                                    # return await self.bot.send(ctx, f"⚠️ The sprite variant \"{variant}\"for \"{tile}\" doesn't seem to be valid.")
-                                    # Replace bad variants with the default sprite 
-                                    stack[i] = "default:0" 
-                                    break
+                                    if re.match(
+                                        # voodoo magic regex to match valid variants
+                                        r"r(ight|s)?|l(eft|s)?|d(own|s)?|u(p|s)?|s(leep)?|31|2[2-7]|1([0-1]|[5-9])|[7-9]|[0-3]",
+                                        variant):
+                                        stack[i] = "default:0"
+                                        continue
+                                    # not a real variant at all
+                                    else:
+                                        return await self.bot.error(ctx, f"⚠️ The sprite variant \"{variant}\" does not exist.")
                                 # Does a text counterpart exist?
                                 suggestion = "text_" + tile
                                 if isfile(f"color/{palette}/{suggestion}-{variant}-0-.png"):
-                                    return await self.bot.error(ctx, f"Could not find a tile for \"{x}\".", f"Did you mean \"{suggestion}\"?")
+                                    return await self.bot.error(ctx, 
+                                    f"Could not find a tile for \"{x}\".", 
+                                    f"Did you mean \"{suggestion}\", or mean to use the `{ctx.prefix}rule` command?"
+                                )
                                 # Did the user accidentally prepend "text_" via hand or using +rule?
                                 suggestion = tile[5:]
                                 if isfile(f"color/{palette}/{suggestion}-{variant}-0-.png"):
                                     # Under the `rule` command
                                     if rule:
-                                        return await self.bot.error(ctx, f"Could not find a tile for \"{suggestion}\" under \"rule\".", f"Did you mean \"tile_{suggestion}\"?")
+                                        return await self.bot.error(ctx, 
+                                        f"Could not find a tile for \"{suggestion}\" under \"rule\".", 
+                                        f"Did you mean \"tile_{suggestion}\", or mean to use the `{ctx.prefix}tile` command?"
+                                    )
                                     # Under the `tile` command
                                     else:
-                                        return await self.bot.error(ctx, f"Could not find a tile for \"{x}\".", f"Did you mean \"{suggestion}\"?")
-                                # Answer to both of those: No
+                                        return await self.bot.error(ctx, 
+                                        f"Could not find a tile for \"{x}\".", 
+                                        f"Did you mean \"{suggestion}\"?"
+                                    )
+                                # tried to use old palette / background syntax?
+                                if tile == "palette":
+                                    return await self.bot.error(ctx, 
+                                        f"Could not find a tile for \"{x}\".", 
+                                        f"Did you mean to use the `--palette={variant}` or `-P={variant}` flag?"
+                                    )
+                                if tile == "background":
+                                    return await self.bot.error(ctx, 
+                                        f"Could not find a tile for \"{x}\".", 
+                                        f"Did you mean to use the `--baclground` or `-B` flag?"
+                                    )
                                 return await self.bot.error(ctx, f"Could not find a tile for \"{x}\".")
 
             # Merges the images found
