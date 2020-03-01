@@ -1,65 +1,5 @@
 [
     {
-        "name":"text_j",
-        "sprite":"text_j",
-        "color":[
-        "0",
-        "3"
-        ],
-        "tiling":"-1",
-        "type":"5"
-    },
-    {
-        "name":"text_k",
-        "sprite":"text_k",
-        "color":[
-        "0",
-        "3"
-        ],
-        "tiling":"-1",
-        "type":"5"
-    },
-    {
-        "name":"text_p",
-        "sprite":"text_p",
-        "color":[
-        "0",
-        "3"
-        ],
-        "tiling":"-1",
-        "type":"5"
-    },
-    {
-        "name":"text_q",
-        "sprite":"text_q",
-        "color":[
-        "0",
-        "3"
-        ],
-        "tiling":"-1",
-        "type":"5"
-    },
-    {
-        "name":"text_y",
-        "sprite":"text_y",
-        "color":[
-        "0",
-        "3"
-        ],
-        "tiling":"-1",
-        "type":"5"
-    },
-    {
-        "name":"text_z",
-        "sprite":"text_z",
-        "color":[
-        "0",
-        "3"
-        ],
-        "tiling":"-1",
-        "type":"5"
-    },
-    {
         "name":"text_select",
         "sprite":"text_select",
         "color":[
@@ -68,6 +8,16 @@
         ],
         "tiling":"-1",
         "type":"2"
+    },
+    {
+        "sprite":"goose",
+        "name":"goose",
+        "color":
+            [
+                "0",
+                "3"
+            ],
+            "tiling":"3"
     },
     {
         "name":"level",
