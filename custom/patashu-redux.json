@@ -188,17 +188,6 @@
       "3"
     ]
   },
-
-  {
-    "name":"text_back",
-    "sprite":"text_back",
-    "tiling":"-1",
-    "color":[
-      "6",
-      "1"
-    ]
-  },
-
   {
     "name":"text_with",
     "sprite":"text_with",

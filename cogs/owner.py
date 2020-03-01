@@ -44,34 +44,56 @@ def multiplyColor(fp, palettes, pixels):
     return zip(recolored, outputPalettes)
 
 def getSpriteVariants(sprite, tiling):
-    # Opens the associated sprites from sprites/
-    # Use every sprite variant, the amount based on the tiling type
+    '''
+    Opens the associated sprites from sprites/
+    Use every sprite variant, the amount based on the tiling type
 
-    # Sprite variants follow this scheme:
+    Sprite variants follow this scheme:
 
-    # == IF NOT TILING TYPE 1 ==
-    # Change by 1 := Change in animation
-    # -> 0,1,2,3 := Regular animation
-    # -> 7 := Sleeping animation
-    # Change by 8 := Change in direction
+    == IF NOT TILING TYPE 1 ==
 
-    # == IF TYLING TYPE 1 ==
-    # 0  := None adjacent
-    # 1  := Right
-    # 2  := Up
-    # 3  := Up & Right
-    # 4  := Left
-    # 5  := Left & Right
-    # 6  := Left & Up
-    # 7  := Left & Right & Up
-    # 8  := Down
-    # 9  := Down & Right
-    # 10 := Down & Up
-    # 11 := Down & Right & Up
-    # 12 := Down & Left
-    # 13 := Down & Left & Right
-    # 14 := Down & Left & Up
-    # 15 := Down & Left & Right & Up
+    Change by 1 := Change in animation
+
+    -> 0,1,2,3 := Regular animation
+
+    -> 7 := Sleeping animation
+
+    Change by 8 := Change in direction
+
+    == IF TYLING TYPE 1 ==
+    
+    0  := None adjacent
+    
+    1  := Right
+    
+    2  := Up
+    
+    3  := Up & Right
+    
+    4  := Left
+    
+    5  := Left & Right
+    
+    6  := Left & Up
+    
+    7  := Left & Right & Up
+    
+    8  := Down
+    
+    9  := Down & Right
+    
+    10 := Down & Up
+    
+    11 := Down & Right & Up
+    
+    12 := Down & Left
+    
+    13 := Down & Left & Right
+    
+    14 := Down & Left & Up
+    
+    15 := Down & Left & Right & Up
+    '''
 
     if tiling == "4": # Animated, non-directional
         spriteNumbers = [0,1,2,3] # Animation
@@ -81,9 +103,9 @@ def getSpriteVariants(sprite, tiling):
                         16,17,18,19, # Animation left
                         24,25,26,27] # Animation down
 
-    if tiling == "3" and sprite == "goose": # Basically for belts only (anim + dirs)
+    if tiling == "3" and sprite == "goose": # For Goose (anim + dirs)
         spriteNumbers = [0,1,2,3, # Animation right
-                        # Goose has no up animations
+                        # Goose has no up animations ¯\_(ツ)_/¯
                         16,17,18,19, # Animation left
                         24,25,26,27] # Animation down
 
@@ -97,7 +119,8 @@ def getSpriteVariants(sprite, tiling):
                         24,25,26,27, # Moving animation down
                         31] # Sleep right
 
-    elif tiling == "2" and sprite == "robot": # No sleep sprite for robot
+    elif tiling == "2" and sprite == "robot": 
+        # Robot has no sleep animations but is a character ¯\_(ツ)_/¯
         spriteNumbers = [0,1,2,3, # Moving animation to the right
                         8,9,10, 11, # Moving animation up
                         16,17,18,19, #Moving animation left
@@ -114,21 +137,6 @@ def getSpriteVariants(sprite, tiling):
     
     return spriteNumbers
     
-def insert_returns(body):
-    # insert return stmt if the last expression is a expression statement
-    if isinstance(body[-1], ast.Expr):
-        body[-1] = ast.Return(body[-1].value)
-        ast.fix_missing_locations(body[-1])
-
-    # for if statements, we insert returns into the body and the orelse
-    if isinstance(body[-1], ast.If):
-        insert_returns(body[-1].body)
-        insert_returns(body[-1].orelse)
-
-    # for with blocks, again we insert returns into the body
-    if isinstance(body[-1], ast.With):
-        insert_returns(body[-1].body)
-
 def load_with_datetime(pairs, format='%Y-%m-%dT%H:%M:%S.%f'):
     '''
     Load json + datetime objects, in the speficied format.
@@ -161,7 +169,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         colorsFile = "cache/tilecolors.json"
         if stat(colorsFile).st_size != 0:
             self.tileColors = json.load(open(colorsFile))
-            self.filterText()
             
         # Loads the alternate tiles if possible
         # Loads debug data, if any
@@ -173,28 +180,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         
         # Are assets loading?
         self.bot.loading = False
-
-    def filterText(self):
-        '''
-        Loads vanilla texts for use with the `random` command. (non-command)
-        '''
-        # self.texts = {
-        #     "0" : [], # BABA (object)
-        #     "1" : [], # IS (verb)
-        #     "2" : [], # YOU (property)
-        #     "3" : [], # LONELY (prefix)
-        #     "4" : [], # NOT (not)
-        #     "5" : [], # A (letter)
-        #     "6" : [], # AND (and)
-        #     "7" : []  # ON (conditional)
-        # }
-        # for tile, data in self.tileColors.items():
-        #     if not tile.startswith("text_"):
-        #         continue
-        #     if data["source"] not in ("vanilla", "vanilla-extensions"):
-        #         continue
-        #     # Add key-value pair to the appropriate type section in self.texts
-        #     self.texts[data["type"]].append(tile)
 
     def generateTileSprites(self, tile, obj, palettes, colors):
         # Fetches the tile data
@@ -211,7 +196,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         spriteVariants = getSpriteVariants(sprite, tiling)
 
         # Saves the tile sprites
-        singleFrame = ["smiley", "hi"] # Filename is of the format "smiley_1.png"
+        singleFrame = ["smiley", "hi", "plus"] # Filename is of the format "smiley_1.png"
         noVariants = ["default"] # Filenames are of the format "default_<1/2/3>.png"
         for variant in spriteVariants:
             if tile in singleFrame or tile.startswith("icon"): # Icons have a single frame
@@ -275,7 +260,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.is_owner()
     async def loadchanges(self, ctx):
         '''
-        Scrapes additional tile data from level metadata files.
+        Scrapes alternate tile data from level metadata (`.ld`) files.
         '''
         self.bot.loading = True
         
@@ -350,12 +335,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                             duplicate = True
                     if not duplicate:
                         alternateTiles[key].extend([alts[key]])
-        
-        # Saves the data of ALL the themes to alternatetiles.json
-        with open("cache/alternatetiles.json", "wt") as alternateFile:
-            json.dump(alternateTiles, alternateFile, indent=3)
+    
 
-        await ctx.send("Loaded preexisting tile data from .ld files.")
+        await ctx.send("Scraped preexisting tile data from `.ld` files.")
         self.bot.loading = False
         return alternateTiles
     
@@ -363,19 +345,21 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.is_owner()
     async def loaddata(self, ctx):
         '''
-        Reloads tile data from values.lua and .ld files.
+        Reloads tile data from `values.lua`, `editor_objectlist.lua` and `.ld` files.
         '''
         altTiles = await ctx.invoke(self.bot.get_command("loadchanges"))
         await ctx.invoke(self.bot.get_command("loadcolors"), alternateTiles = altTiles)
+        await ctx.invoke(self.bot.get_command("loadeditor"))
+        await ctx.invoke(self.bot.get_command("loadcustom"))
+        await ctx.invoke(self.bot.get_command("dumpdata"))
         return await ctx.send("Done. Loaded all tile data.")
 
     @commands.command()
     @commands.is_owner()
     async def loadcolors(self, ctx, alternateTiles):
         '''
-        Loads initial tile data from values.lua.
+        Loads tile data from `values.lua.` and merges it with tile data from `.ld` files.
         '''
-        # Reads values.lua and scrapes the tile data from there
 
         self.tileColors = {}
         altTiles = alternateTiles
@@ -398,7 +382,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 # Only consider certain lines ("objectXYZ =", "name = x", "sprite = y", "colour = {a,b}", "active = {a,b}")
                 if line.startswith("\tobject"):
                     ID = line[1:10]
-                if line.startswith("\t\tname = "):
+                elif line.startswith("\t\tname = "):
                     # Grabs only the name of the object
                     name = line[10:-3] # Magic numbers used to grab the perfect substring
                 # This line has the format "\t\tsprite = \"name\",\n".
@@ -470,8 +454,19 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             elif line == "tileslist =\n":
                 tileslist = True
 
+        await ctx.send("Loaded default tile data from `values.lua`.")
+
+        self.bot.loading = False
+
+    @commands.command()
+    @commands.is_owner()
+    async def loadcustom(self, ctx):
+        '''
+        Loads custom tile data from `custom/*.json` into self.tileData
+        '''
+        
         # Load custom tile data from a json files
-        customData = listdir("custom")
+        customData = [x for x in listdir("custom") if x.endswith(".json")]
         # In alphabetical order, to make sure Patashu's redux mod overwrites the old mod
         customData.sort() 
         for f in customData:
@@ -491,6 +486,61 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 if name is not None:
                     self.tileColors[name] = rewritten
 
+        await ctx.send("Loaded custom tile data from `custom/*.json`.")
+
+    @commands.command()
+    @commands.is_owner()
+    async def loadeditor(self, ctx):
+        '''
+        Loads tile data from `editor_objectlist.lua` into `self.tileData`.
+        '''
+
+        lines = ""
+        with open("editor_objectlist.lua", errors="replace") as objlist:
+            lines = objlist.readlines()
+        
+        objects = {}
+        parsingObjects = False
+        name = tiling = tileType = sprite = ""
+        color = None
+        tags = None
+        for line in lines:
+            if line.startswith("editor_objlist = {"):
+                parsingObjects = True
+            if not parsingObjects:
+                continue
+            if line.startswith("\t},"):
+                if sprite == "": sprite = name
+                objects[name] = {"tiling":tiling,"type":tileType,"sprite":sprite,"color":color,"tags":tags,"source":"vanilla"}
+                name = tiling = tileType = sprite = ""
+                color = None
+                tags = None
+            elif line.startswith("\t\tname = \""):
+                name = line[10:-3]
+            elif line.startswith("\t\ttiling = "):
+                tiling = line[11:-2]
+            elif line.startswith("\t\tsprite = \""):
+                sprite = line[12:-3]
+            elif line.startswith("\t\ttype = "):
+                tileType = line[9:-2]
+            elif line.startswith("\t\tcolour = {"):
+                if not color:
+                    color = [x.strip() for x in line[12:-3].split(",")]
+            elif line.startswith("\t\tcolour_active = {"):
+                color = [x.strip() for x in line[19:-3].split(",")]
+            elif line.startswith("\t\ttags = {"):
+                ...
+
+        self.tileColors.update(objects)
+        await ctx.send("Loaded tile data from `editor_objectlist.lua`.")
+
+    @commands.command()
+    @commands.is_owner()
+    async def dumpdata(self, ctx):
+        '''
+        Dumps cached tile data from `self.tileData` into `tilecolors.json` and `tilelist.txt`.
+        '''
+
         maxLength = len(max(self.tileColors, key=lambda x: len(x))) + 1
 
         with open("tilelist.txt", "wt") as allTiles:
@@ -501,18 +551,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         with open("cache/tilecolors.json", "wt") as emoteFile:
             json.dump(self.tileColors, emoteFile, indent=3)
 
-        await ctx.send("Loaded default tile data.")
-
-        self.bot.loading = False
-
-    @commands.command()
-    @commands.is_owner()
-    async def loadtext(self, ctx):
-        '''
-        Loads vanilla texts for use with the `random` command.
-        '''
-        self.filterText()
-        
+        await ctx.send("Saved cached tile data.")
     
     @commands.command()
     @commands.is_owner()
@@ -522,7 +561,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         '''
         cmds = "\n".join([cmd.name for cmd in self.bot.commands if cmd.hidden])
         await self.bot.send(ctx, f"All hidden commands:\n{cmds}")
-
 
     @commands.command()
     @commands.is_owner()
@@ -615,17 +653,14 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.is_owner()
     async def loadall(self, ctx):
         '''
-        Reloads absolutely everything. (tile data, tile sprites, TODO levels)
+        Reloads absolutely everything. (tile data, tile sprites)
         Avoid using this, as it takes minutes to complete.
         '''
         # Sends some feedback messages
 
         await ctx.send("Loading objects...")
-        altTiles = await ctx.invoke(self.bot.get_command("loadchanges"))
-        await ctx.send("Loading colors...")
-        await ctx.invoke(self.bot.get_command("loadcolors"), alternateTiles=altTiles)
-        await ctx.send("Loading palettes...")
-        palettes = [palette[:-4] for palette in listdir("palettes") if palette not in [".DS_Store"]] 
+        await ctx.invoke(self.bot.get_command("loaddata"))
+        palettes = [palette[:-4] for palette in listdir("palettes") if palette.endswith(".png")] 
         # Strip ".png", ignore some files
         await ctx.invoke(self.bot.get_command("loadpalettes"), palettes)
         await ctx.send(f"{ctx.author.mention} Done.")

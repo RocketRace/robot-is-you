@@ -185,7 +185,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 yOffset += 24
 
             # Resizes to 200%
-            renderFrame = renderFrame.resize((2 * totalWidth, 2 * totalHeight))
+            renderFrame = renderFrame.resize((2 * totalWidth, 2 * totalHeight), resample=Image.NEAREST)
             # Saves the final image
             frames.append(renderFrame)
 
