@@ -888,6 +888,12 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     # Guaranteed
                     levels[filename] = data
 
+        # MapID?
+        if len(levels) == 0:
+            for filename,data in levelData.items():
+                if data["mapID"] == query and data["parent"] is None:
+                    levels[filename] = data
+
         # If not found: error message
         if len(levels) == 0:
             return await self.bot.error(ctx, f'Could not find a level matching the query "{fineQuery}".')
