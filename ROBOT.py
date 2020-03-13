@@ -52,7 +52,8 @@ class BabaBot(commands.Bot):
 
     # Custom get_context method is used to allow for case-insensitive prefixes
     async def get_context(self, message, *, cls=commands.Context):
-        view = commands.view.StringView(message.content.lower())
+        view = commands.view.StringView(message.content)
+        lowerView = commands.view.StringView(message.content.lower())
         ctx = cls(prefix=None, view=view, bot=self, message=message)
 
         if self._skip_check(message.author.id, self.user.id):
@@ -62,13 +63,13 @@ class BabaBot(commands.Bot):
         invoked_prefix = prefix
 
         if isinstance(prefix, str):
-            if not view.skip_string(prefix):
+            if not lowerView.skip_string(prefix):
                 return ctx
         else:
             try:
                 # This line was amended to include .lower() 
                 if message.content.lower().startswith(tuple(prefix)):
-                    invoked_prefix = discord.utils.find(view.skip_string, prefix)
+                    invoked_prefix = discord.utils.find(lowerView.skip_string, prefix)
                 else:
                     return ctx
 
@@ -81,7 +82,9 @@ class BabaBot(commands.Bot):
                         raise TypeError("Iterable command_prefix or list returned from get_prefix must "
                                         "contain only strings, not {}".format(value.__class__.__name__))
                 raise
-
+        
+        view.index = lowerView.index
+        view.previous = lowerView.previous
         invoker = view.get_word()
         ctx.invoked_with = invoker
         ctx.prefix = invoked_prefix
