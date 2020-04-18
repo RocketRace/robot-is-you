@@ -4,6 +4,7 @@ import re
 
 from datetime    import datetime
 from discord.ext import commands
+from functools   import partial
 from inspect     import Parameter
 from itertools   import chain
 from io          import BytesIO
@@ -13,6 +14,7 @@ from os.path     import isfile
 from PIL         import Image
 from random      import choices, random
 from string      import ascii_lowercase
+from time        import time
 
 def flatten(items, seqtypes=(list, tuple)):
     '''
@@ -35,6 +37,26 @@ def tryIndex(string, value):
     except:
         pass
     return index
+
+class SplittingException(BaseException):
+    pass
+
+# Splits the "text_x,y,z..." shortcuts into "text_x", "text_y", ...
+def splitCommas(grid, prefix):
+    for row in grid:
+        toAdd = []
+        for i, word in enumerate(row):
+            if "," in word:
+                if word.startswith(prefix):
+                    each = word.split(",")
+                    expanded = [each[0]]
+                    expanded.extend([prefix + segment for segment in each[1:]])
+                    toAdd.append((i, expanded))
+                else:
+                    raise SplittingException(word)
+        for change in reversed(toAdd):
+            row[change[0]:change[0] + 1] = change[1]
+    return grid
 
 class GlobalCog(commands.Cog, name="Baba Is You"):
     def __init__(self, bot):
@@ -313,7 +335,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     @commands.command()
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
     async def search(self, ctx, *, query: str):
-        """
+        '''
         Searches for tiles based on a query.
 
         **You may use these flags to navigate the output:**
@@ -333,7 +355,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         `search text:false source:vanilla sta`
         `search source:modded sort:color page:4`
         `search text:true color:0,3 reverse:true`
-        """
+        '''
         sanitizedQuery = discord.utils.escape_mentions(query)
         # Pattern to match flags in the format (flag):(value)
         flagPattern = r"([\d\w_]+):([\d\w,-_]+)"
@@ -455,17 +477,17 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             matches.insert(0, f"Found {results} results using query \"{sanitizedQuery}\":")
         
         # Tidy up our output with this mess
-        content = "\n".join([f"**{x.get('name')}** : {', '.join([f'{k}: `{v[0]},{v[1]}`' if isinstance(v, list) else f'{k}: `{v}`' for k, v in sorted(x.items(), key=lambda λ: λ[0]) if k != 'name'])}" if not isinstance(x, str) else x for x in [matches[0]] + sorted(matches[1:], key=lambda λ: (λ[sortBy], λ[secondarySortBy]), reverse=reverse)[firstResult:lastResult + 1]])
+        content = "\n".join([f"**{x.get('name')}** : {', '.join([f'{k}: `{v[0]},{v[1]}`' if isinstance(v, list) else f'{k}: `{v}`' for k, v in sorted(x.items(), key=lambda λ: λ[0]) if k not in ['name', 'tags']])}" if not isinstance(x, str) else x for x in [matches[0]] + sorted(matches[1:], key=lambda λ: (λ[sortBy], λ[secondarySortBy]), reverse=reverse)[firstResult:lastResult + 1]])
         await self.bot.send(ctx, content)
 
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
     @commands.command(name="list")
     async def listTiles(self, ctx):
-        """
+        '''
         Lists valid tiles for rendering.
         Returns all valid tiles in a text file.
         Tiles may be used in the `tile` (and subsequently `rule`) commands.
-        """
+        '''
         now = datetime.now().strftime("%Y-%m-%d")
         fp = discord.File("tilelist.txt", filename=f"tilelist_{now}.txt")
         await ctx.send( "List of all valid tiles:", file=fp)
@@ -473,10 +495,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     @commands.cooldown(2,10,type=commands.BucketType.channel)
     @commands.command(name="palettes")
     async def listPalettes(self, ctx):
-        """
+        '''
         Lists palettes usable for rendering.
         Palettes can be used as arguments for the `tile` (and subsequently `rule`) commands.
-        """
+        '''
         msg = []
         for palette in listdir("palettes"):
             if not palette in [".DS_Store"]:
@@ -602,36 +624,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         # Output
         await self.bot.send(ctx, f"Valid sprite variants for '{cleanTile}'\n" + "\n".join(output[tiling]) + "\n")
 
-    # Generates an animated gif of the tiles provided, using the default palette
-    @commands.command(aliases=["rule"])
-    @commands.cooldown(4, 10, type=commands.BucketType.channel)
-    async def tile(self, ctx, *, objects: str = ""):
-        """
-        Renders the tiles provided.
-
-        **Features:**
-        * `--palette=<palette>` (`-P=<palette>`) flag: Recolors the output gif. (Example: `--palette=abstract`) See the `palettes` command for all valid palettes.
-        * `--background` (`-B`) flag: Enables background color. Color is based on the active palette.
-        * `rule` alias: When using the `rule` command instead of `tile`, every tile is replaced by its text variant.
-        * `:variant` sprite variants: Suffixing `:variant` to a tile renders the specified sprite variant. See the `variants` command for valid variants for a tile.
-
-        **Special syntax:**
-        * `-` : Renders an empty tile. 
-        * `&` : Stacks tiles on top of each other.
-        * `,` : `text_x,y,...` and `tile_x,y,...` is expanded into `text_x text_y...` and `tile_x tile_y ...`
-        * `||` : Marks the output gif as a spoiler. 
-        * `text_` : `text_object` renders text objects.
-        * `tile_` : `tile_object` renders regular objects, but *only* if using the `rule` command alias.
-        
-        **Example commands:**
-        `tile baba - keke`
-        `tile --palette=marshmallow keke:down baba:sleep`
-        `rule -B rock is push`
-        `rule -P=test tile_baba on baba is word`
-        `tile text_baba,is,you`
-        `tile baba&flag ||cake||`
-        `tile -P=mountain -B baba bird:left`
-        """
+    async def renderTiles(self, ctx, *, objects, rule):
+        '''
+        Performs the bulk work for both `tile` and `rule` commands.
+        '''
         async with ctx.typing():
             renderLimit = 64
             tiles = objects.lower().strip()
@@ -642,9 +638,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             # Determines if this should be a spoiler
             spoiler = tiles.replace("|", "") != tiles
             tiles = tiles.replace("|", "")
-
-            # Determines if the command should use text tiles.
-            rule = ctx.invoked_with == "rule"
 
             # check flags
             bgFlags = re.findall(r"--background|-b", tiles)
@@ -662,34 +655,22 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             tiles = tiles.replace("--background", "").replace("-b", "")
             tiles = " ".join(re.split(" +", tiles))
 
+            # Check for empty input
+            if not tiles:
+                return await self.bot.error(ctx, "Input cannot be blank.")
+
             # Split input into lines
             wordRows = tiles.splitlines()
             
             # Split each row into words
             wordGrid = [row.split() for row in wordRows]
 
-            # Splits the "text_x,y,z..." shortcuts into "text_x", "text_y", ...
-            def splitCommas(grid, prefix):
-                for row in grid:
-                    toAdd = []
-                    for i, word in enumerate(row):
-                        if "," in word:
-                            if word.startswith(prefix):
-                                each = word.split(",")
-                                expanded = [each[0]]
-                                expanded.extend([prefix + segment for segment in each[1:]])
-                                toAdd.append((i, expanded))
-                            else:
-                                raise Exception(word)
-                    for change in reversed(toAdd):
-                        row[change[0]:change[0] + 1] = change[1]
-                return grid
             try:
                 if rule:
                     wordGrid = splitCommas(wordGrid, "tile_")
                 else:
                     wordGrid = splitCommas(wordGrid, "text_")
-            except Exception as e:
+            except SplittingException as e:
                 sourceOfException = e.args[0]
                 return await self.bot.error(ctx, f"I couldn't parse the following input: \"{sourceOfException}\".")
 
@@ -803,9 +784,66 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             formatString = "render_%Y-%m-%d_%H.%M.%S"
             formatted = timestamp.strftime(formatString)
             filename = f"{formatted}.gif"
-            self.magickImages(wordGrid, width, height, palette=palette, background=background, out=buffer) # Previously used mergeImages()
+            t = time()
+            task = partial(self.magickImages, wordGrid, width, height, palette=palette, background=background, out=buffer)
+            await self.bot.loop.run_in_executor(None, task)
         # Sends the image through discord
         await ctx.send(content=ctx.author.mention, file=discord.File(buffer, filename=filename, spoiler=spoiler))
+        
+
+    @commands.command()
+    @commands.cooldown(4, 10, type=commands.BucketType.channel)
+    async def rule(self, ctx, *, objects = ""):
+        '''
+        Renders the text tiles provided.
+
+        **Features:**
+        * `--palette=<palette>` (`-P=<palette>`) flag: Recolors the output gif. (Example: `--palette=abstract`) See the `palettes` command for all valid palettes.
+        * `--background` (`-B`) flag: Enables background color. Color is based on the active palette.
+        * `:variant` sprite variants: Append `:variant` to a tile to render variants. See the `variants` command for more information.
+
+        **Special syntax:**
+        * `-` : Renders an empty tile. 
+        * `&` : Stacks tiles on top of each other.
+        * `tile_` : `tile_object` renders regular objects.
+        * `,` : `tile_x,y,...` is expanded into `tile_x tile_y ...`
+        * `||` : Marks the output gif as a spoiler. 
+        
+        **Example commands:**
+        `rule baba is you`
+        `rule -B rock is ||push||`
+        `rule -P=test tile_baba on baba is word`
+        `rule baba eat baba - tile_baba tile_baba:l`
+        '''
+        await self.renderTiles(ctx, objects=objects, rule=True)
+
+    # Generates an animated gif of the tiles provided, using the default palette
+    @commands.command()
+    @commands.cooldown(4, 10, type=commands.BucketType.channel)
+    async def tile(self, ctx, *, objects = ""):
+        '''
+        Renders the tiles provided.
+
+        **Features:**
+        * `--palette=<palette>` (`-P=<palette>`) flag: Recolors the output gif. (Example: `--palette=abstract`) See the `palettes` command for all valid palettes.
+        * `--background` (`-B`) flag: Enables background color. Color is based on the active palette.
+        * `:variant` sprite variants: Append `:variant` to a tile to render variants. See the `variants` command for more information.
+
+        **Special syntax:**
+        * `-` : Renders an empty tile. 
+        * `&` : Stacks tiles on top of each other.
+        * `text_` : `text_object` renders text objects.
+        * `,` : `text_x,y,...` is expanded into `text_x text_y...`
+        * `||` : Marks the output gif as a spoiler. 
+        
+        **Example commands:**
+        `tile baba - keke`
+        `tile --palette=marshmallow keke:d baba:s`
+        `tile text_baba,is,you`
+        `tile baba&flag ||cake||`
+        `tile -P=mountain -B baba bird:l`
+        '''
+        await self.renderTiles(ctx, objects=objects, rule=False)
 
     @commands.cooldown(2, 10, commands.BucketType.channel)
     @commands.command(name="level")
