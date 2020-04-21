@@ -112,7 +112,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
     async def cog_check(self, ctx):
         return not self.bot.loading
 
-    @commands.command()
+    @commands.command(aliases=["info"])
     @commands.cooldown(2, 5, commands.BucketType.channel)
     async def about(self, ctx):
         """
@@ -149,7 +149,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
             await self.bot.send(ctx, "\n".join(["Recent Updates:"] + list(reversed(fp.read().splitlines()))))
 
     
-    @commands.command()
+    @commands.command(aliases=["pong"])
     @commands.cooldown(2, 2, commands.BucketType.channel)
     async def ping(self, ctx):
         '''
