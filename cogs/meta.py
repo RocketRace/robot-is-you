@@ -171,6 +171,24 @@ class MetaCog(commands.Cog, name="Other Commands"):
 
         msg.add_field(name="Support Server", value="[Click here to join RocketRace's Bots](https://discord.gg/rMX3YPK)\n")
         await self.bot.send(ctx, " ", embed=msg)
+    
+    # @commands.command(aliases=["interpret"])
+    @commands.cooldown(2, 10, type=commands.BucketType.channel)
+    async def babalang(self, ctx, program, input=None):
+        '''
+        Interpret a Babalang program.
+        
+        The first argument must be the source code for the program, escaped in quotes:
+        
+        * e.g. `"baba is group and word and text"`
+
+        The second argument is the optional input, also escaped in quotes:
+
+        * e.g. `"foo bar"`
+
+        Both arguments can be multi-line. The input argument will be automatically padded 
+        with trailing newlines as necessary.
+        '''
 
     @commands.Cog.listener()
     async def on_disconnect(self):
@@ -179,7 +197,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
             await self.bot.wait_for("ready", timeout=5.0)
         except asyncio.TimeoutError:
             try: 
-                await self.bot.wait_for("ready", timeout=25.0)
+                await self.bot.wait_for("ready", timeout=55.0)
             except asyncio.TimeoutError:
                 err = discord.Embed(
                     title="Disconnect", 

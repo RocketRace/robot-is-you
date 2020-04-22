@@ -112,9 +112,12 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             [
                 [
                     [
-                        None if word == "-" else f"color/{palette}/{word.split(':')[0]}-{word.split(':')[1]}-{fr}-.png" for word in stack
-                    ] for stack in row
-                ] for row in wordGrid
+                        None if word == "-" 
+                        # Random animation offset for each position on the grid
+                        else f"color/{palette}/{word.split(':')[0]}-{word.split(':')[1]}-{(hash(x + y + z) + fr) % 3}-.png" 
+                        for z, word in enumerate(stack)
+                    ] for x, stack in enumerate(row)
+                ] for y, row in enumerate(wordGrid)
             ] for fr in range(3)
         ]
         # Minimize IO by only opening each image once
