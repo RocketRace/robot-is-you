@@ -5,6 +5,7 @@ import itertools
 from datetime     import datetime
 from discord.ext  import commands
 from json         import load
+from subprocess   import run, TimeoutExpired, PIPE, STDOUT
 from time         import time
 
 # Custom help command implementation
@@ -170,9 +171,9 @@ class MetaCog(commands.Cog, name="Other Commands"):
         msg.add_field(name="Support Server", value="[Click here to join RocketRace's Bots](https://discord.gg/rMX3YPK)\n")
         await self.bot.send(ctx, " ", embed=msg)
     
-    # @commands.command(aliases=["interpret"])
+    @commands.command(aliases=["interpret"])
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
-    async def babalang(self, ctx, program, input=None):
+    async def babalang(self, ctx, program, progInput=None):
         '''
         Interpret a Babalang program.
         
@@ -187,7 +188,53 @@ class MetaCog(commands.Cog, name="Other Commands"):
         Both arguments can be multi-line. The input argument will be automatically padded 
         with trailing newlines as necessary.
         '''
-        
+        if progInput is not None and progInput[-1] != "\n":
+            progInput = progInput + "\n"
+
+        def interpretBabalang():
+            try:
+                process = run(
+                    ["./babalang",  "-c", f"'{program}'"], 
+                    stdout=PIPE,
+                    stderr=STDOUT,
+                    timeout=1.0,
+                    input=progInput,
+                    text=True
+                )
+                if process.stdout is not None:
+                    return (process.returncode, process.stdout)
+                else:
+                    return (process.returncode, "")
+            except TimeoutExpired as timeout:
+                if timeout.output is not None:
+                    return (None, timeout.output[:1000].decode("utf-8", errors="replace"))
+                else:
+                    return (None, None)
+        returnCode, output = await self.bot.loop.run_in_executor(None, interpretBabalang)
+
+        tooLong = False
+        if output is not None:
+            if len(lines := output.splitlines()) > 50:
+                output = "\n".join(lines[:50])
+                tooLong = True
+            if len(output) > 500:
+                output = output[:500]
+                tooLong = True
+
+        message = []
+        if returnCode is None:
+            message.append("The program took too long to execute:\n")
+        else:
+            message.append(f"The program terminated with return code `{returnCode}`:\n")
+
+        if output is None:
+            message.append("```\n[No output]\n```")
+        elif tooLong:
+            message.append(f"```\n{output} [...]\n[Output too long, truncated]\n```")
+        else:
+            message.append(f"```\n{output}\n```")
+
+        await self.bot.send(ctx, "".join(message))
 
     @commands.Cog.listener()
     async def on_disconnect(self):
