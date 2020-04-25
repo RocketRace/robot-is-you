@@ -4,7 +4,6 @@ import traceback
 
 from asyncio      import create_task
 from discord.ext  import commands
-from json         import load
 
 """
 By EeviePy on GitHub: https://gist.github.com/EvieePy/7822af90858ef65012ea500bcecf1612

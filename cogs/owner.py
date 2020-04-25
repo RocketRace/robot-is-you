@@ -8,9 +8,6 @@ from datetime     import datetime, timedelta
 from discord.ext  import commands
 from os           import listdir, mkdir, stat
 from PIL          import Image
-from string       import ascii_lowercase
-from subprocess   import Popen, PIPE, STDOUT
-from time         import time
 
 def multiplyColor(fp, palettes, pixels):
     # fp: file path of the sprite

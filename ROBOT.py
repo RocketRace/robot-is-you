@@ -1,11 +1,10 @@
+import asyncio
 import discord
 import itertools
 import jishaku
 
 from discord.ext  import commands
-from discord.http import asyncio
 from json         import load
-from time         import time
 
 # Sets up the configuration
 configuration = None
