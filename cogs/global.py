@@ -1,12 +1,10 @@
 import discord
-import numpy     as np
 import re
 
 from datetime    import datetime
 from discord.ext import commands
 from functools   import partial
 from inspect     import Parameter
-from itertools   import chain
 from io          import BytesIO
 from json        import load
 from os          import listdir
@@ -14,7 +12,6 @@ from os.path     import isfile
 from PIL         import Image
 from random      import choices, random
 from string      import ascii_lowercase
-from time        import time
 
 def flatten(items, seqtypes=(list, tuple)):
     '''

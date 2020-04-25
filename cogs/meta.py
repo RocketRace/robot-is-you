@@ -1,12 +1,10 @@
+import asyncio
 import discord
 import itertools
 
 from datetime     import datetime
 from discord.ext  import commands
-from discord.http import asyncio
 from json         import load
-from subprocess   import Popen, PIPE, STDOUT
-from random       import choice
 from time         import time
 
 # Custom help command implementation
@@ -189,6 +187,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
         Both arguments can be multi-line. The input argument will be automatically padded 
         with trailing newlines as necessary.
         '''
+        
 
     @commands.Cog.listener()
     async def on_disconnect(self):
