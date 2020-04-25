@@ -214,7 +214,8 @@ class MetaCog(commands.Cog, name="Other Commands"):
 
         tooLong = False
         if output is not None:
-            if len(lines := output.splitlines()) > 50:
+            lines = output.splitlines()
+            if len(lines) > 50:
                 output = "\n".join(lines[:50])
                 tooLong = True
             if len(output) > 500:
