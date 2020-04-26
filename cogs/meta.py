@@ -193,6 +193,8 @@ class MetaCog(commands.Cog, name="Other Commands"):
             progInput = ""
         elif progInput and progInput[0][-1] != "\n":
             progInput = progInput[0] + "\n"
+        else:
+            progInput = ""
 
         def interpretBabalang():
             try:
