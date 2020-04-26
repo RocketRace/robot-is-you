@@ -173,7 +173,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
     
     @commands.command(aliases=["interpret"])
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
-    async def babalang(self, ctx, program, progInput=None):
+    async def babalang(self, ctx, program, *progInput):
         '''
         Interpret a Babalang program.
         
@@ -188,8 +188,11 @@ class MetaCog(commands.Cog, name="Other Commands"):
         Both arguments can be multi-line. The input argument will be automatically padded 
         with trailing newlines as necessary.
         '''
-        if progInput is not None and progInput[-1] != "\n":
-            progInput = progInput + "\n"
+        if len(progInput) > 1:
+            program = " ".join([program] + list(progInput))
+            progInput = ""
+        elif progInput is not None and progInput[0][-1] != "\n":
+            progInput = progInput[0] + "\n"
 
         def interpretBabalang():
             try:
@@ -198,7 +201,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
                     stdout=PIPE,
                     stderr=STDOUT,
                     timeout=1.0,
-                    input=progInput,
+                    input=progInput.encode("utf-8", "ignore"),
                 )
                 if process.stdout is not None:
                     return (process.returncode, process.stdout[:1000].decode("utf-8", "replace"))
