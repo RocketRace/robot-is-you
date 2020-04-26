@@ -331,7 +331,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             "file in your Baba Is You local files!", color=self.bot.embedColor)
         await self.bot.send(ctx, " ", embed=msg)
 
-    @commands.cooldown(2, 10, type=commands.BucketType.channel)
+    # @commands.cooldown(2, 10, type=commands.BucketType.channel)
     @commands.command(name="random")
     @commands.is_owner()
     async def randomRule(self, ctx):
@@ -525,7 +525,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         
 
     @commands.command()
-    @commands.cooldown(4, 10, type=commands.BucketType.channel)
+    @commands.cooldown(5, 10, type=commands.BucketType.channel)
     async def rule(self, ctx, *, objects = ""):
         '''
         Renders the text tiles provided.
@@ -552,7 +552,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
     # Generates an animated gif of the tiles provided, using the default palette
     @commands.command()
-    @commands.cooldown(4, 10, type=commands.BucketType.channel)
+    @commands.cooldown(5, 10, type=commands.BucketType.channel)
     async def tile(self, ctx, *, objects = ""):
         '''
         Renders the tiles provided.
@@ -578,7 +578,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         '''
         await self.renderTiles(ctx, objects=objects, rule=False)
 
-    @commands.cooldown(2, 10, commands.BucketType.channel)
+    @commands.cooldown(5, 10, commands.BucketType.channel)
     @commands.command(name="level")
     async def _level(self, ctx, *, query):
         '''
