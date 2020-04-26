@@ -175,7 +175,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
     async def babalang(self, ctx, program, *progInput):
         '''
-        Interpret a Babalang program.
+        Interpret a [Babalang](https://esolangs.org/wiki/Babalang) program.
         
         The first argument must be the source code for the program, escaped in quotes:
         
