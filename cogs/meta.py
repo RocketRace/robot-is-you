@@ -216,7 +216,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
         returnCode, output = await self.bot.loop.run_in_executor(None, interpretBabalang)
 
         tooLong = False
-        if output is not None:
+        if output:
             lines = output.splitlines()
             if len(lines) > 50:
                 output = "\n".join(lines[:50])
@@ -231,7 +231,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
         else:
             message.append(f"The program terminated with return code `{returnCode}`:\n")
 
-        if output is None:
+        if not output:
             message.append("```\n[No output]\n```")
         elif tooLong:
             message.append(f"```\n{output} [...]\n[Output too long, truncated]\n```")
