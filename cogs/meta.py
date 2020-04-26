@@ -199,16 +199,15 @@ class MetaCog(commands.Cog, name="Other Commands"):
                     stderr=STDOUT,
                     timeout=1.0,
                     input=progInput,
-                    text=True
                 )
                 if process.stdout is not None:
-                    return (process.returncode, process.stdout)
+                    return (process.returncode, process.stdout[:1000].decode("utf-8", "replace"))
                 else:
                     return (process.returncode, "")
             except TimeoutExpired as timeout:
                 if timeout.output is not None:
                     if isinstance(timeout.output, bytes):
-                        return (None, timeout.output[:1000].decode("utf-8", errors="replace"))
+                        return (None, timeout.output[:1000].decode("utf-8", "replace"))
                     else:
                         return (None, timeout.output)
                 else:
