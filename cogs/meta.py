@@ -207,7 +207,10 @@ class MetaCog(commands.Cog, name="Other Commands"):
                     return (process.returncode, "")
             except TimeoutExpired as timeout:
                 if timeout.output is not None:
-                    return (None, timeout.output[:1000].decode("utf-8", errors="replace"))
+                    if isinstance(timeout.output, bytes):
+                        return (None, timeout.output[:1000].decode("utf-8", errors="replace"))
+                    else:
+                        return (None, timeout.output)
                 else:
                     return (None, None)
         returnCode, output = await self.bot.loop.run_in_executor(None, interpretBabalang)
