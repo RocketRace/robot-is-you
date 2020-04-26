@@ -191,7 +191,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
         if len(progInput) > 1:
             program = " ".join([program] + list(progInput))
             progInput = ""
-        elif progInput is not None and progInput[0][-1] != "\n":
+        elif progInput and progInput[0][-1] != "\n":
             progInput = progInput[0] + "\n"
 
         def interpretBabalang():
