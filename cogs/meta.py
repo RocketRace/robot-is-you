@@ -163,7 +163,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
         Invite the bot to your own server!
         '''
         ID = self.bot.user.id
-        permissions = discord.Permissions(permissions=388160)
+        permissions = discord.Permissions(permissions=379968)
         invite = discord.utils.oauth_url(client_id=ID, permissions=permissions)
         formatted = f"[Click Here to invite the bot to your guild!]({invite})"
         msg = discord.Embed(title="Invite", colour=self.bot.embedColor, description=formatted)
