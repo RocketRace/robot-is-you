@@ -182,6 +182,27 @@ soundnames =
 	},
 }
 
+word_names =
+{
+	turn = "turn right",
+	deturn = "turn left",
+	fallright = "fall (right)",
+	fallup = "fall (up)",
+	fallleft = "fall (left)",
+	nudgeright = "nudge (right)",
+	nudgeup = "nudge (up)",
+	nudgeleft = "nudge (left)",
+	nudgedown = "nudge (down)",
+}
+
+decor_offsets =
+{
+	baba = {0,0},
+	keke = {{-2,-4},{0,0},{2,-4},{0,-6}},
+	robot = {-3,-6},
+	ghost = {{-1,-5},{0,0},{1,-5},{-1,-8}},
+}
+
 tileslist =
 {
 	edge =
@@ -1837,8 +1858,426 @@ tileslist =
 		grid = {10, 1},
 		layer = 20,
 	},
-	
-	-- Level cursor!
+	object120 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object121 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object122 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object123 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object124 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object125 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object126 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object127 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object128 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object129 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object130 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object131 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object132 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object133 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object134 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object135 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object136 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object137 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object138 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object139 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object140 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object141 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object142 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object143 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object144 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object145 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object146 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object147 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object148 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object149 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
 	object150 =
 	{
 		name = "cursor",
@@ -1852,6 +2291,218 @@ tileslist =
 		grid = {11, 0},
 		layer = 20,
 	},
+	object151 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+	object152 =
+	{
+		name = "text_sad",
+		sprite = "text_sad",
+		sprite_in_root = true,
+		unittype = "text",
+		tiling = -1,
+		type = 2,
+		colour = {1, 1},
+		active = {3, 2},
+		tile = {6, 11},
+		grid = {10, 1},
+		layer = 20,
+	},
+}
+
+particletypes =
+{
+	bubbles =
+	{
+		amount = 30,
+		animation = 0,
+		colour = {1, 0},
+		extra = 
+			function(unitid)
+				local unit = mmf.newObject(unitid)
+				
+				unit.values[YVEL] = math.random(-3,-1)
+				
+				unit.scaleX = unit.values[YVEL] * -0.33
+				unit.scaleY = unit.values[YVEL] * -0.33
+			end,
+	},
+	soot =
+	{
+		amount = 30,
+		animation = 1,
+		colour = {0, 1},
+		extra = 
+			function(unitid)
+				local unit = mmf.newObject(unitid)
+				
+				unit.values[YVEL] = math.random(-3,-1)
+				
+				unit.scaleX = unit.values[YVEL] * -0.33
+				unit.scaleY = unit.values[YVEL] * -0.33
+			end,
+	},
+	sparks =
+	{
+		amount = 40,
+		animation = 1,
+		colour = {2, 3},
+		extra = 
+			function(unitid)
+				local unit = mmf.newObject(unitid)
+				
+				unit.values[YVEL] = math.random(-3,-1)
+				
+				unit.scaleX = unit.values[YVEL] * -0.23
+				unit.scaleY = unit.values[YVEL] * -0.23
+				
+				local coloury = math.random(2,4)
+				
+				MF_setcolour(unitid,2,coloury)
+				unit.strings[COLOUR] = tostring(2) .. "," .. tostring(coloury)
+			end,
+	},
+	dust =
+	{
+		amount = 50,
+		animation = 1,
+		colour = {1, 0},
+		extra = 
+			function(unitid)
+				local unit = mmf.newObject(unitid)
+				
+				unit.values[YVEL] = math.random(-3,-1)
+				
+				unit.scaleX = unit.values[YVEL] * -0.33 * 1.1
+				unit.scaleY = unit.values[YVEL] * -0.33 * 1.1
+			end,
+	},
+	snow =
+	{
+		amount = 30,
+		animation = 1,
+		colour = {0, 3},
+		extra = 
+			function(unitid)
+				local unit = mmf.newObject(unitid)
+				
+				unit.values[XVEL] = math.random(-50,-10) * 0.1
+				unit.values[YVEL] = math.abs(unit.values[XVEL]) * (math.random(5,15) * 0.1)
+				
+				unit.scaleX = math.abs(unit.values[XVEL]) * 0.2
+				unit.scaleY = math.abs(unit.values[XVEL]) * 0.2
+				unit.flags[INFRONT] = true
+			end,
+	},
+	clouds =
+	{
+		amount = 10,
+		animation = 2,
+		colour = {0, 3},
+		extra = 
+			function(unitid)
+				local unit = mmf.newObject(unitid)
+				
+				unit.scaleX = 1 + math.random(-30,30) * 0.01
+				unit.scaleY = unit.scaleX * 0.9
+				
+				unit.values[YVEL] = 0 - unit.scaleX
+				unit.values[XVEL] = 0 - unit.scaleX
+			end,
+	},
+	smoke =
+	{
+		amount = 30,
+		animation = 3,
+		colour = {1, 0},
+		extra = 
+			function(unitid)
+				local unit = mmf.newObject(unitid)
+				
+				unit.angle = math.random(0,359)
+				
+				unit.scaleX = 1 + math.random(-30,30) * 0.01
+				unit.scaleY = unit.scaleX
+				
+				unit.values[YVEL] = -1
+				unit.values[DIR] = math.random(-25,25) * 0.05
+			end,
+	},
+	pollen =
+	{
+		amount = 20,
+		animation = 5,
+		colour = {1, 0},
+		extra = 
+			function(unitid)
+				local unit = mmf.newObject(unitid)
+				
+				unit.values[XVEL] = math.random(-20,20) * 0.1
+				unit.values[YVEL] = math.random(40,80) * 0.05
+				
+				local size = math.random(2,5)
+				unit.scaleX = size * 0.2
+				unit.scaleY = size * 0.2
+			end,
+	},
+}
+
+namegivingtitles =
+{
+	[1] = {"namegiving_newworldname","maxlen16"},
+	[2] = {"namegiving_changelevelname","maxlen24"},
+	[3] = {"namegiving_newlevelname","maxlen24"},
+	[4] = {"namegiving_changeunitname","lower,maxlen12"},
+	[5] = {"namegiving_changeunittype","lower,maxlen12"},
+	[6] = {"namegiving_newthemename","maxlen16"},
+	[7] = {"namegiving_objectsearchstring","lower,maxlen12"},
+	[8] = {"namegiving_newthemename","maxlen16"},
+	[9] = {"namegiving_levelauthor","maxlen16"},
+	[10] = {"namegiving_worldauthor","maxlen16"},
+	[11] = {"namegiving_changeworldname","maxlen16"},
+	[12] = {"namegiving_downloadcode","upper,maxlen9"},
+	[13] = {"namegiving_levelsearchstring","lower,maxlen12"},
+	[14] = {"namegiving_spritesearchstring","lower,maxlen12"},
+	[15] = {"namegiving_slotname","maxlen16"},
+}
+
+bicons =
+{
+	r_arrow = 3,
+	u_arrow = 4,
+	l_arrow = 5,
+	d_arrow = 6,
+	cog = 7,
+	dr_arrow = 10,
+	du_arrow = 11,
+	dl_arrow = 12,
+	dd_arrow = 13,
+	t_pen = 14,
+	t_line = 15,
+	t_fill = 16,
+	t_rect = 17,
+	t_frect = 18,
+	t_erase = 19,
+	cross = 20,
+	search = 21,
+	rsearch = 22,
+	tags = 23,
+	o_add = 24,
+	o_del = 25,
+	o_edit = 26,
+	l_separate = 27,
+	l_pairs = 28,
 }
 
 lookup_table =
@@ -1869,5 +2520,7 @@ lookup_table =
 	-- vietnamese
 	7871, 7879,
 	-- misc
-	193, 268, 305, 304, 26085, 26412, 35486, 188, 190, 352,
+	193, 268, 305, 304, 26085, 26412, 35486, 188, 190, 352, 9658, 9650, 9668, 9660, 128169, 9807, 9796, 26059, 24459, 26143, 33828, 20013, 25991, 31616, 20307,
+	-- capital letters a-z
+	65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90,
 }
