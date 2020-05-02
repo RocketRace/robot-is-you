@@ -363,7 +363,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         Performs the bulk work for both `tile` and `rule` commands.
         '''
         async with ctx.typing():
-            renderLimit = 64
+            renderLimit = 100
             tiles = objects.lower().strip()
             if tiles == "":
                 param = Parameter("objects", Parameter.KEYWORD_ONLY)
