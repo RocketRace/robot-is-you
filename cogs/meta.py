@@ -127,7 +127,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
             ])
         )
         aboutEmbed.add_field(name="Links", value="[GitHub repository](https://github.com/RocketRace/robot-is-you)\n" + \
-            "[top.gg page](https://top.gg/bot/480227663047294987)"
+            "[Vote for this bot!](https://top.gg/bot/480227663047294987/vote)"
         )
         stats = "".join([
             f"\nGuilds: {len(self.bot.guilds)}",
