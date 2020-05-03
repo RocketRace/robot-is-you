@@ -126,7 +126,9 @@ class MetaCog(commands.Cog, name="Other Commands"):
                 "Written by {0.display_name} ({0.mention}).".format(self.bot.get_user(156021301654454272))
             ])
         )
-        aboutEmbed.add_field(name="GitHub", value="[GitHub repository](https://github.com/RocketRace/robot-is-you)")
+        aboutEmbed.add_field(name="Links", value="[GitHub repository](https://github.com/RocketRace/robot-is-you)\n" + \
+            "[top.gg page](https://top.gg/bot/480227663047294987)"
+        )
         stats = "".join([
             f"\nGuilds: {len(self.bot.guilds)}",
             f"\nUsers: {len(self.bot.users)}",
