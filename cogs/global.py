@@ -329,34 +329,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             "preferably in an archived file (without any color, and in 24x24)\n * **The color of the sprites**, " + \
             "an (x,y) coordinate on the default Baba color palette.\nFor examples of this, check the `values.lua` " + \
             "file in your Baba Is You local files!", color=self.bot.embedColor)
-        await self.bot.send(ctx, " ", embed=msg)
-
-    # @commands.cooldown(2, 10, type=commands.BucketType.channel)
-    @commands.command(name="random")
-    @commands.is_owner()
-    async def randomRule(self, ctx):
-        '''
-        Generates a random valid rule.
-
-        This command is disabled.
-        '''
-        textTypes = self.bot.get_cog("Admin").texts
-        subject = choices(textTypes["0"], k=1)[0][5:] # strip text_ prefix
-        verb = choices(textTypes["1"], k=1)[0][5:]
-        
-        # conditional statement
-        useConditional = random() <= 0.7
-        if useConditional:
-            condWord = choices(textTypes["7"], k=1)[0][5:]
-            condTarget = choices(textTypes["0"], k=1)[0][5:]
-            conditional = f"{condWord} {condTarget} "
-        else: conditional = " "
-        
-        if verb == "is":
-            target = choices(textTypes[choices(("0", "2"), k=1)])[0][5:]
-        else:
-            target = choices(textTypes["0"], k=1)[0][5:]
-        await self.bot.send(ctx, f"{subject} {conditional}{verb} {target}")
+        await self.bot.send(ctx, embed=msg)
 
     async def renderTiles(self, ctx, *, objects, rule):
         '''
@@ -727,8 +700,11 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             # Formatted output
             formatted = f"{ctx.author.mention}{matchesText}\nName: `{tree}{name}`\nID: `{levelID}`{subtitle}"
 
+            # Only the author should be mentioned
+            mentions = discord.AllowedMentions(everyone=False, users=[ctx.author], roles=False)
+
             # Send the result
-            await ctx.send(formatted, file=gif)
+            await ctx.send(formatted, file=gif, allowed_mentions=mentions)
 
 def setup(bot):
     bot.add_cog(GlobalCog(bot))

@@ -3,6 +3,7 @@ import discord
 import jishaku
 import logging
 
+from datetime     import datetime
 from discord.ext  import commands
 from json         import load
 
@@ -27,7 +28,7 @@ VANILLA = configuration.get("vanilla")
 class BabaBot(commands.Bot):
     def __init__(self, command_prefix, webhook_id, embed_color, vanilla, help_command=None, description=None, top=None, **options):
         self.loading = False
-        
+        self.started = datetime.utcnow()
         self.vanillaOnly = bool(vanilla)
         self.embedColor = embed_color
         self.webhookId = webhook_id
@@ -35,22 +36,20 @@ class BabaBot(commands.Bot):
         super().__init__(command_prefix, help_command=help_command, description=description, **options)
     
     # Custom send that sends content in an embed
-    # Sanitizes input, so no mention abuse can occur
+    # Note that due to AllowedMentions, mentions do not have to be "sanitized"
     async def send(self, ctx, content, embed=None, tts=False, file=None):
-        sanitized = discord.utils.escape_mentions(content)
-        if len(sanitized) > 2000:
-            sanitized = sanitized[:1963] + " [...] \n\n (Character limit reached!)"
+        if len(content) > 2000:
+            content = content[:1963] + " [...] \n\n (Character limit reached!)"
         if embed is not None:
-            await ctx.send(sanitized, embed=embed)
-        else:
-            segments = sanitized.split("\n")
-            title = segments[0]
-            description="\n".join(segments[1:])
-            if len(title) > 256:
-                title = None
-                description = "\n".join(segments)
-            container = discord.Embed(title=title, description=description, color=self.embedColor)
-            await ctx.send(" ", embed=container, tts=tts, file=file)
+            return await ctx.send(content, embed=embed)
+        segments = content.split("\n")
+        title = segments[0]
+        description="\n".join(segments[1:])
+        if len(title) > 256:
+            title = None
+            description = "\n".join(segments)
+        container = discord.Embed(title=title, description=description, color=self.embedColor)
+        await ctx.send(embed=container, tts=tts, file=file)
 
     # Custom error message implementation
     # Sends the error message. Automatically deletes it after some time.
@@ -63,26 +62,34 @@ class BabaBot(commands.Bot):
             color=self.embedColor
         )
         await ctx.message.add_reaction("⚠️")
-        message = await ctx.send(" ", embed=embed)
-        
-        # Delete the error message later
-        await asyncio.sleep(20)
-        try:
-            await message.delete()
-        # The message was already deleted
-        except discord.NotFound:
-            pass
+        await ctx.send(embed=embed, delete_after=20)
+
+# Requires discord.py v1.4+
+defaultMentions = discord.AllowedMentions(everyone=False, roles=False)
 
 # Establishes the bot
-bot = BabaBot(PREFIXES_MENTION, 
+bot = BabaBot(
+    # Prefixes
+    PREFIXES_MENTION,
+    # Logger
     WEBHOOK_ID, 
+    # Misc values
     EMBED_COLOR, 
     VANILLA, 
+    top=DBL_TOKEN,
+    # Other behavior parameters
     case_insensitive=True, 
     activity=DEFAULT_ACTIVITY, 
     owner_id = 156021301654454272,
-    top=DBL_TOKEN,
-    description="*An entertainment bot for rendering levels and custom scenes based on the indie game Baba Is You.*"
+    description="*An entertainment bot for rendering levels and custom scenes based on the indie game Baba Is You.*",
+    # Never mention roles or @everyone / @here
+    allowed_mentions=defaultMentions, 
+    # Disable the member cache
+    fetch_offline_users=False,
+    # Disable presence updates 
+    guild_subscriptions=False,
+    # Disable message cache
+    max_messages=None
 )
 
 bot.prefixes = PREFIXES

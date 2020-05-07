@@ -2,7 +2,7 @@ import asyncio
 import discord
 import itertools
 
-from datetime     import datetime
+from datetime     import datetime, timedelta
 from discord.ext  import commands
 from json         import load
 from subprocess   import run, TimeoutExpired, PIPE, STDOUT
@@ -41,7 +41,7 @@ class PrettyHelpCommand(commands.DefaultHelpCommand):
 
             formatted.set_footer(text=note)
             
-            await destination.send(" ", embed=formatted)
+            await destination.send(embed=formatted)
 
     def add_indented_commands(self, commands, *, heading, max_size=None):
         if not commands:
@@ -123,32 +123,23 @@ class MetaCog(commands.Cog, name="Other Commands"):
             colour=self.bot.embedColor, 
             description="\n".join([
                 f"{ctx.me.name} - Bot for Discord based on the indie game Baba Is You. "
-                "Written by {0.display_name} ({0.mention}).".format(self.bot.get_user(156021301654454272))
+                "Written by RocketRace#0798."
             ])
         )
         aboutEmbed.add_field(name="Links", value="[GitHub repository](https://github.com/RocketRace/robot-is-you)\n" + \
             "[Vote for this bot!](https://top.gg/bot/480227663047294987/vote)"
         )
+        ut = datetime.utcnow() - self.bot.started
         stats = "".join([
             f"\nGuilds: {len(self.bot.guilds)}",
-            f"\nUsers: {len(self.bot.users)}",
+            f"\nChannels: {sum(len(g.channels) for g in self.bot.guilds)}",
+            f"\nUptime: {ut.days}d {ut.seconds // 3600}h {ut.seconds % 3600 // 60}m {ut.seconds % 60}s"
         ])
         aboutEmbed.add_field(name="Statistics", value=stats)
         aboutEmbed.add_field(name="Valid Prefixes", value="\n".join([
             "`" + p + "`" for p in self.bot.prefixes
         ]))
-        await self.bot.send(ctx, " ", embed=aboutEmbed)
-
-    # @commands.command()
-    @commands.cooldown(1, 10, commands.BucketType.channel)
-    async def patchnotes(self, ctx):
-        '''
-        Most recent major bot updates.
-        Visit the github page (in the `about` command) for a full list of commits.
-        '''
-        with open("patchnotes.txt") as fp:
-            await self.bot.send(ctx, "\n".join(["Recent Updates:"] + list(reversed(fp.read().splitlines()))))
-
+        await ctx.send(embed=aboutEmbed)
     
     @commands.command(aliases=["pong"])
     @commands.cooldown(2, 2, commands.BucketType.channel)
@@ -171,7 +162,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
         msg = discord.Embed(title="Invite", colour=self.bot.embedColor, description=formatted)
 
         msg.add_field(name="Support Server", value="[Click here to join RocketRace's Bots](https://discord.gg/rMX3YPK)\n")
-        await self.bot.send(ctx, " ", embed=msg)
+        await ctx.send(embed=msg)
     
     @commands.command(aliases=["interpret"])
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
@@ -275,7 +266,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
                 color=0xffff00
             )
         logger = await self.bot.fetch_webhook(594692503014473729)
-        await logger.send(content=" ", embed=err)
+        await logger.send(embed=err)
     
     def cog_unload(self):
         self.bot.help_command = self._original_help_command
