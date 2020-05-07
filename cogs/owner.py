@@ -729,6 +729,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         back_to_json = json.loads(data)
         if back_to_json['op'] == 2:
             self.identifies.append(datetime.utcnow())
+            self.started = datetime.utcnow()
         else:
             self.resumes.append(datetime.utcnow())
 
