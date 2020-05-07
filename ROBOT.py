@@ -1,9 +1,12 @@
 import asyncio
 import discord
 import jishaku
+import logging
 
 from discord.ext  import commands
 from json         import load
+
+logging.basicConfig(filename="log.txt", level=logging.WARNING)
 
 # Sets up the configuration
 configuration = None
