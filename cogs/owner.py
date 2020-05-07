@@ -220,6 +220,23 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                         # (up to >10 for certain color indices)
                         img.save(f"color/{use}/{tile}-{variant}-{i}-.png", format="PNG")
             
+    @commands.command(aliases=["load", "reload"])
+    @commands.is_owner()
+    async def reloadcog(self, ctx, cog = None):
+        '''
+        Reloads extensions within the bot while the bot is running.
+        '''
+        if cog is None:
+            extensions = [a for a in self.bot.extensions.keys()]
+            for extension in extensions:
+                self.bot.reload_extension(extension)
+            await ctx.send("Reloaded all extensions.")
+        elif "cogs." + cog in self.bot.extensions.keys():
+            self.bot.reload_extension("cogs." + cog)
+            await ctx.send(f"Reloaded extension `{cog}` from `cogs/{cog}.py`.")
+        else:
+            await ctx.send("Unknown extension provided.")
+
     @commands.command()
     @commands.is_owner()
     async def debug(self, ctx):
