@@ -15,9 +15,8 @@ class DBLCog(commands.Cog):
         headers = {"Authorization": self.bot._top}
         data = {"server_count": len(self.bot.guilds)}
         async with aiohttp.ClientSession() as session:
-            async with session.post(url, headers=headers, data=data) as request:
-                result = await request.text()
-                print(result)
+            async with session.post(url, headers=headers, data=data):
+                pass
         
 
     @update_stats.before_loop
