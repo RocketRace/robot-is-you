@@ -79,6 +79,26 @@
       ]
   },
   {
+    "sprite":"tree_map",
+    "name":"tree_map",
+    "tiling":"-1",
+    "color":
+      [
+        "5",
+        "2"
+      ]
+  },
+  {
+    "sprite":"husk_map",
+    "name":"husk_map",
+    "tiling":"-1",
+    "color":
+      [
+        "6",
+        "1"
+      ]
+  },
+  {
     "name":"icon",
     "sprite":"icon",
     "color":[
