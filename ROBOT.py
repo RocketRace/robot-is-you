@@ -11,6 +11,7 @@ with open("setup.json") as configFile:
     configuration = load(configFile)
 
 BOT_TOKEN = configuration.get("token")
+DBL_TOKEN = configuration.get("dbl") or ""
 DEFAULT_ACTIVITY = discord.Game(name=configuration.get("activity"))
 COGS = configuration.get("cogs")
 PREFIXES = configuration.get("prefixes")
@@ -21,12 +22,13 @@ VANILLA = configuration.get("vanilla")
 
 # Uses a custom bot class
 class BabaBot(commands.Bot):
-    def __init__(self, command_prefix, webhook_id, embed_color, vanilla, help_command=None, description=None, **options):
+    def __init__(self, command_prefix, webhook_id, embed_color, vanilla, help_command=None, description=None, top=None, **options):
         self.loading = False
         
         self.vanillaOnly = bool(vanilla)
         self.embedColor = embed_color
         self.webhookId = webhook_id
+        self._top = top
         super().__init__(command_prefix, help_command=help_command, description=description, **options)
     
     # Custom send that sends content in an embed
@@ -76,6 +78,7 @@ bot = BabaBot(PREFIXES_MENTION,
     case_insensitive=True, 
     activity=DEFAULT_ACTIVITY, 
     owner_id = 156021301654454272,
+    top=DBL_TOKEN,
     description="*An entertainment bot for rendering levels and custom scenes based on the indie game Baba Is You.*"
 )
 

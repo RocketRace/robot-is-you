@@ -3,6 +3,7 @@ import json
 import zlib
 
 from discord.ext import commands
+from functools   import partial
 from os          import listdir, stat
 
 def flatten(x, y, width):
@@ -220,10 +221,12 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         tiles = [[[dirs(obj) for obj in cell] for cell in row] for row in m["objects"]]
         tiles = renderer.handleVariants(tiles, tileBorders=tileBorders)
 
+        # (0,4) is the color index for level backgrounds
+        background = (0,4) if keepBackground else None
+
         # Render the level
-        background = None
-        if keepBackground: background = (0,4) # (0,4) is the color index for level backgrounds
-        renderer.magickImages(tiles, width, height, images=images, palette=palette, imageSource=source, out=out, background=background)
+        task = partial(renderer.magickImages, tiles, width, height, palette=palette, images=images, imageSource=source, background=background, out=out)
+        await self.bot.loop.run_in_executor(None, task)
         
         # Return level metadata
         return {grid.filename: m["data"]}
@@ -234,7 +237,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         '''
         tileData = self.bot.get_cog("Admin").tileColors
         # If the objects for some reason aren't well formed, they're replaced with error tiles
-        dirs = lambda o: f'error:0' if tileData.get(o["name"]) is None else f'{o["name"]}:{o["direction"] * 8 if tileData[o["name"]]["tiling"] in ["0","2","3"] else 0}'
+        dirs = lambda o: [f'error:0', print(o["name"])][0] if tileData.get(o["name"]) is None else f'{o["name"]}:{o["direction"] * 8 if tileData[o["name"]]["tiling"] in ["0","2","3"] else 0}'
         renderer = self.bot.get_cog("Baba Is You")
         return tileData, dirs, renderer
 

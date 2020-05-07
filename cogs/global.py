@@ -363,7 +363,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         Performs the bulk work for both `tile` and `rule` commands.
         '''
         async with ctx.typing():
-            renderLimit = 64
+            renderLimit = 100
             tiles = objects.lower().strip()
             if tiles == "":
                 param = Parameter("objects", Parameter.KEYWORD_ONLY)
@@ -587,6 +587,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         * Checks if the input matches the level ID (e.g. "20level")
         * Checks if the input matches the level number (e.g. "space-3" or "lake-extra 1")
         * Checks if the input matches the level name (e.g. "further fields")
+        * Checks if the input is the ID of a world (e.g. "cavern")
         '''
         # User feedback
         await ctx.trigger_typing()
