@@ -189,24 +189,6 @@
       ]
    },
    {
-      "name": "dune",
-      "sprite": "dune",
-      "tiling": "-1",
-      "color": [
-         "6",
-         "2"
-      ]
-   },
-   {
-      "name": "text_dune",
-      "sprite": "text_dune",
-      "tiling": "-1",
-      "color": [
-         "6",
-         "2"
-      ]
-   },
-   {
       "name": "hawke",
       "sprite": "hawke",
       "tiling": "0",
