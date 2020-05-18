@@ -85,7 +85,7 @@ bot = BabaBot(
     # Never mention roles or @everyone / @here
     allowed_mentions=defaultMentions, 
     # Disable the member cache
-    fetch_offline_users=False,
+    fetch_offline_members=False,
     # Disable presence updates 
     guild_subscriptions=False,
     # Disable message cache
