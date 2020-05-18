@@ -7,7 +7,7 @@ import numpy      as np
 from datetime     import datetime, timedelta
 from discord.ext  import commands
 from os           import listdir, mkdir, stat
-from PIL          import Image
+from PIL          import Image, ImageDraw
 
 def multiplyColor(fp, palettes, pixels):
     # fp: file path of the sprite
@@ -662,7 +662,54 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         await ctx.send(f"{total} / {total} tiles loaded.")
 
         self.bot.loading = False
-    
+
+    @commands.command()
+    @commands.is_owner()
+    async def loadletters(self, ctx):
+        '''
+        Scrapes individual letters from vanilla sprites.
+        '''
+        def check(name, value):
+            return name.startswith("text_") and value["source"] == "vanilla"
+
+        for name, data in filter(check, self.tileColors.items()):
+            sprite = data["sprite"]
+            tileType = data["type"]
+            for frame in range(3):
+                alpha = Image.open(f"sprites/vanilla/{sprite}_0_{frame}.png").convert("RGBA").getchannel("A")
+                
+                if tileType == "2":
+                    ImageDraw.floodfill(alpha, (0, 0), 255)
+                    alpha = Image.eval(alpha, lambda x: 255 - x)
+                
+                for char in name[5:]:
+                    pass
+
+    @commands.command()
+    @commands.is_owner()
+    async def loadletter(self, ctx, word):
+        data = self.tileColors[word]
+        sprite = data["sprite"]
+        tileType = data["type"]
+        alpha = Image.open(f"sprites/vanilla/{sprite}_0_1.png").convert("RGBA").getchannel("A")
+
+        if tileType == "2":
+            w, h = alpha.size
+            ImageDraw.floodfill(alpha, (0, 0), 255)
+            ImageDraw.floodfill(alpha, (0, h - 1), 255)
+            ImageDraw.floodfill(alpha, (w - 1, 0), 255)
+            ImageDraw.floodfill(alpha, (w - 1, h - 1), 255)
+            
+            arr = np.asarray(alpha)
+            l = arr.T
+            l = 255 - l
+            alpha = Image.fromarray(l.T)
+
+
+        alpha.save("renders/test.png")
+        await ctx.send(":)")
+
+
     @commands.command()
     @commands.is_owner()
     async def loadall(self, ctx):
