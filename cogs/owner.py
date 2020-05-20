@@ -3,7 +3,6 @@ import asyncio
 import discord
 import json
 import numpy      as np
-import sys
 
 from datetime     import datetime, timedelta
 from discord.ext  import commands
@@ -245,8 +244,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         Restarts the bot process.
         '''
         await ctx.send("Restarting bot process...")
+        self.bot.exit_code = 1
         await self.bot.logout()
-        sys.exit(1)
 
     @commands.command(aliases=["kill", "yeet"])
     @commands.is_owner()
@@ -259,7 +258,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         else:
             await ctx.send("Killing bot process...")
         await self.bot.logout()
-        sys.exit(0)
 
     @commands.command()
     @commands.is_owner()
