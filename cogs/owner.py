@@ -3,6 +3,7 @@ import asyncio
 import discord
 import json
 import numpy      as np
+import sys
 
 from datetime     import datetime, timedelta
 from discord.ext  import commands
@@ -236,6 +237,29 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             await ctx.send(f"Reloaded extension `{cog}` from `cogs/{cog}.py`.")
         else:
             await ctx.send("Unknown extension provided.")
+
+    @commands.command(aliases=["reboot"])
+    @commands.is_owner()
+    async def restart(self, ctx):
+        '''
+        Restarts the bot process.
+        '''
+        await ctx.send("Restarting bot process...")
+        await self.bot.logout()
+        sys.exit(42)
+
+    @commands.command(aliases=["kill", "yeet"])
+    @commands.is_owner()
+    async def logout(self, ctx):
+        '''
+        Kills the bot process.
+        '''
+        if ctx.invoked_with == "yeet":
+            await ctx.send("Yeeting bot process...")
+        else:
+            await ctx.send("Killing bot process...")
+        await self.bot.logout()
+        sys.exit(0)
 
     @commands.command()
     @commands.is_owner()
