@@ -349,16 +349,6 @@
     "tiling":"-1"
 },
   {
-    "sprite":"text_turn",
-    "name":"text_turn",
-    "color":[
-       "1",
-       "4"
-    ],
-      "tiling":"-1",
-      "type":"2"
- },
-  {
    "sprite":"text_fall",
    "name":"text_fall",
    "color":

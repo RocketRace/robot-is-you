@@ -2456,6 +2456,55 @@ particletypes =
 				unit.scaleY = size * 0.2
 			end,
 	},
+	stars =
+	{
+		amount = 40,
+		animation = {6, 7},
+		colour = {3, 2},
+		extra = 
+			function(unitid)
+				local unit = mmf.newObject(unitid)
+				
+				unit.values[XVEL] = ((unit.direction - 6) + math.random(0,5) * 0.1)
+				--unit.values[YVEL] = math.random(40,80) * 0.05
+				
+				if (unit.direction == 7) then
+					MF_setcolour(unitid,1,3)
+					
+					unit.strings[COLOUR] = tostring(1) .. "," .. tostring(3)
+				end
+				
+				local size = math.random(2,5)
+				unit.scaleX = size * 0.2
+				unit.scaleY = size * 0.2
+			end,
+	},
+	glitter =
+	{
+		amount = 50,
+		animation = 8,
+		colour = {3, 1},
+		extra = 
+			function(unitid)
+				local unit = mmf.newObject(unitid)
+				
+				if (math.random(1,4) == 1) then
+					MF_setcolour(unitid,4,2)
+					
+					unit.strings[COLOUR] = tostring(4) .. "," .. tostring(1)
+				end
+				
+				if (math.random(1,4) == 1) then
+					MF_setcolour(unitid,0,3)
+					
+					unit.strings[COLOUR] = tostring(0) .. "," .. tostring(3)
+				end
+				
+				local size = math.random(2,5)
+				unit.scaleX = size * 0.2
+				unit.scaleY = size * 0.2
+			end,
+	},
 }
 
 namegivingtitles =
@@ -2463,7 +2512,7 @@ namegivingtitles =
 	[1] = {"namegiving_newworldname","maxlen16"},
 	[2] = {"namegiving_changelevelname","maxlen24"},
 	[3] = {"namegiving_newlevelname","maxlen24"},
-	[4] = {"namegiving_changeunitname","lower,maxlen12"},
+	[4] = {"namegiving_changeunitname","lower,maxlen24"},
 	[5] = {"namegiving_changeunittype","lower,maxlen12"},
 	[6] = {"namegiving_newthemename","maxlen16"},
 	[7] = {"namegiving_objectsearchstring","lower,maxlen12"},
@@ -2472,8 +2521,8 @@ namegivingtitles =
 	[10] = {"namegiving_worldauthor","maxlen16"},
 	[11] = {"namegiving_changeworldname","maxlen16"},
 	[12] = {"namegiving_downloadcode","upper,maxlen9"},
-	[13] = {"namegiving_levelsearchstring","lower,maxlen12"},
-	[14] = {"namegiving_spritesearchstring","lower,maxlen12"},
+	[13] = {"namegiving_levelsearchstring","lower,maxlen24"},
+	[14] = {"namegiving_spritesearchstring","lower,maxlen24"},
 	[15] = {"namegiving_slotname","maxlen16"},
 }
 
@@ -2503,6 +2552,7 @@ bicons =
 	o_edit = 26,
 	l_separate = 27,
 	l_pairs = 28,
+	swap = 29,
 }
 
 lookup_table =

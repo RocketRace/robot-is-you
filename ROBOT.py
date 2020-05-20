@@ -103,5 +103,4 @@ if __name__ == "__main__":
 
 bot.run(BOT_TOKEN, bot = True, reconnect = True)
 
-print(bot.exit_code)
 sys.exit(bot.exit_code)
