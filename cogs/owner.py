@@ -246,7 +246,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         '''
         await ctx.send("Restarting bot process...")
         await self.bot.logout()
-        sys.exit(42)
+        sys.exit(1)
 
     @commands.command(aliases=["kill", "yeet"])
     @commands.is_owner()
