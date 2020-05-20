@@ -2,6 +2,7 @@ import asyncio
 import discord
 import jishaku
 import logging
+import sys
 
 from datetime     import datetime
 from discord.ext  import commands
@@ -93,6 +94,7 @@ bot = BabaBot(
 )
 
 bot.prefixes = PREFIXES
+bot.exit_code = 0
 
 # Loads the modules of the bot
 if __name__ == "__main__":
@@ -100,3 +102,6 @@ if __name__ == "__main__":
         bot.load_extension(cog)
 
 bot.run(BOT_TOKEN, bot = True, reconnect = True)
+
+print(bot.exit_code)
+sys.exit(bot.exit_code)
