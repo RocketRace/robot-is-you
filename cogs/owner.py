@@ -6,8 +6,9 @@ import numpy      as np
 
 from datetime     import datetime, timedelta
 from discord.ext  import commands
-from os           import listdir, mkdir, stat
-from PIL          import Image, ImageDraw
+from os           import listdir, stat
+from pathlib      import Path
+from PIL          import Image, ImageDraw, ImageChops
 
 def multiplyColor(fp, palettes, pixels):
     # fp: file path of the sprite
@@ -158,14 +159,14 @@ def load_with_datetime(pairs, format='%Y-%m-%dT%H:%M:%S.%f'):
 class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     def __init__(self, bot):
         self.bot = bot
-        self.tileColors = {}
+        self.tileData = {}
         self.identifies = []
         self.resumes = []
         # Loads the caches
         # Loads the tile colors, if it exists
-        colorsFile = "cache/tilecolors.json"
+        colorsFile = "cache/tiledata.json"
         if stat(colorsFile).st_size != 0:
-            self.tileColors = json.load(open(colorsFile))
+            self.tileData = json.load(open(colorsFile))
             
         # Loads the alternate tiles if possible
         # Loads debug data, if any
@@ -174,6 +175,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             debugData = json.load(open(debugFile), object_pairs_hook=load_with_datetime)
             self.identifies = debugData.get("identifies")
             self.resumes = debugData.get("resumes")
+
+        self.initializeletters()
         
         # Are assets loading?
         self.bot.loading = False
@@ -397,7 +400,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         Loads tile data from `values.lua.` and merges it with tile data from `.ld` files.
         '''
 
-        self.tileColors = {}
+        self.tileData = {}
         altTiles = alternateTiles
 
         self.bot.loading = True
@@ -471,7 +474,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                                 # Adds the change to the alts, but only if it's the first with that name
                                 if name != altName:
                                     # If the name matches the name of an object already in the alt list
-                                    if self.tileColors.get(altName) is None:
+                                    if self.tileData.get(altName) is None:
                                         alts[altName] = {
                                             "sprite":altSprite, 
                                             "tiling":altTiling, 
@@ -480,9 +483,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                                             "source":"vanilla"
                                         }
                                         
-                        # Adds each unique name-color pairs to the tileColors dict
+                        # Adds each unique name-color pairs to the tileData dict
                         for key,value in alts.items():
-                            self.tileColors[key] = value
+                            self.tileData[key] = value
                     # Resets the fields
                     name = sprite = tiling = colorRaw = ""
                     color = []
@@ -520,7 +523,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 # The sprite source (which folder to draw from)
                 rewritten["source"] = f[:-5] # Trim ".json"
                 if name is not None:
-                    self.tileColors[name] = rewritten
+                    self.tileData[name] = rewritten
 
         await ctx.send("Loaded custom tile data from `custom/*.json`.")
 
@@ -567,25 +570,25 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             elif line.startswith("\t\ttags = {"):
                 ...
 
-        self.tileColors.update(objects)
+        self.tileData.update(objects)
         await ctx.send("Loaded tile data from `editor_objectlist.lua`.")
 
     @commands.command()
     @commands.is_owner()
     async def dumpdata(self, ctx):
         '''
-        Dumps cached tile data from `self.tileData` into `tilecolors.json` and `tilelist.txt`.
+        Dumps cached tile data from `self.tileData` into `tiledata.json` and `tilelist.txt`.
         '''
 
-        maxLength = len(max(self.tileColors, key=lambda x: len(x))) + 1
+        maxLength = len(max(self.tileData, key=lambda x: len(x))) + 1
 
         with open("tilelist.txt", "wt") as allTiles:
             allTiles.write(f"{'*TILE* '.ljust(maxLength, '-')} *SOURCE*\n")
-            allTiles.write("\n".join(sorted([(f"{(tile + ' ').ljust(maxLength, '-')} {data['source']}") for tile, data in self.tileColors.items()])))
+            allTiles.write("\n".join(sorted([(f"{(tile + ' ').ljust(maxLength, '-')} {data['source']}") for tile, data in self.tileData.items()])))
 
-        # Dumps the gathered data to tilecolors.json
-        with open("cache/tilecolors.json", "wt") as emoteFile:
-            json.dump(self.tileColors, emoteFile, indent=3)
+        # Dumps the gathered data to tiledata.json
+        with open("cache/tiledata.json", "wt") as emoteFile:
+            json.dump(self.tileData, emoteFile, indent=3)
 
         await ctx.send("Saved cached tile data.")
     
@@ -615,7 +618,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         '''
         self.bot.loading = True
         # Some checks
-        if self.tileColors.get(tile) is None:
+        if self.tileData.get(tile) is None:
             return await self.bot.send(ctx, f"\"{tile}\" is not in the list of tiles.")
         palettes = [palette]
         if palette == "all":
@@ -626,17 +629,14 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         # Creates the directories for the palettes if they don't exist
         paletteColors = []
         for pal in palettes:
-            try:
-                mkdir("color/%s" % pal)
-            except FileExistsError:
-                pass
+            Path(f"color/{pal}").mkdir(parents=True, exist_ok=True)
 
             # The palette image 
             paletteImg = Image.open("palettes/%s.png" % pal).convert("RGB")
             # The RGB values of the palette
             paletteColors.append([[(paletteImg.getpixel((x,y))) for y in range(5)] for x in range(7)])
 
-        obj = self.tileColors[tile]
+        obj = self.tileData[tile]
         self.generateTileSprites(tile, obj, palettes, paletteColors)
         await ctx.send(f"Generated tile sprites for {tile}.")
         self.bot.loading = False
@@ -668,15 +668,12 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
         # Creates the directories for the palettes if they don't exist
         for palette in palettes:
-            try:
-                mkdir("color/%s" % palette)
-            except FileExistsError:
-                pass
+            Path(f"color/{palette}").mkdir(parents=True, exist_ok=True)
         
-        # Goes through each tile object in the tileColors array
+        # Goes through each tile object in the tileData array
         i = 0
-        total = len(self.tileColors)
-        for tile,obj in self.tileColors.items():
+        total = len(self.tileData)
+        for tile,obj in self.tileData.items():
             if i % 100 == 0:
                 await ctx.send(f"{i} / {total}...")
             self.generateTileSprites(tile, obj, palettes, colors)
@@ -687,49 +684,168 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
     @commands.command()
     @commands.is_owner()
+    async def make(self, ctx, name, color = ..., tileType = ...):
+        two_rows = len(name) >= 4
+
+        if two_rows:
+            if not all(map(lambda c: c in self.letterWidths["small"], name)):
+                return await ctx.send("Go on...")
+
+        else:
+            if not all(map(lambda c: c in self.letterWidths["big"], name)):
+                return await ctx.send("Go on...")
+
+
+    def initializeletters(self):
+        big = {}
+        small = {}
+        for char in listdir("letters/big"):
+            for width in listdir(f"letters/big/{char}"):
+                big.setdefault(char, []).append(width)
+
+        for char in listdir("letters/small"):
+            for width in listdir(f"letters/small/{char}"):
+                big.setdefault(char, []).append(width)
+
+        self.letterWidths = {"big":big, "small":small}
+
+    @commands.command()
+    @commands.is_owner()
     async def loadletters(self, ctx):
         '''
         Scrapes individual letters from vanilla sprites.
         '''
-        def check(name, value):
-            return name.startswith("text_") and value["source"] == "vanilla"
+        ignored = json.load(open("letterignore.json"))
 
-        for name, data in filter(check, self.tileColors.items()):
+        def check(data):
+            return all([
+                data["sprite"].startswith("text_"),
+                data["source"] == "vanilla",
+                data["sprite"] not in ignored,
+                len(data["sprite"]) >= 7
+            ])
+
+        for data in filter(check, self.tileData.values()):
             sprite = data["sprite"]
-            tileType = data["type"]
-            for frame in range(3):
-                alpha = Image.open(f"sprites/vanilla/{sprite}_0_{frame}.png").convert("RGBA").getchannel("A")
-                
-                if tileType == "2":
-                    ImageDraw.floodfill(alpha, (0, 0), 255)
-                    alpha = Image.eval(alpha, lambda x: 255 - x)
-                
-                for char in name[5:]:
-                    pass
+            try:
+                tileType = data["type"]
+            except:
+                print(data)
+            self.loadletter(sprite, tileType)
 
-    @commands.command()
-    @commands.is_owner()
-    async def loadletter(self, ctx, word):
-        data = self.tileColors[word]
-        sprite = data["sprite"]
-        tileType = data["type"]
-        alpha = Image.open(f"sprites/vanilla/{sprite}_0_1.png").convert("RGBA").getchannel("A")
+        await ctx.send("pog")
 
-        if tileType == "2":
+    def loadletter(self, word, tileType):
+        '''
+        Scrapes letters from a sprite.
+        '''
+        chars = word[5:] # Strip "text_" prefix
+
+        # Get the number of rows
+        two_rows = len(chars) >= 4
+
+        # Background plates for type-2 text,
+        # in 1 bit per pixel depth
+        plate_0 = Image.open("plates/plate_0.png").convert("RGBA").getchannel("A").convert("1")
+        plate_1 = Image.open("plates/plate_1.png").convert("RGBA").getchannel("A").convert("1")
+        plate_2 = Image.open("plates/plate_2.png").convert("RGBA").getchannel("A").convert("1")
+        
+        # Maps each character to three bounding boxes + images
+        # (One box + image for each frame of animation)
+        # char_pos : [((x1, y1, x2, y2), Image), ...]
+        char_sizes = {}
+        
+        # Scrape the sprites for the sprite characters in each of the three frames
+        for i, plate in enumerate([plate_0, plate_1, plate_2]):
+            # Get the alpha channel in 1-bit depth
+            alpha = Image.open(f"sprites/vanilla/{word}_0_{i + 1}.png") \
+                .convert("RGBA") \
+                .getchannel("A") \
+                .convert("1")
+
             w, h = alpha.size
-            ImageDraw.floodfill(alpha, (0, 0), 255)
-            ImageDraw.floodfill(alpha, (0, h - 1), 255)
-            ImageDraw.floodfill(alpha, (w - 1, 0), 255)
-            ImageDraw.floodfill(alpha, (w - 1, h - 1), 255)
             
-            arr = np.asarray(alpha)
-            l = arr.T
-            l = 255 - l
-            alpha = Image.fromarray(l.T)
+            # Type-2 text has inverted text on a background plate
+            if tileType == "2":
+                alpha = ImageChops.invert(alpha)
+                alpha = ImageChops.logical_and(alpha, plate)
 
 
-        alpha.save("renders/test.png")
-        await ctx.send(":)")
+            # Get the point from which characters are seeked for
+            x = 0
+            if two_rows:
+                y = h // 4
+            else:
+                y = h // 2
+
+            # Flags
+            skip = False
+            
+            # More than 1 bit per pixel is required for the flood fill
+            alpha = alpha.convert("L")
+            for j, char in enumerate(chars):
+                if skip:
+                    skip = False
+                    continue
+
+                while alpha.getpixel((x, y)) == 0:
+                    if x == w - 1:
+                        if two_rows and y == h // 4:
+                            x = 0
+                            y = 3 * h // 4
+                        else:
+                            break
+                    else:
+                        x += 1
+                # There's a letter at this position
+                else:
+                    clone = alpha.copy()
+                    ImageDraw.floodfill(clone, (x, y), 1) # 1 placeholder
+                    clone = Image.eval(clone, lambda x: 255 if x == 1 else 0)
+                    clone = clone.convert("1")
+                    
+                    # Get bounds of character blob 
+                    x1, y1, x2, y2 = clone.getbbox()
+                    # Run some checks
+                    # Too wide => Skip 2 characters (probably merged two chars)
+                    if x2 - x1 > (1.5 * w * (1 + two_rows) / len(chars)):
+                        skip = True
+                        continue
+                    
+                    # Too tall? Scrap the rest of the characters
+                    if y2 - y1 > 1.5 * h / (1 + two_rows):
+                        break
+                    
+                    # Remove character from sprite, push to char_sizes
+                    alpha = ImageChops.difference(alpha, clone)
+                    clone = clone.crop((x1, y1, x2, y2))
+                    entry = ((x1, y1, x2, y2), clone)
+                    char_sizes.setdefault((char, j), []).append(entry)
+                    continue
+                return
+
+        saved = []
+        # Save scraped characters
+        for (char, _), entries in char_sizes.items():
+            ...
+            # All three frames clearly found the character in the sprite
+            if len(entries) == 3:
+                saved.append(char)
+                x1_min = min(entries, key=lambda x: x[0][0])[0][0]
+                y1_min = min(entries, key=lambda x: x[0][1])[0][1]
+                x2_max = max(entries, key=lambda x: x[0][2])[0][2]
+                y2_max = max(entries, key=lambda x: x[0][3])[0][3]
+
+                now = int(datetime.utcnow().timestamp() * 1000)
+                for i, ((x1, y1, _, _), img) in enumerate(entries):
+                    frame = Image.new("1", (x2_max - x1_min, y2_max - y1_min))
+                    frame.paste(img, (x1 - x1_min, y1 - y1_min))
+                    height = "small" if two_rows else "big"
+                    width = frame.size[0]
+                    Path(f"letters/{height}/{char}/{width}").mkdir(parents=True, exist_ok=True)
+                    frame.save(f"letters/{height}/{char}/{width}/{now}_{i}.png")
+
+        # await ctx.send(f":) {saved}")
 
 
     @commands.command()
