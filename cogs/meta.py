@@ -15,6 +15,10 @@ class PrettyHelpCommand(commands.DefaultHelpCommand):
         self.embedColor = embedColor
         super().__init__(**options)
 
+    async def send_error_message(self, error):
+        # No "no command found" messages
+        return
+
     async def send_pages(self, note="", inline=False):
         # Overwrite the send method to send each page in an embed instead
         destination = self.get_destination()
