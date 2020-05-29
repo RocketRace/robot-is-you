@@ -262,7 +262,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                             variant = "23"
                         
                         # Is this a tiling object (e.g. wall, water)?
-                        tileData = self.bot.get_cog("Admin").tileColors.get(tile)
+                        tileData = self.bot.get_cog("Admin").tileData.get(tile)
                         if tileData is not None:
                             if tileData.get("tiling") is not None:
                                 if tileData["tiling"] == "1":

@@ -235,7 +235,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         '''
         Prerequisites for level rendering
         '''
-        tileData = self.bot.get_cog("Admin").tileColors
+        tileData = self.bot.get_cog("Admin").tileData
         # If the objects for some reason aren't well formed, they're replaced with error tiles
         dirs = lambda o: [f'error:0', print(o["name"])][0] if tileData.get(o["name"]) is None else f'{o["name"]}:{o["direction"] * 8 if tileData[o["name"]]["tiling"] in ["0","2","3"] else 0}'
         renderer = self.bot.get_cog("Baba Is You")
