@@ -2505,6 +2505,29 @@ particletypes =
 				unit.scaleY = size * 0.2
 			end,
 	},
+	leaves =
+	{
+		amount = 30,
+		animation = {9, 10},
+		colour = {6, 0},
+		extra = 
+			function(unitid)
+				local unit = mmf.newObject(unitid)
+				
+				if (math.random(1,4) == 1) then
+					MF_setcolour(unitid,6,3)
+					
+					unit.strings[COLOUR] = tostring(6) .. "," .. tostring(3)
+				end
+				
+				local size = math.random(3,6)
+				unit.scaleX = size * 0.2
+				unit.scaleY = size * 0.2
+				
+				unit.values[XVEL] = math.random(-30,-10) * 0.1
+				unit.values[YVEL] = math.random(0,10) * 0.05
+			end,
+	},
 }
 
 namegivingtitles =
