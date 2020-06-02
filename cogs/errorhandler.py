@@ -145,7 +145,7 @@ class CommandErrorHandler(commands.Cog):
             return await self.bot.error(ctx, "Required arguments are missing.")
 
         # All other Errors not returned come here... And we can just print the default TraceBack + log
-        await self.bot.error(ctx, f"An exception occurred: {type(error)}", f"{error}\n{error.__traceback__}")
+        await self.bot.error(ctx, f"An exception occurred: {type(error)}", f"{error}\n{''.join(traceback.format_tb(error.__traceback__))}")
         await self.logger.send(embed=emb)
         print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
