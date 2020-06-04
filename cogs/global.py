@@ -441,7 +441,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     x = word
                                 # Is the variant faulty?
                                 if isfile(f"color/{palette}/{tile}-{0}-0-.png"):
-                                    if re.match(
+                                    if re.fullmatch(
                                         # voodoo magic regex to match valid variants
                                         r"r(ight|s)?|l(eft|s)?|d(own|s)?|u(p|s)?|s(leep)?|31|2[2-7]|1([0-1]|[5-9])|[7-9]|[0-3]",
                                         variant):
