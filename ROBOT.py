@@ -12,8 +12,8 @@ logging.basicConfig(filename="log.txt", level=logging.WARNING)
 
 # Sets up the configuration
 configuration = None
-with open("setup.json") as configFile:
-    configuration = load(configFile)
+with open("setup.json") as config_file:
+    configuration = load(config_file)
 
 BOT_TOKEN = configuration.get("token")
 DBL_TOKEN = configuration.get("dbl") or ""
@@ -30,9 +30,9 @@ class BabaBot(commands.Bot):
     def __init__(self, command_prefix, webhook_id, embed_color, vanilla, help_command=None, description=None, top=None, **options):
         self.loading = False
         self.started = datetime.utcnow()
-        self.vanillaOnly = bool(vanilla)
-        self.embedColor = embed_color
-        self.webhookId = webhook_id
+        self.vanilla_only = bool(vanilla)
+        self.embed_color = embed_color
+        self.webhook_id = webhook_id
         self._top = top
         super().__init__(command_prefix, help_command=help_command, description=description, **options)
     
@@ -49,7 +49,7 @@ class BabaBot(commands.Bot):
         if len(title) > 256:
             title = None
             description = "\n".join(segments)
-        container = discord.Embed(title=title, description=description, color=self.embedColor)
+        container = discord.Embed(title=title, description=description, color=self.embed_color)
         await ctx.send(embed=container, tts=tts, file=file)
 
     # Custom error message implementation
@@ -60,13 +60,13 @@ class BabaBot(commands.Bot):
         embed = discord.Embed(
             title=_title, 
             description=description,
-            color=self.embedColor
+            color=self.embed_color
         )
         await ctx.message.add_reaction("⚠️")
         await ctx.send(embed=embed, delete_after=20)
 
 # Requires discord.py v1.4+
-defaultMentions = discord.AllowedMentions(everyone=False, roles=False)
+default_mentions = discord.AllowedMentions(everyone=False, roles=False)
 
 # Establishes the bot
 bot = BabaBot(
@@ -84,7 +84,7 @@ bot = BabaBot(
     owner_id = 156021301654454272,
     description="*An entertainment bot for rendering levels and custom scenes based on the indie game Baba Is You.*",
     # Never mention roles or @everyone / @here
-    allowed_mentions=defaultMentions, 
+    allowed_mentions=default_mentions, 
     # Disable the member cache
     fetch_offline_members=False,
     # Disable presence updates 

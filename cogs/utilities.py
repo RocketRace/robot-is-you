@@ -32,41 +32,41 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         `search source:modded sort:color page:4`
         `search text:true color:0,3 reverse:true`
         '''
-        sanitizedQuery = discord.utils.escape_mentions(query)
+        sanitized_query = discord.utils.escape_mentions(query)
         # Pattern to match flags in the format (flag):(value)
-        flagPattern = r"([\d\w_]+):([\d\w,-_]+)"
-        match = re.search(flagPattern, query)
-        plainQuery = ""
+        flag_pattern = r"([\d\w_]+):([\d\w,-_]+)"
+        match = re.search(flag_pattern, query)
+        plain_query = ""
 
         # Whether or not to use simple string matching
-        hasFlags = bool(match)
+        has_flags = bool(match)
         
         # Determine which flags to filter with
         flags = {}
-        if hasFlags:
+        if has_flags:
             if match:
-                flags = dict(re.findall(flagPattern, query)) # Returns "flag":"value" pairs
+                flags = dict(re.findall(flag_pattern, query)) # Returns "flag":"value" pairs
             # Nasty regex to match words that are not flags
-            nonFlagPattern = r"(?<![:\w\d,-])([\w\d,_]+)(?![:\d\w,-])"
-            plainMatch = re.findall(nonFlagPattern, query)
-            plainQuery = " ".join(plainMatch)
+            non_flag_pattern = r"(?<![:\w\d,-])([\w\d,_]+)(?![:\d\w,-])"
+            plain_match = re.findall(non_flag_pattern, query)
+            plain_query = " ".join(plain_match)
         
         # Which value to sort output by
-        sortBy = "name"
-        secondarySortBy = "name" # This is constant
+        sort_by = "name"
+        secondary_sort_by = "name" # This is constant
         if flags.get("sort") is not None:
-            sortBy = flags["sort"]
+            sort_by = flags["sort"]
             flags.pop("sort")
         
         reverse = False
-        reverseFlag = flags.get("reverse")
-        if reverseFlag is not None and reverseFlag.lower() == "true":
+        reverse_flag = flags.get("reverse")
+        if reverse_flag is not None and reverse_flag.lower() == "true":
             reverse = True
             flags.pop("reverse")
 
         page = 0
-        pageFlag = flags.get("page")
-        if pageFlag is not None and pageFlag.isnumeric():
+        page_flag = flags.get("page")
+        if page_flag is not None and page_flag.isnumeric():
             page = int(flags["page"]) - 1
             flags.pop("page")
 
@@ -76,9 +76,9 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         matches = []
 
        # Searches through a list of the names of each tile
-        data = self.bot.get_cog("Admin").tileData
+        data = self.bot.get_cog("Admin").tile_dta
         for name,tile in data.items():
-            if hasFlags:
+            if has_flags:
                 # Checks if the object matches all the flag parameters
                 passed = {f:False for f,v in flags.items()}
                 # Process flags for one object
@@ -113,8 +113,8 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
                             passed[flag] = True
                 
                 # If we pass all flags (and there are more than 0 passed flags)
-                if hasFlags and all(passed.values()):
-                    if plainQuery in name:
+                if has_flags and all(passed.values()):
+                    if plain_query in name:
                         results += 1
                         # Add our object to our results, and append its name (originally a key)
                         obj = tile
@@ -130,35 +130,35 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
                     matches.append(obj)
 
         # Determine our output pagination
-        firstResult = page * limit
-        lastResult = (page + 1) * limit
+        first_result = page * limit
+        last_result = (page + 1) * limit
         # Some sanitization to avoid negative indices
-        if firstResult < 0: 
-            firstResult = 0
-        if lastResult < 0:
-            lastResult = limit
+        if first_result < 0: 
+            first_result = 0
+        if last_result < 0:
+            last_result = limit
         # If we try to go over the limit, just show the last page
-        lastPage = results // limit
-        if firstResult > results:
-            firstResult = lastPage
-        if lastResult > results:
-            lastResult = results - 1
+        last_page = results // limit
+        if first_result > results:
+            first_result = last_page
+        if last_result > results:
+            last_result = results - 1
         
         # What message to prefix our output with
         if results == 0:
-            matches.insert(0, f"Found no results for \"{sanitizedQuery}\".")
+            matches.insert(0, f"Found no results for \"{sanitized_query}\".")
         elif results > limit:
-            matches.insert(0, f"Found {results} results using query \"{sanitizedQuery}\". Showing page {page + 1} of {lastPage + 1}:")
+            matches.insert(0, f"Found {results} results using query \"{sanitized_query}\". Showing page {page + 1} of {last_page + 1}:")
         else:
-            matches.insert(0, f"Found {results} results using query \"{sanitizedQuery}\":")
+            matches.insert(0, f"Found {results} results using query \"{sanitized_query}\":")
         
         # Tidy up our output with this mess
-        content = "\n".join([f"**{x.get('name')}** : {', '.join([f'{k}: `{v[0]},{v[1]}`' if isinstance(v, list) else f'{k}: `{v}`' for k, v in sorted(x.items(), key=lambda λ: λ[0]) if k not in ['name', 'tags']])}" if not isinstance(x, str) else x for x in [matches[0]] + sorted(matches[1:], key=lambda λ: (λ[sortBy], λ[secondarySortBy]), reverse=reverse)[firstResult:lastResult + 1]])
+        content = "\n".join([f"**{x.get('name')}** : {', '.join([f'{k}: `{v[0]},{v[1]}`' if isinstance(v, list) else f'{k}: `{v}`' for k, v in sorted(x.items(), key=lambda λ: λ[0]) if k not in ['name', 'tags']])}" if not isinstance(x, str) else x for x in [matches[0]] + sorted(matches[1:], key=lambda λ: (λ[sort_by], λ[secondary_sort_by]), reverse=reverse)[first_result:last_result + 1]])
         await self.bot.send(ctx, content)
 
     @commands.cooldown(2, 5, type=commands.BucketType.channel)
     @commands.command(name="list")
-    async def listTiles(self, ctx):
+    async def list_tiles(self, ctx):
         '''
         Lists valid tiles for rendering.
         Returns all valid tiles in a text file.
@@ -170,7 +170,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
 
     @commands.cooldown(2, 5, type=commands.BucketType.channel)
     @commands.command(name="palettes")
-    async def listPalettes(self, ctx):
+    async def list_palettes(self, ctx):
         '''
         Lists palettes usable for rendering.
         Palettes can be used as arguments for the `tile` (and subsequently `rule`) commands.
@@ -185,17 +185,17 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
 
     @commands.cooldown(2, 5, type=commands.BucketType.channel)
     @commands.command(name="variants")
-    async def listVariants(self, ctx, tile):
+    async def list_variants(self, ctx, tile):
         '''
         List valid sprite variants for a given tile.
         '''
         # Clean the input
-        cleanTile = tile.strip().lower()
+        clean_tile = tile.strip().lower()
 
         # Does the tile exist?
-        data = self.bot.get_cog("Admin").tileData.get(cleanTile)
+        data = self.bot.get_cog("Admin").tile_dta.get(clean_tile)
         if data is None:
-            return await self.bot.error(ctx, f"Could not find a tile with name '{cleanTile}'.")
+            return await self.bot.error(ctx, f"Could not find a tile with name '{clean_tile}'.")
         
         # Determines the tiling type of the tile
         tiling = data.get("tiling")
@@ -271,7 +271,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         }
 
         # Output
-        await self.bot.send(ctx, f"Valid sprite variants for '{cleanTile}'\n" + "\n".join(output[tiling]) + "\n")
+        await self.bot.send(ctx, f"Valid sprite variants for '{clean_tile}'\n" + "\n".join(output[tiling]) + "\n")
 
 
 def setup(bot):

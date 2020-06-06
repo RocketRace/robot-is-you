@@ -11,8 +11,8 @@ from time         import time
 # Custom help command implementation
 class PrettyHelpCommand(commands.DefaultHelpCommand):
 
-    def __init__(self, embedColor, **options):
-        self.embedColor = embedColor
+    def __init__(self, embed_color, **options):
+        self.embed_color = embed_color
         super().__init__(**options)
 
     async def send_error_message(self, error):
@@ -24,7 +24,7 @@ class PrettyHelpCommand(commands.DefaultHelpCommand):
         destination = self.get_destination()
 
         for page in self.paginator.pages:
-            formatted = discord.Embed(color=self.embedColor)
+            formatted = discord.Embed(color=self.embed_color)
             
             split = page.split("**")
             if len(split) == 1:
@@ -108,7 +108,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
         self.bot = bot
         self._original_help_command = bot.help_command
         # Sets up the help command
-        bot.help_command = PrettyHelpCommand(bot.embedColor, **dict(paginator=commands.Paginator(prefix="", suffix="")))
+        bot.help_command = PrettyHelpCommand(bot.embed_color, **dict(paginator=commands.Paginator(prefix="", suffix="")))
         bot.help_command.cog = self
 
     # Check if the bot is loading
@@ -121,16 +121,16 @@ class MetaCog(commands.Cog, name="Other Commands"):
         """
         Displays bot information.
         """
-        aboutEmbed = discord.Embed(
+        about_embed = discord.Embed(
             title="About This Bot", 
             type="rich", 
-            colour=self.bot.embedColor, 
+            colour=self.bot.embed_color, 
             description="\n".join([
                 f"{ctx.me.name} - Bot for Discord based on the indie game Baba Is You. "
                 "Written by RocketRace#0798."
             ])
         )
-        aboutEmbed.add_field(name="Links", value="[GitHub repository](https://github.com/RocketRace/robot-is-you)\n" + \
+        about_embed.add_field(name="Links", value="[GitHub repository](https://github.com/RocketRace/robot-is-you)\n" + \
             "[Public page](https://top.gg/bot/480227663047294987/vote)"
         )
         ut = datetime.utcnow() - self.bot.started
@@ -139,11 +139,11 @@ class MetaCog(commands.Cog, name="Other Commands"):
             f"\nChannels: {sum(len(g.channels) for g in self.bot.guilds)}",
             f"\nUptime: {ut.days}d {ut.seconds // 3600}h {ut.seconds % 3600 // 60}m {ut.seconds % 60}s"
         ])
-        aboutEmbed.add_field(name="Statistics", value=stats)
-        aboutEmbed.add_field(name="Valid Prefixes", value="\n".join([
+        about_embed.add_field(name="Statistics", value=stats)
+        about_embed.add_field(name="Valid Prefixes", value="\n".join([
             "`" + p + "`" for p in self.bot.prefixes
         ]))
-        await ctx.send(embed=aboutEmbed)
+        await ctx.send(embed=about_embed)
     
     @commands.command(aliases=["pong"])
     @commands.cooldown(2, 2, commands.BucketType.channel)
@@ -163,14 +163,14 @@ class MetaCog(commands.Cog, name="Other Commands"):
         permissions = discord.Permissions(permissions=379968)
         invite = discord.utils.oauth_url(client_id=ID, permissions=permissions)
         formatted = f"[Click Here to invite the bot to your guild!]({invite})"
-        msg = discord.Embed(title="Invite", colour=self.bot.embedColor, description=formatted)
+        msg = discord.Embed(title="Invite", colour=self.bot.embed_color, description=formatted)
 
         msg.add_field(name="Support Server", value="[Click here to join RocketRace's Bots](https://discord.gg/rMX3YPK)\n")
         await ctx.send(embed=msg)
     
     @commands.command(aliases=["interpret"])
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
-    async def babalang(self, ctx, program, *progInput):
+    async def babalang(self, ctx, program, *program_input):
         '''
         Interpret a [Babalang](https://esolangs.org/wiki/Babalang) program.
         
@@ -185,22 +185,23 @@ class MetaCog(commands.Cog, name="Other Commands"):
         Both arguments can be multi-line. The input argument will be automatically padded 
         with trailing newlines as necessary.
         '''
-        if len(progInput) > 1:
-            program = " ".join([program] + list(progInput))
-            progInput = ""
-        elif progInput and progInput[0][-1] != "\n":
-            progInput = progInput[0] + "\n"
+        prog_input = program_input
+        if len(prog_input) > 1:
+            program = " ".join([program] + list(prog_input))
+            prog_input = ""
+        elif prog_input and prog_input[0][-1] != "\n":
+            prog_input = prog_input[0] + "\n"
         else:
-            progInput = ""
+            prog_input = ""
 
-        def interpretBabalang():
+        def interpret_babalang():
             try:
                 process = run(
                     ["./babalang",  "-c", f"'{program}'"], 
                     stdout=PIPE,
                     stderr=STDOUT,
                     timeout=1.0,
-                    input=progInput.encode("utf-8", "ignore"),
+                    input=prog_input.encode("utf-8", "ignore"),
                 )
                 if process.stdout is not None:
                     return (process.returncode, process.stdout[:1000].decode("utf-8", "replace"))
@@ -214,27 +215,27 @@ class MetaCog(commands.Cog, name="Other Commands"):
                         return (None, timeout.output)
                 else:
                     return (None, None)
-        returnCode, output = await self.bot.loop.run_in_executor(None, interpretBabalang)
+        return_code, output = await self.bot.loop.run_in_executor(None, interpret_babalang)
 
-        tooLong = False
+        too_long = False
         if output:
             lines = output.splitlines()
             if len(lines) > 50:
                 output = "\n".join(lines[:50])
-                tooLong = True
+                too_long = True
             if len(output) > 500:
                 output = output[:500]
-                tooLong = True
+                too_long = True
 
         message = []
-        if returnCode is None:
+        if return_code is None:
             message.append("The program took too long to execute:\n")
         else:
-            message.append(f"The program terminated with return code `{returnCode}`:\n")
+            message.append(f"The program terminated with return code `{return_code}`:\n")
 
         if not output:
             message.append("```\n[No output]\n```")
-        elif tooLong:
+        elif too_long:
             message.append(f"```\n{output} [...]\n[Output too long, truncated]\n```")
         else:
             message.append(f"```\n{output}\n```")
