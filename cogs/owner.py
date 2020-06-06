@@ -10,38 +10,38 @@ from os           import listdir, stat
 from pathlib      import Path
 from PIL          import Image, ImageDraw, ImageChops
 
-def multiplyColor(fp, palettes, pixels):
+def multiply_color(fp, palettes, pixels):
     # fp: file path of the sprite
     # palettes: each palette name
     # pixels: the colors the tile should be recolored with
 
-    uniquePixels = {}
+    unique_pixels = {}
     for palette,pixel in zip(palettes, pixels):
-        uniquePixels.setdefault(pixel, []).append(palette)
+        unique_pixels.setdefault(pixel, []).append(palette)
     
     # Output images
     recolored = []
-    outputPalettes = uniquePixels.values()
+    output_palettes = unique_pixels.values()
 
     # Image to recolor from
     base = Image.open(fp).convert("RGBA")
 
     # Multiplies the R,G,B channel for each pixel value
-    for pixel in uniquePixels:
+    for pixel in unique_pixels:
         # New values
-        newR, newG, newB = pixel
+        new_r, new_g, new_b = pixel
         # New channels
         arr = np.asarray(base, dtype='uint16')
-        rC, gC, bC, aC = arr.T
-        rC, gC, bC = newR*rC / 256, newG*gC / 256, newB*bC / 256
-        out = np.stack((rC.T,gC.T,bC.T,aC.T),axis=2).astype('uint8')
+        r_c, g_c, b_c, a_c = arr.T
+        r_c, g_c, b_c = new_r*r_c / 256, new_g*g_c / 256, new_b*b_c / 256
+        out = np.stack((r_c.T,g_c.T,b_c.T,a_c.T),axis=2).astype('uint8')
         RGBA = Image.fromarray(out)
         # Adds to list
         recolored.append(RGBA)
 
-    return zip(recolored, outputPalettes)
+    return zip(recolored, output_palettes)
 
-def getSpriteVariants(sprite, tiling):
+def get_sprite_variants(sprite, tiling):
     '''
     Opens the associated sprites from sprites/
     Use every sprite variant, the amount based on the tiling type
@@ -94,21 +94,21 @@ def getSpriteVariants(sprite, tiling):
     '''
 
     if tiling == "4": # Animated, non-directional
-        spriteNumbers = [0,1,2,3] # Animation
+        sprite_numbers = [0,1,2,3] # Animation
     if tiling == "3" and sprite != "goose": # Basically for belts only (anim + dirs)
-        spriteNumbers = [0,1,2,3, # Animation right
+        sprite_numbers = [0,1,2,3, # Animation right
                         8,9,10,11, # Animation up
                         16,17,18,19, # Animation left
                         24,25,26,27] # Animation down
 
     if tiling == "3" and sprite == "goose": # For Goose (anim + dirs)
-        spriteNumbers = [0,1,2,3, # Animation right
+        sprite_numbers = [0,1,2,3, # Animation right
                         # Goose has no up animations ¯\_(ツ)_/¯
                         16,17,18,19, # Animation left
                         24,25,26,27] # Animation down
 
     elif tiling == "2" and sprite != "robot": # Baba, Keke, Me and Anni have some wonky sprite variations
-        spriteNumbers = [0,1,2,3, # Moving animation to the right
+        sprite_numbers = [0,1,2,3, # Moving animation to the right
                         7, # Sleep up
                         8,9,10, 11, # Moving animation up
                         15, # Sleep left
@@ -119,21 +119,21 @@ def getSpriteVariants(sprite, tiling):
 
     elif tiling == "2" and sprite == "robot": 
         # Robot has no sleep animations but is a character ¯\_(ツ)_/¯
-        spriteNumbers = [0,1,2,3, # Moving animation to the right
+        sprite_numbers = [0,1,2,3, # Moving animation to the right
                         8,9,10, 11, # Moving animation up
                         16,17,18,19, #Moving animation left
                         24,25,26,27] # Moving animation down
 
     elif tiling == "1": # "Tiling" objects
-        spriteNumbers = [i for i in range(16)]
+        sprite_numbers = [i for i in range(16)]
 
     elif tiling == "0": # "Directional" objects have these sprite variations: 
-        spriteNumbers = [0,8,16,24]
+        sprite_numbers = [0,8,16,24]
 
     else: # No tiling
-        spriteNumbers = [0]
+        sprite_numbers = [0]
     
-    return spriteNumbers
+    return sprite_numbers
     
 def load_with_datetime(pairs, format='%Y-%m-%dT%H:%M:%S.%f'):
     '''
@@ -159,29 +159,29 @@ def load_with_datetime(pairs, format='%Y-%m-%dT%H:%M:%S.%f'):
 class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     def __init__(self, bot):
         self.bot = bot
-        self.tileData = {}
+        self.tile_data = {}
         self.identifies = []
         self.resumes = []
         # Loads the caches
         # Loads the tile colors, if it exists
-        colorsFile = "cache/tiledata.json"
-        if stat(colorsFile).st_size != 0:
-            self.tileData = json.load(open(colorsFile))
+        colors_file = "cache/tiledata.json"
+        if stat(colors_file).st_size != 0:
+            self.tile_data = json.load(open(colors_file))
             
         # Loads the alternate tiles if possible
         # Loads debug data, if any
-        debugFile = "cache/debug.json"
-        if stat(debugFile).st_size != 0:
-            debugData = json.load(open(debugFile), object_pairs_hook=load_with_datetime)
-            self.identifies = debugData.get("identifies")
-            self.resumes = debugData.get("resumes")
+        debug_file = "cache/debug.json"
+        if stat(debug_file).st_size != 0:
+            debug_data = json.load(open(debug_file), object_pairs_hook=load_with_datetime)
+            self.identifies = debug_data.get("identifies")
+            self.resumes = debug_data.get("resumes")
 
         self.initializeletters()
         
         # Are assets loading?
         self.bot.loading = False
 
-    def generateTileSprites(self, tile, obj, palettes, colors):
+    def generate_tile_sprites(self, tile, obj, palettes, colors):
         # Fetches the tile data
         sprite = obj["sprite"]
         tiling = obj.get("tiling")
@@ -193,18 +193,18 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         if source is None: source = "vanilla"
         # For convenience
         x,y = [int(n) for n in color]
-        spriteVariants = getSpriteVariants(sprite, tiling)
+        sprite_variants = get_sprite_variants(sprite, tiling)
 
         # Saves the tile sprites
-        singleFrame = ["smiley", "hi", "plus"] # Filename is of the format "smiley_1.png"
-        noVariants = ["default"] # Filenames are of the format "default_<1/2/3>.png"
-        for variant in spriteVariants:
-            if tile in singleFrame or tile.startswith("icon"): # Icons have a single frame
+        single_frame = ["smiley", "hi", "plus"] # Filename is of the format "smiley_1.png"
+        no_variants = ["default"] # Filenames are of the format "default_<1/2/3>.png"
+        for variant in sprite_variants:
+            if tile in single_frame or tile.startswith("icon"): # Icons have a single frame
                 if tile == "icon":
                     paths = [f"sprites/{source}/icon.png" for i in range(3)]
                 else:
                     paths = [f"sprites/{source}/{sprite}_1.png" for i in range(3)]
-            elif tile in noVariants:
+            elif tile in no_variants:
                 paths = [f"sprites/{source}/{sprite}_{i + 1}.png" for i in range(3)]
             else:
                 # Paths should only be of length 3
@@ -213,7 +213,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             # Changes the color of each image, then saves it
             for i,fp in enumerate(paths):
                 pixels = [img[x][y] for img in colors]
-                recolored = multiplyColor(fp, palettes, pixels)
+                recolored = multiply_color(fp, palettes, pixels)
                 # Saves the colored images to /color/[palette]/ given that the image may be identical for some palettes
                 # Recolored images, palettes each image is associated with
                 for img,uses in recolored:
@@ -269,19 +269,19 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         Gives some debug stats.
         '''
         yesterday = datetime.utcnow() - timedelta(days=1)
-        identifiesDay = [event for event in self.identifies if event > yesterday]
-        resumesDay = [event for event in self.resumes if event > yesterday]
-        iCount = len(identifiesDay)
-        rCount = len(resumesDay)
+        identifies_day = [event for event in self.identifies if event > yesterday]
+        resumes_day = [event for event in self.resumes if event > yesterday]
+        i_count = len(identifies_day)
+        r_count = len(resumes_day)
 
-        globalRateLimit = not self.bot.http._global_over.is_set()
+        global_rate_limit = not self.bot.http._global_over.is_set()
 
         msg = discord.Embed(
             title="Debug",
-            description="".join([f"IDENTIFYs in the past 24 hours: {iCount}\n",
-                f"RESUMEs in the past 24 hours: {rCount}\n",
-                f"Global rate limit: {globalRateLimit}"]),
-            color=self.bot.embedColor
+            description="".join([f"IDENTIFYs in the past 24 hours: {i_count}\n",
+                f"RESUMEs in the past 24 hours: {r_count}\n",
+                f"Global rate limit: {global_rate_limit}"]),
+            color=self.bot.embed_color
         )
 
         await self.bot.send(ctx, " ", embed=msg)
@@ -303,7 +303,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         '''
         self.bot.loading = True
         
-        alternateTiles = {}
+        alternate_tiles = {}
 
         levels = [l for l in listdir("levels/vanilla") if l.endswith(".ld")]
         for level in levels:
@@ -347,38 +347,38 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                             alts[ID]["type"] = line[:][15:-1]
                         # Sets the changed color (all tiles)
                         elif line.startswith("colour=", 10):
-                            colorRaw = line[:][17:-1]
+                            color_raw = line[:][17:-1]
                             # Splits the color into a list 
                             # "a,b" -> [a,b]
-                            color = colorRaw.split(",")
+                            color = color_raw.split(",")
                             if not alts[ID].get("color"):
                                 alts[ID]["color"] = color
                         # Sets the changed color (active text only), overrides previous
                         elif line.startswith("activecolour=", 10):
-                            colorRaw = line[:][23:-1]
+                            color_raw = line[:][23:-1]
                             # Splits the color into a list 
                             # "a,b" -> [a,b]
-                            color = colorRaw.split(",")
+                            color = color_raw.split(",")
                             alts[ID]["color"] = color
                     
             # Adds the data to the list of changed objects
             for key in alts:
-                if alternateTiles.get(key) is None:
-                    alternateTiles[key] = [alts[key]]
+                if alternate_tiles.get(key) is None:
+                    alternate_tiles[key] = [alts[key]]
                 else:
                     duplicate = False
-                    for tile in alternateTiles[key]:
+                    for tile in alternate_tiles[key]:
                         a = tile.get("name")
                         b = alts[key].get("name")
                         if a == b:
                             duplicate = True
                     if not duplicate:
-                        alternateTiles[key].extend([alts[key]])
+                        alternate_tiles[key].extend([alts[key]])
     
 
         await ctx.send("Scraped preexisting tile data from `.ld` files.")
         self.bot.loading = False
-        return alternateTiles
+        return alternate_tiles
     
     @commands.command()
     @commands.is_owner()
@@ -386,8 +386,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         '''
         Reloads tile data from `values.lua`, `editor_objectlist.lua` and `.ld` files.
         '''
-        altTiles = await ctx.invoke(self.bot.get_command("loadchanges"))
-        await ctx.invoke(self.bot.get_command("loadcolors"), alternateTiles = altTiles)
+        alt_tiles = await ctx.invoke(self.bot.get_command("loadchanges"))
+        await ctx.invoke(self.bot.get_command("loadcolors"), alternate_tiles = alt_tiles)
         await ctx.invoke(self.bot.get_command("loadeditor"))
         await ctx.invoke(self.bot.get_command("loadcustom"))
         await ctx.invoke(self.bot.get_command("dumpdata"))
@@ -395,13 +395,13 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
     @commands.command()
     @commands.is_owner()
-    async def loadcolors(self, ctx, alternateTiles):
+    async def loadcolors(self, ctx, alternate_tiles):
         '''
         Loads tile data from `values.lua.` and merges it with tile data from `.ld` files.
         '''
 
-        self.tileData = {}
-        altTiles = alternateTiles
+        self.tile_data = {}
+        alt_tiles = alternate_tiles
 
         self.bot.loading = True
         # values.lua contains the data about which color (on the palette) is associated with each tile.
@@ -413,7 +413,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         # The name, ID and sprite of the currently handled tile
         name = ID = sprite = ""
         # The color of the currently handled tile
-        colorRaw = ""
+        color_raw = ""
         color = []
         # Reads each line
         for line in lines:
@@ -437,10 +437,10 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 # We prefer the active color of the text.
                 # If you want the inactive colors, just remove the second condition check.
                 elif line.startswith("\t\tcolour = ") or line.startswith("\t\tactive = "):
-                    colorRaw = line[12:-3]
+                    color_raw = line[12:-3]
                     # Converts the string to a list 
                     # "{a,b}" --> [a,b]
-                    seg = colorRaw.split(",")
+                    seg = color_raw.split(",")
                     color = [seg[i].strip() for i in range(2)]
                 elif line.startswith("\t\ttype = "):
                     type_ = line[9:-2]
@@ -448,46 +448,46 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 elif line == "\t},\n":
                     # Makes sure no fields are empty
                     # bool("") == False, but True for any other string
-                    if bool(name) and bool(sprite) and bool(colorRaw) and bool(tiling):
+                    if bool(name) and bool(sprite) and bool(color_raw) and bool(tiling):
                         # Alternate tile data (initialized with the original)
                         alts = {name:{"sprite":sprite, "color":color, "tiling":tiling, "source":"vanilla", "type":type_}}
                         # Looks for object replacements in the alternateTiles dict
-                        if altTiles.get(ID) is not None:
+                        if alt_tiles.get(ID) is not None:
                             # Each replacement for the object ID:
-                            for value in altTiles[ID]:
+                            for value in alt_tiles[ID]:
                                 # Sets fields to the alternate fields, if specified
-                                altName = name
-                                altSprite = sprite
-                                altTiling = tiling
-                                altColor = color
-                                altType = type_
+                                alt_name = name
+                                alt_sprite = sprite
+                                alt_tiling = tiling
+                                alt_color = color
+                                alt_type = type_
                                 if value.get("name") != "":
-                                    altName = value.get("name")
+                                    alt_name = value.get("name")
                                 if value.get("sprite") != "":
-                                    altSprite = value.get("sprite")
+                                    alt_sprite = value.get("sprite")
                                 if value.get("color") != []: # This shouldn't ever be false
-                                    altColor = value.get("color")
+                                    alt_color = value.get("color")
                                 if value.get("tiling") != "":
-                                    altTiling = value.get("tiling")
+                                    alt_tiling = value.get("tiling")
                                 if value.get("type") != "":
-                                    altType = value.get("type")
+                                    alt_type = value.get("type")
                                 # Adds the change to the alts, but only if it's the first with that name
-                                if name != altName:
+                                if name != alt_name:
                                     # If the name matches the name of an object already in the alt list
-                                    if self.tileData.get(altName) is None:
-                                        alts[altName] = {
-                                            "sprite":altSprite, 
-                                            "tiling":altTiling, 
-                                            "color":altColor, 
-                                            "type":altType,
+                                    if self.tile_data.get(alt_name) is None:
+                                        alts[alt_name] = {
+                                            "sprite":alt_sprite, 
+                                            "tiling":alt_tiling, 
+                                            "color":alt_color, 
+                                            "type":alt_type,
                                             "source":"vanilla"
                                         }
                                         
-                        # Adds each unique name-color pairs to the tileData dict
+                        # Adds each unique name-color pairs to the tile data dict
                         for key,value in alts.items():
-                            self.tileData[key] = value
+                            self.tile_data[key] = value
                     # Resets the fields
-                    name = sprite = tiling = colorRaw = ""
+                    name = sprite = tiling = color_raw = ""
                     color = []
             # Only begins checking for these lines once a certain point in the file has been passed
             elif line == "tileslist =\n":
@@ -501,15 +501,15 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.is_owner()
     async def loadcustom(self, ctx):
         '''
-        Loads custom tile data from `custom/*.json` into self.tileData
+        Loads custom tile data from `custom/*.json` into self.tile_data
         '''
         
         # Load custom tile data from a json files
-        customData = [x for x in listdir("custom") if x.endswith(".json")]
+        custom_data = [x for x in listdir("custom") if x.endswith(".json")]
         # In alphabetical order, to make sure Patashu's redux mod overwrites the old mod
-        customData.sort() 
-        for f in customData:
-            if f != "vanilla.json" and self.bot.vanillaOnly: break
+        custom_data.sort() 
+        for f in custom_data:
+            if f != "vanilla.json" and self.bot.vanilla_only: break
             dat = None
             with open(f"custom/{f}") as fp:
                 dat = json.load(fp)
@@ -523,7 +523,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 # The sprite source (which folder to draw from)
                 rewritten["source"] = f[:-5] # Trim ".json"
                 if name is not None:
-                    self.tileData[name] = rewritten
+                    self.tile_data[name] = rewritten
 
         await ctx.send("Loaded custom tile data from `custom/*.json`.")
 
@@ -531,7 +531,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.is_owner()
     async def loadeditor(self, ctx):
         '''
-        Loads tile data from `editor_objectlist.lua` into `self.tileData`.
+        Loads tile data from `editor_objectlist.lua` into `self.tile_data`.
         '''
 
         lines = ""
@@ -539,19 +539,19 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             lines = objlist.readlines()
         
         objects = {}
-        parsingObjects = False
-        name = tiling = tileType = sprite = ""
+        parsing_objects = False
+        name = tiling = tile_type = sprite = ""
         color = None
         tags = None
         for line in lines:
             if line.startswith("editor_objlist = {"):
-                parsingObjects = True
-            if not parsingObjects:
+                parsing_objects = True
+            if not parsing_objects:
                 continue
             if line.startswith("\t},"):
                 if sprite == "": sprite = name
-                objects[name] = {"tiling":tiling,"type":tileType,"sprite":sprite,"color":color,"tags":tags,"source":"vanilla"}
-                name = tiling = tileType = sprite = ""
+                objects[name] = {"tiling":tiling,"type":tile_type,"sprite":sprite,"color":color,"tags":tags,"source":"vanilla"}
+                name = tiling = tile_type = sprite = ""
                 color = None
                 tags = None
             elif line.startswith("\t\tname = \""):
@@ -561,7 +561,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             elif line.startswith("\t\tsprite = \""):
                 sprite = line[12:-3]
             elif line.startswith("\t\ttype = "):
-                tileType = line[9:-2]
+                tile_type = line[9:-2]
             elif line.startswith("\t\tcolour = {"):
                 if not color:
                     color = [x.strip() for x in line[12:-3].split(",")]
@@ -570,25 +570,25 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             elif line.startswith("\t\ttags = {"):
                 ...
 
-        self.tileData.update(objects)
+        self.tile_data.update(objects)
         await ctx.send("Loaded tile data from `editor_objectlist.lua`.")
 
     @commands.command()
     @commands.is_owner()
     async def dumpdata(self, ctx):
         '''
-        Dumps cached tile data from `self.tileData` into `tiledata.json` and `tilelist.txt`.
+        Dumps cached tile data from `self.tile_data` into `tiledata.json` and `tilelist.txt`.
         '''
 
-        maxLength = len(max(self.tileData, key=lambda x: len(x))) + 1
+        max_length = len(max(self.tile_data, key=lambda x: len(x))) + 1
 
-        with open("tilelist.txt", "wt") as allTiles:
-            allTiles.write(f"{'*TILE* '.ljust(maxLength, '-')} *SOURCE*\n")
-            allTiles.write("\n".join(sorted([(f"{(tile + ' ').ljust(maxLength, '-')} {data['source']}") for tile, data in self.tileData.items()])))
+        with open("tilelist.txt", "wt") as all_tiles:
+            all_tiles.write(f"{'*TILE* '.ljust(max_length, '-')} *SOURCE*\n")
+            all_tiles.write("\n".join(sorted([(f"{(tile + ' ').ljust(max_length, '-')} {data['source']}") for tile, data in self.tile_data.items()])))
 
         # Dumps the gathered data to tiledata.json
-        with open("cache/tiledata.json", "wt") as emoteFile:
-            json.dump(self.tileData, emoteFile, indent=3)
+        with open("cache/tiledata.json", "wt") as emote_file:
+            json.dump(self.tile_data, emote_file, indent=3)
 
         await ctx.send("Saved cached tile data.")
     
@@ -618,7 +618,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         '''
         self.bot.loading = True
         # Some checks
-        if self.tileData.get(tile) is None:
+        if self.tile_data.get(tile) is None:
             return await self.bot.send(ctx, f"\"{tile}\" is not in the list of tiles.")
         palettes = [palette]
         if palette == "all":
@@ -627,17 +627,17 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             return await self.bot.send(ctx, f"\"{palette}\" is not a valid palette.")
             
         # Creates the directories for the palettes if they don't exist
-        paletteColors = []
+        palette_colors = []
         for pal in palettes:
             Path(f"color/{pal}").mkdir(parents=True, exist_ok=True)
 
             # The palette image 
-            paletteImg = Image.open("palettes/%s.png" % pal).convert("RGB")
+            palette_img = Image.open("palettes/%s.png" % pal).convert("RGB")
             # The RGB values of the palette
-            paletteColors.append([[(paletteImg.getpixel((x,y))) for y in range(5)] for x in range(7)])
+            palette_colors.append([[(palette_img.getpixel((x,y))) for y in range(5)] for x in range(7)])
 
-        obj = self.tileData[tile]
-        self.generateTileSprites(tile, obj, palettes, paletteColors)
+        obj = self.tile_data[tile]
+        self.generate_tile_sprites(tile, obj, palettes, palette_colors)
         await ctx.send(f"Generated tile sprites for {tile}.")
         self.bot.loading = False
 
@@ -670,13 +670,13 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         for palette in palettes:
             Path(f"color/{palette}").mkdir(parents=True, exist_ok=True)
         
-        # Goes through each tile object in the tileData array
+        # Goes through each tile object in the tile data array
         i = 0
-        total = len(self.tileData)
-        for tile,obj in self.tileData.items():
+        total = len(self.tile_data)
+        for tile,obj in self.tile_data.items():
             if i % 100 == 0:
                 await ctx.send(f"{i} / {total}...")
-            self.generateTileSprites(tile, obj, palettes, colors)
+            self.generate_tile_sprites(tile, obj, palettes, colors)
             i += 1
         await ctx.send(f"{total} / {total} tiles loaded.")
 
@@ -684,15 +684,15 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
     @commands.command()
     @commands.is_owner()
-    async def make(self, ctx, name, color = ..., tileType = ...):
+    async def make(self, ctx, name, color = ..., tile_type = ...):
         two_rows = len(name) >= 4
 
         if two_rows:
-            if not all(map(lambda c: c in self.letterWidths["small"], name)):
+            if not all(map(lambda c: c in self.letter_widths["small"], name)):
                 return await ctx.send("Go on...")
 
         else:
-            if not all(map(lambda c: c in self.letterWidths["big"], name)):
+            if not all(map(lambda c: c in self.letter_widths["big"], name)):
                 return await ctx.send("Go on...")
 
 
@@ -707,7 +707,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             for width in listdir(f"letters/small/{char}"):
                 big.setdefault(char, []).append(width)
 
-        self.letterWidths = {"big":big, "small":small}
+        self.letter_widths = {"big":big, "small":small}
 
     @commands.command()
     @commands.is_owner()
@@ -725,17 +725,17 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 len(data["sprite"]) >= 7
             ])
 
-        for data in filter(check, self.tileData.values()):
+        for data in filter(check, self.tile_data.values()):
             sprite = data["sprite"]
             try:
-                tileType = data["type"]
+                tile_type = data["type"]
             except:
                 print(data)
-            self.loadletter(sprite, tileType)
+            self.loadletter(sprite, tile_type)
 
         await ctx.send("pog")
 
-    def loadletter(self, word, tileType):
+    def loadletter(self, word, tile_type):
         '''
         Scrapes letters from a sprite.
         '''
@@ -766,7 +766,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             w, h = alpha.size
             
             # Type-2 text has inverted text on a background plate
-            if tileType == "2":
+            if tile_type == "2":
                 alpha = ImageChops.invert(alpha)
                 alpha = ImageChops.logical_and(alpha, plate)
 
@@ -864,40 +864,40 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         await ctx.invoke(self.bot.get_command("loadpalettes"), palettes)
         await ctx.send(f"{ctx.author.mention} Done.")
 
-    def updateDebug(self):
+    def update_debug(self):
         # Updates the debug file
-        debugFile = "cache/debug.json"
-        debugData = {"identifies":None,"resumes":None}
+        debug_file = "cache/debug.json"
+        debug_data = {"identifies":None,"resumes":None}
 
         # Prevent leaking
         yesterday = datetime.utcnow() - timedelta(days=1)
-        identifiesDay = [event for event in self.identifies if event > yesterday]
-        resumesDay = [event for event in self.resumes if event > yesterday]
-        self.identifies = identifiesDay
-        self.resumes = resumesDay
+        identifies_day = [event for event in self.identifies if event > yesterday]
+        resumes_day = [event for event in self.resumes if event > yesterday]
+        self.identifies = identifies_day
+        self.resumes = resumes_day
 
-        debugData["identifies"] = identifiesDay
-        debugData["resumes"] = resumesDay
-        json.dump(debugData, open(debugFile, "w"), indent=2, default=lambda obj:obj.isoformat() if hasattr(obj, 'isoformat') else obj)
+        debug_data["identifies"] = identifies_day
+        debug_data["resumes"] = resumes_day
+        json.dump(debug_data, open(debug_file, "w"), indent=2, default=lambda obj:obj.isoformat() if hasattr(obj, 'isoformat') else obj)
 
     def _clear_gateway_data(self):
-        weekAgo = datetime.utcnow() - timedelta(days=7)
-        to_remove = [index for index, dt in enumerate(self.resumes) if dt < weekAgo]
+        week_ago = datetime.utcnow() - timedelta(days=7)
+        to_remove = [index for index, dt in enumerate(self.resumes) if dt < week_ago]
         for index in reversed(to_remove):
             del self.resumes[index]
 
-        to_remove = [index for index, dt in enumerate(self.resumes) if dt < weekAgo]
+        to_remove = [index for index, dt in enumerate(self.resumes) if dt < week_ago]
         for index in reversed(to_remove):
             del self.identifies[index]
         
         # update debug data file
-        self.updateDebug()
+        self.update_debug()
     
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        webhook = await self.bot.fetch_webhook(self.bot.webhookId)
+        webhook = await self.bot.fetch_webhook(self.bot.webhook_id)
         embed = discord.Embed(
-            color = self.bot.embedColor,
+            color = self.bot.embed_color,
             title = "Joined Guild",
             description = f"Joined {guild.name}."
         )
@@ -922,7 +922,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         self._clear_gateway_data()   
 
         # update debug data file
-        self.updateDebug()
+        self.update_debug()
 
 def setup(bot):
     bot.add_cog(OwnerCog(bot))

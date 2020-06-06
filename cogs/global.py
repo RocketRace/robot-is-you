@@ -23,7 +23,7 @@ def flatten(items, seqtypes=(list, tuple)):
             items[i:i+1] = items[i]
     return items
 
-def tryIndex(string, value):
+def try_index(string, value):
     '''
     Returns the index of a substring within a string.
     Returns -1 if not found.
@@ -39,19 +39,19 @@ class SplittingException(BaseException):
     pass
 
 # Splits the "text_x,y,z..." shortcuts into "text_x", "text_y", ...
-def splitCommas(grid, prefix):
+def split_commas(grid, prefix):
     for row in grid:
-        toAdd = []
+        to_add = []
         for i, word in enumerate(row):
             if "," in word:
                 if word.startswith(prefix):
                     each = word.split(",")
                     expanded = [each[0]]
                     expanded.extend([prefix + segment for segment in each[1:]])
-                    toAdd.append((i, expanded))
+                    to_add.append((i, expanded))
                 else:
                     raise SplittingException(word)
-        for change in reversed(toAdd):
+        for change in reversed(to_add):
             row[change[0]:change[0] + 1] = change[1]
     return grid
 
@@ -66,7 +66,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         '''
         return not self.bot.loading
 
-    def saveFrames(self, frames, fp):
+    def save_frames(self, frames, fp):
         '''
         Saves a list of images as a gif to the specified file path.
         '''
@@ -82,7 +82,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         )
         if not isinstance(fp, str): fp.seek(0)
 
-    def magickImages(self, wordGrid, width, height, *, palette="default", images=None, imageSource="vanilla", out="renders/render.gif", background=None):
+    def magick_images(self, word_grid, width, height, *, palette="default", images=None, image_source="vanilla", out="renders/render.gif", background=None):
         '''
         Takes a list of tile names and generates a gif with the associated sprites.
 
@@ -93,16 +93,14 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         images is a list of background image filenames. Each image is retrieved from `images/{imageSource}/image`.
 
         background is a palette index. If given, the image background color is set to that color, otherwise transparent. Background images overwrite this. 
-
-        tileBorder sets whether or not tiles stick to the edges of the image.
         '''
         frames = []
         if palette == "hide":
             # Silly "hide" palette that returns a blank render
-            renderFrame = Image.new("RGBA", (48 * width, 48 * height))
+            render_frame = Image.new("RGBA", (48 * width, 48 * height))
             for _ in range(3):
-                frames.append(renderFrame)
-            return self.saveFrames(frames, out)
+                frames.append(render_frame)
+            return self.save_frames(frames, out)
 
         # For each animation frame
         paths = [
@@ -114,19 +112,19 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                         else f"color/{palette}/{word.split(':')[0]}-{word.split(':')[1]}-{(hash(x + y + z) + fr) % 3}-.png" 
                         for z, word in enumerate(stack)
                     ] for x, stack in enumerate(row)
-                ] for y, row in enumerate(wordGrid)
+                ] for y, row in enumerate(word_grid)
             ] for fr in range(3)
         ]
         # Minimize IO by only opening each image once
-        uniquePaths = set(flatten(paths.copy()))
-        uniquePaths.discard(None)
-        uniqueImages = {path:Image.open(path) for path in uniquePaths}
+        unique_paths = set(flatten(paths.copy()))
+        unique_paths.discard(None)
+        unique_images = {path:Image.open(path) for path in unique_paths}
         
         imgs = [
             [
                 [
                     [
-                        None if fp is None else uniqueImages[fp] for fp in stack
+                        None if fp is None else unique_images[fp] for fp in stack
                     ] for stack in row
                 ] for row in fr
             ] for fr in paths
@@ -140,80 +138,80 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             ] for row in imgs[0]
         ]
         # Calculates padding based on image sizes
-        leftPad = 0
-        rightPad = 0
-        upPad = 0
-        downPad = 0
+        left_pad = 0
+        right_pad = 0
+        up_pad = 0
+        down_pad = 0
         for y,row in enumerate(sizes):
             for x,stack in enumerate(row):
                 for size in stack:
                     if size is not None:
                         if y == 0:
                             diff = size[1] - 24
-                            if diff > upPad:
-                                upPad = diff
+                            if diff > up_pad:
+                                up_pad = diff
                         if y == len(sizes) - 1:
                             diff = size[1] - 24
-                            if diff > downPad:
-                                downPad = diff
+                            if diff > down_pad:
+                                down_pad = diff
                         if x == 0:
                             diff = size[0] - 24
-                            if diff > leftPad:
-                                leftPad = diff
+                            if diff > left_pad:
+                                left_pad = diff
                         if x == len(row) - 1:
                             diff = size[0] - 24
-                            if diff > rightPad:
-                                rightPad = diff
+                            if diff > right_pad:
+                                right_pad = diff
         
         for i,frame in enumerate(imgs):
             # Get new image dimensions, with appropriate padding
-            totalWidth = len(frame[0]) * 24 + leftPad + rightPad 
-            totalHeight = len(frame) * 24 + upPad + downPad 
+            total_width = len(frame[0]) * 24 + left_pad + right_pad 
+            total_height = len(frame) * 24 + up_pad + down_pad 
 
             # Montage image
             # bg images
-            if bool(images) and imageSource is not None:
-                renderFrame = Image.new("RGBA", (totalWidth, totalHeight))
+            if bool(images) and image_source is not None:
+                render_frame = Image.new("RGBA", (total_width, total_height))
                 # for loop in case multiple background images are used (i.e. baba's world map)
                 for image in images:
-                    overlap = Image.open(f"images/{imageSource}/{image}_{i + 1}.png") # i + 1 because 1-indexed
+                    overlap = Image.open(f"images/{image_source}/{image}_{i + 1}.png") # i + 1 because 1-indexed
                     mask = overlap.getchannel("A")
-                    renderFrame.paste(overlap, mask=mask)
+                    render_frame.paste(overlap, mask=mask)
             # bg color
             elif background is not None:
-                paletteImg = Image.open(f"palettes/{palette}.png").convert("RGBA") # ensure alpha channel exists, even if blank
-                paletteColor = paletteImg.getpixel(background)
-                renderFrame = Image.new("RGBA", (totalWidth, totalHeight), color=paletteColor)
+                palette_img = Image.open(f"palettes/{palette}.png").convert("RGBA") # ensure alpha channel exists, even if blank
+                palette_color = palette_img.getpixel(background)
+                render_frame = Image.new("RGBA", (total_width, total_height), color=palette_color)
             # neither
             else: 
-                renderFrame = Image.new("RGBA", (totalWidth, totalHeight))
+                render_frame = Image.new("RGBA", (total_width, total_height))
 
             # Pastes each image onto the frame
             # For each row
-            yOffset = upPad # For padding: the cursor for example doesn't render fully when alone
+            y_offset = up_pad # For padding: the cursor for example doesn't render fully when alone
             for row in frame:
                 # For each image
-                xOffset = leftPad # Padding
+                x_offset = left_pad # Padding
                 for stack in row:
                     for tile in stack:
                         if tile is not None:
                             width = tile.width
                             height = tile.height
                             # For tiles that don't adhere to the 24x24 sprite size
-                            offset = (xOffset + (24 - width) // 2, yOffset + (24 - height) // 2)
+                            offset = (x_offset + (24 - width) // 2, y_offset + (24 - height) // 2)
 
-                            renderFrame.paste(tile, offset, tile)
-                    xOffset += 24
-                yOffset += 24
+                            render_frame.paste(tile, offset, tile)
+                    x_offset += 24
+                y_offset += 24
 
             # Resizes to 200%
-            renderFrame = renderFrame.resize((2 * totalWidth, 2 * totalHeight), resample=Image.NEAREST)
+            render_frame = render_frame.resize((2 * total_width, 2 * total_height), resample=Image.NEAREST)
             # Saves the final image
-            frames.append(renderFrame)
+            frames.append(render_frame)
 
-        self.saveFrames(frames, out)
+        self.save_frames(frames, out)
 
-    def handleVariants(self, grid, *, tileBorders=False):
+    def handle_variants(self, grid, *, tile_borders=False):
         '''
         Appends variants to tiles in a grid.
         Example:
@@ -224,14 +222,14 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         * Shortcut variant -> The associated variant
         * Given variant -> untouched
         * Anything for a tiling object (given or not) -> variants generated according to adjacent tiles. 
-        If tileBorders is given, this also depends on whether the tile is adjacent to the edge of the image.
+        If tile_borders is given, this also depends on whether the tile is adjacent to the edge of the image.
         '''
 
         width = len(grid[0])
         height = len(grid)
 
-        cloneGrid = [[[word for word in stack] for stack in row] for row in grid]
-        for y, row in enumerate(cloneGrid):
+        clone_grid = [[[word for word in stack] for stack in row] for row in grid]
+        for y, row in enumerate(clone_grid):
             for x, stack in enumerate(row):
                 for z, word in enumerate(stack):
                     if word != "-":
@@ -262,16 +260,16 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                             variant = "23"
                         
                         # Is this a tiling object (e.g. wall, water)?
-                        tileData = self.bot.get_cog("Admin").tileData.get(tile)
-                        if tileData is not None:
-                            if tileData.get("tiling") is not None:
-                                if tileData["tiling"] == "1":
+                        tile_data = self.bot.get_cog("Admin").tile_data.get(tile)
+                        if tile_data is not None:
+                            if tile_data.get("tiling") is not None:
+                                if tile_data["tiling"] == "1":
 
                                     #  The final variation stace of the tile
                                     variant = 0
 
                                     # Tiles that join together
-                                    def doesTile(stack):
+                                    def does_tile(stack):
                                         for t in stack:
                                             if t == tile or t.startswith("level"):
                                                 return True
@@ -280,37 +278,37 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     # Is there the same tile adjacent right?
                                     if x != width - 1:
                                         # The tiles right of this (with variants stripped)
-                                        adjacentRight = [t.split(":")[0] for t in cloneGrid[y][x + 1]]
-                                        if doesTile(adjacentRight):
+                                        adjacent_right = [t.split(":")[0] for t in clone_grid[y][x + 1]]
+                                        if does_tile(adjacent_right):
                                             variant += 1
-                                    if tileBorders:
+                                    if tile_borders:
                                         if x == width - 1:
                                             variant += 1
 
                                     # Is there the same tile adjacent above?
                                     if y != 0:
-                                        adjacentUp = [t.split(":")[0] for t in cloneGrid[y - 1][x]]
-                                        if doesTile(adjacentUp):
+                                        adjacent_up = [t.split(":")[0] for t in clone_grid[y - 1][x]]
+                                        if does_tile(adjacent_up):
                                             variant += 2
-                                    if tileBorders:
+                                    if tile_borders:
                                         if y == 0:
                                             variant += 2
 
                                     # Is there the same tile adjacent left?
                                     if x != 0:
-                                        adjacentLeft = [t.split(":")[0] for t in cloneGrid[y][x - 1]]
-                                        if doesTile(adjacentLeft):
+                                        adjacent_left = [t.split(":")[0] for t in clone_grid[y][x - 1]]
+                                        if does_tile(adjacent_left):
                                             variant += 4
-                                    if tileBorders:
+                                    if tile_borders:
                                         if x == 0:
                                             variant += 4
 
                                     # Is there the same tile adjacent below?
                                     if y != height - 1:
-                                        adjacentDown = [t.split(":")[0] for t in cloneGrid[y + 1][x]]
-                                        if doesTile(adjacentDown):
+                                        adjacent_down = [t.split(":")[0] for t in clone_grid[y + 1][x]]
+                                        if does_tile(adjacent_down):
                                             variant += 8
-                                    if tileBorders:
+                                    if tile_borders:
                                         if y == height - 1:
                                             variant += 8
                                     
@@ -328,15 +326,15 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             "DM @RocketRace#0798 about it! \nI can help you if you send me:\n * **The sprites you want added**, " + \
             "preferably in an archived file (without any color, and in 24x24)\n * **The color of the sprites**, " + \
             "an (x,y) coordinate on the default Baba color palette.\nFor examples of this, check the `values.lua` " + \
-            "file in your Baba Is You local files!", color=self.bot.embedColor)
+            "file in your Baba Is You local files!", color=self.bot.embed_color)
         await self.bot.send(ctx, embed=msg)
 
-    async def renderTiles(self, ctx, *, objects, rule):
+    async def render_tiles(self, ctx, *, objects, rule):
         '''
         Performs the bulk work for both `tile` and `rule` commands.
         '''
         async with ctx.typing():
-            renderLimit = 100
+            render_limit = 100
             tiles = objects.lower().strip()
             if tiles == "":
                 param = Parameter("objects", Parameter.KEYWORD_ONLY)
@@ -347,13 +345,13 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             tiles = tiles.replace("|", "")
 
             # check flags
-            bgFlags = re.findall(r"--background|-b", tiles)
+            bg_flags = re.findall(r"--background|-b", tiles)
             background = None
-            if bgFlags: background = (0,4)
+            if bg_flags: background = (0,4)
             pattern = r"--palette=\w+|-p=\w+"
-            paletteFlags = re.findall(pattern, tiles)
+            palette_flags = re.findall(pattern, tiles)
             palette = "default"
-            for pal in paletteFlags:
+            for pal in palette_flags:
                 palette = pal[pal.index("=") + 1:]
             if palette + ".png" not in listdir("palettes"):
                 return await self.bot.error(ctx, f"Could not find a palette with name \"{pal}\".")
@@ -367,22 +365,22 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 return await self.bot.error(ctx, "Input cannot be blank.")
 
             # Split input into lines
-            wordRows = tiles.splitlines()
+            word_rows = tiles.splitlines()
             
             # Split each row into words
-            wordGrid = [row.split() for row in wordRows]
+            word_grid = [row.split() for row in word_rows]
 
             try:
                 if rule:
-                    wordGrid = splitCommas(wordGrid, "tile_")
+                    word_grid = split_commas(word_grid, "tile_")
                 else:
-                    wordGrid = splitCommas(wordGrid, "text_")
+                    word_grid = split_commas(word_grid, "text_")
             except SplittingException as e:
-                sourceOfException = e.args[0]
-                return await self.bot.error(ctx, f"I couldn't parse the following input: \"{sourceOfException}\".")
+                source_of_exception = e.args[0]
+                return await self.bot.error(ctx, f"I couldn't parse the following input: \"{source_of_exception}\".")
 
             # Splits "&"-joined words into stacks
-            for row in wordGrid:
+            for row in word_grid:
                 for i,stack in enumerate(row):
                     if "&" in stack:
                         row[i] = stack.split("&")
@@ -395,33 +393,33 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
             # Prepends "text_" to words if invoked under the rule command
             if rule:
-                wordGrid = [[[word if word == "-" else word[5:] if word.startswith("tile_") else "text_" + word for word in stack] for stack in row] for row in wordGrid]
+                word_grid = [[[word if word == "-" else word[5:] if word.startswith("tile_") else "text_" + word for word in stack] for stack in row] for row in word_grid]
 
             # Get the dimensions of the grid
-            lengths = [len(row) for row in wordGrid]
+            lengths = [len(row) for row in word_grid]
             width = max(lengths)
-            height = len(wordRows)
+            height = len(word_rows)
 
             # Don't proceed if the request is too large.
             # (It shouldn't be that long to begin with because of Discord's 2000 character limit)
             area = width * height
-            if area > renderLimit and ctx.author.id != self.bot.owner_id:
-                return await self.bot.error(ctx, f"Too many tiles ({area}).", f"You may only render up to {renderLimit} tiles at once, including empty tiles.")
+            if area > render_limit and ctx.author.id != self.bot.owner_id:
+                return await self.bot.error(ctx, f"Too many tiles ({area}).", f"You may only render up to {render_limit} tiles at once, including empty tiles.")
 
             # Now that we have width and height, we can accurately render the "hide" palette entries :^)
             if palette == "hide":
-                wordGrid = [[["-" for tile in stack] for stack in row] for row in wordGrid]
+                word_grid = [[["-" for tile in stack] for stack in row] for row in word_grid]
 
             # Pad the word rows from the end to fit the dimensions
-            [row.extend([["-"]] * (width - len(row))) for row in wordGrid]
+            [row.extend([["-"]] * (width - len(row))) for row in word_grid]
             # Finds the associated image sprite for each word in the input
             # Throws an exception which sends an error message if a word is not found.
             
             # Appends ":0" to sprites without specified variants, and sets (& overrides) the suffix for tiled objects
-            wordGrid = self.handleVariants(wordGrid)
+            word_grid = self.handle_variants(word_grid)
 
             # Each row
-            for row in wordGrid:
+            for row in word_grid:
                 # Each stack
                 for stack in row:
                     # Each word
@@ -488,10 +486,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             # Merges the images found
             buffer = BytesIO()
             timestamp = datetime.now()
-            formatString = "render_%Y-%m-%d_%H.%M.%S"
-            formatted = timestamp.strftime(formatString)
+            format_string = "render_%Y-%m-%d_%H.%M.%S"
+            formatted = timestamp.strftime(format_string)
             filename = f"{formatted}.gif"
-            task = partial(self.magickImages, wordGrid, width, height, palette=palette, background=background, out=buffer)
+            task = partial(self.magick_images, word_grid, width, height, palette=palette, background=background, out=buffer)
             await self.bot.loop.run_in_executor(None, task)
         # Sends the image through discord
         await ctx.send(content=ctx.author.mention, file=discord.File(buffer, filename=filename, spoiler=spoiler))
@@ -521,7 +519,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         `rule -P=test tile_baba on baba is word`
         `rule baba eat baba - tile_baba tile_baba:l`
         '''
-        await self.renderTiles(ctx, objects=objects, rule=True)
+        await self.render_tiles(ctx, objects=objects, rule=True)
 
     # Generates an animated gif of the tiles provided, using the default palette
     @commands.command()
@@ -549,7 +547,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         `tile baba&flag ||cake||`
         `tile -P=mountain -B baba bird:l`
         '''
-        await self.renderTiles(ctx, objects=objects, rule=False)
+        await self.render_tiles(ctx, objects=objects, rule=False)
 
     @commands.cooldown(5, 10, commands.BucketType.channel)
     @commands.command(name="level")
@@ -567,20 +565,20 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
         levels = {}
         # Lower case, make the query all nice
-        fineQuery = query.lower().strip()
+        fine_query = query.lower().strip()
         # Is it the level ID?
-        levelData = self.bot.get_cog("Reader").levelData
-        if levelData.get(fineQuery) is not None:
-            levels[fineQuery] = levelData[fineQuery]
+        level_data = self.bot.get_cog("Reader").level_data
+        if level_data.get(fine_query) is not None:
+            levels[fine_query] = level_data[fine_query]
 
         # Does the query match a level tree?
         if len(levels) == 0:
             # Separates the map and the number / letter / extra number from the query.
-            tree = [string.strip() for string in fineQuery.split("-")]
+            tree = [string.strip() for string in fine_query.split("-")]
             # There should only be two parts to the query.
             if len(tree) == 2:
                 # The two parts
-                mapID = tree[0]
+                map_id = tree[0]
                 identifier = tree[1]
                 # What style of level identifier are we given?
                 # Style: 0 -> "extra" + number
@@ -601,9 +599,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     # 1 <--> b
                     # ...
                     # 25 <--> z
-                    rawNumber = tryIndex(ascii_lowercase, identifier)
+                    raw_number = try_index(ascii_lowercase, identifier)
                     # If the identifier is a lowercase letter, set "number"
-                    if rawNumber != -1: number = str(rawNumber)
+                    if raw_number != -1: number = str(raw_number)
                 elif identifier.startswith("extra") and identifier[5:].strip().isnumeric():
                     # Extra numbers:
                     # Starting with "extra", ending with numbers
@@ -615,33 +613,33 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 if style is not None and number is not None:
                     # Custom map ID?
                     if style == "-1":
-                        # Check for the mapID & custom identifier combination
-                        for filename,data in levelData.items():
-                            if data["mapID"] == number and data["parent"] == mapID:
+                        # Check for the map ID & custom identifier combination
+                        for filename,data in level_data.items():
+                            if data["mapID"] == number and data["parent"] == map_id:
                                 levels[filename] = data
                     else:
-                        # Check for the mapID & identifier combination
-                        for filename,data in levelData.items():
-                            if data["style"] == style and data["number"] == number and data["parent"] == mapID:
+                        # Check for the map ID & identifier combination
+                        for filename,data in level_data.items():
+                            if data["style"] == style and data["number"] == number and data["parent"] == map_id:
                                 levels[filename] = data
 
         # Is the query a real level name?
         if len(levels) == 0:
-            for filename,data in levelData.items():
+            for filename,data in level_data.items():
                 # Matches an existing level name
-                if data["name"] == fineQuery:
+                if data["name"] == fine_query:
                     # Guaranteed
                     levels[filename] = data
 
-        # MapID?
+        # Map ID?
         if len(levels) == 0:
-            for filename,data in levelData.items():
+            for filename,data in level_data.items():
                 if data["mapID"] == query and data["parent"] is None:
                     levels[filename] = data
 
         # If not found: error message
         if len(levels) == 0:
-            return await self.bot.error(ctx, f'Could not find a level matching the query "{fineQuery}".')
+            return await self.bot.error(ctx, f'Could not find a level matching the query "{fine_query}".')
 
         # If found:
         else:
@@ -650,25 +648,25 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
             # The first match
             data = list(levels.items())
-            levelID = data[0][0]
+            level_id = data[0][0]
             level = data[0][1]
 
             # The embedded file
-            gif = discord.File(f"renders/{level['source']}/{levelID}.gif", spoiler=True)
+            gif = discord.File(f"renders/{level['source']}/{level_id}.gif", spoiler=True)
             
             # Level name
             name = level["name"]
 
             # Level parent 
             parent = level.get("parent")
-            mapID = level.get("mapID")
+            map_id = level.get("mapID")
             tree = ""
             # Parse the display name
             if parent is not None:
                 # With a custom mapID
-                if mapID is not None:
+                if map_id is not None:
                     # Format
-                    tree = parent + "-" + mapID + ": "
+                    tree = parent + "-" + map_id + ": "
                 else:
                     # Parse the level style
                     style = level["style"]
@@ -684,8 +682,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     # Extra dots
                         identifier = "extra " + str(int(number) + 1)
                     else: 
-                    # In case the custom mapID wasn't already set
-                        identifier = mapID
+                    # In case the custom map ID wasn't already set
+                        identifier = map_id
                     # format
                     tree = parent + "-" + identifier + ": "
             
@@ -695,10 +693,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 subtitle = "\nSubtitle: `" + level["subtitle"] + "`"
 
             # Any additional matches
-            matchesText = "" if matches == 1 else f"\nFound {matches} matches: `{', '.join([l for l in levels])}`, showing the first." 
+            matches_text = "" if matches == 1 else f"\nFound {matches} matches: `{', '.join([l for l in levels])}`, showing the first." 
 
             # Formatted output
-            formatted = f"{ctx.author.mention}{matchesText}\nName: `{tree}{name}`\nID: `{levelID}`{subtitle}"
+            formatted = f"{ctx.author.mention}{matches_text}\nName: `{tree}{name}`\nID: `{level_id}`{subtitle}"
 
             # Only the author should be mentioned
             mentions = discord.AllowedMentions(everyone=False, users=[ctx.author], roles=False)
