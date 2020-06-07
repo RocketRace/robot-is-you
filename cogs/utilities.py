@@ -76,7 +76,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         matches = []
 
        # Searches through a list of the names of each tile
-        data = self.bot.get_cog("Admin").tile_dta
+        data = self.bot.get_cog("Admin").tile_data
         for name,tile in data.items():
             if has_flags:
                 # Checks if the object matches all the flag parameters
@@ -193,7 +193,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         clean_tile = tile.strip().lower()
 
         # Does the tile exist?
-        data = self.bot.get_cog("Admin").tile_dta.get(clean_tile)
+        data = self.bot.get_cog("Admin").tile_data.get(clean_tile)
         if data is None:
             return await self.bot.error(ctx, f"Could not find a tile with name '{clean_tile}'.")
         
