@@ -102,67 +102,60 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 frames.append(render_frame)
             return self.save_frames(frames, out)
 
-        # For each animation frame
-        paths = [
-            [
-                [
-                    [
-                        None if word == "-" 
-                        # Random animation offset for each position on the grid
-                        else f"color/{palette}/{word.split(':')[0]}-{word.split(':')[1]}-{(hash(x + y + z) + fr) % 3}-.png" 
-                        for z, word in enumerate(stack)
-                    ] for x, stack in enumerate(row)
-                ] for y, row in enumerate(word_grid)
-            ] for fr in range(3)
-        ]
-        # Minimize IO by only opening each image once
-        unique_paths = set(flatten(paths.copy()))
-        unique_paths.discard(None)
-        unique_images = {path:Image.open(path) for path in unique_paths}
-        
-        imgs = [
-            [
-                [
-                    [
-                        None if fp is None else unique_images[fp] for fp in stack
-                    ] for stack in row
-                ] for row in fr
-            ] for fr in paths
-        ]
-        # Only the first frame sizes matter
-        sizes = [
-            [
-                [
-                    None if image is None else (image.width, image.height) for image in stack
-                ] for stack in row
-            ] for row in imgs[0]
-        ]
+        palette_img = Image.open(f"palettes/{palette}.png")
+
         # Calculates padding based on image sizes
         left_pad = 0
         right_pad = 0
         up_pad = 0
         down_pad = 0
-        for y,row in enumerate(sizes):
-            for x,stack in enumerate(row):
-                for size in stack:
-                    if size is not None:
+
+        # Get sprites to be pasted
+        imgs = []
+        for frame in range(3):
+            temp_frame = []
+            for y, row in enumerate(word_grid):
+                temp_row = []
+                for x, stack in enumerate(row):
+                    temp_stack = []
+                    for z, obj in enumerate(stack):
+                        # Get the sprite used
+                        animation_offset = (hash(x + y + z) + frame) % 3 + 1
+                        if obj[2] is None:
+                            path = f"color/{palette}/{obj[0]}-{obj[1]}-{animation_offset}.png"
+                            img = Image.open(path)
+                        else:
+                            path = f"sprites/{obj[3]}/{obj[0]}_{obj[1]}_{animation_offset}.png"
+                            img = Image.open(path).convert("RGBA")
+                            c_r, c_g, c_b = palette_img.getpixel(obj[2])
+                            r, g, b, a = img.split()
+                            r = Image.eval(r, lambda px: px * c_r / 256)
+                            g = Image.eval(g, lambda px: px * c_g / 256)
+                            b = Image.eval(b, lambda px: px * c_b / 256)
+                            img = Image.merge("RGBA", [r, g, b, a])
+                        temp_stack.append(img)
+                        # Check image sizes and calculate padding
                         if y == 0:
-                            diff = size[1] - 24
+                            diff = img.size[1] - 24
                             if diff > up_pad:
                                 up_pad = diff
-                        if y == len(sizes) - 1:
-                            diff = size[1] - 24
+                        if y == len(word_grid) - 1:
+                            diff = img.size[1] - 24
                             if diff > down_pad:
                                 down_pad = diff
                         if x == 0:
-                            diff = size[0] - 24
+                            diff = img.size[0] - 24
                             if diff > left_pad:
                                 left_pad = diff
                         if x == len(row) - 1:
-                            diff = size[0] - 24
+                            diff = img.size[0] - 24
                             if diff > right_pad:
                                 right_pad = diff
-        
+                    temp_row.append(temp_stack)
+                temp_frame.append(temp_row)
+            imgs.append(temp_frame)
+
+         
         for i,frame in enumerate(imgs):
             # Get new image dimensions, with appropriate padding
             total_width = len(frame[0]) * 24 + left_pad + right_pad 
@@ -214,109 +207,197 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     def handle_variants(self, grid, *, tile_borders=False):
         '''
         Appends variants to tiles in a grid.
-        Example:
-        [[["baba", "keke:left"], ["flag:0"]], [["wall:0"], ["wall"]]]
-        -> [[["baba:0", "keke:16"], ["flag:0"]], [["wall:1"], ["wall:4"]]]
-        Explanation:
-        * No variant -> :0
-        * Shortcut variant -> The associated variant
-        * Given variant -> untouched
-        * Anything for a tiling object (given or not) -> variants generated according to adjacent tiles. 
-        If tile_borders is given, this also depends on whether the tile is adjacent to the edge of the image.
+
+        Output tiles are (name string, variant string, color tuple, source string) 4-tuples
+
+        * No variant -> "0" sprite variant, default color
+        * Shortcut sprite variant -> The associated sprite variant
+        * Given sprite variant -> Same sprite variant
+        * Sprite variants for a tiling object -> Sprite variant auto-generated according to adjacent tiles
+        * Shortcut color variant -> Associated color index 
+        * (Source based on tile)
+        If tile_borders is given, sprite variants depend on whether the tile is adjacent to the edge of the image.
         '''
 
         width = len(grid[0])
         height = len(grid)
+        
+        colors = {
+            "red":(2, 2),
+            "orange":(2, 3),
+            "yellow":(2, 4),
+            "green":(5, 3),
+            "blue":(1, 3),
+            "purple":(3, 1),
+            "pink":(4, 1),
+            "grey":(0, 1),
+            "black":(0, 4),
+            "white":(0, 3),
+            "brown":(6, 1),
+        }
 
         clone_grid = [[[word for word in stack] for stack in row] for row in grid]
         for y, row in enumerate(clone_grid):
             for x, stack in enumerate(row):
                 for z, word in enumerate(stack):
-                    if word != "-":
+                    if word in ("-", "empty"):
+                        grid[y][x][z] = (None, None, None, None)
+                    else:
                         tile = word
                         variant = "0"
                         if ":" in word:
                             segments = word.split(":")
                             tile = segments[0]
-                            variant = segments[1]
-
-                        # Shorthands for sprite variants
-                        if variant in ["r", "right"]:
-                            variant = "0"
-                        elif variant in ["u", "up"]:
-                            variant = "8"
-                        elif variant in ["l", "left"]:
-                            variant = "16"
-                        elif variant in ["d", "down"]:
-                            variant = "24"
-                        # Sleep variants
-                        elif variant in ["s", "rs", "sleep"]: 
-                            variant = "31"
-                        elif variant in ["us"]:
-                            variant = "7"
-                        elif variant in ["ls"]:
-                            variant = "15"
-                        elif variant in ["ds"]:
-                            variant = "23"
+                            variants = segments[1:]
+                        else:
+                            variants = []
                         
-                        # Is this a tiling object (e.g. wall, water)?
                         tile_data = self.bot.get_cog("Admin").tile_data.get(tile)
-                        if tile_data is not None:
-                            if tile_data.get("tiling") is not None:
-                                if tile_data["tiling"] == "1":
 
-                                    #  The final variation stace of the tile
-                                    variant = 0
+                        if tile_data is None:
+                            raise FileNotFoundError(word)
 
-                                    # Tiles that join together
-                                    def does_tile(stack):
-                                        for t in stack:
-                                            if t == tile or t.startswith("level"):
-                                                return True
-                                        return False
+                        source = tile_data.get("source") or "vanilla"
 
-                                    # Is there the same tile adjacent right?
-                                    if x != width - 1:
-                                        # The tiles right of this (with variants stripped)
-                                        adjacent_right = [t.split(":")[0] for t in clone_grid[y][x + 1]]
-                                        if does_tile(adjacent_right):
-                                            variant += 1
-                                    if tile_borders:
-                                        if x == width - 1:
-                                            variant += 1
+                        tiling = tile_data.get("tiling")
+                        direction = 0
+                        animation_frame = 0
+                        final_variant = 0
+                        str_color = tile_data.get("color")
+                        color = tuple(map(int, str_color))
 
-                                    # Is there the same tile adjacent above?
-                                    if y != 0:
-                                        adjacent_up = [t.split(":")[0] for t in clone_grid[y - 1][x]]
-                                        if does_tile(adjacent_up):
-                                            variant += 2
-                                    if tile_borders:
-                                        if y == 0:
-                                            variant += 2
+                        # Is this a tiling object (e.g. wall, water)?
+                        if tiling == "1":
+                            #  The final variation of the tile
+                            out = 0
 
-                                    # Is there the same tile adjacent left?
-                                    if x != 0:
-                                        adjacent_left = [t.split(":")[0] for t in clone_grid[y][x - 1]]
-                                        if does_tile(adjacent_left):
-                                            variant += 4
-                                    if tile_borders:
-                                        if x == 0:
-                                            variant += 4
+                            # Tiles that join together
+                            def does_tile(stack):
+                                for t in stack:
+                                    if t == tile or t.startswith("level"):
+                                        return True
+                                return False
 
-                                    # Is there the same tile adjacent below?
-                                    if y != height - 1:
-                                        adjacent_down = [t.split(":")[0] for t in clone_grid[y + 1][x]]
-                                        if does_tile(adjacent_down):
-                                            variant += 8
-                                    if tile_borders:
-                                        if y == height - 1:
-                                            variant += 8
-                                    
-                                    # Stringify
-                                    variant = str(variant)
+                            # Is there the same tile adjacent right?
+                            if x != width - 1:
+                                # The tiles right of this (with variants stripped)
+                                adjacent_right = [t.split(":")[0] for t in clone_grid[y][x + 1]]
+                                if does_tile(adjacent_right):
+                                    out += 1
+                            if tile_borders:
+                                if x == width - 1:
+                                    out += 1
+
+                            # Is there the same tile adjacent above?
+                            if y != 0:
+                                adjacent_up = [t.split(":")[0] for t in clone_grid[y - 1][x]]
+                                if does_tile(adjacent_up):
+                                    out += 2
+                            if tile_borders:
+                                if y == 0:
+                                    out += 2
+
+                            # Is there the same tile adjacent left?
+                            if x != 0:
+                                adjacent_left = [t.split(":")[0] for t in clone_grid[y][x - 1]]
+                                if does_tile(adjacent_left):
+                                    out += 4
+                            if tile_borders:
+                                if x == 0:
+                                    out += 4
+
+                            # Is there the same tile adjacent below?
+                            if y != height - 1:
+                                adjacent_down = [t.split(":")[0] for t in clone_grid[y + 1][x]]
+                                if does_tile(adjacent_down):
+                                    out += 8
+                            if tile_borders:
+                                if y == height - 1:
+                                    out += 8
+                            
+                            # Stringify
+                            final_variant = str(out)
+
+                        for variant in variants:
+                            if colors.get(variant) is not None:
+                                color = colors.get(variant)
+                            # TODO: clean this up
+                            elif tiling == "-1":
+                                if variant in ("r", "right"):
+                                    direction = 0
+                                elif variant == "0":
+                                    final_variant = variant
+                                else: raise FileNotFoundError(word)
+                            elif tiling == "0":
+                                if variant in ("r", "right"):
+                                    direction = 0
+                                elif variant in ("u", "up"):
+                                    direction = 1
+                                elif variant in ("l", "left"):
+                                    direction = 2
+                                elif variant in ("d", "down"):
+                                    direction = 3
+                                elif variant in (
+                                    "0", 
+                                    "8", 
+                                    "16",
+                                    "24",
+                                ):
+                                    final_variant = variant
+                                else: raise FileNotFoundError(word)
+                            elif tiling == "2":
+                                if variant in ("r", "right"):
+                                    direction = 0
+                                elif variant in ("u", "up"):
+                                    direction = 1
+                                elif variant in ("l", "left"):
+                                    direction = 2
+                                elif variant in ("d", "down"):
+                                    direction = 3
+                                elif variant in ("s", "sleep"): 
+                                    animation_frame = -1
+                                elif variant in (
+                                    "31", "0", "1", "2", "3", 
+                                    "7", "8", "9", "10", "11",
+                                    "15", "16", "17", "18", "19",
+                                    "23", "24", "25", "26", "27",
+                                ): 
+                                    final_variant = variant
+                                else: raise FileNotFoundError(word)
+                            elif tiling == "3":
+                                if variant in ("r", "right"):
+                                    direction = 0
+                                elif variant in ("u", "up"):
+                                    direction = 1
+                                elif variant in ("l", "left"):
+                                    direction = 2
+                                elif variant in ("d", "down"):
+                                    direction = 3
+                                elif variant in ("s", "sleep"): 
+                                    animation_frame = -1
+                                elif variant in (
+                                    "0", "1", "2", "3", 
+                                    "8", "9", "10", "11",
+                                    "16", "17", "18", "19",
+                                    "24", "25", "26", "27",
+                                ): 
+                                    final_variant = variant
+                                else: raise FileNotFoundError(word)
+                            elif tiling == "4":
+                                if variant in ("r", "right"):
+                                    direction = 0
+                                elif variant in (
+                                    "0", "1", "2", "3", 
+                                ):
+                                    final_variant = variant
+                                else: raise FileNotFoundError(word)
+
+                        # Allow for both sleep & 
+                        if tiling != "1":
+                            final_variant = final_variant or (8 * direction + animation_frame) % 32
 
                         # Finally, append the variant to the grid
-                        grid[y][x][z] = tile + ":" + variant
+                        grid[y][x][z] = (tile, final_variant, color, source)
         return grid
 
     @commands.command(hidden=True)
@@ -341,24 +422,24 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 raise commands.MissingRequiredArgument(param)
 
             # Determines if this should be a spoiler
-            spoiler = tiles.replace("|", "") != tiles
+            spoiler = "|" in tiles
             tiles = tiles.replace("|", "")
 
-            # check flags
-            bg_flags = re.findall(r"--background|-b", tiles)
-            background = None
-            if bg_flags: background = (0,4)
-            pattern = r"--palette=\w+|-p=\w+"
-            palette_flags = re.findall(pattern, tiles)
-            palette = "default"
-            for pal in palette_flags:
-                palette = pal[pal.index("=") + 1:]
-            if palette + ".png" not in listdir("palettes"):
-                return await self.bot.error(ctx, f"Could not find a palette with name \"{pal}\".")
+            # # check flags
+            # bg_flags = re.findall(r"--background|-b", tiles)
+            # background = None
+            # if bg_flags: background = (0,4)
+            # pattern = r"--palette=\w+|-p=\w+"
+            # palette_flags = re.findall(pattern, tiles)
+            # palette = "default"
+            # for pal in palette_flags:
+            #     palette = pal[pal.index("=") + 1:]
+            # if palette + ".png" not in listdir("palettes"):
+            #     return await self.bot.error(ctx, f"Could not find a palette with name \"{pal}\".")
 
-            tiles = "".join(re.split(pattern, tiles))
-            tiles = tiles.replace("--background", "").replace("-b", "")
-            tiles = " ".join(re.split(" +", tiles))
+            # tiles = "".join(re.split(pattern, tiles))
+            # tiles = tiles.replace("--background", "").replace("-b", "")
+            # tiles = " ".join(re.split(" +", tiles))
 
             # Check for empty input
             if not tiles:
@@ -370,6 +451,34 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             # Split each row into words
             word_grid = [row.split() for row in word_rows]
 
+            # Check palette & bg flags
+            potential_flags = []
+            potential_count = 0
+            try:
+                for y, row in enumerate(word_grid):
+                    for x, word in enumerate(row):
+                        if potential_count == 2:
+                            raise Exception
+                        potential_flags.append((word, x, y))
+                        potential_count += 1
+            except: pass
+            background = None
+            palette = "default"
+            to_delete = []
+            for flag, x, y in potential_flags:
+                if re.fullmatch(r"--background|-b", flag):
+                    background = (0, 4)
+                    to_delete.append((x, y))
+                    continue
+                flag_match = re.fullmatch(r"(--palette=|-p=|palette:)(\w+)", flag)
+                if flag_match:
+                    palette = flag_match.group(2)
+                    if palette + ".png" not in listdir("palettes"):
+                        return await self.bot.error(ctx, f"Could not find a palette with name \"{palette}\".")
+                    to_delete.append((x, y))
+            for x, y in reversed(to_delete):
+                del word_grid[y][x]
+            
             try:
                 if rule:
                     word_grid = split_commas(word_grid, "tile_")
@@ -405,7 +514,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             area = width * height
             if area > render_limit and ctx.author.id != self.bot.owner_id:
                 return await self.bot.error(ctx, f"Too many tiles ({area}).", f"You may only render up to {render_limit} tiles at once, including empty tiles.")
-
+            elif area == 0:
+                return await self.bot.error(ctx, f"Can't render nothing.")
             # Now that we have width and height, we can accurately render the "hide" palette entries :^)
             if palette == "hide":
                 word_grid = [[["-" for tile in stack] for stack in row] for row in word_grid]
@@ -415,73 +525,30 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             # Finds the associated image sprite for each word in the input
             # Throws an exception which sends an error message if a word is not found.
             
-            # Appends ":0" to sprites without specified variants, and sets (& overrides) the suffix for tiled objects
-            word_grid = self.handle_variants(word_grid)
-
-            # Each row
-            for row in word_grid:
-                # Each stack
-                for stack in row:
-                    # Each word
-                    for i, word in enumerate(stack): 
-                        if word != "-":
-                            tile = word
-                            variant = "0"
-                            if ":" in tile:
-                                segments = word.split(":")
-                                variant = segments[1]
-                                tile = segments[0]
-                            # Checks for the word by attempting to open
-                            if not isfile(f"color/{palette}/{tile}-{variant}-0-.png"):
-                                if variant == "0":
-                                    x = tile
-                                else:
-                                    x = word
-                                # Is the variant faulty?
-                                if isfile(f"color/{palette}/{tile}-{0}-0-.png"):
-                                    if re.fullmatch(
-                                        # voodoo magic regex to match valid variants
-                                        r"r(ight|s)?|l(eft|s)?|d(own|s)?|u(p|s)?|s(leep)?|31|2[2-7]|1([0-1]|[5-9])|[7-9]|[0-3]",
-                                        variant):
-                                        stack[i] = "default:0"
-                                        continue
-                                    # not a real variant at all
-                                    else:
-                                        return await self.bot.error(ctx, f"⚠️ The sprite variant \"{variant}\" does not exist.")
-                                # Does a text counterpart exist?
-                                suggestion = "text_" + tile
-                                if isfile(f"color/{palette}/{suggestion}-{variant}-0-.png"):
-                                    return await self.bot.error(ctx, 
-                                    f"Could not find a tile for \"{x}\".", 
-                                    f"Did you mean \"{suggestion}\", or mean to use the `{ctx.prefix}rule` command?"
-                                )
-                                # Did the user accidentally prepend "text_" via hand or using +rule?
-                                suggestion = tile[5:]
-                                if isfile(f"color/{palette}/{suggestion}-{variant}-0-.png"):
-                                    # Under the `rule` command
-                                    if rule:
-                                        return await self.bot.error(ctx, 
-                                        f"Could not find a tile for \"{suggestion}\" under \"rule\".", 
-                                        f"Did you mean \"tile_{suggestion}\", or mean to use the `{ctx.prefix}tile` command?"
-                                    )
-                                    # Under the `tile` command
-                                    else:
-                                        return await self.bot.error(ctx, 
-                                        f"Could not find a tile for \"{x}\".", 
-                                        f"Did you mean \"{suggestion}\"?"
-                                    )
-                                # tried to use old palette / background syntax?
-                                if tile == "palette":
-                                    return await self.bot.error(ctx, 
-                                        f"Could not find a tile for \"{x}\".", 
-                                        f"Did you mean to use the `--palette={variant}` or `-P={variant}` flag?"
-                                    )
-                                if tile == "background":
-                                    return await self.bot.error(ctx, 
-                                        f"Could not find a tile for \"{x}\".", 
-                                        f"Did you mean to use the `--baclground` or `-B` flag?"
-                                    )
-                                return await self.bot.error(ctx, f"Could not find a tile for \"{x}\".")
+            # Handles variants based on `:` suffixes
+            try:
+                word_grid = self.handle_variants(word_grid)
+            except FileNotFoundError as e:
+                tile_data = self.bot.get_cog("Admin").tile_data
+                tile = e.args[0]
+                variants = None
+                if ":" in tile:
+                    variants = ":" + ":".join(tile.split(":")[1:])
+                    tile = tile.split(":")[0]
+                # Error cases
+                if tile_data.get(tile) is not None:
+                    if variants is None:
+                        return await self.bot.error(ctx, f"The tile `{tile}` exists but a sprite could not be found for it.")
+                    return await self.bot.error(ctx, f"The tile `{tile}` exists but the sprite variant(s) `{variants}` are not valid for it.")
+                if tile_data.get("text_" + tile) is not None:
+                    if not rule:
+                        return await self.bot.error(ctx, f"The tile `{tile}` does not exist, but the tile `text_{tile}` does.", "You can also use the `rule` command instead of the `tile command.")
+                    return await self.bot.error(ctx, f"The tile `{tile}` does not exist, but the tile `text_{tile}` does.")
+                if tile.startswith("text_") and tile_data.get(tile[5:]) is not None:
+                    if rule:
+                        return await self.bot.error(ctx, f"The tile `{tile}` does not exist, but the tile `{tile[5:]}` does.", "Did you mean to type `tile_{tile}`.")
+                    return await self.bot.error(ctx, f"The tile `{tile}` does not exist, but the tile `{tile[5:]}` does.")
+                return await self.bot.error(ctx, f"The tile `{tile}` does not exist.")
 
             # Merges the images found
             buffer = BytesIO()
