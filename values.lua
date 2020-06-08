@@ -91,14 +91,14 @@ binds =
 	a7 = {33, 0, 28},
 	a8 = {34, 0, 29},
 	["h0.0"] = {35, 2, 13},
-	["h0.1"] = {36, 2, 13},
-	["h0.2"] = {37, 2, 13},
+	["h0.1"] = {36, 2, 17},
+	["h0.2"] = {37, 2, 15},
 	["h0.3"] = {38, 2, 13},
-	["h0.4"] = {39, 2, 13},
+	["h0.4"] = {39, 2, 19},
 	["h0.5"] = {40, 2, 13},
 	["h0.6"] = {41, 2, 13},
 	["h0.7"] = {42, 2, 13},
-	["h0.8"] = {43, 2, 13},
+	["h0.8"] = {43, 2, 18},
 	["h0.9"] = {44, 2, 13},
 	["b-1"] = {45, 2, 14},
 	},
@@ -121,10 +121,10 @@ binds =
 	lefty = {15, 2, 11},
 	rightx = {16, 2, 12},
 	righty = {17, 2, 12},
-	dpup = {18, 2, 13},
-	dpright = {19, 2, 13},
-	dpdown = {20, 2, 13},
-	dpleft = {21, 2, 13},
+	dpup = {18, 2, 17},
+	dpright = {19, 2, 15},
+	dpdown = {20, 2, 19},
+	dpleft = {21, 2, 18},
 	},
 	
 	keyboard =
@@ -2526,6 +2526,22 @@ particletypes =
 				
 				unit.values[XVEL] = math.random(-30,-10) * 0.1
 				unit.values[YVEL] = math.random(0,10) * 0.05
+			end,
+	},
+	rain =
+	{
+		amount = 50,
+		animation = 11,
+		colour = {3, 2},
+		extra = 
+			function(unitid)
+				local unit = mmf.newObject(unitid)
+				
+				local size = math.random(3,5)
+				unit.scaleX = size * 0.2
+				unit.scaleY = size * 0.2
+				
+				unit.values[YVEL] = 80 + math.random(0,10) * 0.1
 			end,
 	},
 }
