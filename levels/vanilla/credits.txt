@@ -60,6 +60,9 @@ $4,2Darling $4,0-$4,2 DogeisCut $4,0-$4,2 eneb
 $4,2ForeDaMole $4,0-$4,2 FungusDude42
 $4,2Jmickle $4,0-$4,2 kadykunde $4,0-$4,2 Portponky
 $4,2twerps3 $4,0-$4,2 unsinnlos $4,0-$4,2 ZantGuy
+
+#credits_words
+$4,2lilybeevee $4,0-$0,3 Feeling
  
 #credits_thanks
 $4,2Nordic Game Jam
