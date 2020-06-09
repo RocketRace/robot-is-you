@@ -24,7 +24,7 @@ function formatobjlist()
 	end
 end
 
-editor_objlist_order = {"algae","text_algae","baba","text_baba","bat","text_bat","belt","text_belt","bird","text_bird","bog","text_bog","bolt","text_bolt","box","text_box","brick","text_brick","bubble","text_bubble","bug","text_bug","cake","text_cake","cash","text_cash","circle","text_circle","cliff","text_cliff","cloud","text_cloud","cog","text_cog","crab","text_crab","crystal","text_crystal","cup","text_cup","door","text_door","dot","text_dot","dust","text_dust","eye","text_eye","fence","text_fence","fire","text_fire","flag","text_flag","flower","text_flower","foliage","text_foliage","foot","text_foot","fruit","text_fruit","fungi","text_fungi","fungus","text_fungus","gem","text_gem","ghost","text_ghost","grass","text_grass","hand","text_hand","hedge","text_hedge","husk","text_husk","ice","text_ice","jelly","text_jelly","keke","text_keke","key","text_key","ladder","text_ladder","lava","text_lava","leaf","text_leaf","line","text_line","love","text_love","me","text_me","moon","text_moon","orb","text_orb","pillar","text_pillar","pipe","text_pipe","reed","text_reed","robot","text_robot","rocket","text_rocket","rock","text_rock","rose","text_rose","rubble","text_rubble","shirt","text_shirt","sign","text_sign","skull","text_skull","spike","text_spike","square","text_square","star","text_star","statue","text_statue","stump","text_stump","sun","text_sun","tile","text_tile","tree","text_tree","triangle","text_triangle","ufo","text_ufo","wall","text_wall","water","text_water","worm","text_worm","text_right","text_up","text_left","text_down","text_all","text_and","text_best","text_red","text_blue","text_green","text_yellow","text_purple","text_pink","text_grey","text_black","text_white","text_brown","text_orange","text_bonus","text_broken","text_chill","text_defeat","text_eat","text_empty","text_end","text_done","text_back","text_fall","text_fallright","text_fallup","text_fallleft","text_nudgedown","text_nudgeright","text_nudgeup","text_nudgeleft","text_turn","text_deturn","text_fear","text_float","text_follow","text_group","text_has","text_hide","text_hot","text_idle","text_is","text_level","text_lonely","text_often","text_seldom","text_make","text_melt","text_mimic","text_more","text_move","text_not","text_on","text_near","text_facing","text_without","text_above","text_below","text_feeling","text_open","text_play","text_powered","text_power","text_pull","text_push","text_sad","text_safe","text_shift","text_shut","text_sink","text_sleep","text_still","text_stop","text_swap","text_tele","text_text","text_weak","text_win","text_wonder","text_word","text_you2","text_you","husks","text_husks","trees","text_trees","cursor","text_cursor","text_select","text_a","text_b","text_c","text_d","text_e","text_f","text_g","text_h","text_i","text_j","text_k","text_l","text_m","text_n","text_o","text_p","text_q","text_r","text_s","text_t","text_u","text_v","text_w","text_x","text_y","text_z",}
+editor_objlist_order = {"algae","text_algae","baba","text_baba","bat","text_bat","belt","text_belt","bird","text_bird","bog","text_bog","bolt","text_bolt","box","text_box","brick","text_brick","bubble","text_bubble","bug","text_bug","cake","text_cake","cash","text_cash","circle","text_circle","cliff","text_cliff","cloud","text_cloud","cog","text_cog","crab","text_crab","crystal","text_crystal","cup","text_cup","door","text_door","dot","text_dot","dust","text_dust","eye","text_eye","fence","text_fence","fire","text_fire","flag","text_flag","flower","text_flower","foliage","text_foliage","foot","text_foot","fruit","text_fruit","fungi","text_fungi","fungus","text_fungus","gem","text_gem","ghost","text_ghost","grass","text_grass","hand","text_hand","hedge","text_hedge","husk","text_husk","ice","text_ice","jelly","text_jelly","keke","text_keke","key","text_key","ladder","text_ladder","lava","text_lava","leaf","text_leaf","line","text_line","love","text_love","me","text_me","moon","text_moon","orb","text_orb","pillar","text_pillar","pipe","text_pipe","reed","text_reed","robot","text_robot","rocket","text_rocket","rock","text_rock","rose","text_rose","rubble","text_rubble","shirt","text_shirt","sign","text_sign","skull","text_skull","spike","text_spike","square","text_square","star","text_star","statue","text_statue","stump","text_stump","sun","text_sun","tile","text_tile","track","text_track","train","text_train","tree","text_tree","triangle","text_triangle","ufo","text_ufo","wall","text_wall","water","text_water","worm","text_worm","text_right","text_up","text_left","text_down","text_all","text_and","text_best","text_red","text_orange","text_yellow","text_green","text_cyan","text_blue","text_purple","text_pink","text_grey","text_black","text_white","text_brown","text_bonus","text_broken","text_chill","text_defeat","text_eat","text_empty","text_end","text_done","text_back","text_fall","text_fallright","text_fallup","text_fallleft","text_nudgedown","text_nudgeright","text_nudgeup","text_nudgeleft","text_turn","text_deturn","text_fear","text_float","text_follow","text_group","text_has","text_hide","text_hot","text_idle","text_is","text_level","text_lonely","text_often","text_seldom","text_make","text_melt","text_mimic","text_more","text_move","text_not","text_on","text_near","text_facing","text_without","text_above","text_below","text_feeling","text_open","text_play","text_powered","text_power","text_pull","text_push","text_sad","text_safe","text_shift","text_shut","text_sink","text_sleep","text_still","text_stop","text_swap","text_tele","text_text","text_weak","text_win","text_wonder","text_word","text_you2","text_you","husks","text_husks","trees","text_trees","cursor","text_cursor","text_select","text_a","text_b","text_c","text_d","text_e","text_f","text_g","text_h","text_i","text_j","text_k","text_l","text_m","text_n","text_o","text_p","text_q","text_r","text_s","text_t","text_u","text_v","text_w","text_x","text_y","text_z",}
 
 editor_objlist = {
 	[1] = {
@@ -2698,5 +2698,53 @@ editor_objlist = {
 		colour = {0, 2},
 		colour_active = {0, 3},
 		argtype = {2},
+	},
+	[270] = {
+		name = "text_cyan",
+		unittype = "text",
+		tags = {"text","text_quality","decorative","colour"},
+		tiling = -1,
+		type = 2,
+		layer = 20,
+		colour = {1, 2},
+		colour_active = {1, 4},
+	},
+	[271] = {
+		name = "track",
+		unittype = "object",
+		tags = {"machine","floor"},
+		tiling = 1,
+		type = 0,
+		layer = 10,
+		colour = {6, 0},
+	},
+	[272] = {
+		name = "text_track",
+		unittype = "text",
+		tags = {"text","machine","floor"},
+		tiling = -1,
+		type = 0,
+		layer = 20,
+		colour = {6, 0},
+		colour_active = {6, 1},
+	},
+	[273] = {
+		name = "train",
+		unittype = "object",
+		tags = {"machine","item","danger"},
+		tiling = 0,
+		type = 0,
+		layer = 18,
+		colour = {5, 2},
+	},
+	[274] = {
+		name = "text_train",
+		unittype = "text",
+		tags = {"text","machine","item","danger"},
+		tiling = -1,
+		type = 0,
+		layer = 20,
+		colour = {5, 1},
+		colour_active = {5, 2},
 	},
 }
