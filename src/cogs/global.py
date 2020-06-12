@@ -553,7 +553,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 flag_match = re.fullmatch(r"(--palette=|-p=|palette:)(\w+)", flag)
                 if flag_match:
                     palette = flag_match.group(2)
-                    if palette + ".png" not in listdir("palettes"):
+                    if palette + ".png" not in listdir("data/palettes"):
                         return await self.bot.error(ctx, f"Could not find a palette with name \"{palette}\".")
                     to_delete.append((x, y))
             for x, y in reversed(to_delete):
