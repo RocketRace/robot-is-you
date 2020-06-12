@@ -5,6 +5,7 @@ import zlib
 from discord.ext import commands
 from functools   import partial
 from os          import listdir, stat
+from src.utils   import Tile
 
 def flatten(x, y, width):
     '''
@@ -34,7 +35,7 @@ class Grid:
         This should not be used; you should use Reader.read_map() instead to generate a filled grid.
         '''
         # The location of the level
-        self.fp = f"levels/{source}/{filename}.l"
+        self.fp = f"data/levels/{source}/{filename}.l"
         self.filename = filename
         self.source = source
         # Basic level information
@@ -52,9 +53,9 @@ class Grid:
         self.style = None
         self.number = None
     
-    def serialize(self):
+    def clean_up(self):
         '''
-        Returns a json-serialized version of the grid. Used for debugging purposes.
+        Returns a cleaned up version of the grid.
         '''
         # Horrible variable naming scheme below
         m = []
@@ -65,15 +66,17 @@ class Grid:
             for x in range(w):
                 z = []
                 for o in self.cells[y * w + x].objects:
-                    # From Item object to json object / dict
-                    new = {
-                        "ID"        : o.ID,
-                        "obj"       : o.obj,
-                        "name"      : o.name,
-                        "position"  : o.position,
-                        "direction" : 0 if o.direction is None else o.direction,
-                        "extra"     : "" if o.extra is None else o.extra
-                    }
+                    # Cleaned up Item object
+                    new = Item(
+                        ID=o.ID,
+                        obj=o.obj,
+                        name=o.name or "error",
+                        color=o.color,
+                        position=o.position,
+                        # Note the *8! This is for use with handle_variants
+                        direction=0 if o.direction is None else o.direction * 8,
+                        extra=o.extra or ""
+                    )
                     z.append(new)
                 a.append(z)
             m.append(a)
@@ -113,13 +116,14 @@ class Item:
     Represents an object within a level.
     This may be a regular object, a path object, a level object, a special object or empty.
     '''
-    def __init__(self, *, ID=None, obj=None, name=None, position=None, direction=None, extra=None, layer=0):
+    def __init__(self, *, ID=None, obj=None, name=None, color=None, position=None, direction=None, extra=None, layer=0):
         '''
         Returns an Item with the given parameters.
         '''
         self.ID = ID
         self.obj = obj
         self.name = name
+        self.color = color or None
         self.position = position
         self.direction = direction
         self.extra = extra
@@ -129,7 +133,7 @@ class Item:
         '''
         Returns a copy of the item.
         '''
-        return Item(ID=self.ID, obj=self.obj, name=self.name, position=self.position, direction=self.direction, extra=self.extra, layer=self.layer)
+        return Item(ID=self.ID, obj=self.obj, name=self.name, color=self.color, position=self.position, direction=self.direction, extra=self.extra, layer=self.layer)
 
     @classmethod
     def edge(cls):
@@ -146,14 +150,11 @@ class Item:
         return Item(ID=-1, obj="empty", name="empty", layer=0)
     
     @classmethod
-    def level(cls, color=[0,3]):
+    def level(cls, color=(0,3)):
         '''
         Returns an Item representing a level object.
         '''
-        if color == [0,3]:
-            return Item(ID=-2, obj="level", name="level", layer=20)
-        else:
-            return Item(ID=-2, obj="level", name=f"level_{color[0]}_{color[1]}", layer=20)
+        return Item(ID=-2, obj="level", name="level", color=color, layer=20)
 
 class Reader(commands.Cog, command_attrs=dict(hidden=True)):
     '''
@@ -162,7 +163,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot):
         '''
         Initializes the Reader cog.
-        Populates the default objects cache from a "values.lua" file.
+        Populates the default objects cache from a data/values.lua file.
         '''
         self.bot = bot
         self.defaults_by_id = {}
@@ -172,7 +173,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         # Intermediary, please don't access
         self._levels = {}
 
-        with open("values.lua") as reader:
+        with open("data/values.lua") as reader:
             line = None
             while line != "":
                 line = reader.readline()
@@ -189,23 +190,33 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         if stat(levelcache).st_size != 0:
             self.level_data = json.load(open(levelcache))
 
-    async def render_map(self, filename, source, initialize=False, tile_data=None, dirs=None, renderer=None, remove_borders=False, keep_background=False, tile_borders=False):
+    def render_map(
+        self, 
+        filename, 
+        source, 
+        initialize=False, 
+        tile_data=None, 
+        renderer=None, 
+        remove_borders=False, 
+        keep_background=False, 
+        tile_borders=False
+    ):
         '''
         Loads and renders a level, given its file path and source. 
         Shaves off the borders if specified.
         '''
         # Data
-        grid = await self.read_map(filename, source=source, initialize=initialize)
+        grid = self.read_map(filename, source=source, initialize=initialize)
 
-        # Serialize the grid
-        m = grid.serialize()
+        # Clean up the grid
+        m = grid.clean_up()
         images = m["data"]["images"]
         palette = m["data"]["palette"]
         source = m["data"]["source"]
         width = m["data"]["width"]
         height = m["data"]["height"]
         filename = m["data"]["filename"]
-        out = f"renders/{source}/{filename}.gif"
+        out = f"target/renders/{source}/{filename}.gif"
 
         # Shave off the borders:
         if remove_borders:
@@ -218,15 +229,13 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                 row.pop(0)
 
         # Handle sprite variants
-        tiles = [[[dirs(obj) for obj in cell] for cell in row] for row in m["objects"]]
-        tiles = renderer.handle_variants(tiles, tile_borders=tile_borders)
+        tiles = renderer.handle_variants(m["objects"], tile_borders=tile_borders, is_level=True)
 
         # (0,4) is the color index for level backgrounds
         background = (0,4) if keep_background else None
 
         # Render the level
-        task = partial(renderer.magick_images, tiles, width, height, palette=palette, images=images, image_source=source, background=background, out=out)
-        await self.bot.loop.run_in_executor(None, task)
+        renderer.magick_images(tiles, width, height, palette=palette, images=images, image_source=source, background=background, out=out)
         
         # Return level metadata
         return {grid.filename: m["data"]}
@@ -237,9 +246,8 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         '''
         tile_data = self.bot.get_cog("Admin").tile_data
         # If the objects for some reason aren't well formed, they're replaced with error tiles
-        dirs = lambda o: [f'error:0', print(o["name"])][0] if tile_data.get(o["name"]) is None else f'{o["name"]}:{o["direction"] * 8 if tile_data[o["name"]]["tiling"] in ["0","2","3"] else 0}'
         renderer = self.bot.get_cog("Baba Is You")
-        return tile_data, dirs, renderer
+        return tile_data, renderer
 
     @commands.command()
     @commands.is_owner()
@@ -248,13 +256,12 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         Loads a given level. Initializes the level tree if so specified.
         '''
         # For managing the directions of the items
-        tile_data, dirs, renderer = self.pre_map_load()
+        tile_data, renderer = self.pre_map_load()
         # Parse and render
-        metadata = await self.render_map(
+        metadata = self.render_map(
             filename, 
             source=source, 
             tile_data=tile_data, 
-            dirs=dirs, 
             renderer=renderer, 
             initialize=initialize, 
             remove_borders=True,
@@ -303,20 +310,19 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         Initializes the level tree unless otherwise specified.
         Cuts off borders from rendered levels unless otherwise specified.
         '''
-        levels = [l[:-2] for l in listdir("levels/vanilla") if l.endswith(".l")]
+        levels = [l[:-2] for l in listdir("data/levels/vanilla") if l.endswith(".l")]
 
         # For managing the directions of the items
-        tile_data, dirs, renderer = self.pre_map_load()
+        tile_data, renderer = self.pre_map_load()
 
         # Parse and render the level map
         await ctx.send("Loading maps...")
         metadatas = {}
         total = len(levels)
         for i,level in enumerate(levels):
-            metadata = await self.render_map(
+            metadata = self.render_map(
                 level, source="vanilla", 
                 tile_data=tile_data, 
-                dirs=dirs, 
                 renderer=renderer, 
                 initialize=True, 
                 remove_borders=True,
@@ -333,7 +339,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
 
     def read_objects(self, reader):
         '''
-        Inner function that parses the contents of a "values.lua" file.
+        Inner function that parses the contents of the data/values.lua file.
         Returns the largest valid object ID for in-level objects.
         '''
         max_id = 0
@@ -398,7 +404,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             self.defaults_by_object[data] = item
             self.defaults_by_name[item.name] = item
 
-        # We've parsed and stored all objects from "values.lua" in cache.
+        # We've parsed and stored all objects from data/values.lua in cache.
         # Now we only need to add the special cases:
         # Empty tiles
         empty = Item.empty()
@@ -432,9 +438,10 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         elif obj == "layer":
             item.layer = int(value)
         # elif obj == "colour":
-            # item.color = self.CTS(value)
+        #     item.color = self.CTS(value, shift=False)
+        # # Active should override colour!
         # elif obj == "active":
-            # item.active_color = self.CTS(value)
+        #     item.color = self.CTS(value, shift=False)
         # elif obj == "tiling":
             # item.tiling = int(value)
         elif obj == "tile":
@@ -446,9 +453,9 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         # elif obj == "grid":
             # item.grid = self.CTS(value)
 
-    def CTS(self, value):
+    def CTS(self, value, shift=True):
         '''
-        Converts a string from the output of "values.lua" to a number.
+        Converts a string from the output of data/values.lua to a number.
         Examples:
         "{1}" -> 1
         "{1, 5}" -> 1<<8 | 5 -> 261
@@ -466,9 +473,12 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             return int(value)
         x = int(value[start_index: index - start_index + 1])
         y = int(value[index + 1: end_index].strip())
-        return (y << 8) | x
+        if shift:
+            return (y << 8) | x
+        else:
+            return (x, y)
 
-    async def read_map(self, filename, source, initialize = False):
+    def read_map(self, filename, source, initialize = False):
         '''
         Parses a .l file's content, given its file path.
         Returns a Grid object containing the level data.
@@ -565,7 +575,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                         if index == -1: continue
 
                         # These are the bits of information we care about
-                        values = ["_name", "_image"]
+                        values = ["_name", "_image", "_colour", "_activecolour"]
                         for v in values:
                             param_index = try_index(data, v)
                             if param_index != -1:
@@ -584,8 +594,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                         changes[key][param] = data[index + 1:]
         
         # Updates the grid:
-        # Replaces old object names with new object names.
-        # This is a shallow change; only the name is updated.
+        # The name and color are updated.
         if changes:
             for cell in grid.cells:
                 for item in cell.objects:
@@ -593,8 +602,13 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                     if new is not None:
                         if new.get("_name") is not None:
                             item.name = new["_name"]
-                        else:
+                        elif new.get("_image") is not None:
                             item.name = new["_image"]
+                        if new.get("_activecolour") is not None and item.name.startswith("text_"):
+                            item.color = [int(new["_activecolour"][0]), int(new["_activecolour"][2])]
+                        elif new.get("_colour") is not None:
+                            item.color = [int(new["_colour"][0]), int(new["_colour"][2])]
+
         
         return grid
 
@@ -638,7 +652,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                     if pos != -1:
                         cursor_y = int(pos)
         # Add cursor
-        if cursor_x is not None:
+        if cursor_x is not None and cursor_y is not None:
             cursor_position = flatten(cursor_x, cursor_y, grid.width)
             grid.cells[cursor_position].objects.append(self.defaults_by_name["cursor"])
 
@@ -776,15 +790,12 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
 
                 # Level color
                 if data.get("colour") is not None:
-                    color = [int(data["colour"][0]), int(data["colour"][2])]
+                    color = (int(data["colour"][0]), int(data["colour"][2]))
+                    level = Item.level(color=color)
                 else:
-                    color = [0,3]
+                    level = Item.level()
 
-                # Level object
-                # This is a hacky workaround to allow for multicolored levels.
-                # "level" is a plain level with color index (0,3).
-                # "level_x_y" is a colored level with color index (x,y).
-                level = Item.level(color=color)
+                # Level objects can be any color
                 level.position = position
 
                 # Levels are (sort of) like any other object
