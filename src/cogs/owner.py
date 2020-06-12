@@ -616,7 +616,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         '''
         Load a single tile, given a single palette (or alternatively 'all' for all palettes)
         '''
-        self.bot.loading = True
         # Some checks
         if self.tile_data.get(tile) is None:
             return await self.bot.send(ctx, f"\"{tile}\" is not in the list of tiles.")
@@ -625,7 +624,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             palettes = [pal[:-4] for pal in listdir("data/palettes") if pal.endswith(".png")]
         elif palette + ".png" not in listdir("data/palettes"):
             return await self.bot.send(ctx, f"\"{palette}\" is not a valid palette.")
-            
+        self.bot.loading = True 
         # Creates the directories for the palettes if they don't exist
         palette_colors = []
         for pal in palettes:
@@ -648,8 +647,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         Loads all tile sprites for the palettes given.
         '''
         
-        self.bot.loading = True
-
         if isinstance(args, str):
             palettes = args.split(" ")
         else:
@@ -658,6 +655,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         for arg in palettes:
             if arg not in [s[:-4] for s in listdir("data/palettes")]:
                 return await self.bot.send(ctx, "Supply a palette to load.")
+
+        self.bot.loading = True
 
         # The palette images
         # "hide" is a joke palette that doesn't render anything
