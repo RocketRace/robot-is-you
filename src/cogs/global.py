@@ -59,6 +59,9 @@ def split_commas(grid, prefix):
 class GlobalCog(commands.Cog, name="Baba Is You"):
     def __init__(self, bot):
         self.bot = bot
+        with open("config/leveltileoverride.json") as f:
+            j = load(f)
+            self.level_tile_override = j
 
     # Check if the bot is loading
     async def cog_check(self, ctx):
@@ -298,6 +301,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 variants = []
                         
                         tile_data = self.bot.get_cog("Admin").tile_data.get(tile)
+                        if is_level:
+                            if self.level_tile_override.get(tile) is not None:
+                                tile_data = self.level_tile_override[tile]
 
                         if tile_data is None:
                             raise FileNotFoundError(word)

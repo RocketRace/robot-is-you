@@ -1,0 +1,22 @@
+{
+    "hand": {
+        "tiling": "0",
+        "type": "0",
+        "sprite": "hand",
+        "color": [
+           "0",
+           "3"
+        ],
+        "source": "vanilla"
+    },
+    "text_hand": {
+        "tiling": "-1",
+        "type": "0",
+        "sprite": "text_hand",
+        "color": [
+           "0",
+           "3"
+        ],
+        "source": "vanilla"
+     }
+}
