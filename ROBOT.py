@@ -67,7 +67,7 @@ class BabaBot(commands.Bot):
         await ctx.send(embed=embed, delete_after=20)
 
 # Requires discord.py v1.4+
-# default_mentions = discord.AllowedMentions(everyone=False, roles=False)
+default_mentions = discord.AllowedMentions(everyone=False, roles=False)
 
 # Establishes the bot
 bot = BabaBot(
@@ -85,7 +85,7 @@ bot = BabaBot(
     owner_id = 156021301654454272,
     description="*An entertainment bot for rendering levels and custom scenes based on the indie game Baba Is You.*",
     # Never mention roles or @everyone / @here
-    # allowed_mentions=default_mentions, 
+    allowed_mentions=default_mentions, 
     # Disable the member cache
     fetch_offline_members=False,
     # Disable presence updates 
