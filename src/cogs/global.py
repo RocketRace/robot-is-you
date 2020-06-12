@@ -130,16 +130,15 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                         else:
                             animation_offset = frame
                         if tile.color is None:
-                            if tile.name.startswith("icon"):
-                                path = f"target/color/{palette}/{tile.name}-{tile.variant}-{animation_offset}-.png"
-                            else:
-                                path = f"target/color/{palette}/{tile.name}-{tile.variant}-{animation_offset}-.png"
+                            path = f"target/color/{palette}/{tile.name}-{tile.variant}-{animation_offset}-.png"
                             img = Image.open(path)
                         else:
                             if tile.name == "icon":
                                 path = f"data/sprites/vanilla/icon.png"
-                            elif tile.name.startswith("icon"):
+                            elif tile.name in ["smiley", "hi"] or tile.name.startswith("icon"):
                                 path = f"data/sprites/vanilla/{tile.name}_1.png"
+                            elif tile.name == "default":
+                                path = f"data/sprites/vanilla/default_{animation_offset + 1}.png"
                             else:
                                 maybe_sprite = self.bot.get_cog("Admin").tile_data.get(tile.name).get("sprite")
                                 if maybe_sprite != tile.name:
