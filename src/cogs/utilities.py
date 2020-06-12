@@ -165,7 +165,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         Tiles may be used in the `tile` (and subsequently `rule`) commands.
         '''
         now = datetime.now().strftime("%Y-%m-%d")
-        fp = discord.File("tilelist.txt", filename=f"tilelist_{now}.txt")
+        fp = discord.File("target/tilelist.txt", filename=f"tilelist_{now}.txt")
         await ctx.send( "List of all valid tiles:", file=fp)
 
     @commands.cooldown(2, 5, type=commands.BucketType.channel)
@@ -176,7 +176,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         Palettes can be used as arguments for the `tile` (and subsequently `rule`) commands.
         '''
         msg = []
-        for palette in listdir("palettes"):
+        for palette in listdir("data/palettes"):
             if not palette in [".DS_Store"]:
                 msg.append(palette[:-4])
         msg.sort()

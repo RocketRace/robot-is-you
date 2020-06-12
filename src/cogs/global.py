@@ -12,6 +12,7 @@ from os.path     import isfile
 from PIL         import Image
 from random      import choices, random
 from string      import ascii_lowercase
+from src.utils   import Tile
 
 def flatten(items, seqtypes=(list, tuple)):
     '''
@@ -58,6 +59,9 @@ def split_commas(grid, prefix):
 class GlobalCog(commands.Cog, name="Baba Is You"):
     def __init__(self, bot):
         self.bot = bot
+        with open("config/leveltileoverride.json") as f:
+            j = load(f)
+            self.level_tile_override = j
 
     # Check if the bot is loading
     async def cog_check(self, ctx):
@@ -82,15 +86,15 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         )
         if not isinstance(fp, str): fp.seek(0)
 
-    def magick_images(self, word_grid, width, height, *, palette="default", images=None, image_source="vanilla", out="renders/render.gif", background=None):
+    def magick_images(self, word_grid, width, height, *, palette="default", images=None, image_source="vanilla", out="target/renders/render.gif", background=None, rand=False):
         '''
         Takes a list of tile names and generates a gif with the associated sprites.
 
-        out is a file path or buffer. Renders will be saved there, otherwise to `renders/render.gif`.
+        out is a file path or buffer. Renders will be saved there, otherwise to `target/renders/render.gif`.
 
         palette is the name of the color palette to refer to when rendering.
 
-        images is a list of background image filenames. Each image is retrieved from `images/{imageSource}/image`.
+        images is a list of background image filenames. Each image is retrieved from `data/images/{imageSource}/image`.
 
         background is a palette index. If given, the image background color is set to that color, otherwise transparent. Background images overwrite this. 
         '''
@@ -102,7 +106,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 frames.append(render_frame)
             return self.save_frames(frames, out)
 
-        palette_img = Image.open(f"palettes/{palette}.png")
+        palette_img = Image.open(f"data/palettes/{palette}.png").convert("RGB")
 
         # Calculates padding based on image sizes
         left_pad = 0
@@ -118,16 +122,32 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 temp_row = []
                 for x, stack in enumerate(row):
                     temp_stack = []
-                    for z, obj in enumerate(stack):
+                    for z, tile in enumerate(stack):
+                        if tile.name is None: continue
                         # Get the sprite used
-                        animation_offset = (hash(x + y + z) + frame) % 3 + 1
-                        if obj[2] is None:
-                            path = f"color/{palette}/{obj[0]}-{obj[1]}-{animation_offset}.png"
+                        if rand:
+                            animation_offset = (hash(x + y + z) + frame) % 3
+                        else:
+                            animation_offset = frame
+                        if tile.color is None:
+                            if tile.name.startswith("icon"):
+                                path = f"target/color/{palette}/{tile.name}-{tile.variant}-{animation_offset}-.png"
+                            else:
+                                path = f"target/color/{palette}/{tile.name}-{tile.variant}-{animation_offset}-.png"
                             img = Image.open(path)
                         else:
-                            path = f"sprites/{obj[3]}/{obj[0]}_{obj[1]}_{animation_offset}.png"
+                            if tile.name == "icon":
+                                path = f"data/sprites/vanilla/icon.png"
+                            elif tile.name.startswith("icon"):
+                                path = f"data/sprites/vanilla/{tile.name}_1.png"
+                            else:
+                                maybe_sprite = self.bot.get_cog("Admin").tile_data.get(tile.name).get("sprite")
+                                if maybe_sprite != tile.name:
+                                    path = f"data/sprites/{tile.source}/{maybe_sprite}_{tile.variant}_{animation_offset + 1}.png"
+                                else:
+                                    path = f"data/sprites/{tile.source}/{tile.name}_{tile.variant}_{animation_offset + 1}.png"
                             img = Image.open(path).convert("RGBA")
-                            c_r, c_g, c_b = palette_img.getpixel(obj[2])
+                            c_r, c_g, c_b = palette_img.getpixel(tile.color)
                             r, g, b, a = img.split()
                             r = Image.eval(r, lambda px: px * c_r / 256)
                             g = Image.eval(g, lambda px: px * c_g / 256)
@@ -167,12 +187,12 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 render_frame = Image.new("RGBA", (total_width, total_height))
                 # for loop in case multiple background images are used (i.e. baba's world map)
                 for image in images:
-                    overlap = Image.open(f"images/{image_source}/{image}_{i + 1}.png") # i + 1 because 1-indexed
+                    overlap = Image.open(f"data/images/{image_source}/{image}_{i + 1}.png") # i + 1 because 1-indexed
                     mask = overlap.getchannel("A")
                     render_frame.paste(overlap, mask=mask)
             # bg color
             elif background is not None:
-                palette_img = Image.open(f"palettes/{palette}.png").convert("RGBA") # ensure alpha channel exists, even if blank
+                palette_img = Image.open(f"data/palettes/{palette}.png").convert("RGBA") # ensure alpha channel exists, even if blank
                 palette_color = palette_img.getpixel(background)
                 render_frame = Image.new("RGBA", (total_width, total_height), color=palette_color)
             # neither
@@ -204,7 +224,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
         self.save_frames(frames, out)
 
-    def handle_variants(self, grid, *, tile_borders=False):
+    def handle_variants(self, grid, *, tile_borders=False, is_level=False):
         '''
         Appends variants to tiles in a grid.
 
@@ -227,6 +247,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             "orange":(2, 3),
             "yellow":(2, 4),
             "green":(5, 3),
+            "cyan":(1, 4),
             "blue":(1, 3),
             "purple":(3, 1),
             "pink":(4, 1),
@@ -236,23 +257,53 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             "brown":(6, 1),
         }
 
+        icons = [
+            "icon", 
+            "icon_abc", 
+            "icon_abstract",
+            "icon_cave",
+            "icon_dust",
+            "icon_fall",
+            "icon_forest",
+            "icon_garden",
+            "icon_island",
+            "icon_lake",
+            "icon_level",
+            "icon_meta",
+            "icon_mountain",
+            "icon_ruins",
+            "icon_space",
+        ]
+
         clone_grid = [[[word for word in stack] for stack in row] for row in grid]
         for y, row in enumerate(clone_grid):
             for x, stack in enumerate(row):
                 for z, word in enumerate(stack):
-                    if word in ("-", "empty"):
-                        grid[y][x][z] = (None, None, None, None)
+                    tile = word
+                    if is_level:
+                        tile = word.name
+                        final_color = word.color
+                        variants = [str(word.direction)]
                     else:
-                        tile = word
+                        final_color = None
+                    if tile in ("-", "empty"):
+                        grid[y][x][z] = Tile()
+                    elif tile in icons:
+                        grid[y][x][z] = Tile(tile, 0)
+                    else:
                         variant = "0"
-                        if ":" in word:
-                            segments = word.split(":")
-                            tile = segments[0]
-                            variants = segments[1:]
-                        else:
-                            variants = []
+                        if not is_level:
+                            if ":" in tile:
+                                segments = tile.split(":")
+                                tile = segments[0]
+                                variants = segments[1:]
+                            else:
+                                variants = []
                         
                         tile_data = self.bot.get_cog("Admin").tile_data.get(tile)
+                        if is_level:
+                            if self.level_tile_override.get(tile) is not None:
+                                tile_data = self.level_tile_override[tile]
 
                         if tile_data is None:
                             raise FileNotFoundError(word)
@@ -264,7 +315,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                         animation_frame = 0
                         final_variant = 0
                         str_color = tile_data.get("color")
-                        color = tuple(map(int, str_color))
+                        color = final_color or tuple(map(int, str_color))
 
                         # Is this a tiling object (e.g. wall, water)?
                         if tiling == "1":
@@ -273,15 +324,15 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
                             # Tiles that join together
                             def does_tile(stack):
-                                for t in stack:
-                                    if t == tile or t.startswith("level"):
-                                        return True
-                                return False
+                                return any(t == tile or t == "level" for t in stack)
 
                             # Is there the same tile adjacent right?
                             if x != width - 1:
                                 # The tiles right of this (with variants stripped)
-                                adjacent_right = [t.split(":")[0] for t in clone_grid[y][x + 1]]
+                                if is_level:
+                                    adjacent_right = [t.name for t in clone_grid[y][x + 1]]
+                                else:
+                                    adjacent_right = [t.split(":")[0] for t in clone_grid[y][x + 1]]
                                 if does_tile(adjacent_right):
                                     out += 1
                             if tile_borders:
@@ -290,7 +341,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
                             # Is there the same tile adjacent above?
                             if y != 0:
-                                adjacent_up = [t.split(":")[0] for t in clone_grid[y - 1][x]]
+                                if is_level:
+                                    adjacent_up = [t.name for t in clone_grid[y - 1][x]]
+                                else:
+                                    adjacent_up = [t.split(":")[0] for t in clone_grid[y - 1][x]]
                                 if does_tile(adjacent_up):
                                     out += 2
                             if tile_borders:
@@ -299,7 +353,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
                             # Is there the same tile adjacent left?
                             if x != 0:
-                                adjacent_left = [t.split(":")[0] for t in clone_grid[y][x - 1]]
+                                if is_level:
+                                    adjacent_left = [t.name for t in clone_grid[y][x - 1]]
+                                else:
+                                    adjacent_left = [t.split(":")[0] for t in clone_grid[y][x - 1]]
                                 if does_tile(adjacent_left):
                                     out += 4
                             if tile_borders:
@@ -308,7 +365,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
                             # Is there the same tile adjacent below?
                             if y != height - 1:
-                                adjacent_down = [t.split(":")[0] for t in clone_grid[y + 1][x]]
+                                if is_level:
+                                    adjacent_down = [t.name for t in clone_grid[y + 1][x]]
+                                else:
+                                    adjacent_down = [t.split(":")[0] for t in clone_grid[y + 1][x]]
                                 if does_tile(adjacent_down):
                                     out += 8
                             if tile_borders:
@@ -327,7 +387,11 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     direction = 0
                                 elif variant == "0":
                                     final_variant = variant
-                                else: raise FileNotFoundError(word)
+                                else: 
+                                    if is_level:
+                                        direction = 0
+                                    else:
+                                        raise FileNotFoundError(word)
                             elif tiling == "0":
                                 if variant in ("r", "right"):
                                     direction = 0
@@ -344,7 +408,11 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     "24",
                                 ):
                                     final_variant = variant
-                                else: raise FileNotFoundError(word)
+                                else:
+                                    if is_level:
+                                        direction = 0
+                                    else:
+                                        raise FileNotFoundError(word)
                             elif tiling == "2":
                                 if variant in ("r", "right"):
                                     direction = 0
@@ -363,7 +431,11 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     "23", "24", "25", "26", "27",
                                 ): 
                                     final_variant = variant
-                                else: raise FileNotFoundError(word)
+                                else:
+                                    if is_level:
+                                        direction = 0
+                                    else:
+                                        raise FileNotFoundError(word)
                             elif tiling == "3":
                                 if variant in ("r", "right"):
                                     direction = 0
@@ -382,7 +454,11 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     "24", "25", "26", "27",
                                 ): 
                                     final_variant = variant
-                                else: raise FileNotFoundError(word)
+                                else:
+                                    if is_level:
+                                        direction = 0
+                                    else:
+                                        raise FileNotFoundError(word)
                             elif tiling == "4":
                                 if variant in ("r", "right"):
                                     direction = 0
@@ -390,14 +466,18 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     "0", "1", "2", "3", 
                                 ):
                                     final_variant = variant
-                                else: raise FileNotFoundError(word)
+                                else:
+                                    if is_level:
+                                        direction = 0
+                                    else:
+                                        raise FileNotFoundError(word)
 
                         # Allow for both sleep & 
                         if tiling != "1":
                             final_variant = final_variant or (8 * direction + animation_frame) % 32
 
                         # Finally, append the variant to the grid
-                        grid[y][x][z] = (tile, final_variant, color, source)
+                        grid[y][x][z] = Tile(tile, final_variant, color, source)
         return grid
 
     @commands.command(hidden=True)
@@ -719,7 +799,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             level = data[0][1]
 
             # The embedded file
-            gif = discord.File(f"renders/{level['source']}/{level_id}.gif", spoiler=True)
+            gif = discord.File(f"target/renders/{level['source']}/{level_id}.gif", spoiler=True)
             
             # Level name
             name = level["name"]
