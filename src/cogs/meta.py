@@ -197,7 +197,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
         def interpret_babalang():
             try:
                 process = run(
-                    ["./babalang",  "-c", f"'{program}'"], 
+                    ["./src/babalang",  "-c", f"'{program}'"], 
                     stdout=PIPE,
                     stderr=STDOUT,
                     timeout=1.0,

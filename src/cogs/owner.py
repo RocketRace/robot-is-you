@@ -43,7 +43,7 @@ def multiply_color(fp, palettes, pixels):
 
 def get_sprite_variants(sprite, tiling):
     '''
-    Opens the associated sprites from sprites/
+    Opens the associated sprites from data/sprites/
     Use every sprite variant, the amount based on the tiling type
 
     Sprite variants follow this scheme:
@@ -201,27 +201,27 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         for variant in sprite_variants:
             if tile in single_frame or tile.startswith("icon"): # Icons have a single frame
                 if tile == "icon":
-                    paths = [f"sprites/{source}/icon.png" for i in range(3)]
+                    paths = [f"data/sprites/{source}/icon.png" for i in range(3)]
                 else:
-                    paths = [f"sprites/{source}/{sprite}_1.png" for i in range(3)]
+                    paths = [f"data/sprites/{source}/{sprite}_1.png" for i in range(3)]
             elif tile in no_variants:
-                paths = [f"sprites/{source}/{sprite}_{i + 1}.png" for i in range(3)]
+                paths = [f"data/sprites/{source}/{sprite}_{i + 1}.png" for i in range(3)]
             else:
                 # Paths should only be of length 3
-                paths = [f"sprites/{source}/{sprite}_{variant}_{i + 1}.png" for i in range(3)]
+                paths = [f"data/sprites/{source}/{sprite}_{variant}_{i + 1}.png" for i in range(3)]
             
             # Changes the color of each image, then saves it
             for i,fp in enumerate(paths):
                 pixels = [img[x][y] for img in colors]
                 recolored = multiply_color(fp, palettes, pixels)
-                # Saves the colored images to /color/[palette]/ given that the image may be identical for some palettes
+                # Saves the colored images to target/color/[palette]/ given that the image may be identical for some palettes
                 # Recolored images, palettes each image is associated with
                 for img,uses in recolored:
                     # Each associated palette
                     for use in uses:
                         # This saves some redundant computing time spent recoloring the same image multiple times
                         # (up to >10 for certain color indices)
-                        img.save(f"color/{use}/{tile}-{variant}-{i}-.png", format="PNG")
+                        img.save(f"target/color/{use}/{tile}-{variant}-{i}-.png", format="PNG")
             
     @commands.command(aliases=["load", "reload"])
     @commands.is_owner()
@@ -305,11 +305,11 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         
         alternate_tiles = {}
 
-        levels = [l for l in listdir("levels/vanilla") if l.endswith(".ld")]
+        levels = [l for l in listdir("data/levels/vanilla") if l.endswith(".ld")]
         for level in levels:
             # Reads each line of the level file
             lines = ""
-            with open("levels/vanilla/%s" % level) as fp:
+            with open(f"data/levels/vanilla/{level}") as fp:
                 lines = fp.readlines()
 
             IDs = []
@@ -384,7 +384,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.is_owner()
     async def loaddata(self, ctx):
         '''
-        Reloads tile data from `values.lua`, `editor_objectlist.lua` and `.ld` files.
+        Reloads tile data from `data/values.lua`, `data/editor_objectlist.lua` and `.ld` files.
         '''
         alt_tiles = await ctx.invoke(self.bot.get_command("loadchanges"))
         await ctx.invoke(self.bot.get_command("loadcolors"), alternate_tiles = alt_tiles)
@@ -397,7 +397,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.is_owner()
     async def loadcolors(self, ctx, alternate_tiles):
         '''
-        Loads tile data from `values.lua.` and merges it with tile data from `.ld` files.
+        Loads tile data from `data/values.lua.` and merges it with tile data from `.ld` files.
         '''
 
         self.tile_data = {}
@@ -406,7 +406,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         self.bot.loading = True
         # values.lua contains the data about which color (on the palette) is associated with each tile.
         lines = ""
-        with open("values.lua", errors="replace") as colorvalues:
+        with open("data/values.lua", errors="replace") as colorvalues:
             lines = colorvalues.readlines()
         # Skips the parts we don't need
         tileslist = False
@@ -493,7 +493,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             elif line == "tileslist =\n":
                 tileslist = True
 
-        await ctx.send("Loaded default tile data from `values.lua`.")
+        await ctx.send("Loaded default tile data from `data/values.lua`.")
 
         self.bot.loading = False
 
@@ -501,17 +501,17 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.is_owner()
     async def loadcustom(self, ctx):
         '''
-        Loads custom tile data from `custom/*.json` into self.tile_data
+        Loads custom tile data from `data/custom/*.json` into self.tile_data
         '''
         
         # Load custom tile data from a json files
-        custom_data = [x for x in listdir("custom") if x.endswith(".json")]
+        custom_data = [x for x in listdir("data/custom") if x.endswith(".json")]
         # In alphabetical order, to make sure Patashu's redux mod overwrites the old mod
         custom_data.sort() 
         for f in custom_data:
             if f != "vanilla.json" and self.bot.vanilla_only: break
             dat = None
-            with open(f"custom/{f}") as fp:
+            with open(f"data/custom/{f}") as fp:
                 dat = json.load(fp)
             for tile in dat:
                 name = tile["name"]
@@ -525,17 +525,17 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 if name is not None:
                     self.tile_data[name] = rewritten
 
-        await ctx.send("Loaded custom tile data from `custom/*.json`.")
+        await ctx.send("Loaded custom tile data from `data/custom/*.json`.")
 
     @commands.command()
     @commands.is_owner()
     async def loadeditor(self, ctx):
         '''
-        Loads tile data from `editor_objectlist.lua` into `self.tile_data`.
+        Loads tile data from `data/editor_objectlist.lua` into `self.tile_data`.
         '''
 
         lines = ""
-        with open("editor_objectlist.lua", errors="replace") as objlist:
+        with open("data/editor_objectlist.lua", errors="replace") as objlist:
             lines = objlist.readlines()
         
         objects = {}
@@ -571,18 +571,18 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 ...
 
         self.tile_data.update(objects)
-        await ctx.send("Loaded tile data from `editor_objectlist.lua`.")
+        await ctx.send("Loaded tile data from `data/editor_objectlist.lua`.")
 
     @commands.command()
     @commands.is_owner()
     async def dumpdata(self, ctx):
         '''
-        Dumps cached tile data from `self.tile_data` into `tiledata.json` and `tilelist.txt`.
+        Dumps cached tile data from `self.tile_data` into `cache/tiledata.json` and `target/tilelist.txt`.
         '''
 
         max_length = len(max(self.tile_data, key=lambda x: len(x))) + 1
 
-        with open("tilelist.txt", "wt") as all_tiles:
+        with open("target/tilelist.txt", "wt") as all_tiles:
             all_tiles.write(f"{'*TILE* '.ljust(max_length, '-')} *SOURCE*\n")
             all_tiles.write("\n".join(sorted([(f"{(tile + ' ').ljust(max_length, '-')} {data['source']}") for tile, data in self.tile_data.items()])))
 
@@ -616,23 +616,22 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         '''
         Load a single tile, given a single palette (or alternatively 'all' for all palettes)
         '''
-        self.bot.loading = True
         # Some checks
         if self.tile_data.get(tile) is None:
             return await self.bot.send(ctx, f"\"{tile}\" is not in the list of tiles.")
         palettes = [palette]
         if palette == "all":
-            palettes = [pal[:-4] for pal in listdir("palettes") if pal.endswith(".png")]
-        elif palette + ".png" not in listdir("palettes"):
+            palettes = [pal[:-4] for pal in listdir("data/palettes") if pal.endswith(".png")]
+        elif palette + ".png" not in listdir("data/palettes"):
             return await self.bot.send(ctx, f"\"{palette}\" is not a valid palette.")
-            
+        self.bot.loading = True 
         # Creates the directories for the palettes if they don't exist
         palette_colors = []
         for pal in palettes:
-            Path(f"color/{pal}").mkdir(parents=True, exist_ok=True)
+            Path(f"target/color/{pal}").mkdir(parents=True, exist_ok=True)
 
             # The palette image 
-            palette_img = Image.open("palettes/%s.png" % pal).convert("RGB")
+            palette_img = Image.open(f"data/palettes/{pal}.png").convert("RGB")
             # The RGB values of the palette
             palette_colors.append([[(palette_img.getpixel((x,y))) for y in range(5)] for x in range(7)])
 
@@ -648,27 +647,27 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         Loads all tile sprites for the palettes given.
         '''
         
-        self.bot.loading = True
-
         if isinstance(args, str):
             palettes = args.split(" ")
         else:
             palettes = args
         # Tests for a supplied palette
         for arg in palettes:
-            if arg not in [s[:-4] for s in listdir("palettes")]:
+            if arg not in [s[:-4] for s in listdir("data/palettes")]:
                 return await self.bot.send(ctx, "Supply a palette to load.")
+
+        self.bot.loading = True
 
         # The palette images
         # "hide" is a joke palette that doesn't render anything
         palettes = [p for p in palettes if p != "hide"]
-        imgs = [Image.open("palettes/%s.png" % palette).convert("RGB") for palette in palettes]
+        imgs = [Image.open(f"data/palettes/{palette}.png").convert("RGB") for palette in palettes]
         # The RGB values of the palette
         colors = [[[(img.getpixel((x,y))) for y in range(5)] for x in range(7)] for img in imgs]
 
         # Creates the directories for the palettes if they don't exist
         for palette in palettes:
-            Path(f"color/{palette}").mkdir(parents=True, exist_ok=True)
+            Path(f"target/color/{palette}").mkdir(parents=True, exist_ok=True)
         
         # Goes through each tile object in the tile data array
         i = 0
@@ -699,12 +698,12 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     def initializeletters(self):
         big = {}
         small = {}
-        for char in listdir("letters/big"):
-            for width in listdir(f"letters/big/{char}"):
+        for char in listdir("target/letters/big"):
+            for width in listdir(f"target/letters/big/{char}"):
                 big.setdefault(char, []).append(width)
 
-        for char in listdir("letters/small"):
-            for width in listdir(f"letters/small/{char}"):
+        for char in listdir("target/letters/small"):
+            for width in listdir(f"target/letters/small/{char}"):
                 big.setdefault(char, []).append(width)
 
         self.letter_widths = {"big":big, "small":small}
@@ -715,7 +714,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         '''
         Scrapes individual letters from vanilla sprites.
         '''
-        ignored = json.load(open("letterignore.json"))
+        ignored = json.load(open("cache/letterignore.json"))
 
         def check(data):
             return all([
@@ -758,7 +757,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         # Scrape the sprites for the sprite characters in each of the three frames
         for i, plate in enumerate([plate_0, plate_1, plate_2]):
             # Get the alpha channel in 1-bit depth
-            alpha = Image.open(f"sprites/vanilla/{word}_0_{i + 1}.png") \
+            alpha = Image.open(f"data/sprites/vanilla/{word}_0_{i + 1}.png") \
                 .convert("RGBA") \
                 .getchannel("A") \
                 .convert("1")
@@ -842,8 +841,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                     frame.paste(img, (x1 - x1_min, y1 - y1_min))
                     height = "small" if two_rows else "big"
                     width = frame.size[0]
-                    Path(f"letters/{height}/{char}/{width}").mkdir(parents=True, exist_ok=True)
-                    frame.save(f"letters/{height}/{char}/{width}/{now}_{i}.png")
+                    Path(f"target/letters/{height}/{char}/{width}").mkdir(parents=True, exist_ok=True)
+                    frame.save(f"target/letters/{height}/{char}/{width}/{now}_{i}.png")
 
         # await ctx.send(f":) {saved}")
 
@@ -859,7 +858,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
         await ctx.send("Loading objects...")
         await ctx.invoke(self.bot.get_command("loaddata"))
-        palettes = [palette[:-4] for palette in listdir("palettes") if palette.endswith(".png")] 
+        palettes = [palette[:-4] for palette in listdir("data/palettes") if palette.endswith(".png")] 
         # Strip ".png", ignore some files
         await ctx.invoke(self.bot.get_command("loadpalettes"), palettes)
         await ctx.send(f"{ctx.author.mention} Done.")
