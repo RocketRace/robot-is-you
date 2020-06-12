@@ -3,5 +3,6 @@ log.txt
 .DS_Store
 .vscode/
 target
+cache
 src/__pycache__
 src/cogs/__pycache__
