@@ -1,12 +1,7 @@
-color/
-renders/
-letters/
-*.json
-tilelist.txt
-!custom/*
-!tips.json
+setup.json
 log.txt
-empty.png
 .DS_Store
 .vscode/
-cogs/__pycache__/*
+target
+src/__pycache__
+src/cogs/__pycache__

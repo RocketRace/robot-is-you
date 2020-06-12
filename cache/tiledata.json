@@ -1,0 +1,3968 @@
+{
+   "baba": {
+      "tiling": "2",
+      "type": "0",
+      "sprite": "baba",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_m": {
+      "tiling": "-1",
+      "type": "5",
+      "sprite": "text_m",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "foliage": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "foliage",
+      "color": [
+         "6",
+         "0"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "keke": {
+      "tiling": "2",
+      "type": "0",
+      "sprite": "keke",
+      "color": [
+         "2",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_purple": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_purple",
+      "color": [
+         "3",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_foliage": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_foliage",
+      "color": [
+         "2",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "bird": {
+      "tiling": "0",
+      "type": "0",
+      "sprite": "bird",
+      "color": [
+         "2",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "rock": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "rock",
+      "color": [
+         "6",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_n": {
+      "tiling": "-1",
+      "type": "5",
+      "sprite": "text_n",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_pink": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_pink",
+      "color": [
+         "4",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_grass": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_grass",
+      "color": [
+         "5",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_t": {
+      "tiling": "-1",
+      "type": "5",
+      "sprite": "text_t",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_white": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_white",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "leaf": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "leaf",
+      "color": [
+         "2",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_rubble": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_rubble",
+      "color": [
+         "6",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "tile": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "tile",
+      "color": [
+         "0",
+         "0"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_o": {
+      "tiling": "-1",
+      "type": "5",
+      "sprite": "text_o",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_yellow": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_yellow",
+      "color": [
+         "2",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_leaf": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_leaf",
+      "color": [
+         "2",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_and": {
+      "tiling": "-1",
+      "type": "6",
+      "sprite": "text_and",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_green": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_green",
+      "color": [
+         "5",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_hide": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_hide",
+      "color": [
+         "3",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_h": {
+      "tiling": "-1",
+      "type": "5",
+      "sprite": "text_h",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_x": {
+      "tiling": "-1",
+      "type": "5",
+      "sprite": "text_x",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_follow": {
+      "tiling": "-1",
+      "type": "1",
+      "sprite": "text_follow",
+      "color": [
+         "5",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "ufo": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "ufo",
+      "color": [
+         "4",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_four": {
+      "sprite": "text_follow",
+      "tiling": "-1",
+      "color": [
+         "5",
+         "2"
+      ],
+      "type": "2",
+      "source": "vanilla"
+   },
+   "text_float": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_float",
+      "color": [
+         "1",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_ufo": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_ufo",
+      "color": [
+         "4",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_two": {
+      "sprite": "text_float",
+      "tiling": "-1",
+      "color": [
+         "1",
+         "4"
+      ],
+      "type": "2",
+      "source": "vanilla"
+   },
+   "text_lonely": {
+      "tiling": "-1",
+      "type": "3",
+      "sprite": "text_lonely",
+      "color": [
+         "2",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_orange": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_orange",
+      "color": [
+         "2",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "lava": {
+      "tiling": "1",
+      "type": "0",
+      "sprite": "water",
+      "color": [
+         "2",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "bog": {
+      "tiling": "1",
+      "type": "0",
+      "sprite": "water",
+      "color": [
+         "5",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_a": {
+      "tiling": "-1",
+      "type": "5",
+      "sprite": "text_a",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_w": {
+      "tiling": "-1",
+      "type": "5",
+      "sprite": "text_w",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "water": {
+      "tiling": "1",
+      "type": "0",
+      "sprite": "water",
+      "color": [
+         "1",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "wall": {
+      "tiling": "1",
+      "type": "0",
+      "sprite": "wall",
+      "color": [
+         "1",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_empty": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_empty",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_tile": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_tile",
+      "color": [
+         "0",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_s": {
+      "tiling": "-1",
+      "type": "5",
+      "sprite": "text_s",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_weak": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_weak",
+      "color": [
+         "1",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_minusone": {
+      "sprite": "text_weak",
+      "tiling": "-1",
+      "color": [
+         "1",
+         "2"
+      ],
+      "type": "2",
+      "source": "vanilla"
+   },
+   "text_near": {
+      "tiling": "-1",
+      "type": "7",
+      "sprite": "text_near",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "cloud": {
+      "tiling": "1",
+      "type": "0",
+      "sprite": "cloud",
+      "color": [
+         "1",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "pillar": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "pillar",
+      "color": [
+         "0",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_r": {
+      "tiling": "-1",
+      "type": "5",
+      "sprite": "text_r",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "fungi": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "fungi",
+      "color": [
+         "6",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "control_move": {
+      "sprite": "button_move",
+      "tiling": "-1",
+      "color": [
+         "0",
+         "3"
+      ],
+      "type": "0",
+      "source": "vanilla"
+   },
+   "text_fungus": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_fungus",
+      "color": [
+         "6",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_jelly": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_jelly",
+      "color": [
+         "1",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_cliff": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_cliff",
+      "color": [
+         "6",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_f": {
+      "tiling": "-1",
+      "type": "5",
+      "sprite": "text_f",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_baba": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_baba",
+      "color": [
+         "4",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_keke": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_keke",
+      "color": [
+         "2",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_bird": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_bird",
+      "color": [
+         "2",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_flag": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_flag",
+      "color": [
+         "2",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "flag": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "flag",
+      "color": [
+         "2",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "ice": {
+      "tiling": "1",
+      "type": "0",
+      "sprite": "ice",
+      "color": [
+         "1",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_shift": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_shift",
+      "color": [
+         "1",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "rose": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "rose",
+      "color": [
+         "2",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_e": {
+      "tiling": "-1",
+      "type": "5",
+      "sprite": "text_e",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "anni": {
+      "sprite": "anni",
+      "tiling": "2",
+      "color": [
+         "6",
+         "2"
+      ],
+      "type": "0",
+      "source": "vanilla"
+   },
+   "text_all": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_all",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_right": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_right",
+      "color": [
+         "1",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_minusthree": {
+      "sprite": "text_right",
+      "tiling": "-1",
+      "color": [
+         "1",
+         "4"
+      ],
+      "type": "2",
+      "source": "vanilla"
+   },
+   "text_cloud": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_cloud",
+      "color": [
+         "1",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_pillar": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_pillar",
+      "color": [
+         "0",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_g": {
+      "tiling": "-1",
+      "type": "5",
+      "sprite": "text_g",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_fungi": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_fungi",
+      "color": [
+         "6",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "fungus": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "fungus",
+      "color": [
+         "6",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "jelly": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "jelly",
+      "color": [
+         "1",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "cliff": {
+      "tiling": "1",
+      "type": "0",
+      "sprite": "cliff",
+      "color": [
+         "6",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_rock": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_rock",
+      "color": [
+         "6",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_lava": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_lava",
+      "color": [
+         "2",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_bog": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_bog",
+      "color": [
+         "5",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_wall": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_wall",
+      "color": [
+         "0",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_ice": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_ice",
+      "color": [
+         "1",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_is": {
+      "tiling": "-1",
+      "type": "1",
+      "sprite": "text_is",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_rose": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_rose",
+      "color": [
+         "2",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_anni": {
+      "sprite": "text_anni",
+      "tiling": "-1",
+      "color": [
+         "6",
+         "2"
+      ],
+      "type": "0",
+      "source": "vanilla"
+   },
+   "text_more": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_more",
+      "color": [
+         "4",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_three": {
+      "sprite": "text_more",
+      "tiling": "-1",
+      "color": [
+         "4",
+         "1"
+      ],
+      "type": "2",
+      "source": "vanilla"
+   },
+   "text_safe": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_safe",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_end": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_end",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_up": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_up",
+      "color": [
+         "1",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "star": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "star",
+      "color": [
+         "2",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "reed": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "reed",
+      "color": [
+         "6",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "husk": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "husk",
+      "color": [
+         "6",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "cog": {
+      "tiling": "4",
+      "type": "0",
+      "sprite": "cog",
+      "color": [
+         "0",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "sun": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "sun",
+      "color": [
+         "2",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_word": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_word",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_fruit": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_fruit",
+      "color": [
+         "2",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_dot": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_dot",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_bubble": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_bubble",
+      "color": [
+         "1",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_bat": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_bat",
+      "color": [
+         "3",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_sun": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_sun",
+      "color": [
+         "2",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_stump": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_stump",
+      "color": [
+         "6",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_ab": {
+      "sprite": "text_ab",
+      "color": [
+         "4",
+         "1"
+      ],
+      "tiling": "-1",
+      "type": "5",
+      "source": "vanilla"
+   },
+   "text_image": {
+      "sprite": "text_image",
+      "tiling": "-1",
+      "color": [
+         "5",
+         "3"
+      ],
+      "type": "0",
+      "source": "vanilla"
+   },
+   "text_ba": {
+      "sprite": "text_ba",
+      "color": [
+         "4",
+         "1"
+      ],
+      "tiling": "-1",
+      "type": "5",
+      "source": "vanilla"
+   },
+   "text_water": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_water",
+      "color": [
+         "1",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_win": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_win",
+      "color": [
+         "2",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_push": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_push",
+      "color": [
+         "6",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_stop": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_stop",
+      "color": [
+         "5",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_move": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_move",
+      "color": [
+         "5",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_best": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_best",
+      "color": [
+         "2",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_eight": {
+      "sprite": "text_best",
+      "tiling": "-1",
+      "color": [
+         "2",
+         "4"
+      ],
+      "type": "2",
+      "source": "vanilla"
+   },
+   "text_tele": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_tele",
+      "color": [
+         "1",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_sixteen": {
+      "sprite": "text_tele",
+      "tiling": "-1",
+      "color": [
+         "1",
+         "4"
+      ],
+      "type": "2",
+      "source": "vanilla"
+   },
+   "hand": {
+      "tiling": "0",
+      "type": "0",
+      "sprite": "hand",
+      "color": [
+         "3",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "crab": {
+      "tiling": "0",
+      "type": "0",
+      "sprite": "crab",
+      "color": [
+         "2",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "bolt": {
+      "tiling": "0",
+      "type": "0",
+      "sprite": "bolt",
+      "color": [
+         "2",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "rubble": {
+      "tiling": "1",
+      "type": "0",
+      "sprite": "rubble",
+      "color": [
+         "6",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_l": {
+      "tiling": "-1",
+      "type": "5",
+      "sprite": "text_l",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "rocket": {
+      "tiling": "0",
+      "type": "0",
+      "sprite": "rocket",
+      "color": [
+         "0",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_left": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_left",
+      "color": [
+         "1",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_star": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_star",
+      "color": [
+         "2",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_reed": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_reed",
+      "color": [
+         "6",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_husk": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_husk",
+      "color": [
+         "6",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_cog": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_cog",
+      "color": [
+         "0",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_red": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_red",
+      "color": [
+         "2",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_c": {
+      "tiling": "-1",
+      "type": "5",
+      "sprite": "text_c",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_five": {
+      "sprite": "text_red",
+      "tiling": "-1",
+      "color": [
+         "2",
+         "2"
+      ],
+      "type": "2",
+      "source": "vanilla"
+   },
+   "fruit": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "fruit",
+      "color": [
+         "2",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "dot": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "dot",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "bubble": {
+      "tiling": "4",
+      "type": "0",
+      "sprite": "bubble",
+      "color": [
+         "1",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "bat": {
+      "tiling": "4",
+      "type": "0",
+      "sprite": "bat",
+      "color": [
+         "3",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "stump": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "stump",
+      "color": [
+         "6",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_melt": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_melt",
+      "color": [
+         "1",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_hot": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_hot",
+      "color": [
+         "2",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_minusten": {
+      "sprite": "text_hot",
+      "tiling": "-1",
+      "color": [
+         "2",
+         "3"
+      ],
+      "type": "2",
+      "source": "vanilla"
+   },
+   "text_you": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_you",
+      "color": [
+         "4",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_not": {
+      "tiling": "-1",
+      "type": "4",
+      "sprite": "text_not",
+      "color": [
+         "2",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_sink": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_sink",
+      "color": [
+         "1",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "love": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "love",
+      "color": [
+         "4",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "door": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "door",
+      "color": [
+         "2",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_hand": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_hand",
+      "color": [
+         "4",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_crab": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_crab",
+      "color": [
+         "2",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_bolt": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_bolt",
+      "color": [
+         "2",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_rocket": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_rocket",
+      "color": [
+         "0",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "control_enter": {
+      "sprite": "text_enter",
+      "tiling": "-1",
+      "color": [
+         "0",
+         "3"
+      ],
+      "type": "0",
+      "source": "vanilla"
+   },
+   "text_i": {
+      "tiling": "-1",
+      "type": "5",
+      "sprite": "text_i",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_down": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_down",
+      "color": [
+         "1",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_minustwo": {
+      "sprite": "text_down",
+      "tiling": "-1",
+      "color": [
+         "1",
+         "4"
+      ],
+      "type": "2",
+      "source": "vanilla"
+   },
+   "dust": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "dust",
+      "color": [
+         "6",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_flower": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_flower",
+      "color": [
+         "3",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_violet": {
+      "sprite": "text_violet",
+      "tiling": "-1",
+      "color": [
+         "3",
+         "3"
+      ],
+      "type": "0",
+      "source": "vanilla"
+   },
+   "text_tree": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_tree",
+      "color": [
+         "5",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_algae": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_algae",
+      "color": [
+         "5",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_fire": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_fire",
+      "color": [
+         "2",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_cake": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_cake",
+      "color": [
+         "4",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "ghost": {
+      "tiling": "0",
+      "type": "0",
+      "sprite": "ghost",
+      "color": [
+         "4",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "bug": {
+      "tiling": "0",
+      "type": "0",
+      "sprite": "bug",
+      "color": [
+         "6",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "letter_w": {
+      "sprite": "text_w",
+      "tiling": "-1",
+      "color": [
+         "0",
+         "3"
+      ],
+      "type": "5",
+      "source": "vanilla"
+   },
+   "text_defeat": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_defeat",
+      "color": [
+         "2",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "skull": {
+      "tiling": "0",
+      "type": "0",
+      "sprite": "skull",
+      "color": [
+         "2",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "grass": {
+      "tiling": "1",
+      "type": "0",
+      "sprite": "grass",
+      "color": [
+         "5",
+         "0"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_skull": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_skull",
+      "color": [
+         "2",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_love": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_love",
+      "color": [
+         "4",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_door": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_door",
+      "color": [
+         "2",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_text": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_text",
+      "color": [
+         "4",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_sleep": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_sleep",
+      "color": [
+         "1",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_ten": {
+      "sprite": "text_sleep",
+      "tiling": "-1",
+      "color": [
+         "1",
+         "4"
+      ],
+      "type": "2",
+      "source": "vanilla"
+   },
+   "text_dust": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_dust",
+      "color": [
+         "2",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_blue": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_blue",
+      "color": [
+         "3",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_six": {
+      "sprite": "text_blue",
+      "tiling": "-1",
+      "color": [
+         "3",
+         "3"
+      ],
+      "type": "2",
+      "source": "vanilla"
+   },
+   "text_v": {
+      "tiling": "-1",
+      "type": "5",
+      "sprite": "text_v",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "tree": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "tree",
+      "color": [
+         "5",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "algae": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "algae",
+      "color": [
+         "5",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "fire": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "fire",
+      "color": [
+         "2",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "cake": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "cake",
+      "color": [
+         "4",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "key": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "key",
+      "color": [
+         "2",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_key": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_key",
+      "color": [
+         "2",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_open": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_open",
+      "color": [
+         "2",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_shut": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_shut",
+      "color": [
+         "2",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_has": {
+      "tiling": "-1",
+      "type": "1",
+      "sprite": "text_has",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "box": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "box",
+      "color": [
+         "6",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "spike": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "spike",
+      "color": [
+         "1",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_box": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_box",
+      "color": [
+         "6",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_spike": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_spike",
+      "color": [
+         "0",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "belt": {
+      "tiling": "3",
+      "type": "0",
+      "sprite": "belt",
+      "color": [
+         "1",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_make": {
+      "tiling": "-1",
+      "type": "1",
+      "sprite": "text_make",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_fall": {
+      "sprite": "text_fall",
+      "color": [
+         "5",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "vanilla"
+   },
+   "text_seven": {
+      "sprite": "text_fall",
+      "tiling": "-1",
+      "color": [
+         "5",
+         "3"
+      ],
+      "type": "2",
+      "source": "vanilla"
+   },
+   "flower": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "flower",
+      "color": [
+         "3",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "violet": {
+      "sprite": "flower",
+      "tiling": "-1",
+      "color": [
+         "5",
+         "3"
+      ],
+      "type": "0",
+      "source": "vanilla"
+   },
+   "text_fence": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_fence",
+      "color": [
+         "6",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_u": {
+      "tiling": "-1",
+      "type": "5",
+      "sprite": "text_u",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_belt": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_belt",
+      "color": [
+         "1",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "me": {
+      "tiling": "2",
+      "type": "0",
+      "sprite": "me",
+      "color": [
+         "3",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_me": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_me",
+      "color": [
+         "3",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_swap": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_swap",
+      "color": [
+         "3",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_fourteen": {
+      "sprite": "text_swap",
+      "tiling": "-1",
+      "color": [
+         "3",
+         "1"
+      ],
+      "type": "2",
+      "source": "vanilla"
+   },
+   "text_pull": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_pull",
+      "color": [
+         "6",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_on": {
+      "tiling": "-1",
+      "type": "7",
+      "sprite": "text_on",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_unused": {
+      "sprite": "text_on",
+      "tiling": "-1",
+      "color": [
+         "0",
+         "3"
+      ],
+      "type": "7",
+      "source": "vanilla"
+   },
+   "moon": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "moon",
+      "color": [
+         "2",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "blossom": {
+      "sprite": "blossom",
+      "tiling": "-1",
+      "color": [
+         "0",
+         "3"
+      ],
+      "type": "0",
+      "source": "vanilla"
+   },
+   "wait": {
+      "sprite": "button_wait",
+      "tiling": "-1",
+      "color": [
+         "0",
+         "3"
+      ],
+      "type": "0",
+      "source": "vanilla"
+   },
+   "text_ghost": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_ghost",
+      "color": [
+         "4",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_bug": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_bug",
+      "color": [
+         "6",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "fence": {
+      "tiling": "1",
+      "type": "0",
+      "sprite": "fence",
+      "color": [
+         "6",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "hedge": {
+      "tiling": "1",
+      "type": "0",
+      "sprite": "hedge",
+      "color": [
+         "5",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "pipe": {
+      "tiling": "1",
+      "type": "0",
+      "sprite": "pipe",
+      "color": [
+         "1",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_hedge": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_hedge",
+      "color": [
+         "5",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_pipe": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_pipe",
+      "color": [
+         "0",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_level": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_level",
+      "color": [
+         "4",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_orb": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_orb",
+      "color": [
+         "4",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_cursor": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_cursor",
+      "color": [
+         "2",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "orb": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "orb",
+      "color": [
+         "4",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_bonus": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_bonus",
+      "color": [
+         "4",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_you2": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_you2",
+      "color": [
+         "4",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_moon": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_moon",
+      "color": [
+         "2",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_group": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_group",
+      "color": [
+         "3",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_line": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_line",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "brick": {
+      "tiling": "1",
+      "type": "0",
+      "sprite": "brick",
+      "color": [
+         "6",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_brick": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_brick",
+      "color": [
+         "6",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_b": {
+      "tiling": "-1",
+      "type": "5",
+      "sprite": "text_b",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_wonder": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_wonder",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_nine": {
+      "sprite": "text_wonder",
+      "tiling": "-1",
+      "color": [
+         "0",
+         "3"
+      ],
+      "type": "2",
+      "source": "vanilla"
+   },
+   "text_eat": {
+      "tiling": "-1",
+      "type": "1",
+      "sprite": "text_eat",
+      "color": [
+         "2",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_statue": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_statue",
+      "color": [
+         "0",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_robot": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_robot",
+      "color": [
+         "0",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "statue": {
+      "tiling": "0",
+      "type": "0",
+      "sprite": "statue",
+      "color": [
+         "0",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "robot": {
+      "tiling": "2",
+      "type": "0",
+      "sprite": "robot",
+      "color": [
+         "0",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "movehelp": {
+      "sprite": "button_move",
+      "tiling": "-1",
+      "color": [
+         "0",
+         "3"
+      ],
+      "type": "0",
+      "source": "vanilla"
+   },
+   "text_facing": {
+      "tiling": "-1",
+      "type": "7",
+      "sprite": "text_facing",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_done": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_done",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "line": {
+      "tiling": "1",
+      "type": "0",
+      "sprite": "line",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_fear": {
+      "tiling": "-1",
+      "type": "1",
+      "sprite": "text_fear",
+      "color": [
+         "2",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_sad": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_sad",
+      "color": [
+         "3",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_one": {
+      "sprite": "text_sad",
+      "tiling": "-1",
+      "color": [
+         "3",
+         "2"
+      ],
+      "type": "2",
+      "source": "vanilla"
+   },
+   "cursor": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "cursor",
+      "color": [
+         "4",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "cash": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "cash",
+      "color": [
+         "5",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_cash": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_cash",
+      "color": [
+         "5",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "cup": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "cup",
+      "color": [
+         "1",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_cup": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_cup",
+      "color": [
+         "1",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "ladder": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "ladder",
+      "color": [
+         "2",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_ladder": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_ladder",
+      "color": [
+         "2",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "shirt": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "shirt",
+      "color": [
+         "2",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_shirt": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_shirt",
+      "color": [
+         "2",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_grey": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_grey",
+      "color": [
+         "0",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_black": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_black",
+      "color": [
+         "1",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_brown": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_brown",
+      "color": [
+         "6",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_chill": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_chill",
+      "color": [
+         "3",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_back": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_back",
+      "color": [
+         "4",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_fallright": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_fallright",
+      "color": [
+         "5",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_fallup": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_fallup",
+      "color": [
+         "5",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_fallleft": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_fallleft",
+      "color": [
+         "5",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_idle": {
+      "tiling": "-1",
+      "type": "3",
+      "sprite": "text_idle",
+      "color": [
+         "2",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_often": {
+      "tiling": "-1",
+      "type": "3",
+      "sprite": "text_often",
+      "color": [
+         "5",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_seldom": {
+      "tiling": "-1",
+      "type": "3",
+      "sprite": "text_seldom",
+      "color": [
+         "3",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_play": {
+      "tiling": "-1",
+      "type": "1",
+      "sprite": "text_play",
+      "color": [
+         "5",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_powered": {
+      "tiling": "-1",
+      "type": "3",
+      "sprite": "text_powered",
+      "color": [
+         "2",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_power": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_power",
+      "color": [
+         "2",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_without": {
+      "tiling": "-1",
+      "type": "7",
+      "sprite": "text_without",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "husks": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "husks",
+      "color": [
+         "6",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "trees": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "trees",
+      "color": [
+         "5",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_d": {
+      "tiling": "-1",
+      "type": "5",
+      "sprite": "text_d",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_j": {
+      "tiling": "-1",
+      "type": "5",
+      "sprite": "text_j",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_k": {
+      "tiling": "-1",
+      "type": "5",
+      "sprite": "text_k",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_p": {
+      "tiling": "-1",
+      "type": "5",
+      "sprite": "text_p",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_q": {
+      "tiling": "-1",
+      "type": "5",
+      "sprite": "text_q",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_y": {
+      "tiling": "-1",
+      "type": "5",
+      "sprite": "text_y",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_z": {
+      "tiling": "-1",
+      "type": "5",
+      "sprite": "text_z",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_broken": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_broken",
+      "color": [
+         "4",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_nudgeright": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_nudgeright",
+      "color": [
+         "5",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_nudgeup": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_nudgeup",
+      "color": [
+         "5",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_nudgeleft": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_nudgeleft",
+      "color": [
+         "5",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_nudgedown": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_nudgedown",
+      "color": [
+         "5",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_turn": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_turn",
+      "color": [
+         "1",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_deturn": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_deturn",
+      "color": [
+         "1",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_mimic": {
+      "tiling": "-1",
+      "type": "1",
+      "sprite": "text_mimic",
+      "color": [
+         "2",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "sign": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "sign",
+      "color": [
+         "6",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_sign": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_sign",
+      "color": [
+         "6",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_still": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_still",
+      "color": [
+         "2",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "circle": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "circle",
+      "color": [
+         "5",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_circle": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_circle",
+      "color": [
+         "5",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "square": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "square",
+      "color": [
+         "4",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_square": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_square",
+      "color": [
+         "4",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "triangle": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "triangle",
+      "color": [
+         "3",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_triangle": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_triangle",
+      "color": [
+         "3",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "crystal": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "crystal",
+      "color": [
+         "4",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_crystal": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_crystal",
+      "color": [
+         "4",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "foot": {
+      "tiling": "0",
+      "type": "0",
+      "sprite": "foot",
+      "color": [
+         "3",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_foot": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_foot",
+      "color": [
+         "4",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "eye": {
+      "tiling": "2",
+      "type": "0",
+      "sprite": "eye",
+      "color": [
+         "3",
+         "1"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_eye": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_eye",
+      "color": [
+         "4",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "worm": {
+      "tiling": "2",
+      "type": "0",
+      "sprite": "worm",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_worm": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_worm",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_above": {
+      "tiling": "-1",
+      "type": "7",
+      "sprite": "text_above",
+      "color": [
+         "1",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_below": {
+      "tiling": "-1",
+      "type": "7",
+      "sprite": "text_below",
+      "color": [
+         "1",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_select": {
+      "tiling": "-1",
+      "type": "2",
+      "sprite": "text_select",
+      "color": [
+         "2",
+         "4"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "gem": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "gem",
+      "color": [
+         "4",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_gem": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_gem",
+      "color": [
+         "4",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_husks": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_husks",
+      "color": [
+         "6",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_trees": {
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_trees",
+      "color": [
+         "5",
+         "2"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_feeling": {
+      "tiling": "-1",
+      "type": "7",
+      "sprite": "text_feeling",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tags": null,
+      "source": "vanilla"
+   },
+   "text_paradox": {
+      "sprite": "text_paradox",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "cg5-mods"
+   },
+   "text_if": {
+      "sprite": "text_if",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "cg5-mods"
+   },
+   "text_those": {
+      "sprite": "text_those",
+      "tiling": "2",
+      "color": [
+         "3",
+         "3"
+      ],
+      "source": "cg5-mods"
+   },
+   "text_here": {
+      "sprite": "text_here",
+      "tiling": "2",
+      "color": [
+         "3",
+         "3"
+      ],
+      "source": "cg5-mods"
+   },
+   "text_there": {
+      "sprite": "text_there",
+      "tiling": "2",
+      "color": [
+         "1",
+         "4"
+      ],
+      "source": "cg5-mods"
+   },
+   "text_edge": {
+      "sprite": "text_edge",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "lily-and-patashu-mods"
+   },
+   "text_crash": {
+      "sprite": "text_crash",
+      "color": [
+         "1",
+         "1"
+      ],
+      "tiling": "-1",
+      "source": "lily-and-patashu-mods"
+   },
+   "text_cute": {
+      "sprite": "text_cute",
+      "color": [
+         "4",
+         "2"
+      ],
+      "tiling": "-1",
+      "source": "lily-and-patashu-mods"
+   },
+   "text_soft": {
+      "sprite": "text_soft",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "lily-and-patashu-mods"
+   },
+   "fox": {
+      "sprite": "fox",
+      "color": [
+         "4",
+         "2"
+      ],
+      "tiling": "-1",
+      "source": "misc"
+   },
+   "text_fox": {
+      "sprite": "text_fox",
+      "color": [
+         "4",
+         "1"
+      ],
+      "tiling": "-1",
+      "source": "misc"
+   },
+   "hempuli": {
+      "sprite": "hempuli",
+      "color": [
+         "4",
+         "2"
+      ],
+      "tiling": "-1",
+      "source": "misc"
+   },
+   "text_hempuli": {
+      "sprite": "text_hempuli",
+      "color": [
+         "4",
+         "2"
+      ],
+      "tiling": "-1",
+      "source": "misc"
+   },
+   "wug": {
+      "sprite": "wug",
+      "tiling": "2",
+      "color": [
+         "2",
+         "4"
+      ],
+      "source": "misc"
+   },
+   "text_wug": {
+      "sprite": "text_wug",
+      "color": [
+         "2",
+         "4"
+      ],
+      "tiling": "-1",
+      "source": "misc"
+   },
+   "sword": {
+      "sprite": "sword",
+      "tiling": "0",
+      "color": [
+         "0",
+         "3"
+      ],
+      "source": "misc"
+   },
+   "text_sword": {
+      "sprite": "text_sword",
+      "tiling": "-1",
+      "color": [
+         "0",
+         "3"
+      ],
+      "source": "misc"
+   },
+   "trident": {
+      "sprite": "trident",
+      "tiling": "0",
+      "color": [
+         "0",
+         "3"
+      ],
+      "source": "misc"
+   },
+   "ant": {
+      "sprite": "ant",
+      "tiling": "0",
+      "color": [
+         "0",
+         "3"
+      ],
+      "source": "misc"
+   },
+   "text_ant": {
+      "sprite": "text_ant",
+      "tiling": "-1",
+      "color": [
+         "0",
+         "3"
+      ],
+      "source": "misc"
+   },
+   "bulb": {
+      "sprite": "bulb",
+      "tiling": "-1",
+      "color": [
+         "2",
+         "4"
+      ],
+      "source": "misc"
+   },
+   "text_bulb": {
+      "sprite": "text_bulb",
+      "tiling": "-1",
+      "color": [
+         "2",
+         "4"
+      ],
+      "source": "misc"
+   },
+   "border": {
+      "sprite": "border",
+      "tiling": "-1",
+      "color": [
+         "1",
+         "0"
+      ],
+      "source": "misc"
+   },
+   "text_border": {
+      "sprite": "text_border",
+      "tiling": "-1",
+      "color": [
+         "1",
+         "0"
+      ],
+      "source": "misc"
+   },
+   "oatmeal": {
+      "sprite": "oatmeal",
+      "tiling": "-1",
+      "color": [
+         "6",
+         "2"
+      ],
+      "source": "misc"
+   },
+   "text_oatmeal": {
+      "sprite": "text_oatmeal",
+      "tiling": "-1",
+      "color": [
+         "6",
+         "2"
+      ],
+      "source": "misc"
+   },
+   "sand": {
+      "sprite": "sand",
+      "tiling": "1",
+      "color": [
+         "2",
+         "4"
+      ],
+      "source": "misc"
+   },
+   "text_sand": {
+      "sprite": "text_sand",
+      "tiling": "-1",
+      "color": [
+         "2",
+         "4"
+      ],
+      "source": "misc"
+   },
+   "cactus": {
+      "sprite": "cactus",
+      "tiling": "-1",
+      "color": [
+         "5",
+         "2"
+      ],
+      "source": "misc"
+   },
+   "text_cactus": {
+      "sprite": "text_cactus",
+      "tiling": "-1",
+      "color": [
+         "5",
+         "2"
+      ],
+      "source": "misc"
+   },
+   "hawke": {
+      "sprite": "hawke",
+      "tiling": "0",
+      "color": [
+         "0",
+         "3"
+      ],
+      "source": "misc"
+   },
+   "text_hawke": {
+      "sprite": "text_hawke",
+      "tiling": "-1",
+      "color": [
+         "1",
+         "4"
+      ],
+      "source": "misc"
+   },
+   "text_badbad": {
+      "sprite": "text_badbad",
+      "tiling": "-1",
+      "color": [
+         "1",
+         "4"
+      ],
+      "source": "misc"
+   },
+   "badbad": {
+      "sprite": "badbad",
+      "tiling": "2",
+      "color": [
+         "0",
+         "3"
+      ],
+      "source": "misc"
+   },
+   "text_reset": {
+      "sprite": "text_reset",
+      "tiling": "-1",
+      "color": [
+         "3",
+         "1"
+      ],
+      "source": "patashu-redux"
+   },
+   "text_with": {
+      "sprite": "text_with",
+      "tiling": "-1",
+      "color": [
+         "0",
+         "3"
+      ],
+      "source": "patashu-redux"
+   },
+   "goose": {
+      "sprite": "goose",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "3",
+      "source": "vanilla-extensions"
+   },
+   "level": {
+      "sprite": "level",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "vanilla-extensions"
+   },
+   "sale": {
+      "sprite": "sale",
+      "color": [
+         "4",
+         "2"
+      ],
+      "tiling": "-1",
+      "source": "vanilla-extensions"
+   },
+   "text_sale": {
+      "sprite": "text_sale",
+      "color": [
+         "4",
+         "2"
+      ],
+      "tiling": "-1",
+      "type": "0",
+      "source": "vanilla-extensions"
+   },
+   "spore": {
+      "sprite": "spore",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "vanilla-extensions"
+   },
+   "edge": {
+      "sprite": "edge",
+      "color": [
+         "1",
+         "0"
+      ],
+      "tiling": "-1",
+      "source": "vanilla-extensions"
+   },
+   
+   "seastar": {
+      "sprite": "seastar",
+      "color": [
+         "2",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "vanilla"
+   },
+   "error": {
+      "sprite": "error",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "vanilla"
+   },
+   "what": {
+      "sprite": "what",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "vanilla"
+   },
+   "door_map": {
+      "sprite": "door_map",
+      "color": [
+         "2",
+         "2"
+      ],
+      "tiling": "-1",
+      "source": "vanilla"
+   },
+   "grid": {
+      "sprite": "grid",
+      "color": [
+         "4",
+         "2"
+      ],
+      "tiling": "-1",
+      "source": "vanilla"
+   },
+   "island": {
+      "sprite": "island",
+      "tiling": "1",
+      "color": [
+         "6",
+         "1"
+      ],
+      "source": "vanilla"
+   },
+   "tree2": {
+      "sprite": "tree2",
+      "color": [
+         "5",
+         "2"
+      ],
+      "tiling": "-1",
+      "source": "vanilla"
+   },
+   "wall_map": {
+      "sprite": "wall_map",
+      "tiling": "1",
+      "color": [
+         "1",
+         "1"
+      ],
+      "source": "vanilla"
+   },
+   "tree_map": {
+      "sprite": "tree_map",
+      "tiling": "-1",
+      "color": [
+         "5",
+         "2"
+      ],
+      "source": "vanilla"
+   },
+   "husk_map": {
+      "sprite": "husk_map",
+      "tiling": "-1",
+      "color": [
+         "6",
+         "1"
+      ],
+      "source": "vanilla"
+   },
+   "icon": {
+      "sprite": "icon",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "vanilla"
+   },
+   "icon_abc": {
+      "sprite": "icon_abc",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "vanilla"
+   },
+   "icon_abstract": {
+      "sprite": "icon_abstract",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "vanilla"
+   },
+   "icon_cave": {
+      "sprite": "icon_cave",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "vanilla"
+   },
+   "icon_dust": {
+      "sprite": "icon_dust",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "vanilla"
+   },
+   "icon_fall": {
+      "sprite": "icon_fall",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "vanilla"
+   },
+   "icon_forest": {
+      "sprite": "icon_forest",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "vanilla"
+   },
+   "icon_garden": {
+      "sprite": "icon_garden",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "vanilla"
+   },
+   "icon_island": {
+      "sprite": "icon_island",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "vanilla"
+   },
+   "icon_lake": {
+      "sprite": "icon_lake",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "vanilla"
+   },
+   "icon_level": {
+      "sprite": "icon_level",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "vanilla"
+   },
+   "icon_meta": {
+      "sprite": "icon_meta",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "vanilla"
+   },
+   "icon_mountain": {
+      "sprite": "icon_mountain",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "vanilla"
+   },
+   "icon_ruins": {
+      "sprite": "icon_ruins",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "vanilla"
+   },
+   "icon_space": {
+      "sprite": "icon_space",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "vanilla"
+   },
+   "text_what": {
+      "sprite": "text_what",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "-1",
+      "type": "0",
+      "source": "vanilla"
+   },
+   "text_stick": {
+      "sprite": "text_stick",
+      "color": [
+         "5",
+         "3"
+      ],
+      "tiling": "-1",
+      "type": "2",
+      "source": "vanilla"
+   },
+   "text_ok": {
+      "sprite": "text_ok",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "-1",
+      "type": "0",
+      "source": "vanilla"
+   },
+   "text_p1": {
+      "sprite": "text_p1",
+      "color": [
+         "4",
+         "1"
+      ],
+      "tiling": "-1",
+      "type": "2",
+      "source": "vanilla"
+   },
+   "text_p2": {
+      "sprite": "text_p2",
+      "color": [
+         "4",
+         "1"
+      ],
+      "tiling": "-1",
+      "type": "2",
+      "source": "vanilla"
+   },
+   "hi": {
+      "sprite": "hi",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "vanilla"
+   },
+   "smiley": {
+      "sprite": "smiley",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "vanilla"
+   },
+   "default": {
+      "sprite": "default",
+      "color": [
+         "0",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "vanilla"
+   },
+   "rain": {
+      "sprite": "rain",
+      "color": [
+         "1",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "vanilla"
+   },
+   "text_rain": {
+      "sprite": "text_rain",
+      "color": [
+         "1",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "vanilla"
+   },
+   "text_falldown": {
+      "sprite": "text_falldown",
+      "color": [
+         "5",
+         "3"
+      ],
+      "tiling": "-1",
+      "source": "vanilla"
+   }
+}
