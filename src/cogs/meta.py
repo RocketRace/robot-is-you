@@ -133,7 +133,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
         permissions = discord.Permissions(permissions=379968)
         invite = discord.utils.oauth_url(client_id=self.bot.user.id, permissions=permissions)
         about_embed.add_field(name="Links", value="[GitHub repository](https://github.com/RocketRace/robot-is-you)\n" + \
-            f"[Invite link]({invite})" + \
+            f"[Invite link]({invite})\n" + \
             "[Support guild](https://discord.gg/rMX3YPK)"
         )
         ut = datetime.utcnow() - self.bot.started
