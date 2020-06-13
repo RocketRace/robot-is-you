@@ -9,34 +9,8 @@ from discord.ext  import commands
 from json         import load
 from timeit       import timeit
 
-logging.basicConfig(filename="log.txt", level=logging.WARNING)
-
-# Sets up the configuration
-configuration = None
-with open("setup.json") as config_file:
-    configuration = load(config_file)
-
-BOT_TOKEN = configuration.get("token")
-DBL_TOKEN = configuration.get("dbl") or ""
-DEFAULT_ACTIVITY = discord.Game(name=configuration.get("activity"))
-COGS = configuration.get("cogs")
-PREFIXES = configuration.get("prefixes")
-PREFIXES_MENTION = commands.when_mentioned_or(*PREFIXES) if configuration.get("mention") else PREFIXES
-WEBHOOK_ID = configuration.get("webhook")
-EMBED_COLOR = configuration.get("color")
-VANILLA = configuration.get("vanilla")
-
 # Uses a custom bot class
 class BabaBot(commands.Bot):
-    def __init__(self, command_prefix, webhook_id, embed_color, vanilla, help_command=None, description=None, top=None, **options):
-        self.loading = False
-        self.started = datetime.utcnow()
-        self.vanilla_only = bool(vanilla)
-        self.embed_color = embed_color
-        self.webhook_id = webhook_id
-        self._top = top
-        super().__init__(command_prefix, help_command=help_command, description=description, **options)
-    
     # Custom send that sends content in an embed
     # Note that due to AllowedMentions, mentions do not have to be "sanitized"
     async def send(self, ctx, content, embed=None, tts=False, file=None):
@@ -56,15 +30,23 @@ class BabaBot(commands.Bot):
     # Custom error message implementation
     # Sends the error message. Automatically deletes it after some time.
     async def error(self, ctx, title, content=None):
-        _title = f"{title}"
         description = content if content else None
         embed = discord.Embed(
-            title=_title, 
+            title=title, 
             description=description,
             color=self.embed_color
         )
         await ctx.message.add_reaction("⚠️")
         await ctx.send(embed=embed, delete_after=20)
+
+# Sets up the config
+with open("config/setup.json") as config_file:
+    conf = load(config_file)
+
+logging.basicConfig(filename=conf.get("log_file"), level=logging.WARNING)
+default_activity = discord.Game(name=conf.get("activity"))
+prefixes = conf.get("prefixes")
+bot_trigger = commands.when_mentioned_or(*prefixes) if conf.get("trigger_on_mention") else prefixes
 
 # Requires discord.py v1.4+
 default_mentions = discord.AllowedMentions(everyone=False, roles=False)
@@ -72,19 +54,13 @@ default_mentions = discord.AllowedMentions(everyone=False, roles=False)
 # Establishes the bot
 bot = BabaBot(
     # Prefixes
-    PREFIXES_MENTION,
-    # Logger
-    WEBHOOK_ID, 
-    # Misc values
-    EMBED_COLOR, 
-    VANILLA, 
-    top=DBL_TOKEN,
+    bot_trigger,
     # Other behavior parameters
     case_insensitive=True, 
-    activity=DEFAULT_ACTIVITY, 
-    owner_id = 156021301654454272,
-    description="*An entertainment bot for rendering levels and custom scenes based on the indie game Baba Is You.*",
-    # Never mention roles or @everyone / @here
+    activity=default_activity, 
+    owner_id=conf.get("owner_id"),
+    description=conf.get("description"),
+    # Never mention roles, @everyone or @here
     allowed_mentions=default_mentions, 
     # Disable the member cache
     fetch_offline_members=False,
@@ -94,14 +70,21 @@ bot = BabaBot(
     max_messages=None
 )
 
-bot.prefixes = PREFIXES
+bot.started = datetime.utcnow()
+bot.loading = False
+bot.embed_color = conf.get("embed_color")
+bot.webhook_id = conf.get("webhook_id")
+bot.prefixes = prefixes
 bot.exit_code = 0
 
 # Loads the modules of the bot
-if __name__ == "__main__":
-    for cog in COGS:
-        bot.load_extension(cog)
+for cog in conf.get("cogs"):
+    bot.load_extension(cog)
 
-bot.run(BOT_TOKEN, bot = True, reconnect = True)
+# Run
+with open(conf.get("auth_file")) as f:
+    auth_conf = load(f)
+
+bot.run(auth_conf.get("token"))
 
 sys.exit(bot.exit_code)
