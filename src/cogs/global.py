@@ -249,24 +249,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             "brown":(6, 1),
         }
 
-        icons = [
-            "icon", 
-            "icon_abc", 
-            "icon_abstract",
-            "icon_cave",
-            "icon_dust",
-            "icon_fall",
-            "icon_forest",
-            "icon_garden",
-            "icon_island",
-            "icon_lake",
-            "icon_level",
-            "icon_meta",
-            "icon_mountain",
-            "icon_ruins",
-            "icon_space",
-        ]
-
         clone_grid = [[[word for word in stack] for stack in row] for row in grid]
         for y, row in enumerate(clone_grid):
             for x, stack in enumerate(row):
