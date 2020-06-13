@@ -5,7 +5,7 @@
     "trigger_on_mention" : true,
     "webhook_id": 594692503014473729,
     "owner_id" : 156021301654454272,
-    "embed_color" : 15335523,
+    "embed_color" : 9077635,
     "auth_file" : "config/auth.json",
     "log_file" : "log.txt",
     "cogs" : [
