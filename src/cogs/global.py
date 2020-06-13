@@ -99,13 +99,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         background is a palette index. If given, the image background color is set to that color, otherwise transparent. Background images overwrite this. 
         '''
         frames = []
-        if palette == "hide":
-            # Silly "hide" palette that returns a blank render
-            render_frame = Image.new("RGBA", (48 * width, 48 * height))
-            for _ in range(3):
-                frames.append(render_frame)
-            return self.save_frames(frames, out)
-
         palette_img = Image.open(f"data/palettes/{palette}.png").convert("RGB")
 
         # Calculates padding based on image sizes
@@ -287,8 +280,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                         final_color = None
                     if tile in ("-", "empty"):
                         grid[y][x][z] = Tile()
-                    elif tile in icons:
-                        grid[y][x][z] = Tile(tile, 0)
                     else:
                         variant = "0"
                         if not is_level:
@@ -299,6 +290,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                             else:
                                 variants = []
                         
+                        if "hide" in variants:
+                            grid[y][x][z] = Tile()
+                            continue
+
                         tile_data = self.bot.get_cog("Admin").tile_data.get(tile)
                         if is_level:
                             if self.level_tile_override.get(tile) is not None:
@@ -595,9 +590,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 return await self.bot.error(ctx, f"Too many tiles ({area}).", f"You may only render up to {render_limit} tiles at once, including empty tiles.")
             elif area == 0:
                 return await self.bot.error(ctx, f"Can't render nothing.")
-            # Now that we have width and height, we can accurately render the "hide" palette entries :^)
-            if palette == "hide":
-                word_grid = [[["-" for tile in stack] for stack in row] for row in word_grid]
 
             # Pad the word rows from the end to fit the dimensions
             [row.extend([["-"]] * (width - len(row))) for row in word_grid]

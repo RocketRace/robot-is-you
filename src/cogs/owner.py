@@ -659,8 +659,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         self.bot.loading = True
 
         # The palette images
-        # "hide" is a joke palette that doesn't render anything
-        palettes = [p for p in palettes if p != "hide"]
         imgs = [Image.open(f"data/palettes/{palette}.png").convert("RGB") for palette in palettes]
         # The RGB values of the palette
         colors = [[[(img.getpixel((x,y))) for y in range(5)] for x in range(7)] for img in imgs]

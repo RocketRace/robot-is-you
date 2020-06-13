@@ -15,7 +15,6 @@
         "src.cogs.errorhandler",
         "src.cogs.reader",
         "src.cogs.utilities",
-        "src.cogs.top",
         "jishaku"
     ]
 }
