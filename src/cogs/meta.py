@@ -127,11 +127,14 @@ class MetaCog(commands.Cog, name="Other Commands"):
             colour=self.bot.embed_color, 
             description="\n".join([
                 f"{ctx.me.name} - Bot for Discord based on the indie game Baba Is You. "
-                "Written by RocketRace#0798."
+                "Written by RocketRace#0798 using the [discord.py](https://github.com/Rapptz/discord.py) library."
             ])
         )
+        permissions = discord.Permissions(permissions=379968)
+        invite = discord.utils.oauth_url(client_id=self.bot.user.id, permissions=permissions)
         about_embed.add_field(name="Links", value="[GitHub repository](https://github.com/RocketRace/robot-is-you)\n" + \
-            "[Public page](https://top.gg/bot/480227663047294987/vote)"
+            f"[Invite link]({invite})" + \
+            "[Support guild](https://discord.gg/rMX3YPK)"
         )
         ut = datetime.utcnow() - self.bot.started
         stats = "".join([
