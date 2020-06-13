@@ -234,9 +234,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             for extension in extensions:
                 self.bot.reload_extension(extension)
             await ctx.send("Reloaded all extensions.")
-        elif "cogs." + cog in self.bot.extensions.keys():
-            self.bot.reload_extension("cogs." + cog)
-            await ctx.send(f"Reloaded extension `{cog}` from `cogs/{cog}.py`.")
+        elif "src.cogs." + cog in self.bot.extensions.keys():
+            self.bot.reload_extension("src.cogs." + cog)
+            await ctx.send(f"Reloaded extension `{cog}` from `src/cogs/{cog}.py`.")
         else:
             await ctx.send("Unknown extension provided.")
 
