@@ -1,4 +1,4 @@
-discord.py==1.4
-Pillow==6.1
-jishaku==1.17
-psutil==5.7
+git+git://github.com/Rapptz/discord.py.git@sharding-rework#egg=discord.py
+Pillow>=6.2.2
+jishaku>=1.18
+psutil>=5.7
