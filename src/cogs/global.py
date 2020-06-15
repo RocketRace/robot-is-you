@@ -13,6 +13,7 @@ from PIL         import Image
 from random      import choices, random
 from string      import ascii_lowercase
 from src.utils   import Tile
+from time        import time
 
 def flatten(items, seqtypes=(list, tuple)):
     '''
@@ -610,9 +611,12 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             formatted = timestamp.strftime(format_string)
             filename = f"{formatted}.gif"
             task = partial(self.magick_images, word_grid, width, height, palette=palette, background=background, out=buffer)
+            start = time()
             await self.bot.loop.run_in_executor(None, task)
+            delta = time() - start
         # Sends the image through discord
-        await ctx.send(content=ctx.author.mention, file=discord.File(buffer, filename=filename, spoiler=spoiler))
+        msg = f"{ctx.author.mention}\n*Rendered in {delta:.2f} s*"
+        await ctx.send(content=msg, file=discord.File(buffer, filename=filename, spoiler=spoiler))
         
 
     @commands.command()
