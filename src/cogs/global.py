@@ -615,7 +615,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             await self.bot.loop.run_in_executor(None, task)
             delta = time() - start
         # Sends the image through discord
-        msg = f"{ctx.author.mention} *Rendered in {delta:3f} s*"
+        msg = f"{ctx.author.mention}\n*Rendered in {delta:.2f} s*"
         await ctx.send(content=msg, file=discord.File(buffer, filename=filename, spoiler=spoiler))
         
 
