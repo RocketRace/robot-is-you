@@ -100,13 +100,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         background is a palette index. If given, the image background color is set to that color, otherwise transparent. Background images overwrite this. 
         '''
         frames = []
-        if palette == "hide":
-            # Silly "hide" palette that returns a blank render
-            render_frame = Image.new("RGBA", (48 * width, 48 * height))
-            for _ in range(3):
-                frames.append(render_frame)
-            return self.save_frames(frames, out)
-
         palette_img = Image.open(f"data/palettes/{palette}.png").convert("RGB")
 
         # Calculates padding based on image sizes
@@ -131,16 +124,15 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                         else:
                             animation_offset = frame
                         if tile.color is None:
-                            if tile.name.startswith("icon"):
-                                path = f"target/color/{palette}/{tile.name}-{tile.variant}-{animation_offset}-.png"
-                            else:
-                                path = f"target/color/{palette}/{tile.name}-{tile.variant}-{animation_offset}-.png"
+                            path = f"target/color/{palette}/{tile.name}-{tile.variant}-{animation_offset}-.png"
                             img = Image.open(path)
                         else:
                             if tile.name == "icon":
                                 path = f"data/sprites/vanilla/icon.png"
-                            elif tile.name.startswith("icon"):
+                            elif tile.name in ["smiley", "hi"] or tile.name.startswith("icon"):
                                 path = f"data/sprites/vanilla/{tile.name}_1.png"
+                            elif tile.name == "default":
+                                path = f"data/sprites/vanilla/default_{animation_offset + 1}.png"
                             else:
                                 maybe_sprite = self.bot.get_cog("Admin").tile_data.get(tile.name).get("sprite")
                                 if maybe_sprite != tile.name:
@@ -258,24 +250,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             "brown":(6, 1),
         }
 
-        icons = [
-            "icon", 
-            "icon_abc", 
-            "icon_abstract",
-            "icon_cave",
-            "icon_dust",
-            "icon_fall",
-            "icon_forest",
-            "icon_garden",
-            "icon_island",
-            "icon_lake",
-            "icon_level",
-            "icon_meta",
-            "icon_mountain",
-            "icon_ruins",
-            "icon_space",
-        ]
-
         clone_grid = [[[word for word in stack] for stack in row] for row in grid]
         for y, row in enumerate(clone_grid):
             for x, stack in enumerate(row):
@@ -289,8 +263,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                         final_color = None
                     if tile in ("-", "empty"):
                         grid[y][x][z] = Tile()
-                    elif tile in icons:
-                        grid[y][x][z] = Tile(tile, 0)
                     else:
                         variant = "0"
                         if not is_level:
@@ -301,6 +273,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                             else:
                                 variants = []
                         
+                        if "hide" in variants:
+                            grid[y][x][z] = Tile()
+                            continue
+
                         tile_data = self.bot.get_cog("Admin").tile_data.get(tile)
                         if is_level:
                             if self.level_tile_override.get(tile) is not None:
@@ -554,7 +530,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 flag_match = re.fullmatch(r"(--palette=|-p=|palette:)(\w+)", flag)
                 if flag_match:
                     palette = flag_match.group(2)
-                    if palette + ".png" not in listdir("palettes"):
+                    if palette + ".png" not in listdir("data/palettes"):
                         return await self.bot.error(ctx, f"Could not find a palette with name \"{palette}\".")
                     to_delete.append((x, y))
             for x, y in reversed(to_delete):
@@ -597,9 +573,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 return await self.bot.error(ctx, f"Too many tiles ({area}).", f"You may only render up to {render_limit} tiles at once, including empty tiles.")
             elif area == 0:
                 return await self.bot.error(ctx, f"Can't render nothing.")
-            # Now that we have width and height, we can accurately render the "hide" palette entries :^)
-            if palette == "hide":
-                word_grid = [[["-" for tile in stack] for stack in row] for row in word_grid]
 
             # Pad the word rows from the end to fit the dimensions
             [row.extend([["-"]] * (width - len(row))) for row in word_grid]
