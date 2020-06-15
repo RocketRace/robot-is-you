@@ -6,6 +6,7 @@ target/color/*
 target/renders/*
 target/letters/big/*
 target/letters/small/*
+target/tilelist.txt
 cache/*
 src/__pycache__
 src/cogs/__pycache__
