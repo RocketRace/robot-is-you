@@ -2481,7 +2481,7 @@ particletypes =
 	},
 	glitter =
 	{
-		amount = 50,
+		amount = 60,
 		animation = 8,
 		colour = {3, 1},
 		extra = 
@@ -2548,7 +2548,7 @@ particletypes =
 
 namegivingtitles =
 {
-	[1] = {"namegiving_newworldname","maxlen16"},
+	[1] = {"namegiving_newworldname","maxlen24"},
 	[2] = {"namegiving_changelevelname","maxlen24"},
 	[3] = {"namegiving_newlevelname","maxlen24"},
 	[4] = {"namegiving_changeunitname","lower,maxlen24"},
@@ -2558,7 +2558,7 @@ namegivingtitles =
 	[8] = {"namegiving_newthemename","maxlen16"},
 	[9] = {"namegiving_levelauthor","maxlen16"},
 	[10] = {"namegiving_worldauthor","maxlen16"},
-	[11] = {"namegiving_changeworldname","maxlen16"},
+	[11] = {"namegiving_changeworldname","maxlen24"},
 	[12] = {"namegiving_downloadcode","upper,maxlen9"},
 	[13] = {"namegiving_levelsearchstring","lower,maxlen24"},
 	[14] = {"namegiving_spritesearchstring","lower,maxlen24"},
@@ -2582,16 +2582,22 @@ bicons =
 	t_rect = 17,
 	t_frect = 18,
 	t_erase = 19,
-	cross = 20,
-	search = 21,
-	rsearch = 22,
-	tags = 23,
-	o_add = 24,
-	o_del = 25,
-	o_edit = 26,
-	l_separate = 27,
-	l_pairs = 28,
-	swap = 29,
+	t_select = 20,
+	cross = 21,
+	search = 22,
+	rsearch = 23,
+	tags = 24,
+	o_add = 25,
+	o_del = 26,
+	o_edit = 27,
+	l_separate = 28,
+	l_pairs = 29,
+	swap = 30,
+	m_start = 31,
+	m_settings = 32,
+	m_credits = 33,
+	m_erase = 34,
+	m_return = 35,
 }
 
 lookup_table =
