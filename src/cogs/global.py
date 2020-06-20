@@ -9,8 +9,8 @@ from io          import BytesIO
 from json        import load
 from os          import listdir
 from os.path     import isfile
-from PIL         import Image
-from random      import choices, random
+from PIL         import Image, ImageChops
+from random      import choice, choices, random
 from string      import ascii_lowercase
 from src.utils   import Tile
 from time        import time
@@ -117,7 +117,12 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 for x, stack in enumerate(row):
                     temp_stack = []
                     for z, tile in enumerate(stack):
-                        if tile.name is None: continue
+                        if tile.name is None: 
+                            continue
+                        # Custom tiles
+                        if tile.custom:
+                            temp_stack.append(tile.images[frame])
+                            continue
                         # Get the sprite used
                         if rand:
                             animation_offset = (hash(x + y + z) + frame) % 3
@@ -214,6 +219,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             render_frame = render_frame.resize((2 * total_width, 2 * total_height), resample=Image.NEAREST)
             # Saves the final image
             frames.append(render_frame)
+            render_frame.save(f"target/test_{i}.png")
 
         self.save_frames(frames, out)
 
@@ -457,15 +463,121 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                         grid[y][x][z] = Tile(tile, final_variant, color, source)
         return grid
 
-    @commands.command(hidden=True)
-    @commands.cooldown(2, 10, type=commands.BucketType.channel)
-    async def custom(self, ctx):
-        msg = discord.Embed(title="Custom Tiles?", description="Want custom tiles added to the bot? " + \
-            "DM @RocketRace#0798 about it! \nI can help you if you send me:\n * **The sprites you want added**, " + \
-            "preferably in an archived file (without any color, and in 24x24)\n * **The color of the sprites**, " + \
-            "an (x,y) coordinate on the default Baba color palette.\nFor examples of this, check the `values.lua` " + \
-            "file in your Baba Is You local files!", color=self.bot.embed_color)
-        await self.bot.send(ctx, embed=msg)
+    @commands.command()
+    @commands.cooldown(2, 10, commands.BucketType.channel)
+    async def make(self, ctx, text, color = None, is_property = None):
+        '''
+        Tries to create a new text sprite.
+        '''
+        # These colors are based on the default palette
+        valid_colors = {
+            "red":(0.88671875, 0.328125, 0.25390625),
+            "orange":(0.8828125, 0.59375, 0.33984375),
+            "yellow":(),
+            "lime":(),
+            "green":(),
+            "cyan":(),
+            "blue":(),
+            "purple":(),
+            "pink":(),
+            "rosy":(),
+            "white":(1, 1, 1),
+            "grey":(),
+            "black":(0, 0, 0),
+            "brown":(),
+        }
+        if color is not None:
+            if color.startswith("#") or color.startswith("0x"):
+                int_color = int(color[-6:], base=16)
+                byte_color = (int_color >> 16, (int_color & 255 << 8) >> 8, int_color & 255)
+                tile_color = (byte_color[0] / 256, byte_color[1] / 256, byte_color[2] / 256)
+            elif color in valid_colors:
+                tile_color = valid_colors[color]
+        else:
+            tile_color = (1, 1, 1)
+        if is_property == "property":
+            buffer = self.generate_tile(text, tile_color, True)
+        else:
+            buffer = self.generate_tile(text, tile_color, False)
+        await ctx.send(file=discord.File(buffer, filename=f"custom_'{text}'.gif"))
+
+    def generate_tile(self, text, color, is_property):
+        size = len(text)
+        if size == 1:
+            paths = [
+                f"data/sprites/vanilla/text_{text}_0"
+            ]
+            positions = [
+                (12, 12)
+            ]
+        else:
+            if size <= 3:
+                scale = "big"
+                data = self.bot.get_cog("Admin").letter_widths["big"]
+                # Attempt to have 1 pixel gaps between letters
+                arrangement = [24 // size] * size
+                positions = [(int(24 // size * (pos + 0.5)), 11) for pos in range(size)]
+            else:
+                scale = "small"
+                data = self.bot.get_cog("Admin").letter_widths["small"]
+                # Prefer more on the top ;)
+                split = [(size + 1) // 2, size // 2]
+                arrangement = [24 // split[0]] * split[0] + [23 // split[1]] * split[1]
+                positions = [(int(24 // split[0] * (pos + 0.5)), 6) for pos in range(split[0])] + \
+                    [(int(24 // split[1] * (pos + 0.5)), 18) for pos in range(split[1])]
+            try:
+                widths = {x: data[x] for x in text}
+            except KeyError as e:
+                ... # TODO
+            
+            final_arrangement = []
+            for char, limit in zip(text, arrangement):
+                top = 0
+                for width in widths[char]:
+                    if top <= width <= limit:
+                        top = width
+                if top == 0:
+                    ... # TODO
+                final_arrangement.append(top)
+
+            paths = [
+                f"target/letters/{scale}/{char}/{width}/" + \
+                    choice([
+                        i for i in listdir(f"target/letters/{scale}/{char}/{width}") if i.endswith("0.png")
+                    ])[:-6]
+                for char, width in zip(text, final_arrangement)
+            ]
+        images = []
+        for frame in range(3):
+            letter_sprites = [Image.open(f"{path}_{frame + (size == 1)}.png").convert("1") for path in paths]
+            base = Image.new("1", (24, 24), color=0)
+            if is_property:
+                plate = Image.open(f"data/plates/plate_{frame}.png").convert("1")
+                base = ImageChops.invert(ImageChops.add(base, plate))
+            
+            for (x, y), sprite in zip(positions, letter_sprites):
+                s_x, s_y = sprite.size
+                base.paste(sprite, box=(x - s_x // 2, y - s_y // 2), mask=sprite)
+
+            if is_property:
+                base = ImageChops.invert(base)
+
+            # Cute alignment
+            color_matrix = (color[0], 0, 0, 0,
+                         0, color[1], 0, 0,
+                      0, 0, color[2], 0,)
+
+            alpha = base.copy()
+            base = base.convert("RGB")
+            base = base.convert("RGB", matrix=color_matrix)
+            base.putalpha(alpha)
+            base.save(f"target/abc_{frame}.png")
+            images.append(base)
+        
+        buffer = BytesIO()
+        self.magick_images([[[Tile(name=text, images=images)]]], 1, 1, out=buffer)
+        return buffer
+        
 
     async def render_tiles(self, ctx, *, objects, rule):
         '''
