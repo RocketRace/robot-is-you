@@ -43,7 +43,7 @@ $1,4Português$0,3 $4,0-$4,2 Luca Macedo
 $1,4Português (BR)$0,3 $4,0-$4,2 Vile Lasagna
 $1,4Thai$0,3 $4,0-$4,2 Tanakorn Tantisitikul
 $1,4Turkish$0,3 $4,0-$4,2 Doruk Balci
-$1,4Vietnamese$0,3 $4,0-$4,2 HLongNV
+$1,4Vietnamese$0,3 $4,0-$4,2 Nguyen Vu Hai Long
  
 #credits_help
 $4,2capsulehero $4,0-$4,2 BearishMushroom
