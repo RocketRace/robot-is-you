@@ -509,7 +509,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         # In alphabetical order, to make sure Patashu's redux mod overwrites the old mod
         custom_data.sort() 
         for f in custom_data:
-            if f != "vanilla.json" and self.bot.vanilla_only: break
             dat = None
             with open(f"data/custom/{f}") as fp:
                 dat = json.load(fp)
