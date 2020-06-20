@@ -679,30 +679,16 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
         self.bot.loading = False
 
-    @commands.command()
-    @commands.is_owner()
-    async def make(self, ctx, name, color = ..., tile_type = ...):
-        two_rows = len(name) >= 4
-
-        if two_rows:
-            if not all(map(lambda c: c in self.letter_widths["small"], name)):
-                return await ctx.send("Go on...")
-
-        else:
-            if not all(map(lambda c: c in self.letter_widths["big"], name)):
-                return await ctx.send("Go on...")
-
-
     def initializeletters(self):
         big = {}
         small = {}
         for char in listdir("target/letters/big"):
             for width in listdir(f"target/letters/big/{char}"):
-                big.setdefault(char, []).append(width)
+                big.setdefault(char, set()).add(int(width))
 
         for char in listdir("target/letters/small"):
             for width in listdir(f"target/letters/small/{char}"):
-                big.setdefault(char, []).append(width)
+                small.setdefault(char, set()).add(int(width))
 
         self.letter_widths = {"big":big, "small":small}
 
@@ -712,7 +698,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         '''
         Scrapes individual letters from vanilla sprites.
         '''
-        ignored = json.load(open("cache/letterignore.json"))
+        ignored = json.load(open("config/letterignore.json"))
 
         def check(data):
             return all([
@@ -743,9 +729,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
         # Background plates for type-2 text,
         # in 1 bit per pixel depth
-        plate_0 = Image.open("plates/plate_0.png").convert("RGBA").getchannel("A").convert("1")
-        plate_1 = Image.open("plates/plate_1.png").convert("RGBA").getchannel("A").convert("1")
-        plate_2 = Image.open("plates/plate_2.png").convert("RGBA").getchannel("A").convert("1")
+        plate_0 = Image.open("data/plates/plate_0.png").convert("RGBA").getchannel("A").convert("1")
+        plate_1 = Image.open("data/plates/plate_1.png").convert("RGBA").getchannel("A").convert("1")
+        plate_2 = Image.open("data/plates/plate_2.png").convert("RGBA").getchannel("A").convert("1")
         
         # Maps each character to three bounding boxes + images
         # (One box + image for each frame of animation)
