@@ -219,7 +219,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             render_frame = render_frame.resize((2 * total_width, 2 * total_height), resample=Image.NEAREST)
             # Saves the final image
             frames.append(render_frame)
-            render_frame.save(f"target/test_{i}.png")
 
         self.save_frames(frames, out)
 
@@ -291,7 +290,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 tile_data = self.level_tile_override[tile]
 
                         if tile_data is None:
-                            raise FileNotFoundError(word)
+                            if tile.startswith("text_"):
+                                grid[y][x][z] = self.make_custom_tile(tile, variants)
+                                continue
 
                         source = tile_data.get("source") or "vanilla"
 
@@ -475,18 +476,18 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         valid_colors = {
             "red":(0.88671875, 0.328125, 0.25390625),
             "orange":(0.8828125, 0.59375, 0.33984375),
-            "yellow":(),
-            "lime":(),
-            "green":(),
-            "cyan":(),
-            "blue":(),
-            "purple":(),
-            "pink":(),
-            "rosy":(),
+            "yellow":(0.92578125, 0.87890625, 0.5390625),
+            "lime":(0.64453125, 0.6875, 0.28125),
+            "green":(0.36328125, 0.5078125, 0.23828125),
+            "cyan":(0.5234375, 0.78125, 0.88671875),
+            "blue":(0.3828125, 0.6171875, 0.80859375),
+            "purple":(0.55078125, 0.375, 0.60546875),
+            "pink":(0.83984375, 0.234375, 0.41796875),
+            "rosy":(0.91015625, 0.57421875, 0.78515625),
             "white":(1, 1, 1),
-            "grey":(),
-            "black":(0, 0, 0),
-            "brown":(),
+            "grey":(0.44921875, 0.44921875, 0.44921875),
+            "black":(0.03125, 0.03125, 0.03125),
+            "brown":(0.55859375, 0.40234375, 0.25390625),
         }
         if color is not None:
             if color.startswith("#") or color.startswith("0x"):
@@ -503,15 +504,44 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             buffer = self.generate_tile(text, tile_color, False)
         await ctx.send(file=discord.File(buffer, filename=f"custom_'{text}'.gif"))
 
+    def make_custom_tile(self, text, variants):
+        valid_colors = {
+            "red":(0.88671875, 0.328125, 0.25390625),
+            "orange":(0.8828125, 0.59375, 0.33984375),
+            "yellow":(0.92578125, 0.87890625, 0.5390625),
+            "lime":(0.64453125, 0.6875, 0.28125),
+            "green":(0.36328125, 0.5078125, 0.23828125),
+            "cyan":(0.5234375, 0.78125, 0.88671875),
+            "blue":(0.3828125, 0.6171875, 0.80859375),
+            "purple":(0.55078125, 0.375, 0.60546875),
+            "pink":(0.83984375, 0.234375, 0.41796875),
+            "rosy":(0.91015625, 0.57421875, 0.78515625),
+            "white":(1, 1, 1),
+            "grey":(0.44921875, 0.44921875, 0.44921875),
+            "black":(0.03125, 0.03125, 0.03125),
+            "brown":(0.55859375, 0.40234375, 0.25390625),
+        }
+        color = (1,1,1)
+        for variant in variants:
+            if variant not in valid_colors:
+                raise ValueError(text, variant, "variant")
+            color = valid_colors[variant]
+        return self.generate_tile(text[5:], color, False)
+
     def generate_tile(self, text, color, is_property):
         size = len(text)
         if size == 1:
-            paths = [
-                f"data/sprites/vanilla/text_{text}_0"
-            ]
-            positions = [
-                (12, 12)
-            ]
+            if text in self.bot.get_cog("Admin").letter_widths:
+                paths = [
+                    f"data/sprites/vanilla/text_{text}_0"
+                ]
+                positions = [
+                    (12, 12)
+                ]
+            else:
+                raise ValueError(text, text, "char")
+        elif size > 10:
+            raise ValueError(text, None, "width")
         else:
             if size <= 3:
                 scale = "big"
@@ -530,7 +560,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             try:
                 widths = {x: data[x] for x in text}
             except KeyError as e:
-                ... # TODO
+                raise ValueError(text, e.args[0], "char")
+
             
             final_arrangement = []
             for char, limit in zip(text, arrangement):
@@ -539,7 +570,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     if top <= width <= limit:
                         top = width
                 if top == 0:
-                    ... # TODO
+                    raise ValueError(text, char, "width")
                 final_arrangement.append(top)
 
             paths = [
@@ -573,12 +604,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             base = base.convert("RGB")
             base = base.convert("RGB", matrix=color_matrix)
             base.putalpha(alpha)
-            base.save(f"target/abc_{frame}.png")
             images.append(base)
         
-        buffer = BytesIO()
-        self.magick_images([[[Tile(name=text, images=images)]]], 1, 1, out=buffer)
-        return buffer
+        return Tile(name=text, images=images)
         
 
     async def render_tiles(self, ctx, *, objects, rule):
@@ -694,29 +722,44 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             # Throws an exception which sends an error message if a word is not found.
             
             # Handles variants based on `:` suffixes
+            start = time()
             try:
                 word_grid = self.handle_variants(word_grid)
-            except FileNotFoundError as e:
-                tile_data = self.bot.get_cog("Admin").tile_data
-                tile = e.args[0]
-                variants = None
-                if ":" in tile:
-                    variants = ":" + ":".join(tile.split(":")[1:])
-                    tile = tile.split(":")[0]
-                # Error cases
-                if tile_data.get(tile) is not None:
-                    if variants is None:
-                        return await self.bot.error(ctx, f"The tile `{tile}` exists but a sprite could not be found for it.")
-                    return await self.bot.error(ctx, f"The tile `{tile}` exists but the sprite variant(s) `{variants}` are not valid for it.")
-                if tile_data.get("text_" + tile) is not None:
-                    if not rule:
-                        return await self.bot.error(ctx, f"The tile `{tile}` does not exist, but the tile `text_{tile}` does.", "You can also use the `rule` command instead of the `tile command.")
-                    return await self.bot.error(ctx, f"The tile `{tile}` does not exist, but the tile `text_{tile}` does.")
-                if tile.startswith("text_") and tile_data.get(tile[5:]) is not None:
-                    if rule:
-                        return await self.bot.error(ctx, f"The tile `{tile}` does not exist, but the tile `{tile[5:]}` does.", "Did you mean to type `tile_{tile}`.")
-                    return await self.bot.error(ctx, f"The tile `{tile}` does not exist, but the tile `{tile[5:]}` does.")
-                return await self.bot.error(ctx, f"The tile `{tile}` does not exist.")
+            except (ValueError, FileNotFoundError) as e:
+                # try:
+                if isinstance(e, FileNotFoundError):
+                    tile_data = self.bot.get_cog("Admin").tile_data
+                    tile = e.args[0]
+                    variants = None
+                    if ":" in tile:
+                        variants = ":" + ":".join(tile.split(":")[1:])
+                        tile = tile.split(":")[0]
+                    # Error cases
+                    if tile_data.get(tile) is not None:
+                        if variants is None:
+                            return await self.bot.error(ctx, f"The tile `{tile}` exists but a sprite could not be found for it.")
+                        return await self.bot.error(ctx, f"The tile `{tile}` exists but the sprite variant(s) `{variants}` are not valid for it.")
+                    if tile_data.get("text_" + tile) is not None:
+                        if not rule:
+                            return await self.bot.error(ctx, f"The tile `{tile}` does not exist, but the tile `text_{tile}` does.", "You can also use the `rule` command instead of the `tile command.")
+                        return await self.bot.error(ctx, f"The tile `{tile}` does not exist, but the tile `text_{tile}` does.")
+                    if tile.startswith("text_") and tile_data.get(tile[5:]) is not None:
+                        if rule:
+                            return await self.bot.error(ctx, f"The tile `{tile}` does not exist, but the tile `{tile[5:]}` does.", "Did you mean to type `tile_{tile}`.")
+                        return await self.bot.error(ctx, f"The tile `{tile}` does not exist, but the tile `{tile[5:]}` does.")
+                    return await self.bot.error(ctx, f"The tile `{tile}` does not exist.")
+                tile = "text_" + e.args[0]
+                culprit = e.args[1]
+                reason = e.args[2]
+                if reason == "variant":
+                    return await self.bot.error(ctx, f"The tile `{tile}` could not be automatically generated, because the variant `{culprit}` is invalid.")
+                if reason == "width":
+                    return await self.bot.error(ctx, f"The tile `{tile}` could not be automatically generated, because it is too long.")
+                if reason == "char":
+                    return await self.bot.error(ctx, f"The tile `{tile}` could not be automatically generated, because no letter sprite exists for `{culprit}`.")
+                return await self.bot.error(ctx, f"The tile `{tile}` was not found, and could not be automatically generated.")
+                # except:
+                #     return await self.bot.error(ctx, "An error occurred while processing a previous error message. Was your input too long?")
 
             # Merges the images found
             buffer = BytesIO()
@@ -725,7 +768,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             formatted = timestamp.strftime(format_string)
             filename = f"{formatted}.gif"
             task = partial(self.magick_images, word_grid, width, height, palette=palette, background=background, out=buffer)
-            start = time()
             await self.bot.loop.run_in_executor(None, task)
             delta = time() - start
         # Sends the image through discord

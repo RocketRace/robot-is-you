@@ -3,10 +3,10 @@ import asyncio
 import discord
 import json
 import numpy      as np
+import os
 
 from datetime     import datetime, timedelta
 from discord.ext  import commands
-from os           import listdir, stat
 from pathlib      import Path
 from PIL          import Image, ImageDraw, ImageChops
 
@@ -165,18 +165,18 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         # Loads the caches
         # Loads the tile colors, if it exists
         colors_file = "cache/tiledata.json"
-        if stat(colors_file).st_size != 0:
+        if os.stat(colors_file).st_size != 0:
             self.tile_data = json.load(open(colors_file))
             
         # Loads the alternate tiles if possible
         # Loads debug data, if any
         debug_file = "cache/debug.json"
-        if stat(debug_file).st_size != 0:
+        if os.stat(debug_file).st_size != 0:
             debug_data = json.load(open(debug_file), object_pairs_hook=load_with_datetime)
             self.identifies = debug_data.get("identifies")
             self.resumes = debug_data.get("resumes")
 
-        self.initializeletters()
+        self.initialize_letters()
         
         # Are assets loading?
         self.bot.loading = False
@@ -305,7 +305,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         
         alternate_tiles = {}
 
-        levels = [l for l in listdir("data/levels/vanilla") if l.endswith(".ld")]
+        levels = [l for l in os.listdir("data/levels/vanilla") if l.endswith(".ld")]
         for level in levels:
             # Reads each line of the level file
             lines = ""
@@ -505,7 +505,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         '''
         
         # Load custom tile data from a json files
-        custom_data = [x for x in listdir("data/custom") if x.endswith(".json")]
+        custom_data = [x for x in os.listdir("data/custom") if x.endswith(".json")]
         # In alphabetical order, to make sure Patashu's redux mod overwrites the old mod
         custom_data.sort() 
         for f in custom_data:
@@ -620,8 +620,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             return await self.bot.send(ctx, f"\"{tile}\" is not in the list of tiles.")
         palettes = [palette]
         if palette == "all":
-            palettes = [pal[:-4] for pal in listdir("data/palettes") if pal.endswith(".png")]
-        elif palette + ".png" not in listdir("data/palettes"):
+            palettes = [pal[:-4] for pal in os.listdir("data/palettes") if pal.endswith(".png")]
+        elif palette + ".png" not in os.listdir("data/palettes"):
             return await self.bot.send(ctx, f"\"{palette}\" is not a valid palette.")
         self.bot.loading = True 
         # Creates the directories for the palettes if they don't exist
@@ -652,7 +652,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             palettes = args
         # Tests for a supplied palette
         for arg in palettes:
-            if arg not in [s[:-4] for s in listdir("data/palettes")]:
+            if arg not in [s[:-4] for s in os.listdir("data/palettes")]:
                 return await self.bot.send(ctx, "Supply a palette to load.")
 
         self.bot.loading = True
@@ -678,16 +678,22 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
         self.bot.loading = False
 
-    def initializeletters(self):
+    def initialize_letters(self):
         big = {}
         small = {}
-        for char in listdir("target/letters/big"):
-            for width in listdir(f"target/letters/big/{char}"):
-                big.setdefault(char, set()).add(int(width))
+        for char in os.listdir("target/letters/big"):
+            if char != ".DS_Store":
+                for width in os.listdir(f"target/letters/big/{char}"):
+                    if width != ".DS_Store":
+                        big.setdefault(char, set()).add(int(width))
 
-        for char in listdir("target/letters/small"):
-            for width in listdir(f"target/letters/small/{char}"):
-                small.setdefault(char, set()).add(int(width))
+        for char in os.listdir("target/letters/small"):
+            if char != ".DS_Store":
+                for width in os.listdir(f"target/letters/small/{char}"):
+                    if width != ".DS_Store":
+                        small.setdefault(char, set()).add(int(width))
+
+        os.system("cp -r data/letters target")
 
         self.letter_widths = {"big":big, "small":small}
 
@@ -714,6 +720,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             except:
                 print(data)
             self.loadletter(sprite, tile_type)
+
+        self.initialize_letters()
 
         await ctx.send("pog")
 
@@ -841,7 +849,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
         await ctx.send("Loading objects...")
         await ctx.invoke(self.bot.get_command("loaddata"))
-        palettes = [palette[:-4] for palette in listdir("data/palettes") if palette.endswith(".png")] 
+        palettes = [palette[:-4] for palette in os.listdir("data/palettes") if palette.endswith(".png")] 
         # Strip ".png", ignore some files
         await ctx.invoke(self.bot.get_command("loadpalettes"), palettes)
         await ctx.send(f"{ctx.author.mention} Done.")
