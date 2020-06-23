@@ -1,4 +1,5 @@
 import discord
+import random
 import re
 
 from datetime    import datetime
@@ -10,7 +11,6 @@ from json        import load
 from os          import listdir
 from os.path     import isfile
 from PIL         import Image, ImageChops
-from random      import choice, choices, random
 from string      import ascii_lowercase
 from src.utils   import Tile
 from time        import time
@@ -468,9 +468,14 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
     @commands.command()
     @commands.cooldown(2, 10, commands.BucketType.channel)
-    async def make(self, ctx, text, color = None, is_property = None):
+    async def make(self, ctx, text, color = None, style = None):
         '''
-        Tries to create a new text sprite.
+        Generates a custom text sprite.
+
+        The `color` argument can be a hex color (`"#ffffff"`) or a string (`"red"`).
+
+        The optional `style` argument can be set to `"property"` to make the result 
+        a property tile.
         '''
         # These colors are based on the default palette
         valid_colors = {
@@ -490,19 +495,34 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             "brown":(0.55859375, 0.40234375, 0.25390625),
         }
         if color is not None:
-            if color.startswith("#") or color.startswith("0x"):
-                int_color = int(color[-6:], base=16)
+            real_color = color.lower()
+            if real_color.startswith("#") or real_color.startswith("0x"):
+                int_color = int(real_color[-6:], base=16)
                 byte_color = (int_color >> 16, (int_color & 255 << 8) >> 8, int_color & 255)
                 tile_color = (byte_color[0] / 256, byte_color[1] / 256, byte_color[2] / 256)
-            elif color in valid_colors:
-                tile_color = valid_colors[color]
+            elif real_color in valid_colors:
+                tile_color = valid_colors[real_color]
+            else:
+                return await self.bot.error(ctx, f"The color `{color}` is invalid.")
         else:
             tile_color = (1, 1, 1)
-        if is_property == "property":
-            buffer = self.generate_tile(text, tile_color, True)
+        try:
+            tile = self.generate_tile(text, tile_color, (style and style.lower()) == "property")
+        except ValueError as e:
+            text = e.args[0]
+            culprit = e.args[1]
+            reason = e.args[2]
+            if reason == "variant":
+                return await self.bot.error(ctx, f"The text `{text}` could not be generated, because the variant `{culprit}` is invalid.")
+            if reason == "width":
+                return await self.bot.error(ctx, f"The text `{text}` could not be generated, because it is too long.")
+            if reason == "char":
+                return await self.bot.error(ctx, f"The text `{text}` could not be generated, because no letter sprite exists for `{culprit}`.")
+            return await self.bot.error(ctx, f"The text `{text}` could not be generated.")
         else:
-            buffer = self.generate_tile(text, tile_color, False)
-        await ctx.send(file=discord.File(buffer, filename=f"custom_'{text}'.gif"))
+            buffer = BytesIO()
+            self.magick_images([[[tile]]], 1, 1, out=buffer)
+            await ctx.send(file=discord.File(buffer, filename=f"custom_'{text}'.gif"))
 
     def make_custom_tile(self, text, variants):
         valid_colors = {
@@ -531,7 +551,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     def generate_tile(self, text, color, is_property):
         size = len(text)
         if size == 1:
-            if text in self.bot.get_cog("Admin").letter_widths:
+            if text.isalpha():
                 paths = [
                     f"data/sprites/vanilla/text_{text}_0"
                 ]
@@ -552,7 +572,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             else:
                 scale = "small"
                 data = self.bot.get_cog("Admin").letter_widths["small"]
-                # Prefer more on the top ;)
+                # Prefer more on the top
                 split = [(size + 1) // 2, size // 2]
                 arrangement = [24 // split[0]] * split[0] + [23 // split[1]] * split[1]
                 positions = [(int(24 // split[0] * (pos + 0.5)), 6) for pos in range(split[0])] + \
@@ -566,16 +586,23 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             final_arrangement = []
             for char, limit in zip(text, arrangement):
                 top = 0
+                second = 0
                 for width in widths[char]:
                     if top <= width <= limit:
+                        second = top
                         top = width
                 if top == 0:
                     raise ValueError(text, char, "width")
-                final_arrangement.append(top)
+                # Add some variety into the result,
+                # in case there is only one sprite of the "ideal" width
+                if random.randint(0, 1) and second:
+                    final_arrangement.append(second)
+                else:
+                    final_arrangement.append(top)
 
             paths = [
                 f"target/letters/{scale}/{char}/{width}/" + \
-                    choice([
+                    random.choice([
                         i for i in listdir(f"target/letters/{scale}/{char}/{width}") if i.endswith("0.png")
                     ])[:-6]
                 for char, width in zip(text, final_arrangement)
@@ -726,7 +753,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             try:
                 word_grid = self.handle_variants(word_grid)
             except (ValueError, FileNotFoundError) as e:
-                # try:
                 if isinstance(e, FileNotFoundError):
                     tile_data = self.bot.get_cog("Admin").tile_data
                     tile = e.args[0]
@@ -758,8 +784,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 if reason == "char":
                     return await self.bot.error(ctx, f"The tile `{tile}` could not be automatically generated, because no letter sprite exists for `{culprit}`.")
                 return await self.bot.error(ctx, f"The tile `{tile}` was not found, and could not be automatically generated.")
-                # except:
-                #     return await self.bot.error(ctx, "An error occurred while processing a previous error message. Was your input too long?")
 
             # Merges the images found
             buffer = BytesIO()
@@ -779,15 +803,17 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     @commands.cooldown(5, 10, type=commands.BucketType.channel)
     async def rule(self, ctx, *, objects = ""):
         '''
-        Renders the text tiles provided.
+        Renders the text tiles provided. If not found, the bot tries to auto-generate them!
 
-        **Features:**
-        * `--palette=<palette>` (`-P=<palette>`) flag: Recolors the output gif. (Example: `--palette=abstract`) See the `palettes` command for all valid palettes.
-        * `--background` (`-B`) flag: Enables background color. Color is based on the active palette.
-        * `:variant` sprite variants: Append `:variant` to a tile to render variants. See the `variants` command for more information.
+        **Flags**
+        * `--palette=<...>` (`-P=<...>`): Recolors the output gif. See the `palettes` command for more.
+        * `--background` (`-B`): Enables background color.
+        
+        **Variants**
+        * `:variant`: Append `:variant` to a tile to change color or sprite of a tile. See the `variants` command for more.
 
-        **Special syntax:**
-        * `-` : Renders an empty tile. 
+        **Useful tips:**
+        * `-` : Shortcut for an empty tile. 
         * `&` : Stacks tiles on top of each other.
         * `tile_` : `tile_object` renders regular objects.
         * `,` : `tile_x,y,...` is expanded into `tile_x tile_y ...`
@@ -808,13 +834,15 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         '''
         Renders the tiles provided.
 
-        **Features:**
-        * `--palette=<palette>` (`-P=<palette>`) flag: Recolors the output gif. (Example: `--palette=abstract`) See the `palettes` command for all valid palettes.
-        * `--background` (`-B`) flag: Enables background color. Color is based on the active palette.
-        * `:variant` sprite variants: Append `:variant` to a tile to render variants. See the `variants` command for more information.
+       **Flags**
+        * `--palette=<...>` (`-P=<...>`): Recolors the output gif. See the `palettes` command for more.
+        * `--background` (`-B`): Enables background color.
+        
+        **Variants**
+        * `:variant`: Append `:variant` to a tile to change color or sprite of a tile. See the `variants` command for more.
 
-        **Special syntax:**
-        * `-` : Renders an empty tile. 
+        **Useful tips:**
+        * `-` : Shortcut for an empty tile. 
         * `&` : Stacks tiles on top of each other.
         * `text_` : `text_object` renders text objects.
         * `,` : `text_x,y,...` is expanded into `text_x text_y...`
