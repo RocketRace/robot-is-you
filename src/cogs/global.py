@@ -647,7 +647,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         '''
         async with ctx.typing():
             render_limit = 100
-            tiles = objects.lower().strip()
+            tiles = objects.lower().strip().replace("\\", "")
             if tiles == "":
                 param = Parameter("objects", Parameter.KEYWORD_ONLY)
                 raise commands.MissingRequiredArgument(param)
@@ -655,23 +655,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             # Determines if this should be a spoiler
             spoiler = "|" in tiles
             tiles = tiles.replace("|", "")
-
-            # # check flags
-            # bg_flags = re.findall(r"--background|-b", tiles)
-            # background = None
-            # if bg_flags: background = (0,4)
-            # pattern = r"--palette=\w+|-p=\w+"
-            # palette_flags = re.findall(pattern, tiles)
-            # palette = "default"
-            # for pal in palette_flags:
-            #     palette = pal[pal.index("=") + 1:]
-            # if palette + ".png" not in listdir("palettes"):
-            #     return await self.bot.error(ctx, f"Could not find a palette with name \"{pal}\".")
-
-            # tiles = "".join(re.split(pattern, tiles))
-            # tiles = tiles.replace("--background", "").replace("-b", "")
-            # tiles = " ".join(re.split(" +", tiles))
-
+            
             # Check for empty input
             if not tiles:
                 return await self.bot.error(ctx, "Input cannot be blank.")
