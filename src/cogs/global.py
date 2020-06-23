@@ -556,7 +556,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     def generate_tile(self, text, color, is_property):
         size = len(text)
         if size == 1:
-            if text.isalpha():
+            if text.isascii() and text.isalpha():
                 paths = [
                     f"data/sprites/vanilla/text_{text}_0"
                 ]
