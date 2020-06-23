@@ -542,11 +542,15 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             "brown":(0.55859375, 0.40234375, 0.25390625),
         }
         color = (1,1,1)
+        is_property = False
         for variant in variants:
+            if variant == "property":
+                is_property = True
+                continue
             if variant not in valid_colors:
                 raise ValueError(text, variant, "variant")
             color = valid_colors[variant]
-        return self.generate_tile(text[5:], color, False)
+        return self.generate_tile(text[5:], color, is_property)
 
     def generate_tile(self, text, color, is_property):
         size = len(text)
