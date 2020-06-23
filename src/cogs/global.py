@@ -508,7 +508,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         else:
             tile_color = (1, 1, 1)
         try:
-            tile = self.generate_tile(text, tile_color, (style and style.lower()) == "property")
+            tile = self.generate_tile(text.lower(), tile_color, (style and style.lower()) == "property")
         except ValueError as e:
             text = e.args[0]
             culprit = e.args[1]
@@ -519,6 +519,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 return await self.bot.error(ctx, f"The text `{text}` could not be generated, because it is too long.")
             if reason == "char":
                 return await self.bot.error(ctx, f"The text `{text}` could not be generated, because no letter sprite exists for `{culprit}`.")
+            if reason == "zero":
+                return await self.bot.error(ctx, f"The input cannot be empty.")
             return await self.bot.error(ctx, f"The text `{text}` could not be generated.")
         else:
             buffer = BytesIO()
@@ -555,6 +557,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
     def generate_tile(self, text, color, is_property):
         size = len(text)
+        if size == 0:
+            raise ValueError(text, None, "zero")
         if size == 1:
             if text.isascii() and text.isalpha():
                 paths = [
@@ -788,6 +792,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     return await self.bot.error(ctx, f"The tile `{tile}` could not be automatically generated, because it is too long.")
                 if reason == "char":
                     return await self.bot.error(ctx, f"The tile `{tile}` could not be automatically generated, because no letter sprite exists for `{culprit}`.")
+                if reason == "zero":
+                    return await self.bot.error(ctx, f"Cannot apply variants to an empty tile.")
                 return await self.bot.error(ctx, f"The tile `{tile}` was not found, and could not be automatically generated.")
 
             # Merges the images found
