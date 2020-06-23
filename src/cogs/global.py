@@ -293,6 +293,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                             if tile.startswith("text_"):
                                 grid[y][x][z] = self.make_custom_tile(tile, variants)
                                 continue
+                            raise FileNotFoundError(tile)
 
                         source = tile_data.get("source") or "vanilla"
 
