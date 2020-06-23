@@ -779,7 +779,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                             return await self.bot.error(ctx, f"The tile `{tile}` does not exist, but the tile `{tile[5:]}` does.", "Did you mean to type `tile_{tile}`.")
                         return await self.bot.error(ctx, f"The tile `{tile}` does not exist, but the tile `{tile[5:]}` does.")
                     return await self.bot.error(ctx, f"The tile `{tile}` does not exist.")
-                tile = "text_" + e.args[0]
+                tile = e.args[0]
                 culprit = e.args[1]
                 reason = e.args[2]
                 if reason == "variant":
