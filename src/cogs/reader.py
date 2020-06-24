@@ -510,18 +510,19 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
 
         # We've added the basic objects & their directions. 
         # Now we add everything else:
-        # Paths
-        grid = self.add_paths(grid)
-        # Levels
-        grid = self.add_levels(grid, initialize=initialize) # If we want to also initialize the level tree
-        # Images
-        grid = self.add_images(grid)
-        # Level metadata (must be below add_specials)
-        grid = self.add_metadata(grid)
-        # Special objects
-        grid = self.add_specials(grid, initialize=initialize)
-        # Object changes
-        grid = self.add_changes(grid)
+        with open(grid.fp + "d") as fp:
+            # Paths
+            grid = self.add_paths(grid, file=fp)
+            # Levels
+            grid = self.add_levels(grid, file=fp, initialize=initialize) # If we want to also initialize the level tree
+            # Images
+            grid = self.add_images(grid, file=fp)
+            # Level metadata (must be below add_specials)
+            grid = self.add_metadata(grid, file=fp)
+            # Special objects
+            grid = self.add_specials(grid, file=fp, initialize=initialize)
+            # Object changes
+            grid = self.add_changes(grid, file=fp)
 
         # Makes sure objects within a single cell are rendered in the right order
         grid = self.sort_layers(grid)
@@ -538,60 +539,59 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
 
         return grid
 
-    def add_changes(self, grid):
+    def add_changes(self, grid, file):
         '''
-        Modifies the objects in the level according to the changes proposed in the level's .ld file.
+        Modifies the objects in the level according to the changes proposed in the given file.
         '''
         # the .ld file
-        info = grid.fp + "d"
-        with open(info) as ld:
-            changes = {}
+        file.seek(0)
+        changes = {}
 
-            # Go through each line of the file
-            raw = None
-            while raw != "":
-                raw = ld.readline()
-                line = raw.strip()
-                
-                # We're starting parsing the object changes section
-                if line == "[tiles]":
-                    rawl = None
-                    while rawl != "":
-                        rawl = ld.readline()
-                        data = rawl.strip()
+        # Go through each line of the file
+        raw = None
+        while raw != "":
+            raw = file.readline()
+            line = raw.strip()
+            
+            # We're starting parsing the object changes section
+            if line == "[tiles]":
+                rawl = None
+                while rawl != "":
+                    rawl = file.readline()
+                    data = rawl.strip()
 
-                        # Which objects are changed?
-                        if data.startswith("changed="):
-                            changes = dict.fromkeys(line[8:].split(","), None)
-                            continue
-                        
-                        # We're done parsing
-                        # We've exited [tiles] and entered a new "group"
-                        if data.startswith("["):
+                    # Which objects are changed?
+                    if data.startswith("changed="):
+                        changes = dict.fromkeys(line[8:].split(","), None)
+                        continue
+                    
+                    # We're done parsing
+                    # We've exited [tiles] and entered a new "group"
+                    if data.startswith("["):
+                        break
+
+                    # Parsing
+                    index = try_index(data, "=")
+                    if index == -1: continue
+
+                    # These are the bits of information we care about
+                    values = ["_name", "_image", "_colour", "_activecolour"]
+                    for v in values:
+                        param_index = try_index(data, v)
+                        if param_index != -1:
                             break
+                        # Don't need the line anymore, move on
+                    if param_index == -1:
+                        continue
+                    
+                    # This will be an element of `values`
+                    param = data[param_index:index]
 
-                        # Parsing
-                        index = try_index(data, "=")
-                        if index == -1: continue
-
-                        # These are the bits of information we care about
-                        values = ["_name", "_image", "_colour", "_activecolour"]
-                        for v in values:
-                            param_index = try_index(data, v)
-                            if param_index != -1:
-                                break
-                            # Don't need the line anymore, move on
-                        if param_index == -1:
-                            continue
-                        
-                        # This will be an element of `values`
-                        param = data[param_index:index]
-
-                        # The object ID prefixing the line
-                        key = data[:param_index]
-                        if changes.get(key) is None:
-                            changes[key] = {}
-                        changes[key][param] = data[index + 1:]
+                    # The object ID prefixing the line
+                    key = data[:param_index]
+                    if changes.get(key) is None:
+                        changes[key] = {}
+                    changes[key][param] = data[index + 1:]
         
         # Updates the grid:
         # The name and color are updated.
@@ -614,7 +614,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
 
     def add_metadata(self, grid):
         '''
-        Adds level metadata from a level's .ld file to the given Grid.
+        Adds level metadata from the given file to the given Grid.
         Adds the following information:
         * Level name 
         * Subtitle
@@ -670,118 +670,115 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
 
         return grid
 
-    def add_levels(self, grid, initialize=False):
+    def add_levels(self, grid, file, initialize=False):
         '''
         Adds raw level objects from within a level to the given Grid.
-        Data is parsed from the .ld file associated with the level.
+        Data is parsed from the given file.
         if `initialize` is True, adds levels to the global level tree.
         '''
-        # the .ld file
-        info = grid.fp + "d"
-        with open(info) as ld:
-            levels = {}
-            icons = {}
-            level_count = 0
-            map_id = ""
-
-            # Go through each line of the file
-            line = None
-            while line != "":
-                line = ld.readline().strip()
-                # How many levels are there in the map??
-                if line.startswith("levels="):
-                    level_count = int(line[7:])
-                # When initializing the level tree:
-                if initialize and line.startswith("mapid="):
-                    map_id = line[6:]
-                
-                # We're starting parsing levels
-                if line == "[levels]":
-                    data = None
-                    while data != "":
-                        data = ld.readline().strip()
-                        
-                        # We're done parsing
-                        # We've exited [levels] and entered a new "group"
-                        if data.startswith("["):
-                            break
-                        
-                        # not what we're looking for
-                        if not data[:1].isnumeric():
-                            continue
-
-                        # Parsing
-                        index = data.index("=")
-
-                        # These are the bits of information we care about
-                        if initialize:
-                            values = ["X", "Y", "style", "colour", "number", "file", "name"]
-                        else:
-                            values = ["X", "Y", "style", "colour", "number"]
-                        for v in values:
-                            param_index = try_index(data, v)
-                            if param_index != -1:
-                                break
-                            # Don't need the line anymore, move on
-                        if param_index == -1:
-                            continue
-                        
-                        # This will be an element of `values`
-                        param = data[param_index:index]
-
-                        # The number prefixing the line
-                        key = data[:param_index]
-                        if key.isnumeric():
-                            # Ignore levels with IDs above the levelcount
-                            # Because those are not actual levels???
-                            if int(key) <= level_count - 1:
-                                # If the level is new
-                                if levels.get(key) is None:
-                                    levels[key] = {}
-                                # Store the level data
-                                levels[key][param] = data[index + 1:]
+        file.seek(0)
+        levels = {}
+        icons = {}
+        level_count = 0
+        map_id = ""
+        # Go through each line of the file
+        line = None
+        while line != "":
+            line = file.readline().strip()
+            # How many levels are there in the map??
+            if line.startswith("levels="):
+                level_count = int(line[7:])
+            # When initializing the level tree:
+            if initialize and line.startswith("mapid="):
+                map_id = line[6:]
+            
+            # We're starting parsing levels
+            if line == "[levels]":
+                data = None
+                while data != "":
+                    data = file.readline().strip()
                     
-                # We're starting parsing level icons
-                if line == "[icons]":
-                    data = None
-                    while data != "":
-                        data = ld.readline().strip()
-                        
-                        # We're done parsing
-                        # We've exited [icons] and entered a new "group"
-                        if data.startswith("["):
+                    # We're done parsing
+                    # We've exited [levels] and entered a new "group"
+                    if data.startswith("["):
+                        break
+                    
+                    # not what we're looking for
+                    if not data[:1].isnumeric():
+                        continue
+
+                    # Parsing
+                    index = data.index("=")
+
+                    # These are the bits of information we care about
+                    if initialize:
+                        values = ["X", "Y", "style", "colour", "number", "file", "name"]
+                    else:
+                        values = ["X", "Y", "style", "colour", "number"]
+                    for v in values:
+                        param_index = try_index(data, v)
+                        if param_index != -1:
                             break
-                        
-                        # not what we're looking for
-                        if not data[:1].isnumeric():
-                            continue
+                        # Don't need the line anymore, move on
+                    if param_index == -1:
+                        continue
+                    
+                    # This will be an element of `values`
+                    param = data[param_index:index]
 
-                        # Parsing
-                        index = data.index("=")
+                    # The number prefixing the line
+                    key = data[:param_index]
+                    if key.isnumeric():
+                        # Ignore levels with IDs above the levelcount
+                        # Because those are not actual levels???
+                        if int(key) <= level_count - 1:
+                            # If the level is new
+                            if levels.get(key) is None:
+                                levels[key] = {}
+                            # Store the level data
+                            levels[key][param] = data[index + 1:]
+                
+            # We're starting parsing level icons
+            if line == "[icons]":
+                data = None
+                while data != "":
+                    data = ld.readline().strip()
+                    
+                    # We're done parsing
+                    # We've exited [icons] and entered a new "group"
+                    if data.startswith("["):
+                        break
+                    
+                    # not what we're looking for
+                    if not data[:1].isnumeric():
+                        continue
 
-                        # These are the bits of information we care about
-                        values = ["file"]
-                        for v in values:
-                            param_index = try_index(data, v)
-                            if param_index != -1:
-                                break
-                            # Don't need the line anymore, move on
-                        if param_index == -1:
-                            continue
-                        
-                        param = "file"
+                    # Parsing
+                    index = data.index("=")
 
-                        # The number prefixing the line
-                        key = data[:param_index]
-                        if key.isnumeric():
-                            # Ignore levels with IDs above the levelcount
-                            # Because those are not visible when playing the game
-                            if int(key) <= level_count - 1:
-                                # If the level icon is new
-                                if icons.get(key) is None:
-                                    icons[key] = {}
-                                # Store the level icon
-                                icons[key][param] = data[index + 1:]
+                    # These are the bits of information we care about
+                    values = ["file"]
+                    for v in values:
+                        param_index = try_index(data, v)
+                        if param_index != -1:
+                            break
+                        # Don't need the line anymore, move on
+                    if param_index == -1:
+                        continue
+                    
+                    param = "file"
+
+                    # The number prefixing the line
+                    key = data[:param_index]
+                    if key.isnumeric():
+                        # Ignore levels with IDs above the levelcount
+                        # Because those are not visible when playing the game
+                        if int(key) <= level_count - 1:
+                            # If the level icon is new
+                            if icons.get(key) is None:
+                                icons[key] = {}
+                            # Store the level icon
+                            icons[key][param] = data[index + 1:]
 
             # Update our grid object with the levels
             for data in levels.values():
@@ -855,67 +852,65 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             
             return grid
     
-    def add_paths(self, grid):
+    def add_paths(self, grid, file):
         '''
         Adds raw path objects from within a level to the given Grid.
         Objects are added to the Grid as regular objects without path information.
-        Data is parsed from the .ld file associated with the level.
+        Data is parsed from the given file.
         '''
-        # the .ld file
-        info = grid.fp + "d"
-        with open(info) as ld:
-            paths = {}
-            path_count = 0
+        file.seek(0)
+        paths = {}
+        path_count = 0
 
-            # Go through each line of the file
-            line = None
-            while line != "":
-                line = ld.readline().strip()                
-                # How many path objects are there in the map?
-                if line.startswith("paths="):
-                    path_count = int(line[6:])
-                
-                # We've started parsing paths
-                if line == "[paths]":
-                    data = None
-                    while data != "":
-                        data = ld.readline().strip()
-                        
-                        # We're done parsing
-                        # "[paths]" section is over
-                        # new section has started
-                        if data.startswith("["):
+        # Go through each line of the file
+        line = None
+        while line != "": 
+            line = file.readline().strip()                
+            # How many path objects are there in the map?
+            if line.startswith("paths="):
+                path_count = int(line[6:])
+            
+            # We've started parsing paths
+            if line == "[paths]":
+                data = None
+                while data != "":
+                    data = file.readline().strip()
+                    
+                    # We're done parsing
+                    # "[paths]" section is over
+                    # new section has started
+                    if data.startswith("["):
+                        break
+                    
+                    # not what we're looking for
+                    if not data[:1].isnumeric():
+                        continue
+
+                    # Parsing
+                    index = data.index("=")
+                    # These are the bits of information we care about
+                    values = ["X", "Y", "object", "dir"]
+                    for v in values:
+                        param_index = try_index(data, v)
+                        if param_index != -1:
                             break
-                        
-                        # not what we're looking for
-                        if not data[:1].isnumeric():
-                            continue
+                    if param_index == -1:
+                        continue
 
-                        # Parsing
-                        index = data.index("=")
-                        # These are the bits of information we care about
-                        values = ["X", "Y", "object", "dir"]
-                        for v in values:
-                            param_index = try_index(data, v)
-                            if param_index != -1:
-                                break
-                        if param_index == -1:
-                            continue
+                    # This will be "X", "Y", "object" or "dir"
+                    param = data[param_index:index]
 
-                        # This will be "X", "Y", "object" or "dir"
-                        param = data[param_index:index]
-
-                        # The number prefixing the line
-                        key = data[:param_index]
-                        if key.isnumeric():
-                            # Ignore paths with IDs above the pathcount
-                            # Because those are not actual paths???
-                            if int(key) <= path_count - 1:
-                                # If the path is new
-                                if paths.get(key) is None:
-                                    paths[key] = {}
-                                # Store the path position, dir & object
-                                paths[key][param] = data[index + 1:]
+                    # The number prefixing the line
+                    key = data[:param_index]
+                    if key.isnumeric():
+                        # Ignore paths with IDs above the pathcount
+                        # Because those are not actual paths???
+                        if int(key) <= path_count - 1:
+                            # If the path is new
+                            if paths.get(key) is None:
+                                paths[key] = {}
+                            # Store the path position, dir & object
+                            paths[key][param] = data[index + 1:]
 
             # Update our grid object with the levels
             for data in paths.values():
@@ -933,45 +928,44 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             
             return grid
 
-    def add_images(self, grid):
+    def add_images(self, grid, file):
         '''
         Adds background image data from a level to the given Grid.
-        Data is parsed from the .ld file associated with the level.
+        Data is parsed from the given file.
         '''
         # The .ld file
-        info = grid.fp + "d"
-        with open(info) as ld:
-            images = {}
+        file.seek(0)
+        images = {}
 
-            # Go through each line of the file
-            line = None
-            while line != "":
-                line = ld.readline().strip()            
-                # This is where we begin parsing
-                if line == "[images]":
-                    data = None
-                    while data != "":
-                        data = ld.readline().strip()
-                        
-                        # We're done parsing
-                        # The "[images]" section is over and
-                        # A new section has begun
-                        if data.startswith("["):
-                            break
-                        
-                        # not what we're looking for
-                        if not data[0].isnumeric():
-                            continue
+        # Go through each line of the file
+        line = None
+        while line != "":
+            line = file.readline().strip()            
+            # This is where we begin parsing
+            if line == "[images]":
+                data = None
+                while data != "":
+                    data = f.readline().strip()
+                    
+                    # We're done parsing
+                    # The "[images]" section is over and
+                    # A new section has begun
+                    if data.startswith("["):
+                        break
+                    
+                    # not what we're looking for
+                    if not data[0].isnumeric():
+                        continue
 
-                        # Parsing
-                        index = data.index("=")
-                        # This dictates the order of the images
-                        # Lower key -> lower Z position
-                        key = data[:index]
-                        value = data[index + 1:]
-                        
-                        # Store this
-                        images[key] = value
+                    # Parsing
+                    index = data.index("=")
+                    # This dictates the order of the images
+                    # Lower key -> lower Z position
+                    key = data[:index]
+                    value = data[index + 1:]
+                    
+                    # Store this
+                    images[key] = value
 
         # Convert to list 
         sorted_images = dict(sorted(images.items(), key=lambda x: int(x[0])))
@@ -980,66 +974,65 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         grid.images = sorted_list
         return grid
 
-    def add_specials(self, grid, initialize=False):
+    def add_specials(self, grid, file, initialize=False):
         '''
         Adds special objects from within a level to the given Grid.
-        Data is parsed from the .ld file associated with the level.
+        Data is parsed from the given file.
         '''
         # the .ld file
-        info = grid.fp + "d"
-        with open(info) as ld:
-            specials = {}
-            special_count = 0
+        file.seek(0)
+        specials = {}
+        special_count = 0
 
-            # Go through each line of the file
-            line = None
-            while line != "":
-                line = ld.readline().strip()                
-                # How many speicl objects are there in the map?
-                if line.startswith("specials="):
-                    special_count = int(line[9:])
-                
-                # We've started parsing paths
-                if line == "[specials]":
-                    data = None
-                    while data != "":
-                        data = ld.readline().strip()
-                        
-                        # We're done parsing
-                        # "[specials]" section is over
-                        # new section has started
-                        if data.startswith("["):
+        # Go through each line of the file
+        line = None
+        while line != "":
+            line = file.readline().strip()                
+            # How many speicl objects are there in the map?
+            if line.startswith("specials="):
+                special_count = int(line[9:])
+            
+            # We've started parsing paths
+            if line == "[specials]":
+                data = None
+                while data != "":
+                    data = file.readline().strip()
+                    
+                    # We're done parsing
+                    # "[specials]" section is over
+                    # new section has started
+                    if data.startswith("["):
+                        break
+
+                    # not what we're looking for
+                    if not data[:1].isnumeric():
+                        continue
+
+                    # Parsing
+                    index = data.index("=")
+                    # These are the bits of information we care about
+                    values = ["X", "Y", "data"]
+                    for v in values:
+                        param_index = try_index(data, v)
+                        if param_index != -1:
                             break
+                    if param_index == -1:
+                        continue
+                    
+                    # This will be "X", or "Y" or "data"
+                    param = data[param_index:index]
 
-                        # not what we're looking for
-                        if not data[:1].isnumeric():
-                            continue
-
-                        # Parsing
-                        index = data.index("=")
-                        # These are the bits of information we care about
-                        values = ["X", "Y", "data"]
-                        for v in values:
-                            param_index = try_index(data, v)
-                            if param_index != -1:
-                                break
-                        if param_index == -1:
-                            continue
-                        
-                        # This will be "X", or "Y" or "data"
-                        param = data[param_index:index]
-
-                        # The number prefixing the line
-                        key = data[:param_index]
-                        if key.isnumeric():
-                            # Ignore specials with IDs above the pathcount
-                            # Because those are not actual specials???
-                            if int(key) <= special_count - 1:
-                                # If the special is new
-                                if specials.get(key) is None:
-                                    specials[key] = {}
-                                # Store the special position & data
-                                specials[key][param] = data[index + 1:]
+                    # The number prefixing the line
+                    key = data[:param_index]
+                    if key.isnumeric():
+                        # Ignore specials with IDs above the pathcount
+                        # Because those are not actual specials???
+                        if int(key) <= special_count - 1:
+                            # If the special is new
+                            if specials.get(key) is None:
+                                specials[key] = {}
+                            # Store the special position & data
+                            specials[key][param] = data[index + 1:]
     
         # Handle the actual special information
         for special in specials.values():

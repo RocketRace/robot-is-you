@@ -12,7 +12,7 @@ from os          import listdir
 from os.path     import isfile
 from PIL         import Image, ImageChops
 from string      import ascii_lowercase
-from src.utils   import Tile
+from src.utils   import *
 from time        import time
 
 def flatten(items, seqtypes=(list, tuple)):
@@ -109,6 +109,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         down_pad = 0
 
         # Get sprites to be pasted
+        cache= {}
         imgs = []
         for frame in range(3):
             temp_frame = []
@@ -130,7 +131,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                             animation_offset = frame
                         if tile.color is None:
                             path = f"target/color/{palette}/{tile.name}-{tile.variant}-{animation_offset}-.png"
-                            img = Image.open(path)
+                            img = cached_open(path, cache=cache, is_image=True)
                         else:
                             if tile.name == "icon":
                                 path = f"data/sprites/vanilla/icon.png"
@@ -144,13 +145,14 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     path = f"data/sprites/{tile.source}/{maybe_sprite}_{tile.variant}_{animation_offset + 1}.png"
                                 else:
                                     path = f"data/sprites/{tile.source}/{tile.name}_{tile.variant}_{animation_offset + 1}.png"
-                            img = Image.open(path).convert("RGBA")
+                            img = cached_open(path, cache=cache, is_image=True).convert("RGBA")
                             c_r, c_g, c_b = palette_img.getpixel(tile.color)
                             r, g, b, a = img.split()
-                            r = Image.eval(r, lambda px: px * c_r / 256)
-                            g = Image.eval(g, lambda px: px * c_g / 256)
-                            b = Image.eval(b, lambda px: px * c_b / 256)
-                            img = Image.merge("RGBA", [r, g, b, a])
+                            color_matrix = (c_r / 256, 0, 0, 0,
+                                         0, c_g / 256, 0, 0,
+                                      0, 0, c_b / 256, 0)
+                            img = img.convert("RGB").convert("RGB", matrix=color_matrix)
+                            img.putalpha(a)
                         temp_stack.append(img)
                         # Check image sizes and calculate padding
                         if y == 0:
@@ -786,7 +788,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             format_string = "render_%Y-%m-%d_%H.%M.%S"
             formatted = timestamp.strftime(format_string)
             filename = f"{formatted}.gif"
-            task = partial(self.magick_images, word_grid, width, height, palette=palette, background=background, out=buffer)
+            task = partial(self.magick_images, word_grid, width, height, palette=palette, background=background, out=buffer, rand=True)
             await self.bot.loop.run_in_executor(None, task)
             delta = time() - start
         # Sends the image through discord
