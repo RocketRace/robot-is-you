@@ -309,7 +309,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         for level in levels:
             # Reads each line of the level file
             lines = ""
-            with open(f"data/levels/vanilla/{level}") as fp:
+            with open(f"data/levels/vanilla/{level}", errors="ignore") as fp:
                 lines = fp.readlines()
 
             IDs = []
@@ -362,10 +362,16 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                             alts[ID]["color"] = color
                     
             # Adds the data to the list of changed objects
+            with open("config/editortileignore.json") as fp:
+                ignored_tiles = json.load(fp)
             for key in alts:
                 if alternate_tiles.get(key) is None:
+                    if alts[key].get("name") in ignored_tiles:
+                        continue
                     alternate_tiles[key] = [alts[key]]
                 else:
+                    if alts[key].get("name") in ignored_tiles:
+                        continue
                     duplicate = False
                     for tile in alternate_tiles[key]:
                         a = tile.get("name")
