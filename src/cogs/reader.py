@@ -612,7 +612,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         
         return grid
 
-    def add_metadata(self, grid):
+    def add_metadata(self, grid, file):
         '''
         Adds level metadata from the given file to the given Grid.
         Adds the following information:
@@ -621,36 +621,34 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         * Palette
         * Cursor position
         '''
-        # the .ld file
-        info = grid.fp + "d"
         # Our data
         name = subtitle = palette = cursor_x = cursor_y = map_id = None
-        with open(info) as ld:
-            # Go through each line of the file
-            line = None
-            while line != "":
-                line = ld.readline().strip()
-                # Level name
-                if line.startswith("name="):
-                    name = line[5:]
-                # Palette (strip .png)
-                if line.startswith("palette="):
-                    palette = line[8:-4]
-                # Level subtitle
-                if line.startswith("subtitle="):
-                    subtitle = line[9:]
-                # Custom level parent
-                if line.startswith("mapid="):
-                    map_id = line[6:]
-                # Cursor position
-                if line.startswith("selectorX="):
-                    pos = line[10:]
-                    if pos != -1:
-                        cursor_x = int(pos)
-                if line.startswith("selectorY="):
-                    pos = line[10:]
-                    if pos != -1:
-                        cursor_y = int(pos)
+        file.seek(0)
+        # Go through each line of the file
+        line = None
+        while line != "":
+            line = file.readline().strip()
+            # Level name
+            if line.startswith("name="):
+                name = line[5:]
+            # Palette (strip .png)
+            if line.startswith("palette="):
+                palette = line[8:-4]
+            # Level subtitle
+            if line.startswith("subtitle="):
+                subtitle = line[9:]
+            # Custom level parent
+            if line.startswith("mapid="):
+                map_id = line[6:]
+            # Cursor position
+            if line.startswith("selectorX="):
+                pos = line[10:]
+                if pos != -1:
+                    cursor_x = int(pos)
+            if line.startswith("selectorY="):
+                pos = line[10:]
+                if pos != -1:
+                    cursor_y = int(pos)
         # Add cursor
         if cursor_x is not None and cursor_y is not None:
             cursor_position = flatten(cursor_x, cursor_y, grid.width)
