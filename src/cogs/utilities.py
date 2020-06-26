@@ -272,7 +272,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         }
         choice = output[tiling]
         choice.append("It also supports all of the following colors: " + \
-        "`red`, `orange`, `yellow`, `lime`, `green`, `cyan`, `blue`, `purple`, `pink`, `rosy`, `white`, `grey`, `black`, `brown`.")
+        "`red`, `orange`, `yellow`, `lime`, `green`, `cyan`, `blue`, `purple`, `pink`, `rosy`, `white`, `silver`, `grey`, `black`, `brown`, `hide`.")
 
         # Output
         await self.bot.send(ctx, f"Valid sprite variants for '{clean_tile}'\n" + "\n".join(choice) + "\n")
