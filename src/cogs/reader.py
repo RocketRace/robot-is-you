@@ -510,7 +510,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
 
         # We've added the basic objects & their directions. 
         # Now we add everything else:
-        with open(grid.fp + "d") as fp:
+        with open(grid.fp + "d", errors="replace") as fp:
             # Paths
             grid = self.add_paths(grid, file=fp)
             # Levels
@@ -778,77 +778,97 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                             # Store the level icon
                             icons[key][param] = data[index + 1:]
 
-            # Update our grid object with the levels
-            for data in levels.values():
-                # Level position
-                position = flatten(data["X"], data["Y"], grid.width)
+        # Update our grid object with the levels
+        for data in levels.values():
+            # Level position
+            position = flatten(data["X"], data["Y"], grid.width)
 
-                # Level color
-                if data.get("colour") is not None:
-                    color = (int(data["colour"][0]), int(data["colour"][2]))
-                    level = Item.level(color=color)
+            # Level color
+            if data.get("colour") is not None:
+                color = (int(data["colour"][0]), int(data["colour"][2]))
+                level = Item.level(color=color)
+            else:
+                level = Item.level()
+
+            # Level objects can be any color
+            level.position = position
+
+            # Levels are (sort of) like any other object
+            grid.cells[position].objects.append(level)
+            # Levels that use custom icons:
+            if data["style"] == "-1":
+                # The number of the level is the icon key
+                number = data["number"]
+                icon_file = icons[number]["file"]
+
+                icon = Item()
+                icon.position = position
+                # This is a hack to work around the fact that 
+                    # This is a hack to work around the fact that 
+                # This is a hack to work around the fact that 
+                    # This is a hack to work around the fact that 
+                # This is a hack to work around the fact that 
+                    # This is a hack to work around the fact that 
+                # This is a hack to work around the fact that 
+                    # This is a hack to work around the fact that 
+                # This is a hack to work around the fact that 
+                    # This is a hack to work around the fact that 
+                # This is a hack to work around the fact that 
+                # the game does not consider level icons objects, but 
+                # our rendering framework does:
+                # Remove _1 from the file name if
+                if icon_file.startswith("icon"):
+                    icon.name = icon_file[:-2]
                 else:
-                    level = Item.level()
-
-                # Level objects can be any color
-                level.position = position
-
-                # Levels are (sort of) like any other object
-                grid.cells[position].objects.append(level)
-                # Levels that use custom icons:
-                if data["style"] == "-1":
-                    # The number of the level is the icon key
-                    number = data["number"]
-                    icon_file = icons[number]["file"]
-
-                    icon = Item()
-                    icon.position = position
+                    icon.name = icon_file[:-4]
+                # Bring to the front layer whenever possible
+                icon.layer = 30
+                grid.cells[position].objects.append(icon)
+            # Levels using the dot icons + the default level icon
+            elif data["style"] == "2":
+                icon = Item()
+                icon.position = position
+                # This is a hack to work around the fact that 
                     # This is a hack to work around the fact that 
-                    # the game does not consider level icons objects, but 
-                    # our rendering framework does:
-                    # Remove _1 from the file name if
-                    if icon_file.startswith("icon"):
-                        icon.name = icon_file[:-2]
-                    else:
-                        icon.name = icon_file[:-4]
-                    # Bring to the front layer whenever possible
-                    icon.layer = 30
-                    grid.cells[position].objects.append(icon)
-                # Levels using the dot icons + the default level icon
-                elif data["style"] == "2":
-                    icon = Item()
-                    icon.position = position
+                # This is a hack to work around the fact that 
                     # This is a hack to work around the fact that 
-                    # the game does not consider level icons objects, but 
-                    # our rendering framework does:
-                    # Create an item with the name "icon"
-                    icon.name = "icon"
-                    # Bring to the front layer whenever possible
-                    icon.layer = 30
-                    grid.cells[position].objects.append(icon)
+                # This is a hack to work around the fact that 
+                    # This is a hack to work around the fact that 
+                # This is a hack to work around the fact that 
+                    # This is a hack to work around the fact that 
+                # This is a hack to work around the fact that 
+                    # This is a hack to work around the fact that 
+                # This is a hack to work around the fact that 
+                # the game does not consider level icons objects, but 
+                # our rendering framework does:
+                # Create an item with the name "icon"
+                icon.name = "icon"
+                # Bring to the front layer whenever possible
+                icon.layer = 30
+                grid.cells[position].objects.append(icon)
 
-                # Handle the level tree
-                if initialize:
-                    # The parent node
-                    node = {
-                        "mapID"  : map_id,
-                        "levels" : {}
+            # Handle the level tree
+            if initialize:
+                # The parent node
+                node = {
+                    "mapID"  : map_id,
+                    "levels" : {}
+                }
+                # Key
+                parent = grid.filename
+                # Each level within
+                for l in levels.values():
+                    child = {
+                        "number" : l["number"],
+                        "name"   : l["name"],
+                        "style"  : l["style"]
                     }
-                    # Key
-                    parent = grid.filename
-                    # Each level within
-                    for l in levels.values():
-                        child = {
-                            "number" : l["number"],
-                            "name"   : l["name"],
-                            "style"  : l["style"]
-                        }
-                        # nice nested level ids
-                        node["levels"][l["file"]] = child
-                                                
-                    self._levels[parent] = node
-            
-            return grid
+                    # nice nested level ids
+                    node["levels"][l["file"]] = child
+                                            
+                self._levels[parent] = node
+        
+        return grid
     
     def add_paths(self, grid, file):
         '''
@@ -910,21 +930,21 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                             # Store the path position, dir & object
                             paths[key][param] = data[index + 1:]
 
-            # Update our grid object with the levels
-            for data in paths.values():
-                path = Item()
-                position = flatten(data["X"], data["Y"], grid.width)
+        # Update our grid object with the levels
+        for data in paths.values():
+            path = Item()
+            position = flatten(data["X"], data["Y"], grid.width)
 
-                path.position  = position
-                path.direction = int(data["dir"])
-                path.obj       = data["object"]
-                path.ID        = self.defaults_by_object[data["object"]].ID
-                path.name      = self.defaults_by_object[data["object"]].name
-                # Paths are (sort of) like any other object
-                grid.cells[position].objects.append(path)
-            
-            
-            return grid
+            path.position  = position
+            path.direction = int(data["dir"])
+            path.obj       = data["object"]
+            path.ID        = self.defaults_by_object[data["object"]].ID
+            path.name      = self.defaults_by_object[data["object"]].name
+            # Paths are (sort of) like any other object
+            grid.cells[position].objects.append(path)
+        
+        
+        return grid
 
     def add_images(self, grid, file):
         '''
@@ -981,7 +1001,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         file.seek(0)
         specials = {}
         special_count = 0
-
+        map_id = ""
         # Go through each line of the file
         line = None
         while line != "":
@@ -989,6 +1009,9 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             # How many speicl objects are there in the map?
             if line.startswith("specials="):
                 special_count = int(line[9:])
+            # When initializing the level tree:
+            if initialize and line.startswith("mapid="):
+                map_id = line[6:]
             
             # We've started parsing paths
             if line == "[specials]":
