@@ -224,7 +224,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
         self.save_frames(frames, out)
 
-    def handle_variants(self, grid, *, tile_borders=False, is_level=False):
+    def handle_variants(self, grid, *, tile_borders=False, is_level=False, palette="default"):
         '''
         Appends variants to tiles in a grid.
 
@@ -255,6 +255,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             "rosy":(4, 2),
             "grey":(0, 1),
             "black":(0, 4),
+            "silver":(0, 2),
             "white":(0, 3),
             "brown":(6, 1),
         }
@@ -293,7 +294,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
                         if tile_data is None:
                             if tile.startswith("text_"):
-                                grid[y][x][z] = self.make_custom_tile(tile, variants)
+                                grid[y][x][z] = self.make_custom_tile(tile, variants, palette)
                                 continue
                             raise FileNotFoundError(tile)
 
@@ -471,31 +472,34 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
     @commands.command()
     @commands.cooldown(2, 10, commands.BucketType.channel)
-    async def make(self, ctx, text, color = None, style = None):
+    async def make(self, ctx, text, color = None, style = "noun", palette="default"):
         '''
         Generates a custom text sprite.
 
         The `color` argument can be a hex color (`"#ffffff"`) or a string (`"red"`).
 
-        The optional `style` argument can be set to `"property"` to make the result 
+        The `style` argument can be set to `"property"` to make the result 
         a property tile.
+
+        The `palette` argument can be set to the name of a palette.
         '''
         # These colors are based on the default palette
         valid_colors = {
-            "red":(0.88671875, 0.328125, 0.25390625),
-            "orange":(0.8828125, 0.59375, 0.33984375),
-            "yellow":(0.92578125, 0.87890625, 0.5390625),
-            "lime":(0.64453125, 0.6875, 0.28125),
-            "green":(0.36328125, 0.5078125, 0.23828125),
-            "cyan":(0.5234375, 0.78125, 0.88671875),
-            "blue":(0.3828125, 0.6171875, 0.80859375),
-            "purple":(0.55078125, 0.375, 0.60546875),
-            "pink":(0.83984375, 0.234375, 0.41796875),
-            "rosy":(0.91015625, 0.57421875, 0.78515625),
-            "white":(1, 1, 1),
-            "grey":(0.44921875, 0.44921875, 0.44921875),
-            "black":(0.03125, 0.03125, 0.03125),
-            "brown":(0.55859375, 0.40234375, 0.25390625),
+            "red":(2, 2),
+            "orange":(2, 3),
+            "yellow":(2, 4),
+            "lime":(5, 3),
+            "green":(5, 2),
+            "cyan":(1, 4),
+            "blue":(1, 3),
+            "purple":(3, 1),
+            "pink":(4, 1),
+            "rosy":(4, 2),
+            "grey":(0, 1),
+            "black":(0, 4),
+            "silver":(0, 2),
+            "white":(0, 3),
+            "brown":(6, 1),
         }
         if color is not None:
             real_color = color.lower()
@@ -504,7 +508,12 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 byte_color = (int_color >> 16, (int_color & 255 << 8) >> 8, int_color & 255)
                 tile_color = (byte_color[0] / 256, byte_color[1] / 256, byte_color[2] / 256)
             elif real_color in valid_colors:
-                tile_color = valid_colors[real_color]
+                try:
+                    palette_img = Image.open(f"data/palettes/{palette}.png").convert("RGB")
+                    color_index = valid_colors[real_color]
+                    tile_color = palette_img.getpixel(color_index)
+                except FileNotFoundError:
+                    return await self.bot.error(ctx, f"The palette `{palette}` is not valid.")
             else:
                 return await self.bot.error(ctx, f"The color `{color}` is invalid.")
         else:
@@ -527,24 +536,25 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         else:
             buffer = BytesIO()
             self.magick_images([[[tile]]], 1, 1, out=buffer)
-            await ctx.send(file=discord.File(buffer, filename=f"custom_'{text}'.gif"))
+            await ctx.send(ctx.author.mention, file=discord.File(buffer, filename=f"custom_'{text}'.gif"))
 
-    def make_custom_tile(self, text, variants):
+    def make_custom_tile(self, text, variants, palette="default"):
         valid_colors = {
-            "red":(0.88671875, 0.328125, 0.25390625),
-            "orange":(0.8828125, 0.59375, 0.33984375),
-            "yellow":(0.92578125, 0.87890625, 0.5390625),
-            "lime":(0.64453125, 0.6875, 0.28125),
-            "green":(0.36328125, 0.5078125, 0.23828125),
-            "cyan":(0.5234375, 0.78125, 0.88671875),
-            "blue":(0.3828125, 0.6171875, 0.80859375),
-            "purple":(0.55078125, 0.375, 0.60546875),
-            "pink":(0.83984375, 0.234375, 0.41796875),
-            "rosy":(0.91015625, 0.57421875, 0.78515625),
-            "white":(1, 1, 1),
-            "grey":(0.44921875, 0.44921875, 0.44921875),
-            "black":(0.03125, 0.03125, 0.03125),
-            "brown":(0.55859375, 0.40234375, 0.25390625),
+            "red":(2, 2),
+            "orange":(2, 3),
+            "yellow":(2, 4),
+            "lime":(5, 3),
+            "green":(5, 2),
+            "cyan":(1, 4),
+            "blue":(1, 3),
+            "purple":(3, 1),
+            "pink":(4, 1),
+            "rosy":(4, 2),
+            "grey":(0, 1),
+            "black":(0, 4),
+            "silver":(0, 2),
+            "white":(0, 3),
+            "brown":(6, 1),
         }
         color = (1,1,1)
         is_property = False
@@ -554,7 +564,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 continue
             if variant not in valid_colors:
                 raise ValueError(text, variant, "variant")
-            color = valid_colors[variant]
+            palette_img = Image.open(f"data/palettes/{palette}.png").convert("RGB")
+            color_index = valid_colors[variant]
+            color = palette_img.getpixel(color_index)
         return self.generate_tile(text[5:], color, is_property)
 
     def generate_tile(self, text, color, is_property):
@@ -746,7 +758,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             # Handles variants based on `:` suffixes
             start = time()
             try:
-                word_grid = self.handle_variants(word_grid)
+                word_grid = self.handle_variants(word_grid, palette=palette)
             except (ValueError, FileNotFoundError) as e:
                 if isinstance(e, FileNotFoundError):
                     tile_data = self.bot.get_cog("Admin").tile_data
