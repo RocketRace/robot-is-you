@@ -511,7 +511,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 try:
                     palette_img = Image.open(f"data/palettes/{palette}.png").convert("RGB")
                     color_index = valid_colors[real_color]
-                    tile_color = palette_img.getpixel(color_index)
+                    tile_color = tuple(p/256 for p in palette_img.getpixel(color_index))
                 except FileNotFoundError:
                     return await self.bot.error(ctx, f"The palette `{palette}` is not valid.")
             else:
@@ -566,7 +566,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 raise ValueError(text, variant, "variant")
             palette_img = Image.open(f"data/palettes/{palette}.png").convert("RGB")
             color_index = valid_colors[variant]
-            color = palette_img.getpixel(color_index)
+            color = tuple(p/256 for p in palette_img.getpixel(color_index))
         return self.generate_tile(text[5:], color, is_property)
 
     def generate_tile(self, text, color, is_property):
