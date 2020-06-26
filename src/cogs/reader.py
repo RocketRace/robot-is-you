@@ -740,7 +740,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             if line == "[icons]":
                 data = None
                 while data != "":
-                    data = ld.readline().strip()
+                    data = file.readline().strip()
                     
                     # We're done parsing
                     # We've exited [icons] and entered a new "group"
@@ -943,7 +943,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             if line == "[images]":
                 data = None
                 while data != "":
-                    data = f.readline().strip()
+                    data = file.readline().strip()
                     
                     # We're done parsing
                     # The "[images]" section is over and
@@ -1046,7 +1046,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                     # The parent node
                     map_id = grid.map_id
                     for parent_id,children in self._levels.items():
-                        if children["mapID"] == map_id:
+                        if children.get("mapID") == map_id:
                             parent = parent_id
                     
                     # Relevant fields
@@ -1054,7 +1054,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                     style = split[2]
                     number = split[3]
                                                 
-                    self._levels[parent]["levels"][level_id] = {
+                    self._levels.setdefault(grid.filename, {}).setdefault("levels", {})[level_id] = {
                         "number" : number,
                         "style"  : style,
                         "name"   : None
