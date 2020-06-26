@@ -1077,7 +1077,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                     style = split[2]
                     number = split[3]
                                                 
-                    self._levels.setdefault(grid.filename, {}).setdefault("levels", {})[level_id] = {
+                    self._levels[parent]["levels"][level_id] = {
                         "number" : number,
                         "style"  : style,
                         "name"   : None
