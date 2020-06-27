@@ -632,7 +632,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 data = self.bot.get_cog("Admin").letter_widths["small"]
                 # Prefer more on the top
                 split = [(size + 1) // 2, size // 2]
-                arrangement = [24 // split[0]] * split[0] + [23 // split[1]] * split[1]
+                arrangement = [24 // split[0]] * split[0] + [24 // split[1]] * split[1]
                 positions = [(int(24 // split[0] * (pos + 0.5)), 6) for pos in range(split[0])] + \
                     [(int(24 // split[1] * (pos + 0.5)), 18) for pos in range(split[1])]
             try:
