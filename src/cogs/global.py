@@ -571,7 +571,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     img_buffer.seek(0)
                     archive.writestr(f"text_{real_text}_0_{i}.png", data=img_buffer.getbuffer())
             buffer.seek(0)
-            await ctx.send(f"{ctx.author.mention} *Raw sprites for {real_text}*", file=discord.File(buffer, filename=f"custom_{real_text}_sprites.zip"))
+            await ctx.send(f"{ctx.author.mention} *Raw sprites for `text_{real_text}`*", file=discord.File(buffer, filename=f"custom_{real_text}_sprites.zip"))
             
     def make_custom_tile(self, text, variants, palette="default"):
         valid_colors = {
