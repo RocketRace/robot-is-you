@@ -293,7 +293,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                             if self.level_tile_override.get(tile) is not None:
                                 tile_data = self.level_tile_override[tile]
 
-                        if tile_data is None:
+                        if tile_data is None or "property" in variants:
                             if tile.startswith("text_"):
                                 grid[y][x][z] = self.make_custom_tile(tile, variants, palette)
                                 continue
