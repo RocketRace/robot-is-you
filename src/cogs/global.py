@@ -293,7 +293,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                             if self.level_tile_override.get(tile) is not None:
                                 tile_data = self.level_tile_override[tile]
 
-                        if tile_data is None or "property" in variants:
+                        if tile_data is None or "property" in variants or "noun" in variants:
                             if tile.startswith("text_"):
                                 grid[y][x][z] = self.make_custom_tile(tile, variants, palette)
                                 continue
@@ -596,6 +596,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         for variant in variants:
             if variant == "property":
                 is_property = True
+                continue
+            if variant == "noun":
+                is_property = False
                 continue
             if variant not in valid_colors:
                 raise ValueError(text, variant, "variant")
