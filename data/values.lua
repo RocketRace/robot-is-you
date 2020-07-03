@@ -2598,6 +2598,14 @@ bicons =
 	m_credits = 33,
 	m_erase = 34,
 	m_return = 35,
+	m_settings_grid_no = 36,
+	m_settings_grid = 37,
+	m_settings_wobble_no = 38,
+	m_settings_wobble = 39,
+	m_settings_particles_no = 40,
+	m_settings_particles = 41,
+	m_settings_shake_no = 42,
+	m_settings_shake = 43,
 }
 
 lookup_table =
