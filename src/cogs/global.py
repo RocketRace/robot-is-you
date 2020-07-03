@@ -1,6 +1,7 @@
 import discord
 import random
 import re
+import zipfile
 
 from datetime    import datetime
 from discord.ext import commands
@@ -292,7 +293,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                             if self.level_tile_override.get(tile) is not None:
                                 tile_data = self.level_tile_override[tile]
 
-                        if tile_data is None:
+                        if tile_data is None or "property" in variants:
                             if tile.startswith("text_"):
                                 grid[y][x][z] = self.make_custom_tile(tile, variants, palette)
                                 continue
@@ -470,7 +471,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                         grid[y][x][z] = Tile(tile, final_variant, color, source)
         return grid
 
-    @commands.command()
+    @commands.group(invoke_without_command=True)
     @commands.cooldown(2, 10, commands.BucketType.channel)
     async def make(self, ctx, text, color = None, style = "noun", palette="default"):
         '''
@@ -538,6 +539,40 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             self.magick_images([[[tile]]], 1, 1, out=buffer)
             await ctx.send(ctx.author.mention, file=discord.File(buffer, filename=f"custom_'{text}'.gif"))
 
+    @make.command()
+    @commands.cooldown(2, 10, type=commands.BucketType.channel)
+    async def raw(self, ctx, text, style="noun"):
+        '''Returns a zip archive of the custom tile.
+
+        `style` can be set to `"property"` to make the result a property tile.
+        '''
+        real_text = text.lower()
+        try:
+            tile = self.generate_tile(real_text, (1, 1, 1), (style and style.lower()) == "property")
+        except ValueError as e:
+            text = e.args[0]
+            culprit = e.args[1]
+            reason = e.args[2]
+            if reason == "variant":
+                return await self.bot.error(ctx, f"The text `{text}` could not be generated, because the variant `{culprit}` is invalid.")
+            if reason == "width":
+                return await self.bot.error(ctx, f"The text `{text}` could not be generated, because it is too long.")
+            if reason == "char":
+                return await self.bot.error(ctx, f"The text `{text}` could not be generated, because no letter sprite exists for `{culprit}`.")
+            if reason == "zero":
+                return await self.bot.error(ctx, f"The input cannot be empty.")
+            return await self.bot.error(ctx, f"The text `{text}` could not be generated.")
+        else:
+            buffer = BytesIO()
+            with zipfile.ZipFile(buffer, mode="w") as archive:
+                for i, image in enumerate(tile.images):
+                    img_buffer = BytesIO()
+                    image.save(img_buffer, format="PNG")
+                    img_buffer.seek(0)
+                    archive.writestr(f"text_{real_text}_0_{i}.png", data=img_buffer.getbuffer())
+            buffer.seek(0)
+            await ctx.send(f"{ctx.author.mention} *Raw sprites for `text_{real_text}`*", file=discord.File(buffer, filename=f"custom_{real_text}_sprites.zip"))
+            
     def make_custom_tile(self, text, variants, palette="default"):
         valid_colors = {
             "red":(2, 2),
@@ -597,7 +632,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 data = self.bot.get_cog("Admin").letter_widths["small"]
                 # Prefer more on the top
                 split = [(size + 1) // 2, size // 2]
-                arrangement = [24 // split[0]] * split[0] + [23 // split[1]] * split[1]
+                arrangement = [24 // split[0]] * split[0] + [24 // split[1]] * split[1]
                 positions = [(int(24 // split[0] * (pos + 0.5)), 6) for pos in range(split[0])] + \
                     [(int(24 // split[1] * (pos + 0.5)), 18) for pos in range(split[1])]
             try:
