@@ -591,7 +591,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             "white":(0, 3),
             "brown":(6, 1),
         }
-        color = (1,1,1)
+        color = (0, 3)
         is_property = False
         for variant in variants:
             if variant == "property":
