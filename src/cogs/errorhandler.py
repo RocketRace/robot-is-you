@@ -134,16 +134,31 @@ class CommandErrorHandler(commands.Cog):
                 emb.add_field(name="Notes", value="Could not send private messages to user.")
             return await self.logger.send(embed=emb)
 
-        # For this error example we check to see where it came from...
+        elif isinstance(error, commands.ExpectedClosingQuoteError):
+            return await self.bot.error(ctx, f"Expected closing quotation mark `{error.close_quote}`.")
+        
+        elif isinstance(error, commands.InvalidEndOfQuotedStringError):
+            return await self.bot.error(ctx, f"Expected a space after a quoted string, got `{error.char}` instead.")
+        
+        elif isinstance(error, commands.UnexpectedQuoteError):
+            return await self.bot.error(ctx, f"Got unexpected quotation mark `{error.char}` inside a string.")
+
         elif isinstance(error, commands.ArgumentParsingError):
             await self.logger.send(embed=emb)
-            if ctx.command.name == "tile":  # Checks the 
-                return await self.bot.error(ctx, "Invalid palette argument provided.")
             return await self.bot.error(ctx, "Invalid function arguments provided.")
 
         elif isinstance(error, commands.MissingRequiredArgument):
             return await self.bot.error(ctx, "Required arguments are missing.")
 
+        elif isinstance(error, discord.HTTPException):
+            if error.status == 400:
+                return await self.bot.error(ctx, "This action could not be performed.")
+            if error.status == 429:
+                return await self.bot.error(ctx, "We're being ratelimited. Try again later.")
+            if error.status == 401:
+                return await self.bot.error(ctx, "This action cannot be performed.")
+            return await self.bot.error(ctx, "There was an error while processing this request.")
+        
         # All other Errors not returned come here... And we can just print the default TraceBack + log
         await self.bot.error(ctx, f"An exception occurred: {type(error)}", f"{error}\n{''.join(traceback.format_tb(error.__traceback__))}")
         await self.logger.send(embed=emb)
