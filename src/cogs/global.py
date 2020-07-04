@@ -528,7 +528,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             if reason == "variant":
                 return await self.bot.error(ctx, f"The text `{text}` could not be generated, because the variant `{culprit}` is invalid.")
             if reason == "width":
-                return await self.bot.error(ctx, f"The text `{text}` could not be generated, because it is too long.")
+                return await self.bot.error(ctx, f"The text `{text[:150] + '...'}` could not be generated, because it is too long.")
             if reason == "char":
                 return await self.bot.error(ctx, f"The text `{text}` could not be generated, because no letter sprite exists for `{culprit}`.")
             if reason == "zero":
@@ -556,7 +556,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             if reason == "variant":
                 return await self.bot.error(ctx, f"The text `{text}` could not be generated, because the variant `{culprit}` is invalid.")
             if reason == "width":
-                return await self.bot.error(ctx, f"The text `{text}` could not be generated, because it is too long.")
+                return await self.bot.error(ctx, f"The text `{text[:150] + '...'}` could not be generated, because it is too long.")
             if reason == "char":
                 return await self.bot.error(ctx, f"The text `{text}` could not be generated, because no letter sprite exists for `{culprit}`.")
             if reason == "zero":
@@ -737,7 +737,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             palette = "default"
             to_delete = []
             for flag, x, y in potential_flags:
-                if re.fullmatch(r"--background|-b", flag):
+                if re.fullmatch(r"--background|-b|background:true", flag):
                     background = (0, 4)
                     to_delete.append((x, y))
                     continue
@@ -827,7 +827,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 if reason == "variant":
                     return await self.bot.error(ctx, f"The tile `{tile}` could not be automatically generated, because the variant `{culprit}` is invalid.")
                 if reason == "width":
-                    return await self.bot.error(ctx, f"The tile `{tile}` could not be automatically generated, because it is too long.")
+                    return await self.bot.error(ctx, f"The tile `{tile[:150] + '...'}` could not be automatically generated, because it is too long.")
                 if reason == "char":
                     return await self.bot.error(ctx, f"The tile `{tile}` could not be automatically generated, because no letter sprite exists for `{culprit}`.")
                 if reason == "zero":

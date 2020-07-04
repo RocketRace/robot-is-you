@@ -192,7 +192,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
         if len(prog_input) > 1:
             program = " ".join([program] + list(prog_input))
             prog_input = ""
-        elif prog_input and prog_input[0][-1] != "\n":
+        elif len(prog_input) == 1 and prog_input[0] and prog_input[0][-1] != "\n":
             prog_input = prog_input[0] + "\n"
         else:
             prog_input = ""
