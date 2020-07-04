@@ -141,7 +141,7 @@ class CommandErrorHandler(commands.Cog):
             return await self.bot.error(ctx, f"Expected a space after a quoted string, got `{error.char}` instead.")
         
         elif isinstance(error, commands.UnexpectedQuoteError):
-            return await self.bot.error(ctx, f"Got unexpected quotation mark `{error.char}` inside a string.")
+            return await self.bot.error(ctx, f"Got unexpected quotation mark `{error.quote}` inside a string.")
 
         elif isinstance(error, commands.ArgumentParsingError):
             await self.logger.send(embed=emb)
