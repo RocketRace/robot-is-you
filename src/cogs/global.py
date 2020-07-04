@@ -737,7 +737,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             palette = "default"
             to_delete = []
             for flag, x, y in potential_flags:
-                if re.fullmatch(r"--background|-b", flag):
+                if re.fullmatch(r"--background|-b|background:true", flag):
                     background = (0, 4)
                     to_delete.append((x, y))
                     continue
