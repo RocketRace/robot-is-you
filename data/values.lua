@@ -2567,6 +2567,8 @@ namegivingtitles =
 
 bicons =
 {
+	controls_disablegamepad_off = 0,
+	controls_disablegamepad_on = 1,
 	r_arrow = 3,
 	u_arrow = 4,
 	l_arrow = 5,
@@ -2606,6 +2608,8 @@ bicons =
 	m_settings_particles = 41,
 	m_settings_shake_no = 42,
 	m_settings_shake = 43,
+	yes = 44,
+	no = 45,
 }
 
 lookup_table =
