@@ -773,7 +773,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
             # Prepends "text_" to words if invoked under the rule command
             if rule:
-                word_grid = [[[word if word == "-" else word[5:] if word.startswith("tile_") else "text_" + word for word in stack] for stack in row] for row in word_grid]
+                word_grid = [[["-" if word == "-" else word[5:] if word.startswith("tile_") else "text_" + word for word in stack] for stack in row] for row in word_grid]
+            else:
+                word_grid = [[["-" if word in ("-", "text_-") else word for word in stack] for stack in row] for row in word_grid]
 
             # Get the dimensions of the grid
             lengths = [len(row) for row in word_grid]
