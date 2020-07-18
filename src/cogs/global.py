@@ -569,7 +569,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     img_buffer = BytesIO()
                     image.save(img_buffer, format="PNG")
                     img_buffer.seek(0)
-                    archive.writestr(f"text_{real_text}_0_{i}.png", data=img_buffer.getbuffer())
+                    archive.writestr(f"text_{real_text}_0_{i + 1}.png", data=img_buffer.getbuffer())
             buffer.seek(0)
             await ctx.send(f"{ctx.author.mention} *Raw sprites for `text_{real_text}`*", file=discord.File(buffer, filename=f"custom_{real_text}_sprites.zip"))
             
