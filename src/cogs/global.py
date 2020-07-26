@@ -544,11 +544,13 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     async def raw(self, ctx, text, style="noun"):
         '''Returns a zip archive of the custom tile.
 
+        **A raw sprite has no color!**
+
         `style` can be set to `"property"` to make the result a property tile.
         '''
         real_text = text.lower()
         try:
-            tile = self.generate_tile(real_text, (1, 1, 1), (style and style.lower()) == "property")
+            tile = self.generate_tile(real_text, (1, 1, 1), style == "property")
         except ValueError as e:
             text = e.args[0]
             culprit = e.args[1]

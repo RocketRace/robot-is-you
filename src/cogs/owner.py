@@ -107,7 +107,7 @@ def get_sprite_variants(sprite, tiling):
                         16,17,18,19, # Animation left
                         24,25,26,27] # Animation down
 
-    elif tiling == "2" and sprite != "robot": # Baba, Keke, Me and Anni have some wonky sprite variations
+    elif tiling == "2": # Baba, Keke, Me and Anni have some wonky sprite variations
         sprite_numbers = [0,1,2,3, # Moving animation to the right
                         7, # Sleep up
                         8,9,10, 11, # Moving animation up
@@ -116,13 +116,6 @@ def get_sprite_variants(sprite, tiling):
                         23, # Sleep down
                         24,25,26,27, # Moving animation down
                         31] # Sleep right
-
-    elif tiling == "2" and sprite == "robot": 
-        # Robot has no sleep animations but is a character ¯\_(ツ)_/¯
-        sprite_numbers = [0,1,2,3, # Moving animation to the right
-                        8,9,10, 11, # Moving animation up
-                        16,17,18,19, #Moving animation left
-                        24,25,26,27] # Moving animation down
 
     elif tiling == "1": # "Tiling" objects
         sprite_numbers = [i for i in range(16)]
