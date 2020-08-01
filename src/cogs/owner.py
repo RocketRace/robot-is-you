@@ -150,11 +150,16 @@ def load_with_datetime(pairs, format='%Y-%m-%dT%H:%M:%S.%f'):
     return d
     
 class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
+    
+    def bot_check(self, ctx):
+        return ctx.author.id not in self.blacklist
+
     def __init__(self, bot):
         self.bot = bot
         self.tile_data = {}
         self.identifies = []
         self.resumes = []
+        self.blacklist = []
         # Loads the caches
         # Loads the tile colors, if it exists
         colors_file = "cache/tiledata.json"
@@ -168,6 +173,10 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             debug_data = json.load(open(debug_file), object_pairs_hook=load_with_datetime)
             self.identifies = debug_data.get("identifies")
             self.resumes = debug_data.get("resumes")
+
+        bl_file = "cache/blacklist.json"
+        if os.stat(debug_file).st_size != 0:
+            self.blacklist = json.load(open(bl_file))
 
         self.initialize_letters()
         
@@ -287,6 +296,27 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         t = t.replace("_", " ")
         embed = discord.Embed(title=t, type="rich", description=content, colour=0x00ffff)
         await self.bot.send(ctx.message.channel_mentions[0], " ", embed=embed)
+
+    @commands.command()
+    @commands.is_owner()
+    async def ban(self, ctx, user: int):
+        self.blacklist.append(user)
+        with open("cache/blacklist.json", "w") as f:
+            json.dump(self.blacklist, f)
+        await ctx.send(f"{user} bent.")
+
+    @commands.command()
+    @commands.is_owner()
+    async def leave(self, ctx, guild: int = None):
+        if guild is None:
+            await ctx.send("Bye!")
+            await ctx.guild.leave()
+        else:
+            try:
+                await self.bot.get_guild(guild).leave()
+                await ctx.send(f"Left {guild}.")
+            except:
+                await ctx.send(f"Couldn't leave {guild}.")
 
     @commands.command()
     @commands.is_owner()
