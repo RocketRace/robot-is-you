@@ -475,7 +475,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     @commands.cooldown(2, 10, commands.BucketType.channel)
     async def make(self, ctx, text, color = None, style = "noun", palette="default"):
         '''
-        Generates a custom text sprite.
+        Generates a custom text sprite. Use "/" in the text to force a line break.
 
         The `color` argument can be a hex color (`"#ffffff"`) or a string (`"red"`).
 
@@ -548,7 +548,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     async def raw(self, ctx, text, style="noun"):
         '''Returns a zip archive of the custom tile.
 
-        **A raw sprite has no color!**
+        A raw sprite has no color!
 
         `style` can be set to `"property"` to make the result a property tile.
         '''
@@ -614,7 +614,13 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         return self.generate_tile(text[5:], color, is_property)
 
     def generate_tile(self, text, color, is_property):
-        size = len(text)
+        clean = text.replace("/", "")
+        size = len(clean)
+        if text.count("/") >= 2:
+            raise ValueError(text, None, "slash")
+        elif text.count("/") == 1 and size <= 3:
+            raise ValueError(text, None, "slash")
+
         if size == 0:
             raise ValueError(text, None, "zero")
         if size == 1:
@@ -639,19 +645,24 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             else:
                 scale = "small"
                 data = self.bot.get_cog("Admin").letter_widths["small"]
-                # Prefer more on the top
-                split = [(size + 1) // 2, size // 2]
+                if "/" in text:
+                    split = [text.index("/"), len(clean) - text.index("/")]
+                    if 0 in split:
+                        raise ValueError(text, None, "slash")
+                else:
+                    # Prefer more on the top
+                    split = [(size + 1) // 2, size // 2]
                 arrangement = [24 // split[0]] * split[0] + [24 // split[1]] * split[1]
                 positions = [(int(24 // split[0] * (pos + 0.5)), 6) for pos in range(split[0])] + \
                     [(int(24 // split[1] * (pos + 0.5)), 18) for pos in range(split[1])]
             try:
-                widths = {x: data[x] for x in text}
+                widths = {x: data[x] for x in clean}
             except KeyError as e:
                 raise ValueError(text, e.args[0], "char")
 
             
             final_arrangement = []
-            for char, limit in zip(text, arrangement):
+            for char, limit in zip(clean, arrangement):
                 top = 0
                 second = 0
                 for width in widths[char]:
@@ -672,7 +683,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     random.choice([
                         i for i in listdir(f"target/letters/{scale}/{char}/{width}") if i.endswith("0.png")
                     ])[:-6]
-                for char, width in zip(text, final_arrangement)
+                for char, width in zip(clean, final_arrangement)
             ]
         images = []
         for frame in range(3):
@@ -700,7 +711,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             base.putalpha(alpha)
             images.append(base)
         
-        return Tile(name=text, images=images)
+        return Tile(name=clean, images=images)
         
 
     async def render_tiles(self, ctx, *, objects, rule):
