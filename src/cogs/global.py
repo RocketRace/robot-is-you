@@ -519,8 +519,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 return await self.bot.error(ctx, f"The color `{color}` is invalid.")
         else:
             tile_color = (1, 1, 1)
+        if style not in ("property", "noun"):
+            return await self.bot.error(ctx, f"The style `{style}` is not valid.")
         try:
-            tile = self.generate_tile(text.lower(), tile_color, (style and style.lower()) == "property")
+            tile = self.generate_tile(text.lower(), tile_color, style.lower() == "property")
         except ValueError as e:
             text = e.args[0]
             culprit = e.args[1]
@@ -528,7 +530,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             if reason == "variant":
                 return await self.bot.error(ctx, f"The text `{text}` could not be generated, because the variant `{culprit}` is invalid.")
             if reason == "width":
-                return await self.bot.error(ctx, f"The text `{text[:150] + '...'}` could not be generated, because it is too long.")
+                if len(text) < 20:
+                    return await self.bot.error(ctx, f"The text `{text}` could not be generated, because it is too long.")
+                return await self.bot.error(ctx, f"The text `{text[:20] + '...'}` could not be generated, because it is too long.")
             if reason == "char":
                 return await self.bot.error(ctx, f"The text `{text}` could not be generated, because no letter sprite exists for `{culprit}`.")
             if reason == "zero":
