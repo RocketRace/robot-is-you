@@ -541,7 +541,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         else:
             buffer = BytesIO()
             self.magick_images([[[tile]]], 1, 1, out=buffer)
-            await ctx.send(ctx.author.mention, file=discord.File(buffer, filename=f"custom_'{text}'.gif"))
+            await ctx.send(ctx.author.mention, file=discord.File(buffer, filename=f"custom_'{text.replace('/','')}'.gif"))
 
     @make.command()
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
@@ -575,9 +575,12 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     img_buffer = BytesIO()
                     image.save(img_buffer, format="PNG")
                     img_buffer.seek(0)
-                    archive.writestr(f"text_{real_text}_0_{i + 1}.png", data=img_buffer.getbuffer())
+                    archive.writestr(f"text_{real_text.replace('/','')}_0_{i + 1}.png", data=img_buffer.getbuffer())
             buffer.seek(0)
-            await ctx.send(f"{ctx.author.mention} *Raw sprites for `text_{real_text}`*", file=discord.File(buffer, filename=f"custom_{real_text}_sprites.zip"))
+            await ctx.send(
+                f"{ctx.author.mention} *Raw sprites for `text_{real_text.replace('/','')}`*", 
+                file=discord.File(buffer, filename=f"custom_{real_text.replace('/','')}_sprites.zip")
+            )
             
     def make_custom_tile(self, text, variants, palette="default"):
         valid_colors = {
