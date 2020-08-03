@@ -615,10 +615,11 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
     def generate_tile(self, text, color, is_property):
         clean = text.replace("/", "")
+        forced = len(clean) != len(text)
         size = len(clean)
         if text.count("/") >= 2:
             raise ValueError(text, None, "slash")
-        elif text.count("/") == 1 and size <= 3:
+        elif text.count("/") == 1 and size == 1:
             raise ValueError(text, None, "slash")
 
         if size == 0:
@@ -636,7 +637,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         elif size > 10:
             raise ValueError(text, None, "width")
         else:
-            if size <= 3:
+            if size <= 3 and not forced:
                 scale = "big"
                 data = self.bot.get_cog("Admin").letter_widths["big"]
                 # Attempt to have 1 pixel gaps between letters
@@ -645,7 +646,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             else:
                 scale = "small"
                 data = self.bot.get_cog("Admin").letter_widths["small"]
-                if "/" in text:
+                if forced:
                     split = [text.index("/"), len(clean) - text.index("/")]
                     if 0 in split:
                         raise ValueError(text, None, "slash")
