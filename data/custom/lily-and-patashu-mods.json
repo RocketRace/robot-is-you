@@ -9,15 +9,6 @@
         "tiling":"-1"
    },
    {
-      "sprite":"text_crash",
-      "name":"text_crash",
-      "color":[
-         "1",
-         "1"
-      ],
-        "tiling":"-1"
-   },
-   {
       "sprite":"text_cute",
       "name":"text_cute",
       "color":[
