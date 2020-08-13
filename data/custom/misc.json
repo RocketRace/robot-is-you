@@ -1,5 +1,13 @@
 [
    {
+      "name": "no",
+      "sprite": "no",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
       "name": "fox",
       "sprite": "fox",
       "color": [
