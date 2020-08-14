@@ -151,17 +151,13 @@ class MetaCog(commands.Cog, name="Other Commands"):
     @commands.command(aliases=["pong"])
     @commands.cooldown(2, 2, commands.BucketType.channel)
     async def ping(self, ctx):
-        '''
-        Returns bot latency.
-        '''
+        '''Returns bot latency.'''
         await self.bot.send(ctx, f"Latency: {round(self.bot.latency, 3)} seconds")
 
     @commands.command()
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
     async def invite(self, ctx):
-        '''
-        Invite the bot to your own server!
-        '''
+        '''Invite the bot to your own server!'''
         ID = self.bot.user.id
         permissions = discord.Permissions(permissions=379968)
         invite = discord.utils.oauth_url(client_id=ID, permissions=permissions)
@@ -174,8 +170,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
     @commands.command(aliases=["interpret"])
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
     async def babalang(self, ctx, program, *program_input):
-        '''
-        Interpret a [Babalang](https://esolangs.org/wiki/Babalang) program.
+        '''Interpret a [Babalang v1.1.1](https://esolangs.org/wiki/Babalang) program.
         
         The first argument must be the source code for the program, escaped in quotes:
         

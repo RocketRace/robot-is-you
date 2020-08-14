@@ -42,8 +42,7 @@ def multiply_color(fp, palettes, pixels):
     return zip(recolored, output_palettes)
 
 def get_sprite_variants(sprite, tiling):
-    '''
-    Opens the associated sprites from data/sprites/
+    '''Opens the associated sprites from data/sprites/
     Use every sprite variant, the amount based on the tiling type
 
     Sprite variants follow this scheme:
@@ -129,8 +128,7 @@ def get_sprite_variants(sprite, tiling):
     return sprite_numbers
     
 def load_with_datetime(pairs, format='%Y-%m-%dT%H:%M:%S.%f'):
-    '''
-    Load json + datetime objects, in the speficied format.
+    '''Load json + datetime objects, in the speficied format.
     Via https://stackoverflow.com/a/14996040
     '''
     d = {}
@@ -228,9 +226,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.command(aliases=["load", "reload"])
     @commands.is_owner()
     async def reloadcog(self, ctx, cog = None):
-        '''
-        Reloads extensions within the bot while the bot is running.
-        '''
+        '''Reloads extensions within the bot while the bot is running.'''
         if cog is None:
             extensions = [a for a in self.bot.extensions.keys()]
             for extension in extensions:
@@ -245,9 +241,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.command(aliases=["reboot"])
     @commands.is_owner()
     async def restart(self, ctx):
-        '''
-        Restarts the bot process.
-        '''
+        '''Restarts the bot process.'''
         await ctx.send("Restarting bot process...")
         self.bot.exit_code = 1
         await self.bot.logout()
@@ -255,9 +249,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.command(aliases=["kill", "yeet"])
     @commands.is_owner()
     async def logout(self, ctx):
-        '''
-        Kills the bot process.
-        '''
+        '''Kills the bot process.'''
         if ctx.invoked_with == "yeet":
             await ctx.send("Yeeting bot process...")
         else:
@@ -267,9 +259,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.command()
     @commands.is_owner()
     async def debug(self, ctx):
-        '''
-        Gives some debug stats.
-        '''
+        '''Gives some debug stats.'''
         yesterday = datetime.utcnow() - timedelta(days=1)
         identifies_day = [event for event in self.identifies if event > yesterday]
         resumes_day = [event for event in self.resumes if event > yesterday]
@@ -321,9 +311,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.command()
     @commands.is_owner()
     async def loadchanges(self, ctx):
-        '''
-        Scrapes alternate tile data from level metadata (`.ld`) files.
-        '''
+        '''Scrapes alternate tile data from level metadata (`.ld`) files.'''
         self.bot.loading = True
         
         alternate_tiles = {}
@@ -412,9 +400,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.command()
     @commands.is_owner()
     async def loaddata(self, ctx):
-        '''
-        Reloads tile data from `data/values.lua`, `data/editor_objectlist.lua` and `.ld` files.
-        '''
+        '''Reloads tile data from `data/values.lua`, `data/editor_objectlist.lua` and `.ld` files.'''
         alt_tiles = await ctx.invoke(self.bot.get_command("loadchanges"))
         await ctx.invoke(self.bot.get_command("loadcolors"), alternate_tiles = alt_tiles)
         await ctx.invoke(self.bot.get_command("loadeditor"))
@@ -425,9 +411,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.command()
     @commands.is_owner()
     async def loadcolors(self, ctx, alternate_tiles):
-        '''
-        Loads tile data from `data/values.lua.` and merges it with tile data from `.ld` files.
-        '''
+        '''Loads tile data from `data/values.lua.` and merges it with tile data from `.ld` files.'''
 
         self.tile_data = {}
         alt_tiles = alternate_tiles
@@ -529,9 +513,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.command()
     @commands.is_owner()
     async def loadcustom(self, ctx):
-        '''
-        Loads custom tile data from `data/custom/*.json` into self.tile_data
-        '''
+        '''Loads custom tile data from `data/custom/*.json` into self.tile_data'''
         
         # Load custom tile data from a json files
         custom_data = [x for x in os.listdir("data/custom") if x.endswith(".json")]
@@ -558,9 +540,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.command()
     @commands.is_owner()
     async def loadeditor(self, ctx):
-        '''
-        Loads tile data from `data/editor_objectlist.lua` into `self.tile_data`.
-        '''
+        '''Loads tile data from `data/editor_objectlist.lua` into `self.tile_data`.'''
 
         lines = ""
         with open("data/editor_objectlist.lua", errors="replace") as objlist:
@@ -604,9 +584,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.command()
     @commands.is_owner()
     async def dumpdata(self, ctx):
-        '''
-        Dumps cached tile data from `self.tile_data` into `cache/tiledata.json` and `target/tilelist.txt`.
-        '''
+        '''Dumps cached tile data from `self.tile_data` into `cache/tiledata.json` and `target/tilelist.txt`.'''
 
         max_length = len(max(self.tile_data, key=lambda x: len(x))) + 1
 
@@ -623,27 +601,21 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.command()
     @commands.is_owner()
     async def hidden(self, ctx):
-        '''
-        Lists all hidden commands.
-        '''
+        '''Lists all hidden commands.'''
         cmds = "\n".join([cmd.name for cmd in self.bot.commands if cmd.hidden])
         await self.bot.send(ctx, f"All hidden commands:\n{cmds}")
 
     @commands.command()
     @commands.is_owner()
     async def doc(self, ctx, command):
-        '''
-        Check a command's doc.
-        '''
+        '''Check a command's docstring.'''
         description = self.bot.get_command(command).help
         await self.bot.send(ctx, f"Command doc for {command}:\n{description}")
 
     @commands.command()
     @commands.is_owner()
     async def loadtile(self, ctx, tile, palette):
-        '''
-        Load a single tile, given a single palette (or alternatively 'all' for all palettes)
-        '''
+        '''Load a single tile, given a single palette (or alternatively 'all' for all palettes)'''
         # Some checks
         if self.tile_data.get(tile) is None:
             return await self.bot.send(ctx, f"\"{tile}\" is not in the list of tiles.")
@@ -671,9 +643,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.command()
     @commands.is_owner()
     async def loadpalettes(self, ctx, args):
-        '''
-        Loads all tile sprites for the palettes given.
-        '''
+        '''Loads all tile sprites for the palettes given.'''
         
         if isinstance(args, str):
             palettes = args.split(" ")
@@ -729,9 +699,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.command()
     @commands.is_owner()
     async def loadletters(self, ctx):
-        '''
-        Scrapes individual letters from vanilla sprites.
-        '''
+        '''Scrapes individual letters from vanilla sprites.'''
         ignored = json.load(open("config/letterignore.json"))
 
         def check(data):
@@ -755,9 +723,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         await ctx.send("pog")
 
     def loadletter(self, word, tile_type):
-        '''
-        Scrapes letters from a sprite.
-        '''
+        '''Scrapes letters from a sprite.'''
         chars = word[5:] # Strip "text_" prefix
 
         # Get the number of rows
@@ -870,8 +836,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.command()
     @commands.is_owner()
     async def loadall(self, ctx):
-        '''
-        Reloads absolutely everything. (tile data, tile sprites)
+        '''Reloads absolutely everything. (tile data, tile sprites)
         Avoid using this, as it takes minutes to complete.
         '''
         # Sends some feedback messages

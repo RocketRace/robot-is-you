@@ -11,8 +11,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
     @commands.command()
     @commands.cooldown(2, 5, type=commands.BucketType.channel)
     async def search(self, ctx, *, query: str):
-        '''
-        Searches for tiles based on a query.
+        '''Searches for tiles based on a query.
 
         **You may use these flags to navigate the output:**
         * `page`: Which page of output you wish to view. (Example usage: `search text page:2`)
@@ -159,8 +158,8 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
     @commands.cooldown(2, 5, type=commands.BucketType.channel)
     @commands.command(name="list")
     async def list_tiles(self, ctx):
-        '''
-        Lists valid tiles for rendering.
+        '''Lists valid tiles for rendering.
+
         Returns all valid tiles in a text file.
         Tiles may be used in the `tile` (and subsequently `rule`) commands.
         '''
@@ -171,8 +170,8 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
     @commands.cooldown(2, 5, type=commands.BucketType.channel)
     @commands.command(name="palettes")
     async def list_palettes(self, ctx):
-        '''
-        Lists palettes usable for rendering.
+        '''Lists palettes usable for rendering.
+
         Palettes can be used as arguments for the `tile` (and subsequently `rule`) commands.
         '''
         msg = []
@@ -186,9 +185,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
     @commands.cooldown(2, 5, type=commands.BucketType.channel)
     @commands.command(name="variants")
     async def list_variants(self, ctx, tile):
-        '''
-        List valid sprite variants for a given tile.
-        '''
+        '''List valid sprite variants for a given tile.'''
         # Clean the input
         clean_tile = tile.strip().lower()
 
