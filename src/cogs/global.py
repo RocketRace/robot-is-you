@@ -17,8 +17,7 @@ from src.utils   import *
 from time        import time
 
 def flatten(items, seqtypes=(list, tuple)):
-    '''
-    Flattens nested iterables, of speficied types.
+    '''Flattens nested iterables, of speficied types.
     Via https://stackoverflow.com/a/10824086
     '''
     for i, _ in enumerate(items):
@@ -27,8 +26,7 @@ def flatten(items, seqtypes=(list, tuple)):
     return items
 
 def try_index(string, value):
-    '''
-    Returns the index of a substring within a string.
+    '''Returns the index of a substring within a string.
     Returns -1 if not found.
     '''
     index = -1
@@ -67,15 +65,11 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
     # Check if the bot is loading
     async def cog_check(self, ctx):
-        '''
-        Only if the bot is not loading assets
-        '''
+        '''Only if the bot is not loading assets'''
         return not self.bot.loading
 
     def save_frames(self, frames, fp):
-        '''
-        Saves a list of images as a gif to the specified file path.
-        '''
+        '''Saves a list of images as a gif to the specified file path.'''
         frames[0].save(fp, "GIF",
             save_all=True,
             append_images=frames[1:],
@@ -89,8 +83,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         if not isinstance(fp, str): fp.seek(0)
 
     def magick_images(self, word_grid, width, height, *, palette="default", images=None, image_source="vanilla", out="target/renders/render.gif", background=None, rand=False):
-        '''
-        Takes a list of tile names and generates a gif with the associated sprites.
+        '''Takes a list of tile names and generates a gif with the associated sprites.
 
         out is a file path or buffer. Renders will be saved there, otherwise to `target/renders/render.gif`.
 
@@ -226,8 +219,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         self.save_frames(frames, out)
 
     def handle_variants(self, grid, *, tile_borders=False, is_level=False, palette="default"):
-        '''
-        Appends variants to tiles in a grid.
+        '''Appends variants to tiles in a grid.
 
         Output tiles are (name string, variant string, color tuple, source string) 4-tuples
 
@@ -474,8 +466,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     @commands.group(invoke_without_command=True)
     @commands.cooldown(2, 10, commands.BucketType.channel)
     async def make(self, ctx, text, color = None, style = "noun", palette="default"):
-        '''
-        Generates a custom text sprite. Use "/" in the text to force a line break.
+        '''Generates a custom text sprite. 
+        Use "/" in the text to force a line break.
 
         The `color` argument can be a hex color (`"#ffffff"`) or a string (`"red"`).
 
@@ -719,9 +711,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         
 
     async def render_tiles(self, ctx, *, objects, rule):
-        '''
-        Performs the bulk work for both `tile` and `rule` commands.
-        '''
+        '''Performs the bulk work for both `tile` and `rule` commands.'''
         async with ctx.typing():
             render_limit = 100
             tiles = objects.lower().strip().replace("\\", "")
@@ -872,8 +862,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     @commands.command()
     @commands.cooldown(5, 10, type=commands.BucketType.channel)
     async def rule(self, ctx, *, objects = ""):
-        '''
-        Renders the text tiles provided. If not found, the bot tries to auto-generate them!
+        '''Renders the text tiles provided. 
+        
+        If not found, the bot tries to auto-generate them! (See the `make` command for more.)
 
         **Flags**
         * `--palette=<...>` (`-P=<...>`): Recolors the output gif. See the `palettes` command for more.
@@ -901,8 +892,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     @commands.command()
     @commands.cooldown(5, 10, type=commands.BucketType.channel)
     async def tile(self, ctx, *, objects = ""):
-        '''
-        Renders the tiles provided.
+        '''Renders the tiles provided.
 
        **Flags**
         * `--palette=<...>` (`-P=<...>`): Recolors the output gif. See the `palettes` command for more.
@@ -930,8 +920,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     @commands.cooldown(5, 10, commands.BucketType.channel)
     @commands.command(name="level")
     async def _level(self, ctx, *, query):
-        '''
-        Renders the given Baba Is You level.
+        '''Renders the given Baba Is You level.
+
         Levels are searched for in the following order:
         * Checks if the input matches the level ID (e.g. "20level")
         * Checks if the input matches the level number (e.g. "space-3" or "lake-extra 1")

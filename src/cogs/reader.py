@@ -8,14 +8,11 @@ from os          import listdir, stat
 from src.utils   import Tile
 
 def flatten(x, y, width):
-    '''
-    Return the flattened position of a coordinate in a grid of specified width
-    '''
+    '''Return the flattened position of a coordinate in a grid of specified width'''
     return int(y) * width + int(x)
 
 def try_index(string, value):
-    '''
-    Returns the index of a substring within a string.
+    '''Returns the index of a substring within a string.
     Returns -1 if not found.
     '''
     index = -1
@@ -26,12 +23,9 @@ def try_index(string, value):
     return index
 
 class Grid:
-    '''
-    This stores the information of a single Baba level, in a format readable by the renderer.
-    '''
+    '''This stores the information of a single Baba level, in a format readable by the renderer.'''
     def __init__(self, filename, source):
-        '''
-        Initializes a blank grid, given a path to the level file. 
+        '''Initializes a blank grid, given a path to the level file. 
         This should not be used; you should use Reader.read_map() instead to generate a filled grid.
         '''
         # The location of the level
@@ -54,9 +48,7 @@ class Grid:
         self.number = None
     
     def clean_up(self):
-        '''
-        Returns a cleaned up version of the grid.
-        '''
+        '''Returns a cleaned up version of the grid.'''
         # Horrible variable naming scheme below
         m = []
         h = self.height
@@ -101,25 +93,19 @@ class Grid:
         return final
 
 class Cell:
-    '''
-    Contains the information stored in a single position of a level. 
+    '''Contains the information stored in a single position of a level. 
     Not really necessary.
     '''
     def __init__(self):
-        '''
-        Initializes a blank cell.
-        '''
+        '''Initializes a blank cell.'''
         self.objects = []
 
 class Item:
-    '''
-    Represents an object within a level.
+    '''Represents an object within a level.
     This may be a regular object, a path object, a level object, a special object or empty.
     '''
     def __init__(self, *, ID=None, obj=None, name=None, color=None, position=None, direction=None, extra=None, layer=0):
-        '''
-        Returns an Item with the given parameters.
-        '''
+        '''Returns an Item with the given parameters.'''
         self.ID = ID
         self.obj = obj
         self.name = name
@@ -130,39 +116,28 @@ class Item:
         self.layer = layer
 
     def copy(self):
-        '''
-        Returns a copy of the item.
-        '''
+        '''Returns a copy of the item.'''
         return Item(ID=self.ID, obj=self.obj, name=self.name, color=self.color, position=self.position, direction=self.direction, extra=self.extra, layer=self.layer)
 
     @classmethod
     def edge(cls):
-        '''
-        Returns an Item representing an edge tile.
-        '''
+        '''Returns an Item representing an edge tile.'''
         return Item(ID=0, obj="edge", name="edge", layer=20)
     
     @classmethod
     def empty(cls):
-        '''
-        Returns an Item representing an empty tile.
-        '''
+        '''Returns an Item representing an empty tile.'''
         return Item(ID=-1, obj="empty", name="empty", layer=0)
     
     @classmethod
     def level(cls, color=(0,3)):
-        '''
-        Returns an Item representing a level object.
-        '''
+        '''Returns an Item representing a level object.'''
         return Item(ID=-2, obj="level", name="level", color=color, layer=20)
 
 class Reader(commands.Cog, command_attrs=dict(hidden=True)):
-    '''
-    A class for parsing the contents of level files.
-    '''
+    '''A class for parsing the contents of level files.'''
     def __init__(self, bot):
-        '''
-        Initializes the Reader cog.
+        '''Initializes the Reader cog.
         Populates the default objects cache from a data/values.lua file.
         '''
         self.bot = bot
@@ -201,8 +176,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         keep_background=False, 
         tile_borders=False
     ):
-        '''
-        Loads and renders a level, given its file path and source. 
+        '''Loads and renders a level, given its file path and source. 
         Shaves off the borders if specified.
         '''
         # Data
@@ -241,9 +215,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         return {grid.filename: m["data"]}
 
     def pre_map_load(self):
-        '''
-        Prerequisites for level rendering
-        '''
+        '''Prerequisites for level rendering'''
         tile_data = self.bot.get_cog("Admin").tile_data
         # If the objects for some reason aren't well formed, they're replaced with error tiles
         renderer = self.bot.get_cog("Baba Is You")
@@ -252,9 +224,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
     @commands.command()
     @commands.is_owner()
     async def loadmap(self, ctx, source, filename, initialize: bool =False):
-        '''
-        Loads a given level. Initializes the level tree if so specified.
-        '''
+        '''Loads a given level. Initializes the level tree if so specified.'''
         # For managing the directions of the items
         tile_data, renderer = self.pre_map_load()
         # Parse and render
@@ -274,9 +244,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         await ctx.send(f"Rendered level at `{source}/{filename}`.")
 
     def clean_metadata(self, metadata):
-        '''
-        Cleans up level metadata from self._levels as well as the given dict, and populates the cleaned data into self.level_data.
-        '''
+        '''Cleans up level metadata from self._levels as well as the given dict, and populates the cleaned data into self.level_data.'''
         # Clean up basic level data
         for level,data in metadata.items():
             self.level_data[level] = data
@@ -305,8 +273,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
     @commands.command()
     @commands.is_owner()
     async def loadmaps(self, ctx, initialize=True, remove_borders=True):
-        '''
-        Loads and renders all levels.
+        '''Loads and renders all levels.
         Initializes the level tree unless otherwise specified.
         Cuts off borders from rendered levels unless otherwise specified.
         '''
@@ -338,8 +305,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         self.clean_metadata(metadatas)
 
     def read_objects(self, reader):
-        '''
-        Inner function that parses the contents of the data/values.lua file.
+        '''Inner function that parses the contents of the data/values.lua file.
         Returns the largest valid object ID for in-level objects.
         '''
         max_id = 0
@@ -420,9 +386,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         return max_id
 
     def set_item_value(self, item, obj, value):
-        '''
-        Sets an Item's attribute to a value.
-        '''
+        '''Sets an Item's attribute to a value.'''
         # Most of these attributes are commented out.
         # They may be implemented later, if necessary.
         if obj == "name":
@@ -454,8 +418,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             # item.grid = self.CTS(value)
 
     def CTS(self, value, shift=True):
-        '''
-        Converts a string from the output of data/values.lua to a number.
+        '''Converts a string from the output of data/values.lua to a number.
         Examples:
         "{1}" -> 1
         "{1, 5}" -> 1<<8 | 5 -> 261
@@ -479,8 +442,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             return (x, y)
 
     def read_map(self, filename, source, initialize = False):
-        '''
-        Parses a .l file's content, given its file path.
+        '''Parses a .l file's content, given its file path.
         Returns a Grid object containing the level data.
         '''
         grid = Grid(filename, source)
@@ -530,8 +492,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         return grid
 
     def sort_layers(self, grid):
-        '''
-        Sorts the items within each cell of the grid.
+        '''Sorts the items within each cell of the grid.
         Items are sorted according to their layer attribute, in ascending order.
         '''
         for cell in grid.cells:
@@ -540,9 +501,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         return grid
 
     def add_changes(self, grid, file):
-        '''
-        Modifies the objects in the level according to the changes proposed in the given file.
-        '''
+        '''Modifies the objects in the level according to the changes proposed in the given file.'''
         # the .ld file
         file.seek(0)
         changes = {}
@@ -613,8 +572,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         return grid
 
     def add_metadata(self, grid, file):
-        '''
-        Adds level metadata from the given file to the given Grid.
+        '''Adds level metadata from the given file to the given Grid.
         Adds the following information:
         * Level name 
         * Subtitle
@@ -669,8 +627,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         return grid
 
     def add_levels(self, grid, file, initialize=False):
-        '''
-        Adds raw level objects from within a level to the given Grid.
+        '''Adds raw level objects from within a level to the given Grid.
         Data is parsed from the given file.
         if `initialize` is True, adds levels to the global level tree.
         '''
@@ -871,8 +828,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         return grid
     
     def add_paths(self, grid, file):
-        '''
-        Adds raw path objects from within a level to the given Grid.
+        '''Adds raw path objects from within a level to the given Grid.
         Objects are added to the Grid as regular objects without path information.
         Data is parsed from the given file.
         '''
@@ -947,8 +903,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         return grid
 
     def add_images(self, grid, file):
-        '''
-        Adds background image data from a level to the given Grid.
+        '''Adds background image data from a level to the given Grid.
         Data is parsed from the given file.
         '''
         # The .ld file
@@ -993,8 +948,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         return grid
 
     def add_specials(self, grid, file, initialize=False):
-        '''
-        Adds special objects from within a level to the given Grid.
+        '''Adds special objects from within a level to the given Grid.
         Data is parsed from the given file.
         '''
         # the .ld file
