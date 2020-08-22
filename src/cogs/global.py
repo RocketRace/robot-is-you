@@ -297,7 +297,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                         direction = 0
                         animation_frame = 0
                         final_variant = 0
-                        str_color = tile_data["active"] if tile_data.get("active") is not None else tile_data.get("color")
+                        str_color = tile_data["active"] if tile_data.get("active") else tile_data.get("color")
                         color = final_color or tuple(map(int, str_color))
 
                         # Is this a tiling object (e.g. wall, water)?
@@ -366,7 +366,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 color = colors.get(variant)
                             elif variant == "inactive":
                                 # If an active variant exists, the default color is inactive
-                                if tile_data.get("active") is not None:
+                                if tile_data.get("active"):
                                     color = map(int, tile_data["color"])
                                 else:
                                     raise FileNotFoundError(word)

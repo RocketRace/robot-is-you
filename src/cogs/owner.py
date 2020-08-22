@@ -187,7 +187,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         tiling = obj.get("tiling")
         # Custom tiles will probably not have the tiling property unless specified
         if tiling is None: tiling = "-1"
-        color = obj["active"] if obj.get("active") is not None else obj["color"] 
+        color = obj["active"] if obj.get("active") else obj["color"] 
         source = obj.get("source")
         # If not specified, it's a vanilla sprite
         if source is None: source = "vanilla"
