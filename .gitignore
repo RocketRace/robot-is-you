@@ -9,5 +9,4 @@ target/letters/big/*
 target/letters/small/*
 target/tilelist.txt
 cache/*
-src/__pycache__
-src/cogs/__pycache__
+**/__pycache__
