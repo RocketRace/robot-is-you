@@ -16,8 +16,6 @@ function clearobjlist()
 	objlistdata.search_currobjlist = ""
 	editor2.strings[SEARCHSTRING] = ""
 	editor4.strings[SEARCHSTRING_CURROBJLIST] = ""
-	
-	setundo_editor()
 end
 
 function formatobjlist()
