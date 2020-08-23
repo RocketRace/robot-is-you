@@ -2605,6 +2605,7 @@ namegivingtitles =
 	[13] = {"namegiving_levelsearchstring","lower,maxlen24"},
 	[14] = {"namegiving_spritesearchstring","lower,maxlen24"},
 	[15] = {"namegiving_slotname","maxlen16"},
+	[16] = {"namegiving_subtitle","maxlen26"},
 }
 
 bicons =
@@ -2672,4 +2673,27 @@ lookup_table =
 	193, 268, 305, 304, 26085, 26412, 35486, 188, 190, 352, 9658, 9650, 9668, 9660, 128169, 9807, 9796, 26059, 24459, 26143, 33828, 20013, 25991, 31616, 20307,
 	-- capital letters a-z
 	65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90,
+}
+
+play_data =
+{
+	tunes = 
+	{
+		baba = "tune",
+		box = "drum_kick",
+		rock = "drum_snare",
+		key = "drum_hat",
+		keke = "tune_blop",
+		skull = "tune_short",
+	},
+	freqs = 
+	{
+		a = 44000,
+		b = 49388,
+		c = 52325,
+		d = 58733,
+		e = 65925,
+		f = 69846,
+		g = 78399,
+	},
 }
