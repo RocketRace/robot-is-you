@@ -187,7 +187,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         tiling = obj.get("tiling")
         # Custom tiles will probably not have the tiling property unless specified
         if tiling is None: tiling = "-1"
-        color = obj["color"]
+        color = obj["active"] if obj.get("active") else obj["color"] 
         source = obj.get("source")
         # If not specified, it's a vanilla sprite
         if source is None: source = "vanilla"
@@ -335,7 +335,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                         IDs.extend(line.strip().split(",")[1:-1])
                         alts = dict.fromkeys(IDs[:])
                         for alt in alts:
-                            alts[alt] = {"name":"", "sprite":"", "tiling":"", "color":[], "type":""}
+                            alts[alt] = {"name":"", "sprite":"", "tiling":"", "color":[], "active":[],"type":""}
                 else:
                     if line.startswith("object"):
                         ID = line[:][:9]
@@ -369,8 +369,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                             color_raw = line[:][23:-1]
                             # Splits the color into a list 
                             # "a,b" -> [a,b]
-                            color = color_raw.split(",")
-                            alts[ID]["color"] = color
+                            active = color_raw.split(",")
+                            alts[ID]["active"] = color
                     
             # Adds the data to the list of changed objects
             with open("config/editortileignore.json") as fp:
@@ -427,7 +427,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         name = ID = sprite = ""
         # The color of the currently handled tile
         color_raw = ""
-        color = []
+        color = active = []
         # Reads each line
         for line in lines:
             if tileslist:
@@ -449,12 +449,16 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 # The "active" line only exists for text tiles.
                 # We prefer the active color of the text.
                 # If you want the inactive colors, just remove the second condition check.
-                elif line.startswith("\t\tcolour = ") or line.startswith("\t\tactive = "):
+                elif line.startswith("\t\tcolour = "):
                     color_raw = line[12:-3]
                     # Converts the string to a list 
                     # "{a,b}" --> [a,b]
                     seg = color_raw.split(",")
                     color = [seg[i].strip() for i in range(2)]
+                elif line.startswith("\t\tactive = "):
+                    color_raw = line[12:-3]
+                    seg = color_raw.split(",")
+                    active = [seg[i].strip() for i in range(2)]
                 elif line.startswith("\t\ttype = "):
                     type_ = line[9:-2]
                 # Signifies that the data for the current tile is over
@@ -463,7 +467,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                     # bool("") == False, but True for any other string
                     if bool(name) and bool(sprite) and bool(color_raw) and bool(tiling):
                         # Alternate tile data (initialized with the original)
-                        alts = {name:{"sprite":sprite, "color":color, "tiling":tiling, "source":"vanilla", "type":type_}}
+                        alts = {name:{"sprite":sprite, "color":color, "active":active, "tiling":tiling, "source":"vanilla", "type":type_}}
                         # Looks for object replacements in the alternateTiles dict
                         if alt_tiles.get(ID) is not None:
                             # Each replacement for the object ID:
@@ -473,6 +477,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                                 alt_sprite = sprite
                                 alt_tiling = tiling
                                 alt_color = color
+                                alt_active = active
                                 alt_type = type_
                                 if value.get("name") != "":
                                     alt_name = value.get("name")
@@ -492,6 +497,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                                             "sprite":alt_sprite, 
                                             "tiling":alt_tiling, 
                                             "color":alt_color, 
+                                            "active":alt_active,
                                             "type":alt_type,
                                             "source":"vanilla"
                                         }
@@ -501,7 +507,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                             self.tile_data[key] = value
                     # Resets the fields
                     name = sprite = tiling = color_raw = ""
-                    color = []
+                    color = active = []
             # Only begins checking for these lines once a certain point in the file has been passed
             elif line == "tileslist =\n":
                 tileslist = True
@@ -549,7 +555,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         objects = {}
         parsing_objects = False
         name = tiling = tile_type = sprite = ""
-        color = None
+        color = active = None
         tags = None
         for line in lines:
             if line.startswith("editor_objlist = {"):
@@ -558,9 +564,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 continue
             if line.startswith("\t},"):
                 if sprite == "": sprite = name
-                objects[name] = {"tiling":tiling,"type":tile_type,"sprite":sprite,"color":color,"tags":tags,"source":"vanilla"}
+                objects[name] = {"tiling":tiling,"type":tile_type,"sprite":sprite,"color":color,"active":active,"tags":tags,"source":"vanilla"}
                 name = tiling = tile_type = sprite = ""
-                color = None
+                color = active = None
                 tags = None
             elif line.startswith("\t\tname = \""):
                 name = line[10:-3]
@@ -571,10 +577,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             elif line.startswith("\t\ttype = "):
                 tile_type = line[9:-2]
             elif line.startswith("\t\tcolour = {"):
-                if not color:
-                    color = [x.strip() for x in line[12:-3].split(",")]
+                color = [x.strip() for x in line[12:-3].split(",")]
             elif line.startswith("\t\tcolour_active = {"):
-                color = [x.strip() for x in line[19:-3].split(",")]
+                active = [x.strip() for x in line[19:-3].split(",")]
             elif line.startswith("\t\ttags = {"):
                 ...
 
