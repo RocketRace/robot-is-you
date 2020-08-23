@@ -297,7 +297,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                         direction = 0
                         animation_frame = 0
                         final_variant = 0
-                        str_color = tile_data.get("color")
+                        str_color = tile_data["active"] if tile_data.get("active") else tile_data.get("color")
                         color = final_color or tuple(map(int, str_color))
 
                         # Is this a tiling object (e.g. wall, water)?
@@ -364,6 +364,12 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                         for variant in variants:
                             if colors.get(variant) is not None:
                                 color = colors.get(variant)
+                            elif variant == "inactive":
+                                # If an active variant exists, the default color is inactive
+                                if tile_data.get("active"):
+                                    color = map(int, tile_data["color"])
+                                else:
+                                    raise FileNotFoundError(word)
                             # TODO: clean this up
                             elif tiling == "-1":
                                 if variant in ("r", "right"):
@@ -396,6 +402,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                         direction = 0
                                     else:
                                         raise FileNotFoundError(word)
+                            elif tiling == "1":
+                                raise FileNotFoundError(word)
                             elif tiling == "2":
                                 if variant in ("r", "right"):
                                     direction = 0
@@ -428,8 +436,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     direction = 2
                                 elif variant in ("d", "down"):
                                     direction = 3
-                                elif variant in ("s", "sleep"): 
-                                    animation_frame = -1
                                 elif variant in (
                                     "0", "1", "2", "3", 
                                     "8", "9", "10", "11",
