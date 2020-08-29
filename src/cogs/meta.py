@@ -115,7 +115,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
     async def cog_check(self, ctx):
         return not self.bot.loading
 
-    @commands.command(aliases=["info"])
+    @commands.command(aliases=["info", "you"])
     @commands.cooldown(2, 5, commands.BucketType.channel)
     async def about(self, ctx):
         """
