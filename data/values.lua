@@ -2606,8 +2606,8 @@ namegivingtitles =
 	[14] = {"namegiving_spritesearchstring","lower,maxlen24"},
 	[15] = {"namegiving_slotname","maxlen16"},
 	[16] = {"namegiving_subtitle","maxlen26"},
-	[17] = {"namegiving_editor_autopick","lower,maxlen26"},
-	[18] = {"namegiving_currobjlist_autoadd","lower,maxlen26"},
+	[17] = {"namegiving_editor_autopick","lower"},
+	[18] = {"namegiving_currobjlist_autoadd","lower"},
 }
 
 bicons =
