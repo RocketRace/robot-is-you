@@ -317,6 +317,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         alternate_tiles = {}
 
         levels = [l for l in os.listdir("data/levels/vanilla") if l.endswith(".ld")]
+        with open("config/editortileignore.json") as fp:
+            ignored_tiles = json.load(fp)
         for level in levels:
             # Reads each line of the level file
             lines = ""
@@ -331,11 +333,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 # Only considers lines starting with objectXYZ
                 if line.startswith("changed="):
                     if len(line) > 16:
-                        IDs = [line[8:17]]
-                        IDs.extend(line.strip().split(",")[1:-1])
-                        alts = dict.fromkeys(IDs[:])
-                        for alt in alts:
-                            alts[alt] = {"name":"", "sprite":"", "tiling":"", "color":[], "active":[],"type":""}
+                        IDs = line[8:].strip().split(",")[:-1]
+                        alts = {ID: {"name":"", "sprite":"", "tiling":"", "color":[], "active":[],"type":""} for ID in IDs}
                 else:
                     if line.startswith("object"):
                         ID = line[:][:9]
@@ -362,19 +361,17 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                             # Splits the color into a list 
                             # "a,b" -> [a,b]
                             color = color_raw.split(",")
-                            if not alts[ID].get("color"):
-                                alts[ID]["color"] = color
+                            # if not alts[ID].get("color"):
+                            alts[ID]["color"] = color
                         # Sets the changed color (active text only), overrides previous
                         elif line.startswith("activecolour=", 10):
                             color_raw = line[:][23:-1]
                             # Splits the color into a list 
                             # "a,b" -> [a,b]
                             active = color_raw.split(",")
-                            alts[ID]["active"] = color
+                            alts[ID]["active"] = active
                     
             # Adds the data to the list of changed objects
-            with open("config/editortileignore.json") as fp:
-                ignored_tiles = json.load(fp)
             for key in alts:
                 if alternate_tiles.get(key) is None:
                     if alts[key].get("name") in ignored_tiles:
