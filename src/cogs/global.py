@@ -141,7 +141,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     path = f"data/sprites/{tile.source}/{tile.name}_{tile.variant}_{animation_offset + 1}.png"
                             img = cached_open(path, cache=cache, is_image=True).convert("RGBA")
                             c_r, c_g, c_b = palette_img.getpixel(tile.color)
-                            r, g, b, a = img.split()
+                            _r, _g, _b, a = img.split()
                             color_matrix = (c_r / 256, 0, 0, 0,
                                          0, c_g / 256, 0, 0,
                                       0, 0, c_b / 256, 0)
