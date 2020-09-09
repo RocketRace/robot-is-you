@@ -175,7 +175,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                             continue
                         if rand:
                             # Random animations
-                            animation_offset = (hash(x + y + z) + frame) % 3
+                            animation_offset = (hash(x + y) + frame) % 3
                         else:
                             animation_offset = frame
                         # Certain sprites have to be hard-coded, since their file paths are not very neat
