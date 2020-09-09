@@ -916,7 +916,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             task = partial(self.magick_images, word_grid, width, height, palette=palette, background=background, out=buffer, rand=True)
             try:
                 await self.bot.loop.run_in_executor(None, task)
-            except ValueError:
+            except:
                 return await self.bot.error(ctx, f"You can only apply apply three layers of meta.")
             delta = time() - start
         # Sends the image through discord
