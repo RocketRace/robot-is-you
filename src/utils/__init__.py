@@ -4,12 +4,14 @@ __all__ = ("Tile", "cached_open")
 
 class Tile:
     '''Represents a tile object, ready to be rendered.'''
-    def __init__(self, name = None, variant = None, color = None, source = "vanilla", images = []):
+    def __init__(self, name = None, variant = None, color = None, source = "vanilla", meta_level = 0, style = None, custom=False, images = []):
         self.name = name
         self.variant = variant
         self.color = None if color is None else tuple(color)
         self.source = source
-        self.custom = len(images) > 0
+        self.style = style
+        self.meta_level = meta_level
+        self.custom = custom
         self.images = images
 
     def __repr__(self):

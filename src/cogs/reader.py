@@ -50,7 +50,7 @@ class Grid:
     def clean_up(self):
         '''Returns a cleaned up version of the grid.'''
         # Horrible variable naming scheme below
-        m = []
+        grid = []
         h = self.height
         w = self.width
         for y in range(h):
@@ -59,22 +59,13 @@ class Grid:
                 z = []
                 for o in self.cells[y * w + x].objects:
                     # Cleaned up Item object
-                    new = Item(
-                        ID=o.ID,
-                        obj=o.obj,
-                        name=o.name or "error",
-                        color=o.color,
-                        position=o.position,
-                        # Note the *8! This is for use with handle_variants
-                        direction=0 if o.direction is None else o.direction * 8,
-                        extra=o.extra or ""
-                    )
+                    new = f"{o.name or 'error'}:{'0' if o.direction is None else str(o.direction * 8)}{':' + ','.join(tuple(map(str,o.color))) if o.color else ''}" 
                     z.append(new)
                 a.append(z)
-            m.append(a)
+            grid.append(a)
         # Handle level images as well
         final = {
-            "objects" : m,
+            "objects" : grid,
             "data" : {
                 "images"     : self.images,
                 "palette"    : self.palette,
