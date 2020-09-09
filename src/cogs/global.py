@@ -154,7 +154,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                             continue
                         # Custom tiles
                         if tile.custom:
-                            img = self.make_meta(tile.images[frame], tile.meta_level)
+                            # Custom tiles are already rendered, and have their meta level applied properly
+                            img = tile.images[frame]
                             if y == 0:
                                 diff = img.size[1] - 24
                                 if diff > up_pad:
@@ -381,9 +382,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 final.custom = True
                                 final.style = "property" if "property" in variants else "noun"
                                 if final.color is None:
-                                    final.images = self.generate_tile(tile[5:], (1,1,1), final.style == "property", 0)
+                                    final.images = self.generate_tile(tile[5:], (1,1,1), final.style == "property", final.meta_level)
                                 else:
-                                    whites = self.generate_tile(tile[5:], (1,1,1), final.style == "property", 0)
+                                    whites = self.generate_tile(tile[5:], (1,1,1), final.style == "property", final.meta_level)
                                     colored = []
                                     for im in whites:
                                         c_r, c_g, c_b = palette_img.getpixel(final.color)
