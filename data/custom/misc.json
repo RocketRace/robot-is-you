@@ -26,6 +26,14 @@
       ]
    },
    {
+      "name": "stop",
+      "sprite": "stop",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
       "name": "no",
       "sprite": "no",
       "color": [
