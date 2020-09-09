@@ -106,6 +106,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         elif meta_level == 0:
             return img
 
+        original = img.copy()
         final = img
         for i in range(meta_level):
             base = Image.new("L", (final.width + 6, final.width + 6))
@@ -117,6 +118,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             base = base.convert("1")
             final = base.convert("RGBA")
             final.putalpha(base)
+        if meta_level == 2:
+            final.paste(original, (i + 1, i + 1), original.convert("L"))
+        
         return final
         
 
