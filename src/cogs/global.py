@@ -338,7 +338,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                             final.name = word
                         # Easter egg
                         if "hide" in variants:
-                            grid[y][x][z] = final
+                            grid[y][x][z] = Tile()
                             continue
                         
                         # Certain tiles from levels are overridden with other tiles
