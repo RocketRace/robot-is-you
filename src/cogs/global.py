@@ -563,8 +563,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
         The `color` argument can be a hex color (`"#ffffff"`) or a string (`"red"`).
 
-        The `style` argument may be "noun", "property", "metanoun", "metaproperty",
-        "metametanoun", "metametaproperty", "metametametanoun" and "metametametaproperty".
+        The `style` argument may be "noun", "property", "meta", "metanoun", "metaproperty",
+        "metameta", "metametanoun", "metametaproperty", "metametameta", "metametametanoun" or "metametametaproperty".
 
         The `palette` argument can be set to the name of a palette.
         '''
@@ -586,7 +586,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 return await self.bot.error(ctx, f"The color `{color}` is invalid.")
         else:
             tile_color = (1, 1, 1)
-        if style not in ("property", "noun", "meta", "metanoun", "metaproperty", "metametanoun", "metametaproperty", "metametametanoun", "metametametaproperty"):
+        if style not in ("property", "noun", "meta", "metanoun", "metaproperty", "metametanoun", "metameta", "metametaproperty", "metametametanoun", "metametameta", "metametametaproperty"):
             return await self.bot.error(ctx, f"The style `{style}` is not valid.")
         try:
             if style.startswith("metametameta"):
@@ -626,8 +626,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
         A raw sprite has no color!
 
-        The `style` argument may be "noun", "property", "metanoun", "metaproperty",
-        "metametanoun", "metametaproperty", "metametametanoun" and "metametametaproperty".
+        The `style` argument may be "noun", "property", "meta", "metanoun", "metaproperty",
+        "metameta", "metametanoun", "metametaproperty", "metametameta", "metametametanoun" or "metametametaproperty".
         '''
         real_text = text.lower()
         try:
