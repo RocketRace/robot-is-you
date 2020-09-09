@@ -192,7 +192,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                             else:
                                 path = f"data/sprites/{tile.source}/{tile.name}_{tile.variant}_{animation_offset + 1}.png"
                         if tile.color is None:
-                            tile.color = self.bot.get_cog("Admin").tile_data.get(tile.name).get("color")
+                            tile.color = self.bot.get_cog("Admin").tile_data.get(tile.name).get("active")
+                            if tile.color is None:
+                                tile.color = self.bot.get_cog("Admin").tile_data.get(tile.name).get("color")
                             tile.color = tuple(map(int, tile.color))
                         img = cached_open(path, cache=cache, is_image=True).convert("RGBA")
                         img = self.make_meta(img, tile.meta_level)
