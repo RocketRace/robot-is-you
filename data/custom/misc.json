@@ -1,5 +1,23 @@
 [
    {
+      "name": "frog",
+      "sprite": "frog",
+      "tiling": "2",
+      "color": [
+         "5",
+         "3"
+      ]
+   },
+   {
+      "name": "text_frog",
+      "sprite": "text_frog",
+      "color": [
+         "5",
+         "3"
+      ],
+      "tiling": "-1"
+   },
+   {
       "name": "warn",
       "sprite": "warn",
       "color": [
