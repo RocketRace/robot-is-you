@@ -379,5 +379,15 @@
        "2"
      ],
      "tiling":"2"
+  },
+  {
+   "sprite":"blossom",
+   "name":"blossom",
+   "color":
+     [
+       "0",
+       "3"
+     ],
+     "tiling":"-1"
   }
 ]
