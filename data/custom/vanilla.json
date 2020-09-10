@@ -369,5 +369,15 @@
        "3"
      ],
      "tiling":"-1"
+  },
+  {
+   "sprite":"anni",
+   "name":"anni",
+   "color":
+     [
+       "6",
+       "1"
+     ],
+     "tiling":"2"
   }
 ]
