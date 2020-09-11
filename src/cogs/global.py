@@ -109,8 +109,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         original = img.copy()
         final = img
         for i in range(meta_level):
+            _, _, _, alpha = final.split()
             base = Image.new("L", (final.width + 6, final.width + 6))
-            base.paste(final, (3, 3))
+            base.paste(final, (3, 3), alpha)
             base = ImageChops.invert(base)
             base = base.filter(ImageFilter.FIND_EDGES)
             ImageDraw.floodfill(base, (0, 0), 0)

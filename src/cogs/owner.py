@@ -240,7 +240,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.is_owner()
     async def loadcolors(self, ctx, alternate_tiles):
         '''Loads tile data from `data/values.lua.` and merges it with tile data from `.ld` files.'''
-        print(len(self.tile_data))
         self.tile_data = {}
         alt_tiles = alternate_tiles
 
@@ -341,7 +340,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         await ctx.send("Loaded default tile data from `data/values.lua`.")
 
         self.bot.loading = False
-        print(len(self.tile_data))
 
     @commands.command()
     @commands.is_owner()
@@ -374,7 +372,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.is_owner()
     async def loadeditor(self, ctx):
         '''Loads tile data from `data/editor_objectlist.lua` into `self.tile_data`.'''
-        print(len(self.tile_data))
 
         lines = ""
         with open("data/editor_objectlist.lua", errors="replace") as objlist:
@@ -412,7 +409,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 ...
 
         self.tile_data.update(objects)
-        print(len(self.tile_data))
         await ctx.send("Loaded tile data from `data/editor_objectlist.lua`.")
 
     @commands.command()
