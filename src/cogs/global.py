@@ -121,6 +121,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             final.putalpha(base)
         if meta_level == 2:
             final.paste(original, (i + 1, i + 1), original.convert("L"))
+        elif meta_level == 3:
+            final.paste(ImageChops.invert(original), (i + 1, i + 1), original.convert("L"))
         
         return final
         
