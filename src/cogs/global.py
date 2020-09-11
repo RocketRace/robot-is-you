@@ -109,7 +109,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         original = img.copy()
         final = img
         for i in range(meta_level):
-            _, _, _, alpha = final.split()
+            _, _, _, alpha = final.convert("RGBA").split()
             base = Image.new("L", (final.width + 6, final.width + 6))
             base.paste(final, (3, 3), alpha)
             base = ImageChops.invert(base)
@@ -652,11 +652,11 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     img_buffer = BytesIO()
                     image.save(img_buffer, format="PNG")
                     img_buffer.seek(0)
-                    archive.writestr(f"text_{real_text.replace('/','')}_0_{i + 1}.png", data=img_buffer.getbuffer())
+                    archive.writestr(f"text_{meta_level*'meta_'}{real_text.replace('/','')}_0_{i + 1}.png", data=img_buffer.getbuffer())
             buffer.seek(0)
             await ctx.send(
-                f"{ctx.author.mention} *Raw sprites for `text_{real_text.replace('/','')}`*", 
-                file=discord.File(buffer, filename=f"custom_{real_text.replace('/','')}_sprites.zip")
+                f"{ctx.author.mention} *Raw sprites for `text_{meta_level*'meta_'}{real_text.replace('/','')}`*", 
+                file = discord.File(buffer, filename=f"custom_{meta_level*'meta_'}{real_text.replace('/','')}_sprites.zip")
             )
         except ValueError as e:
             text = e.args[0]
