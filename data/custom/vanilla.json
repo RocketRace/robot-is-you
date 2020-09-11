@@ -450,8 +450,8 @@
      "tiling":"-1"
   },
   {
-   "sprite":"buttom_wait",
-   "name":"buttom_wait",
+   "sprite":"button_wait",
+   "name":"button_wait",
    "color":
      [
        "0",
@@ -460,8 +460,8 @@
      "tiling":"-1"
   },
   {
-   "sprite":"buttom_menu",
-   "name":"buttom_menu",
+   "sprite":"button_menu",
+   "name":"button_menu",
    "color":
      [
        "0",
@@ -470,8 +470,8 @@
      "tiling":"-1"
   },
   {
-   "sprite":"buttom_restart",
-   "name":"buttom_restart",
+   "sprite":"button_restart",
+   "name":"button_restart",
    "color":
      [
        "0",
@@ -480,8 +480,8 @@
      "tiling":"-1"
   },
   {
-   "sprite":"buttom_undo",
-   "name":"buttom_undo",
+   "sprite":"button_undo",
+   "name":"button_undo",
    "color":
      [
        "0",
