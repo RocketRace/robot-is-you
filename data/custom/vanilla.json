@@ -9,6 +9,55 @@
       "tiling":"-1"
   },
   {
+    "sprite":"anni",
+    "name":"anni",
+    "color":
+      [
+        "6",
+        "2"
+      ],
+      "tiling":"2"
+   },
+  {
+    "name": "text_violet",
+    "sprite": "text_violet",
+    "tiling": "-1",
+    "color": [
+       "6",
+       "1"
+    ],
+    "active": [
+       "6",
+       "2"
+    ],
+    "type": "0",
+    "source": "vanilla"
+ },
+  {
+      "name":"violet",
+      "sprite":"violet",
+      "color":[
+      "3",
+      "2"
+      ],
+      "tiling":"-1"
+  },
+  {
+    "name": "text_violet",
+    "sprite": "text_violet",
+    "tiling": "-1",
+    "color": [
+       "3",
+       "2"
+    ],
+    "active": [
+       "3",
+       "3"
+    ],
+    "type": "0",
+    "source": "vanilla"
+ },
+  {
     "sprite":"error",
     "name":"error",
     "color":
@@ -371,18 +420,78 @@
      "tiling":"-1"
   },
   {
-   "sprite":"anni",
-   "name":"anni",
-   "color":
-     [
-       "6",
-       "2"
-     ],
-     "tiling":"2"
-  },
-  {
    "sprite":"blossom",
    "name":"blossom",
+   "color":
+     [
+       "0",
+       "3"
+     ],
+     "tiling":"-1"
+  },
+  {
+   "sprite":"button_move",
+   "name":"button_move",
+   "color":
+     [
+       "0",
+       "3"
+     ],
+     "tiling":"-1"
+  },
+  {
+   "sprite":"button_enter",
+   "name":"text_enter",
+   "color":
+     [
+       "0",
+       "3"
+     ],
+     "tiling":"-1"
+  },
+  {
+   "sprite":"buttom_wait",
+   "name":"buttom_wait",
+   "color":
+     [
+       "0",
+       "3"
+     ],
+     "tiling":"-1"
+  },
+  {
+   "sprite":"buttom_menu",
+   "name":"buttom_menu",
+   "color":
+     [
+       "0",
+       "3"
+     ],
+     "tiling":"-1"
+  },
+  {
+   "sprite":"buttom_restart",
+   "name":"buttom_restart",
+   "color":
+     [
+       "0",
+       "3"
+     ],
+     "tiling":"-1"
+  },
+  {
+   "sprite":"buttom_undo",
+   "name":"buttom_undo",
+   "color":
+     [
+       "0",
+       "3"
+     ],
+     "tiling":"-1"
+  },
+  {
+   "sprite":"plus",
+   "name":"plus",
    "color":
      [
        "0",

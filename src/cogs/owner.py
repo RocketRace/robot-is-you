@@ -2,7 +2,6 @@ import ast
 import asyncio
 import discord
 import json
-import numpy      as np
 import os
 
 from datetime     import datetime, timedelta
@@ -10,123 +9,6 @@ from discord.ext  import commands
 from pathlib      import Path
 from PIL          import Image, ImageDraw, ImageChops
 
-def multiply_color(fp, palettes, pixels):
-    # fp: file path of the sprite
-    # palettes: each palette name
-    # pixels: the colors the tile should be recolored with
-
-    unique_pixels = {}
-    for palette,pixel in zip(palettes, pixels):
-        unique_pixels.setdefault(pixel, []).append(palette)
-    
-    # Output images
-    recolored = []
-    output_palettes = unique_pixels.values()
-
-    # Image to recolor from
-    base = Image.open(fp).convert("RGBA")
-
-    # Multiplies the R,G,B channel for each pixel value
-    for pixel in unique_pixels:
-        # New values
-        new_r, new_g, new_b = pixel
-        # New channels
-        arr = np.asarray(base, dtype='uint16')
-        r_c, g_c, b_c, a_c = arr.T
-        r_c, g_c, b_c = new_r*r_c / 256, new_g*g_c / 256, new_b*b_c / 256
-        out = np.stack((r_c.T,g_c.T,b_c.T,a_c.T),axis=2).astype('uint8')
-        RGBA = Image.fromarray(out)
-        # Adds to list
-        recolored.append(RGBA)
-
-    return zip(recolored, output_palettes)
-
-def get_sprite_variants(sprite, tiling):
-    '''Opens the associated sprites from data/sprites/
-    Use every sprite variant, the amount based on the tiling type
-
-    Sprite variants follow this scheme:
-
-    == IF NOT TILING TYPE 1 ==
-
-    Change by 1 := Change in animation
-
-    -> 0,1,2,3 := Regular animation
-
-    -> 7 := Sleeping animation
-
-    Change by 8 := Change in direction
-
-    == IF TYLING TYPE 1 ==
-    
-    0  := None adjacent
-    
-    1  := Right
-    
-    2  := Up
-    
-    3  := Up & Right
-    
-    4  := Left
-    
-    5  := Left & Right
-    
-    6  := Left & Up
-    
-    7  := Left & Right & Up
-    
-    8  := Down
-    
-    9  := Down & Right
-    
-    10 := Down & Up
-    
-    11 := Down & Right & Up
-    
-    12 := Down & Left
-    
-    13 := Down & Left & Right
-    
-    14 := Down & Left & Up
-    
-    15 := Down & Left & Right & Up
-    '''
-
-    if tiling == "4": # Animated, non-directional
-        sprite_numbers = [0,1,2,3] # Animation
-    if tiling == "3" and sprite != "goose": # Basically for belts only (anim + dirs)
-        sprite_numbers = [0,1,2,3, # Animation right
-                        8,9,10,11, # Animation up
-                        16,17,18,19, # Animation left
-                        24,25,26,27] # Animation down
-
-    if tiling == "3" and sprite == "goose": # For Goose (anim + dirs)
-        sprite_numbers = [0,1,2,3, # Animation right
-                        # Goose has no up animations ¯\_(ツ)_/¯
-                        16,17,18,19, # Animation left
-                        24,25,26,27] # Animation down
-
-    elif tiling == "2": # Baba, Keke, Me and Anni have some wonky sprite variations
-        sprite_numbers = [0,1,2,3, # Moving animation to the right
-                        7, # Sleep up
-                        8,9,10, 11, # Moving animation up
-                        15, # Sleep left
-                        16,17,18,19, #Moving animation left
-                        23, # Sleep down
-                        24,25,26,27, # Moving animation down
-                        31] # Sleep right
-
-    elif tiling == "1": # "Tiling" objects
-        sprite_numbers = [i for i in range(16)]
-
-    elif tiling == "0": # "Directional" objects have these sprite variations: 
-        sprite_numbers = [0,8,16,24]
-
-    else: # No tiling
-        sprite_numbers = [0]
-    
-    return sprite_numbers
-    
 def load_with_datetime(pairs, format='%Y-%m-%dT%H:%M:%S.%f'):
     '''Load json + datetime objects, in the speficied format.
     Via https://stackoverflow.com/a/14996040
@@ -180,48 +62,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         
         # Are assets loading?
         self.bot.loading = False
-
-    def generate_tile_sprites(self, tile, obj, palettes, colors):
-        # Fetches the tile data
-        sprite = obj["sprite"]
-        tiling = obj.get("tiling")
-        # Custom tiles will probably not have the tiling property unless specified
-        if tiling is None: tiling = "-1"
-        color = obj["active"] if obj.get("active") else obj["color"] 
-        source = obj.get("source")
-        # If not specified, it's a vanilla sprite
-        if source is None: source = "vanilla"
-        # For convenience
-        x,y = [int(n) for n in color]
-        sprite_variants = get_sprite_variants(sprite, tiling)
-
-        # Saves the tile sprites
-        single_frame = ["smiley", "hi", "plus"] # Filename is of the format "smiley_1.png"
-        no_variants = ["default"] # Filenames are of the format "default_<1/2/3>.png"
-        for variant in sprite_variants:
-            if tile in single_frame or tile.startswith("icon"): # Icons have a single frame
-                if tile == "icon":
-                    paths = [f"data/sprites/{source}/icon.png" for i in range(3)]
-                else:
-                    paths = [f"data/sprites/{source}/{sprite}_1.png" for i in range(3)]
-            elif tile in no_variants:
-                paths = [f"data/sprites/{source}/{sprite}_{i + 1}.png" for i in range(3)]
-            else:
-                # Paths should only be of length 3
-                paths = [f"data/sprites/{source}/{sprite}_{variant}_{i + 1}.png" for i in range(3)]
-            
-            # Changes the color of each image, then saves it
-            for i,fp in enumerate(paths):
-                pixels = [img[x][y] for img in colors]
-                recolored = multiply_color(fp, palettes, pixels)
-                # Saves the colored images to target/color/[palette]/ given that the image may be identical for some palettes
-                # Recolored images, palettes each image is associated with
-                for img,uses in recolored:
-                    # Each associated palette
-                    for use in uses:
-                        # This saves some redundant computing time spent recoloring the same image multiple times
-                        # (up to >10 for certain color indices)
-                        img.save(f"target/color/{use}/{tile}-{variant}-{i}-.png", format="PNG")
             
     @commands.command(aliases=["load", "reload"])
     @commands.is_owner()
@@ -277,15 +117,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         )
 
         await self.bot.send(ctx, " ", embed=msg)
-        
-    # Sends a message in the specified channel
-    @commands.command()
-    @commands.is_owner()
-    async def announce(self, ctx, channel, title, *, content):
-        t = title
-        t = t.replace("_", " ")
-        embed = discord.Embed(title=t, type="rich", description=content, colour=0x00ffff)
-        await self.bot.send(ctx.message.channel_mentions[0], " ", embed=embed)
 
     @commands.command()
     @commands.is_owner()
@@ -615,71 +446,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         description = self.bot.get_command(command).help
         await self.bot.send(ctx, f"Command doc for {command}:\n{description}")
 
-    @commands.command()
-    @commands.is_owner()
-    async def loadtile(self, ctx, tile, palette):
-        '''Load a single tile, given a single palette (or alternatively 'all' for all palettes)'''
-        # Some checks
-        if self.tile_data.get(tile) is None:
-            return await self.bot.send(ctx, f"\"{tile}\" is not in the list of tiles.")
-        palettes = [palette]
-        if palette == "all":
-            palettes = [pal[:-4] for pal in os.listdir("data/palettes") if pal.endswith(".png")]
-        elif palette + ".png" not in os.listdir("data/palettes"):
-            return await self.bot.send(ctx, f"\"{palette}\" is not a valid palette.")
-        self.bot.loading = True 
-        # Creates the directories for the palettes if they don't exist
-        palette_colors = []
-        for pal in palettes:
-            Path(f"target/color/{pal}").mkdir(parents=True, exist_ok=True)
-
-            # The palette image 
-            palette_img = Image.open(f"data/palettes/{pal}.png").convert("RGB")
-            # The RGB values of the palette
-            palette_colors.append([[(palette_img.getpixel((x,y))) for y in range(5)] for x in range(7)])
-
-        obj = self.tile_data[tile]
-        self.generate_tile_sprites(tile, obj, palettes, palette_colors)
-        await ctx.send(f"Generated tile sprites for {tile}.")
-        self.bot.loading = False
-
-    @commands.command()
-    @commands.is_owner()
-    async def loadpalettes(self, ctx, args):
-        '''Loads all tile sprites for the palettes given.'''
-        
-        if isinstance(args, str):
-            palettes = args.split(" ")
-        else:
-            palettes = args
-        # Tests for a supplied palette
-        for arg in palettes:
-            if arg not in [s[:-4] for s in os.listdir("data/palettes")]:
-                return await self.bot.send(ctx, "Supply a palette to load.")
-
-        self.bot.loading = True
-
-        # The palette images
-        imgs = [Image.open(f"data/palettes/{palette}.png").convert("RGB") for palette in palettes]
-        # The RGB values of the palette
-        colors = [[[(img.getpixel((x,y))) for y in range(5)] for x in range(7)] for img in imgs]
-
-        # Creates the directories for the palettes if they don't exist
-        for palette in palettes:
-            Path(f"target/color/{palette}").mkdir(parents=True, exist_ok=True)
-        
-        # Goes through each tile object in the tile data array
-        i = 0
-        total = len(self.tile_data)
-        for tile,obj in self.tile_data.items():
-            if i % 100 == 0:
-                await ctx.send(f"{i} / {total}...")
-            self.generate_tile_sprites(tile, obj, palettes, colors)
-            i += 1
-        await ctx.send(f"{total} / {total} tiles loaded.")
-
-        self.bot.loading = False
-
     def initialize_letters(self):
         big = {}
         small = {}
@@ -834,22 +600,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                     frame.save(f"target/letters/{height}/{char}/{width}/{now}_{i}.png")
 
         # await ctx.send(f":) {saved}")
-
-
-    @commands.command()
-    @commands.is_owner()
-    async def loadall(self, ctx):
-        '''Reloads absolutely everything. (tile data, tile sprites)
-        Avoid using this, as it takes minutes to complete.
-        '''
-        # Sends some feedback messages
-
-        await ctx.send("Loading objects...")
-        await ctx.invoke(self.bot.get_command("loaddata"))
-        palettes = [palette[:-4] for palette in os.listdir("data/palettes") if palette.endswith(".png")] 
-        # Strip ".png", ignore some files
-        await ctx.invoke(self.bot.get_command("loadpalettes"), palettes)
-        await ctx.send(f"{ctx.author.mention} Done.")
 
     def update_debug(self):
         # Updates the debug file
