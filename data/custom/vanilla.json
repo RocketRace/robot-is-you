@@ -440,8 +440,8 @@
      "tiling":"-1"
   },
   {
-   "sprite":"button_enter",
-   "name":"text_enter",
+   "sprite":"text_enter",
+   "name":"sprite_enter",
    "color":
      [
        "0",
