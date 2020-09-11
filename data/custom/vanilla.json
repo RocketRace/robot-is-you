@@ -441,7 +441,7 @@
   },
   {
    "sprite":"text_enter",
-   "name":"sprite_enter",
+   "name":"button_enter",
    "color":
      [
        "0",
