@@ -27,7 +27,7 @@
    },
    {
       "name": "point",
-      "sprite": "stop",
+      "sprite": "point",
       "color": [
          "0",
          "3"
