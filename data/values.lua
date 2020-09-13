@@ -2602,7 +2602,7 @@ namegivingtitles =
 	[10] = {"namegiving_worldauthor","maxlen16"},
 	[11] = {"namegiving_changeworldname","maxlen24"},
 	[12] = {"namegiving_downloadcode","upper,maxlen9"},
-	[13] = {"namegiving_levelsearchstring","lower,maxlen24"},
+	[13] = {"namegiving_levelsearchstring","maxlen24"},
 	[14] = {"namegiving_spritesearchstring","lower,maxlen24"},
 	[15] = {"namegiving_slotname","maxlen16"},
 	[16] = {"namegiving_subtitle","maxlen26"},
@@ -2778,4 +2778,16 @@ play_data =
 		['6g'] = 156798,
 		['sharp6g'] = 166121,
 	},
+}
+
+controlnames =
+{
+	-- Keyboard ingame controls
+	{"right","up","left","down","right2","up2","left2","down2","idle","undo","restart","confirm","pause","idle2","undo2","restart2","confirm2"},
+	-- Gamepad ingame controls
+	{"move","move2","idle","undo","restart","confirm","pause","idle2","undo2","restart2","confirm2"},
+	-- Editor gamepad controls
+	{"move","rotate","place","copy","drag","undo","scrollright_hotbar","scrollleft_hotbar","scrollright_tool","scrollleft_tool","currobjlist","quickmenu","swap","scrollright_layer","scrollleft_layer","moveall","altpress","lock","showdir","cut","autopick","pickempty"},
+	-- Currobjlist gamepad controls
+	{"move","select","swap","drag","tooltip","scrollleft","scrollright","closemenu","tags","remove","edit","addnew","search","autoadd"},
 }
