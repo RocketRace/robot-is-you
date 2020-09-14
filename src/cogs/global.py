@@ -100,9 +100,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         )
         if not isinstance(fp, str): fp.seek(0)
 
-    def make_meta(self, img, meta_level):
+    def make_meta(self, name, img, meta_level):
         if meta_level > 3:
-            raise ValueError(meta_level)
+            raise ValueError(name, meta_level, "meta")
         elif meta_level == 0:
             return img
 
@@ -205,7 +205,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 tile.color = self.bot.get_cog("Admin").tile_data.get(tile.name).get("color")
                             tile.color = tuple(map(int, tile.color))
                         img = cached_open(path, cache=cache, is_image=True).convert("RGBA")
-                        img = self.make_meta(img, tile.meta_level)
+                        img = self.make_meta(tile.name, img, tile.meta_level)
                         c_r, c_g, c_b = palette_img.getpixel(tile.color)
                         _r, _g, _b, a = img.split()
                         color_matrix = (c_r / 256, 0, 0, 0,
@@ -667,7 +667,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             if reason == "variant":
                 return await self.bot.error(ctx, f"The text `{text}` could not be generated, because the variant `{culprit}` is invalid.")
             if reason == "width":
-                return await self.bot.error(ctx, f"The text `{text[:150] + '...'}` could not be generated, because it is too long.")
+                return await self.bot.error(ctx, f"The text `{text[:150]}` could not be generated, because it is too long.")
             if reason == "char":
                 return await self.bot.error(ctx, f"The text `{text}` could not be generated, because no letter sprite exists for `{culprit}`.")
             if reason == "zero":
@@ -765,7 +765,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             if is_property:
                 base = ImageChops.invert(base)
 
-            base = self.make_meta(base, meta_level).convert("L")
+            base = self.make_meta(clean, base, meta_level).convert("L")
 
             # Cute alignment
             color_matrix = (color[0], 0, 0, 0,
@@ -913,6 +913,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     return await self.bot.error(ctx, f"The tile `{tile}` could not be automatically generated, because no letter sprite exists for `{culprit}`.")
                 if reason == "zero":
                     return await self.bot.error(ctx, f"Cannot apply variants to an empty tile.")
+                if reason == "meta":
+                    return await self.bot.error(ctx, "You can only go three layers of meta deep.")
                 return await self.bot.error(ctx, f"The tile `{tile}` was not found, and could not be automatically generated.")
 
             # Merges the images found
