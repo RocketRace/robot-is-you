@@ -579,8 +579,12 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         # These colors are based on the default palette
         if color is not None:
             real_color = color.lower()
-            if real_color.startswith("#") or real_color.startswith("0x"):
-                int_color = int(real_color[-6:], base=16)
+            if real_color.startswith("#"): 
+                int_color = int(real_color[1:], base=16) & (2 ** 24 - 1)
+                byte_color = (int_color >> 16, (int_color & 255 << 8) >> 8, int_color & 255)
+                tile_color = (byte_color[0] / 256, byte_color[1] / 256, byte_color[2] / 256)
+            elif real_color.startswith("0x"):
+                int_color = int(real_color, base=16)
                 byte_color = (int_color >> 16, (int_color & 255 << 8) >> 8, int_color & 255)
                 tile_color = (byte_color[0] / 256, byte_color[1] / 256, byte_color[2] / 256)
             elif real_color in valid_colors:
