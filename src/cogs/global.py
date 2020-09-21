@@ -156,7 +156,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 temp_row = []
                 for x, stack in enumerate(row):
                     temp_stack = []
-                    for z, tile in enumerate(stack):
+                    for _z, tile in enumerate(stack):
                         if tile.name is None:
                             continue
                         # Custom tiles
@@ -693,7 +693,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         if size == 0:
             raise ValueError(text, None, "zero")
         if size == 1:
-            if text.isascii() and text.isalpha():
+            if text.isascii() and text.isalnum():
                 paths = [
                     f"data/sprites/vanilla/text_{text}_0"
                 ]
