@@ -18,6 +18,24 @@
       "tiling": "-1"
    },
    {
+      "name": "balt",
+      "sprite": "balt",
+      "tiling": "2",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_balt",
+      "sprite": "text_balt",
+      "color": [
+         "0",
+         "1"
+      ],
+      "tiling": "-1"
+   },
+   {
       "name": "warn",
       "sprite": "warn",
       "color": [
