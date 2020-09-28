@@ -192,7 +192,18 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         # Does the tile exist?
         data = self.bot.get_cog("Admin").tile_data.get(clean_tile)
         if data is None:
-            return await self.bot.error(ctx, f"Could not find a tile with name '{clean_tile}'.")
+            if clean_tile.startswith("text_"):
+                output = [
+                    "This text tile doesn't exist, but you might be able to auto-generate it.",
+                    "Auto-generated sprites support the `:noun`, `:letter`, and `:property` variants.",
+                    "In addition, they support the following colors:" + \
+                    "`:red`, `:orange`, `:yellow`, `:lime`, `:green`, `:cyan`, `:blue`, `:purple`, `:pink`, `:rosy`, `:white`, `:silver`, `:grey`, `:black`, `:brown`,",
+                    "as well as the following filters: `:meta`, `:hide`."
+                ]
+                await self.bot.send(ctx, f"Valid sprite variants for '{clean_tile}'\n" + "\n".join(output) + "\n")
+            else:
+                await self.bot.error(ctx, f"Could not find a tile with name '{clean_tile}'.")
+            return
         
         # Determines the tiling type of the tile
         tiling = data.get("tiling")
@@ -268,8 +279,10 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
             ]
         }
         choice = output[tiling]
+        if clean_tile.startswith("text_"):
+            choice.append("It can also be auto-generated, supporting the `:noun`, `:letter`, and `:property` variants.",)
         choice.append("It also supports all of the following colors: " + \
-        "`red`, `orange`, `yellow`, `lime`, `green`, `cyan`, `blue`, `purple`, `pink`, `rosy`, `white`, `silver`, `grey`, `black`, `brown`...")
+        "`:red`, `:orange`, `:yellow`, `:lime`, `:green`, `:cyan`, `:blue`, `:purple`, `:pink`, `:rosy`, `:white`, `:silver`, `:grey`, `:black`, `:brown`,")
         choice.append("As well as the following filters: `hide`, `meta`.")
 
         # Output

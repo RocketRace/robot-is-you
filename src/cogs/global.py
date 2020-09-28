@@ -384,14 +384,19 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                         # Force custom-rendered text
                         # This has to be rendered beforehand (each sprite can't be generated separately)
                         # because generated sprites uses randomly picked letters
-                        if tile_data is None or "property" in variants or "noun" in variants:
+                        if tile_data is None or "property" in variants or "noun" in variants or "letter" in variants:
                             if tile.startswith("text_"):
                                 final.custom = True
-                                final.style = "property" if "property" in variants else "noun"
+                                if "property" in variants:
+                                    final.style = "property"
+                                if "noun" in variants:
+                                    final.style = "noun"
+                                if "letter" in variants:
+                                    final.style = "letter"
                                 if final.color is None:
-                                    final.images = self.generate_tile(tile[5:], (1,1,1), final.style == "property", final.meta_level)
+                                    final.images = self.generate_tile(tile[5:], (1,1,1), final.style, final.meta_level)
                                 else:
-                                    whites = self.generate_tile(tile[5:], (1,1,1), final.style == "property", final.meta_level)
+                                    whites = self.generate_tile(tile[5:], (1,1,1), final.style, final.meta_level)
                                     colored = []
                                     for im in whites:
                                         c_r, c_g, c_b = palette_img.getpixel(final.color)
@@ -565,14 +570,15 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
     @commands.group(invoke_without_command=True)
     @commands.cooldown(2, 10, commands.BucketType.channel)
-    async def make(self, ctx, text, color = None, style = "noun", palette="default"):
+    async def make(self, ctx, text, color = None, style = "noun", meta_level = "0", palette = "default"):
         '''Generates a custom text sprite. 
         Use "/" in the text to force a line break.
 
         The `color` argument can be a hex color (`"#ffffff"`) or a string (`"red"`).
 
-        The `style` argument may be "noun", "property", "meta", "metanoun", "metaproperty",
-        "metameta", "metametanoun", "metametaproperty", "metametameta", "metametametanoun" or "metametametaproperty".
+        The `style` argument may be "noun", "property", or "letter".
+        
+        The `meta_level` argument may be "0", "1", "2" or "3".
 
         The `palette` argument can be set to the name of a palette.
         '''
@@ -598,21 +604,14 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 return await self.bot.error(ctx, f"The color `{color}` is invalid.")
         else:
             tile_color = (1, 1, 1)
-        if style not in ("property", "noun", "meta", "metanoun", "metaproperty", "metametanoun", "metameta", "metametaproperty", "metametametanoun", "metametameta", "metametametaproperty"):
+        if style not in ("noun", "property", "letter"):
             return await self.bot.error(ctx, f"The style `{style}` is not valid.")
         try:
-            if style.startswith("metametameta"):
-                meta_level = 3
-            elif style.startswith("metameta"):
-                meta_level = 2
-            elif style.startswith("meta"):
-                meta_level = 1
-            else:
-                meta_level = 0
+            meta_level = int(meta_level)
             # tile = self.generate_tile(text.lower(), tile_color, style.lower() == "property")
             buffer = BytesIO()
             tile = Tile(name=text.lower(), color=tile_color, style=style.lower(), custom=True)
-            tile.images = self.generate_tile(tile.name, color=tile.color, is_property="property" in style, meta_level=meta_level)
+            tile.images = self.generate_tile(tile.name, color=tile.color, style=style, meta_level=meta_level)
             self.magick_images([[[tile]]], 1, 1, out=buffer)
             await ctx.send(ctx.author.mention, file=discord.File(buffer, filename=f"custom_'{text.replace('/','')}'.gif"))
         except ValueError as e:
@@ -633,26 +632,20 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         
     @make.command()
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
-    async def raw(self, ctx, text, style="noun"):
+    async def raw(self, ctx, text, style="noun", meta_level = "0"):
         '''Returns a zip archive of the custom tile.
 
         A raw sprite has no color!
 
-        The `style` argument may be "noun", "property", "meta", "metanoun", "metaproperty",
-        "metameta", "metametanoun", "metametaproperty", "metametameta", "metametametanoun" or "metametametaproperty".
+        The `style` argument may be "noun", "property", or "letter".
+        
+        The `meta_level` argument may be "0", "1", "2" or "3".
         '''
         real_text = text.lower()
         try:
-            if style.startswith("metametameta"):
-                meta_level = 3
-            elif style.startswith("metameta"):
-                meta_level = 2
-            elif style.startswith("meta"):
-                meta_level = 1
-            else:
-                meta_level = 0
+            meta_level = int(meta_level)
             buffer = BytesIO()
-            images = self.generate_tile(real_text, (1, 1, 1), "property" in style, meta_level)
+            images = self.generate_tile(real_text, (1, 1, 1), style, meta_level)
             with zipfile.ZipFile(buffer, mode="w") as archive:
                 for i, image in enumerate(images):
                     img_buffer = BytesIO()
@@ -678,7 +671,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 return await self.bot.error(ctx, f"The input cannot be empty.")
             return await self.bot.error(ctx, f"The text `{text}` could not be generated.")
 
-    def generate_tile(self, text, color, is_property, meta_level):
+    def generate_tile(self, text, color, style, meta_level):
         '''
         Custom tile => rendered custom tile
         '''
@@ -699,6 +692,18 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 ]
                 positions = [
                     (12, 12)
+                ]
+            else:
+                raise ValueError(text, text, "char")
+        elif size == 2 and style == "letter":
+            if text.isascii():
+                paths = [
+                    f"target/letters/thick/text_{text[0]}_0",
+                    f"target/letters/thick/text_{text[1]}_0",
+                ]
+                positions = [
+                    (6, 12),
+                    (18, 12)
                 ]
             else:
                 raise ValueError(text, text, "char")
@@ -756,9 +761,16 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             ]
         images = []
         for frame in range(3):
-            letter_sprites = [Image.open(f"{path}_{frame + (size == 1)}.png").convert("1") for path in paths]
+            letter_sprites = [
+                Image.open(f"{path}_{frame + (size == 1 or style == 'letter')}.png")
+                for path in paths
+            ]
+            letter_sprites = [
+                s.getchannel("A") if s.mode == "RGBA" else s.convert("1")
+                for s in letter_sprites
+            ]
             base = Image.new("1", (24, 24), color=0)
-            if is_property:
+            if style == "property":
                 plate = Image.open(f"data/plates/plate_{frame}.png").convert("1")
                 base = ImageChops.invert(ImageChops.add(base, plate))
             
@@ -766,7 +778,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 s_x, s_y = sprite.size
                 base.paste(sprite, box=(x - s_x // 2, y - s_y // 2), mask=sprite)
 
-            if is_property:
+            if style == "property":
                 base = ImageChops.invert(base)
 
             base = self.make_meta(clean, base, meta_level).convert("L")
