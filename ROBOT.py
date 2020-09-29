@@ -48,9 +48,9 @@ default_activity = discord.Game(name=conf.get("activity"))
 prefixes = conf.get("prefixes")
 bot_trigger = commands.when_mentioned_or(*prefixes) if conf.get("trigger_on_mention") else prefixes
 
-# Requires discord.py v1.4+
 default_mentions = discord.AllowedMentions(everyone=False, roles=False)
-
+intents = discord.Intents(messages=True, reactions=True)
+member_cache = discord.MemberCacheFlags.none()
 # Establishes the bot
 bot = BabaBot(
     # Prefixes
@@ -62,12 +62,14 @@ bot = BabaBot(
     description=conf.get("description"),
     # Never mention roles, @everyone or @here
     allowed_mentions=default_mentions, 
+    # Only receive message and reaction events
+    intents=intents,
     # Disable the member cache
-    fetch_offline_members=False,
-    # Disable presence updates 
-    guild_subscriptions=False,
-    # Disable message cache
-    max_messages=None
+    member_cache_flags=member_cache,
+    # Disable the message cache
+    max_messages=None,
+    # Don't chunk guilds
+    chunk_guilds_at_startup=False
 )
 
 bot.started = datetime.utcnow()
