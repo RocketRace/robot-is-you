@@ -49,7 +49,7 @@ prefixes = conf.get("prefixes")
 bot_trigger = commands.when_mentioned_or(*prefixes) if conf.get("trigger_on_mention") else prefixes
 
 default_mentions = discord.AllowedMentions(everyone=False, roles=False)
-intents = discord.Intents(messages=True, reactions=True)
+intents = discord.Intents(messages=True, reactions=True, guilds=True)
 member_cache = discord.MemberCacheFlags.none()
 # Establishes the bot
 bot = BabaBot(
