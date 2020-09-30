@@ -628,6 +628,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 return await self.bot.error(ctx, f"The text `{text}` could not be generated, because no letter sprite exists for `{culprit}`.")
             if reason == "zero":
                 return await self.bot.error(ctx, f"The input cannot be empty.")
+            if reason == "letter":
+                return await self.bot.error(ctx, "You can only apply the letter style for 1 or 2 letter words.")
             return await self.bot.error(ctx, f"The text `{text}` could not be generated.")
         
     @make.command()
@@ -669,6 +671,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 return await self.bot.error(ctx, f"The text `{text}` could not be generated, because no letter sprite exists for `{culprit}`.")
             if reason == "zero":
                 return await self.bot.error(ctx, f"The input cannot be empty.")
+            if reason == "letter":
+                return await self.bot.error(ctx, "You can only apply the letter style for 1 or 2 letter words.")
             return await self.bot.error(ctx, f"The text `{text}` could not be generated.")
 
     def generate_tile(self, text, color, style, meta_level):
@@ -709,6 +713,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 raise ValueError(text, text, "char")
         elif size > 10:
             raise ValueError(text, None, "width")
+        elif style == "letter":
+            raise ValueError(text, None, "letter")
         else:
             if size <= 3 and not forced:
                 scale = "big"
@@ -931,6 +937,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     return await self.bot.error(ctx, f"Cannot apply variants to an empty tile.")
                 if reason == "meta":
                     return await self.bot.error(ctx, "You can only go three layers of meta deep.")
+                if reason == "letter":
+                    return await self.bot.error(ctx, "You can only apply the letter style for 1 or 2 letter words.")
                 return await self.bot.error(ctx, f"The tile `{tile}` was not found, and could not be automatically generated.")
 
             # Merges the images found
