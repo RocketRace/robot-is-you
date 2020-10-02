@@ -777,7 +777,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             ]
             base = Image.new("1", (24, 24), color=0)
             if style == "property":
-                plate = Image.open(f"data/plates/plate_{frame}.png").convert("1")
+                plate = Image.open(f"data/sprites/vanilla-extensions/plate_0_{frame+1}.png").convert("1")
                 base = ImageChops.invert(ImageChops.add(base, plate))
             
             for (x, y), sprite in zip(positions, letter_sprites):

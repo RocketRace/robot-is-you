@@ -55,5 +55,14 @@
             "0"
         ],
         "tiling":"-1"
+    },
+    {
+        "name":"plate",
+        "sprite":"plate",
+        "color":[
+            "0",
+            "3"
+        ],
+        "tiling":"-1"
     }
 ]
