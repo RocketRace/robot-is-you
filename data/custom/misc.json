@@ -52,6 +52,38 @@
       ]
    },
    {
+      "name": "comma",
+      "sprite": "comma",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "slash",
+      "sprite": "slash",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "minus",
+      "sprite": "minus",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "equals",
+      "sprite": "equals",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
       "name": "no",
       "sprite": "no",
       "color": [
