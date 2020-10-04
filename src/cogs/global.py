@@ -305,7 +305,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
         width = len(grid[0])
         height = len(grid)
-        palette_img = Image.open(f"data/palettes/{palette}.png")
+        palette_img = Image.open(f"data/palettes/{palette}.png").convert("RGB")
         
         colors = {
             "red":(2, 2),
