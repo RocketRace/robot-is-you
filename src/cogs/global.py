@@ -623,7 +623,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             if reason == "width":
                 if len(text) < 20:
                     return await self.bot.error(ctx, f"The text `{text}` could not be generated, because it is too long.")
-                return await self.bot.error(ctx, f"The text `{text[:20] + '...'}` could not be generated, because it is too long.")
+                return await self.bot.error(ctx, f"The text `{text[:20]}` could not be generated, because it is too long.")
             if reason == "char":
                 return await self.bot.error(ctx, f"The text `{text}` could not be generated, because no letter sprite exists for `{culprit}`.")
             if reason == "zero":
@@ -666,7 +666,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             if reason == "variant":
                 return await self.bot.error(ctx, f"The text `{text}` could not be generated, because the variant `{culprit}` is invalid.")
             if reason == "width":
-                return await self.bot.error(ctx, f"The text `{text[:150]}` could not be generated, because it is too long.")
+                return await self.bot.error(ctx, f"The text `{text[:20]}` could not be generated, because it is too long.")
             if reason == "char":
                 return await self.bot.error(ctx, f"The text `{text}` could not be generated, because no letter sprite exists for `{culprit}`.")
             if reason == "zero":
@@ -690,9 +690,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         if size == 0:
             raise ValueError(text, None, "zero")
         if size == 1:
-            if text.isascii() and text.isalnum():
+            if text.isascii() and (text.isalnum() or text == "*"):
                 paths = [
-                    f"data/sprites/vanilla/text_{text}_0"
+                    f"data/sprites/{'vanilla' if text.isalnum() else 'misc'}/text_{text}_0"
                 ]
                 positions = [
                     (12, 12)
@@ -700,7 +700,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             else:
                 raise ValueError(text, text, "char")
         elif size == 2 and style == "letter":
-            if text.isascii() and text.isalnum():
+            if text.isascii() and all(k.isalnum() or k == "*" for k in text):
                 paths = [
                     f"target/letters/thick/text_{text[0]}_0",
                     f"target/letters/thick/text_{text[1]}_0",
@@ -930,7 +930,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 if reason == "variant":
                     return await self.bot.error(ctx, f"The tile `{tile}` could not be automatically generated, because the variant `{culprit}` is invalid.")
                 if reason == "width":
-                    return await self.bot.error(ctx, f"The tile `{tile[:150] + '...'}` could not be automatically generated, because it is too long.")
+                    return await self.bot.error(ctx, f"The tile `{tile[:20]}` could not be automatically generated, because it is too long.")
                 if reason == "char":
                     return await self.bot.error(ctx, f"The tile `{tile}` could not be automatically generated, because no letter sprite exists for `{culprit}`.")
                 if reason == "zero":
