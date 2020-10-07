@@ -60,6 +60,22 @@
       ]
    },
    {
+     "name": "text_'",
+     "sprite": "text_'",
+     "color": [
+        "0",
+        "3"
+     ]
+  },
+  {
+     "name": "text_*",
+     "sprite": "text_*",
+     "color": [
+        "0",
+        "3"
+     ]
+  },
+   {
       "name": "slash",
       "sprite": "slash",
       "color": [
@@ -90,24 +106,6 @@
          "2",
          "2"
       ]
-   },
-   {
-      "name": "fox",
-      "sprite": "fox",
-      "color": [
-         "4",
-         "2"
-      ],
-      "tiling": "-1"
-   },
-   {
-      "name": "text_fox",
-      "sprite": "text_fox",
-      "color": [
-         "4",
-         "1"
-      ],
-      "tiling": "-1"
    },
    {
       "name": "hempuli",
@@ -224,24 +222,6 @@
       "color": [
          "1",
          "0"
-      ]
-   },
-   {
-      "name": "oatmeal",
-      "sprite": "oatmeal",
-      "tiling": "-1",
-      "color": [
-         "6",
-         "2"
-      ]
-   },
-   {
-      "name": "text_oatmeal",
-      "sprite": "text_oatmeal",
-      "tiling": "-1",
-      "color": [
-         "6",
-         "2"
       ]
    },
    {
