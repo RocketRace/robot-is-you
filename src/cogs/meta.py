@@ -157,7 +157,9 @@ class MetaCog(commands.Cog, name="Other Commands"):
         '''Links for the bot support server'''
         msg = discord.Embed(colour=self.bot.embed_color, title="Invite Links", description="Due to an API change, this bot is no longer able to join any new guilds.\n" + \
             "This is a Discord mandated change and there is no way to bypass it.\n" + \
-            "If you dislike the direction Discord is going with bots, you can contact them via [support](https://dis.gd/contact).")
+            "See the [GitHub guides](https://github.com/RocketRace/robot-is-you#to-host-this-yourself) if you want to host this bot yourself.\n" + \
+            "If you dislike the direction Discord is going with bots, you can contact them via [support](https://dis.gd/contact)."
+        )
 
         msg.add_field(name="Support Server", value="[Click here to join RocketRace's Bots](https://discord.gg/rMX3YPK)")
         await ctx.send(embed=msg)
