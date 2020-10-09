@@ -131,9 +131,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
             ])
         )
         permissions = discord.Permissions(permissions=379968)
-        invite = discord.utils.oauth_url(client_id=self.bot.user.id, permissions=permissions)
         about_embed.add_field(name="Links", value="[GitHub repository](https://github.com/RocketRace/robot-is-you)\n" + \
-            f"[Invite link]({invite})\n" + \
             "[Support guild](https://discord.gg/rMX3YPK)"
         )
         ut = datetime.utcnow() - self.bot.started
@@ -157,14 +155,14 @@ class MetaCog(commands.Cog, name="Other Commands"):
     @commands.command()
     @commands.cooldown(2, 10, type=commands.BucketType.channel)
     async def invite(self, ctx):
-        '''Invite the bot to your own server!'''
-        ID = self.bot.user.id
-        permissions = discord.Permissions(permissions=379968)
-        invite = discord.utils.oauth_url(client_id=ID, permissions=permissions)
-        formatted = f"[Click Here to invite the bot to your guild!]({invite})"
-        msg = discord.Embed(title="Invite", colour=self.bot.embed_color, description=formatted)
+        '''Links for the bot support server'''
+        msg = discord.Embed(colour=self.bot.embed_color)
 
-        msg.add_field(name="Support Server", value="[Click here to join RocketRace's Bots](https://discord.gg/rMX3YPK)\n")
+        msg.add_field(name="Support Server", value="[Click here to join RocketRace's Bots](https://discord.gg/rMX3YPK)")
+        msg.add_field(name="Invite Link", value="Due to an API change, this bot is no longer able to join any new guilds.\n" + \
+            "This is a Discord mandated change and there is no way to bypass it.\n" + \
+            "If you dislike the direction Discord is going with bots, you can contact them via [support](https://dis.gd/contact)."
+        )
         await ctx.send(embed=msg)
     
     @commands.command(aliases=["interpret"])
