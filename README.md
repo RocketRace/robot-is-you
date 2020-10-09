@@ -30,9 +30,7 @@ Leave any suggestions, bug reports or questions in the official [support Discord
 
 # To Host This Yourself
 
-Support is not provided for self-hosting. You may run the code yourself given that you follow the terms of the license.
-
----
+Please follow the terms of the license!
 
 Install the requirements: `pip install -r requirements.txt`.
 
@@ -42,4 +40,6 @@ Run the bot using `python3 ROBOT.py`.
 
 If the bot complains about missing files in `cache/`, create them.
 
-The bot may or may not work properly on Windows, or MacOS.
+The bot will not work properly on Windows, as it makes use of some unix-ish shell commands.
+
+To load tile data, run the `loaddata` command. To load letter data (for custom text), run the `loadletters` command. To load and pre-render levels, run the `loadlevel` command.
