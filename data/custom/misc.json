@@ -1,5 +1,23 @@
 [
    {
+      "name": "bubu",
+      "sprite": "bubu",
+      "tiling": "2",
+      "color": [
+         "2",
+         "4"
+      ]
+   },
+   {
+      "name": "text_bubu",
+      "sprite": "text_bubu",
+      "color": [
+         "2",
+         "4"
+      ],
+      "tiling": "-1"
+   },
+   {
       "name": "frog",
       "sprite": "frog",
       "tiling": "2",
