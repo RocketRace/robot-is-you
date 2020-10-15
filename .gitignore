@@ -3,7 +3,6 @@ auth.json
 log.txt
 .DS_Store
 .vscode/
-target/color/*
 target/renders/*
 target/letters/big/*
 target/letters/small/*
