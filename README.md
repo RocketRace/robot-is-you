@@ -34,7 +34,19 @@ Please follow the terms of the license!
 
 Install the requirements: `pip install -r requirements.txt`.
 
-Bot configuration is in `config/setup.json`. The `auth_file` field should point to a JSON file with a `token` field with your bot token. Other fields are documented through their existence.
+Bot configuration is in `config/setup.json`. It contains the following fields:
+
+* `auth_file` Should point to a JSON file with a `token` field with your bot token.
+* `activity` A "playing" message to set at login.
+* `description` A description to use in the help command.
+* `prefixes` A list of strings that can be used to trigger commands.
+* `trigger_on_mention` A boolean dictating whether bot @mentions will behave as a command prefix.
+* `webhook_id` The ID of a webhook to report command errors to. Requires the `manage webhooks` permission in the webhook's channel.
+* `owner_id` The ID of the bot owner.
+* `embed_color` The color of embedded messages.
+* `log_file` The file to report logs to.
+* `cogs` A list of strings -- cogs to load into the bot.
+
 
 Run the bot using `python3 ROBOT.py`.
 
