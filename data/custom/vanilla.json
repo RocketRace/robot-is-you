@@ -498,5 +498,17 @@
        "3"
      ],
      "tiling":"-1"
+  },
+  {
+    "name":"text_scary",
+    "sprite":"text_scary",
+    "color":[
+      "2",
+      "0"
+    ],
+    "active":[
+      "2",
+      "1"
+    ]
   }
 ]
