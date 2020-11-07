@@ -313,16 +313,6 @@
       "type":"0"
   },
   {
-      "name":"text_stick",
-      "sprite":"text_stick",
-      "color":[
-      "5",
-      "3"
-      ],
-      "tiling":"-1",
-      "type":"2"
-  },
-  {
       "name":"text_ok",
       "sprite":"text_ok",
       "color":[
