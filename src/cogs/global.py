@@ -646,6 +646,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         real_text = text.lower()
         if style not in ("noun", "property", "letter"):
             return await self.bot.error(ctx, f"`{style}` is not a valid style. It must be one of `noun`, `property` or `letter`.")
+        if meta_level not in "0123":
+            return await self.bot.error(ctx, f"`{meta_level}` is not a valid meta level. It must be one of `0`, `1`, `2` or `3`.")
         try:
             meta_level = int(meta_level)
             buffer = BytesIO()
