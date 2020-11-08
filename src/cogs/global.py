@@ -394,9 +394,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 if "letter" in variants:
                                     final.style = "letter"
                                 if final.color is None:
-                                    final.images = self.generate_tile(tile[5:], (1,1,1), final.style, final.meta_level)
+                                    # Seed used for RNG to ensure that two identical sprites get generated the same way regardless of stack position
+                                    final.images = self.generate_tile(tile[5:], (1,1,1), final.style, final.meta_level, y*100+x) 
                                 else:
-                                    whites = self.generate_tile(tile[5:], (1,1,1), final.style, final.meta_level)
+                                    whites = self.generate_tile(tile[5:], (1,1,1), final.style, final.meta_level, y*100+x)
                                     colored = []
                                     for im in whites:
                                         c_r, c_g, c_b = palette_img.getpixel(final.color)
@@ -608,7 +609,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             return await self.bot.error(ctx, f"The style `{style}` is not valid.")
         try:
             meta_level = int(meta_level)
-            # tile = self.generate_tile(text.lower(), tile_color, style.lower() == "property")
             buffer = BytesIO()
             tile = Tile(name=text.lower(), color=tile_color, style=style.lower(), custom=True)
             tile.images = self.generate_tile(tile.name, color=tile.color, style=style, meta_level=meta_level)
@@ -679,10 +679,12 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 return await self.bot.error(ctx, "You can only apply the letter style for 1 or 2 letter words.")
             return await self.bot.error(ctx, f"The text `{text}` could not be generated.")
 
-    def generate_tile(self, text, color, style, meta_level):
+    def generate_tile(self, text, color, style, meta_level, seed=None):
         '''
         Custom tile => rendered custom tile
         '''
+        if seed is not None:
+            random.seed(seed)
         clean = text.replace("/", "")
         forced = len(clean) != len(text)
         size = len(clean)
@@ -764,9 +766,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
             paths = [
                 f"target/letters/{scale}/{char}/{width}/" + \
-                    random.choice([
+                    random.choice(sorted([
                         i for i in listdir(f"target/letters/{scale}/{char}/{width}") if i.endswith("0.png")
-                    ])[:-6]
+                    ]))[:-6]
                 for char, width in zip(clean, final_arrangement)
             ]
         images = []
