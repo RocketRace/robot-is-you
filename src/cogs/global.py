@@ -1,4 +1,3 @@
-from typing import List, final
 import discord
 import random
 import re
