@@ -1,3 +1,4 @@
+from typing import List, final
 import discord
 import random
 import re
@@ -9,7 +10,7 @@ from functools   import partial
 from inspect     import Parameter
 from io          import BytesIO
 from json        import load
-from os          import listdir
+from os          import listdir, name
 from os.path     import isfile
 from PIL         import Image, ImageChops, ImageFilter, ImageDraw, ImageOps
 from string      import ascii_lowercase
@@ -688,6 +689,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         clean = text.replace("/", "")
         forced = len(clean) != len(text)
         size = len(clean)
+        final_arrangement = None
         if text.count("/") >= 2:
             raise ValueError(text, None, "slash")
         elif text.count("/") == 1 and size == 1:
@@ -698,7 +700,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         if size == 1:
             if text.isascii() and (text.isalnum() or text == "*"):
                 paths = [
-                    f"data/sprites/{'vanilla' if text.isalnum() else 'misc'}/text_{text}_0"
+                    f"data/sprites/{'vanilla' if text.isalnum() else 'misc'}/text_{text}_0".replace("*", "asterisk")
                 ]
                 positions = [
                     (12, 12)
@@ -708,8 +710,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         elif size == 2 and style == "letter":
             if text.isascii() and all(k.isalnum() or k == "*" for k in text):
                 paths = [
-                    f"target/letters/thick/text_{text[0]}_0",
-                    f"target/letters/thick/text_{text[1]}_0",
+                    f"target/letters/thick/text_{text[0]}_0".replace("*", "asterisk"),
+                    f"target/letters/thick/text_{text[1]}_0".replace("*", "asterisk"),
                 ]
                 positions = [
                     (6, 12),
@@ -771,6 +773,16 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     ]))[:-6]
                 for char, width in zip(clean, final_arrangement)
             ]
+        # Special cases and flags everywhere...
+        # No wonder nobody wants to work on this code (including myself)
+        # gross
+        if size == 2 and style != "letter":
+            a, b = final_arrangement # trust me here, pylance
+            n_a = 11 - a // 2 if a < 12 else 6
+            n_b = 13 + b // 2 if b < 12 else 18
+            positions = [(n_a, 11), (n_b, 11)] # center the letters
+
+        
         images = []
         for frame in range(3):
             letter_sprites = [
