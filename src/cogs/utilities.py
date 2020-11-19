@@ -9,7 +9,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         self.bot = bot
 
     @commands.command()
-    @commands.cooldown(2, 5, type=commands.BucketType.channel)
+    @commands.cooldown(5, 8, type=commands.BucketType.channel)
     async def search(self, ctx, *, query: str):
         '''Searches for tiles based on a query.
 
@@ -155,7 +155,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         content = "\n".join([f"**{x.get('name')}** : {', '.join([f'{k}: `{v[0]},{v[1]}`' if isinstance(v, list) else f'{k}: `{v}`' for k, v in sorted(x.items(), key=lambda λ: λ[0]) if k not in ['name', 'tags']])}" if not isinstance(x, str) else x for x in [matches[0]] + sorted(matches[1:], key=lambda λ: (λ[sort_by], λ[secondary_sort_by]), reverse=reverse)[first_result:last_result + 1]])
         await self.bot.send(ctx, content)
 
-    @commands.cooldown(2, 5, type=commands.BucketType.channel)
+    @commands.cooldown(5, 8, type=commands.BucketType.channel)
     @commands.command(name="list")
     async def list_tiles(self, ctx):
         '''Lists valid tiles for rendering.
@@ -167,7 +167,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         fp = discord.File("target/tilelist.txt", filename=f"tilelist_{now}.txt")
         await ctx.send( "List of all valid tiles:", file=fp)
 
-    @commands.cooldown(2, 5, type=commands.BucketType.channel)
+    @commands.cooldown(5, 8, type=commands.BucketType.channel)
     @commands.command(name="palettes")
     async def list_palettes(self, ctx):
         '''Lists palettes usable for rendering.
@@ -182,7 +182,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         msg.insert(0, "Valid palettes:")
         await self.bot.send(ctx, "\n".join(msg))
 
-    @commands.cooldown(2, 5, type=commands.BucketType.channel)
+    @commands.cooldown(5, 8, type=commands.BucketType.channel)
     @commands.command(name="variants")
     async def list_variants(self, ctx, tile):
         '''List valid sprite variants for a given tile.'''
