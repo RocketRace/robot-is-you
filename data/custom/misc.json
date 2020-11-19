@@ -86,8 +86,8 @@
      ]
   },
   {
-     "name": "text_*",
-     "sprite": "text_*",
+     "name": "text_asterisk",
+     "sprite": "text_asterisk",
      "color": [
         "0",
         "3"
