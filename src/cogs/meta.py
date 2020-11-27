@@ -116,7 +116,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
         return not self.bot.loading
 
     @commands.command(aliases=["info", "you"])
-    @commands.cooldown(2, 5, commands.BucketType.channel)
+    @commands.cooldown(5, 8, commands.BucketType.channel)
     async def about(self, ctx):
         """
         Displays bot information.
@@ -146,13 +146,13 @@ class MetaCog(commands.Cog, name="Other Commands"):
         await ctx.send(embed=about_embed)
     
     @commands.command(aliases=["pong"])
-    @commands.cooldown(2, 2, commands.BucketType.channel)
+    @commands.cooldown(5, 8, commands.BucketType.channel)
     async def ping(self, ctx):
         '''Returns bot latency.'''
         await self.bot.send(ctx, f"Latency: {round(self.bot.latency, 3)} seconds")
 
     @commands.command()
-    @commands.cooldown(2, 10, type=commands.BucketType.channel)
+    @commands.cooldown(5, 8, type=commands.BucketType.channel)
     async def invite(self, ctx):
         '''Links for the bot support server'''
         msg = discord.Embed(colour=self.bot.embed_color, title="Invite Links", description="Due to an API change, this bot is no longer able to join any new guilds.\n" + \
@@ -165,7 +165,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
         await ctx.send(embed=msg)
     
     @commands.command(aliases=["interpret"])
-    @commands.cooldown(2, 10, type=commands.BucketType.channel)
+    @commands.cooldown(5, 8, type=commands.BucketType.channel)
     async def babalang(self, ctx, program, *program_input):
         '''Interpret a [Babalang v1.1.1](https://esolangs.org/wiki/Babalang) program.
         

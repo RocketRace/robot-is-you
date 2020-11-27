@@ -570,7 +570,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         return grid
 
     @commands.group(invoke_without_command=True)
-    @commands.cooldown(2, 10, commands.BucketType.channel)
+    @commands.cooldown(5, 8, commands.BucketType.channel)
     async def make(self, ctx, text, color = None, style = "noun", meta_level = "0", palette = "default"):
         '''Generates a custom text sprite. 
         Use "/" in the text to force a line break.
@@ -635,7 +635,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             return await self.bot.error(ctx, f"The text `{text}` could not be generated.")
         
     @make.command()
-    @commands.cooldown(2, 10, type=commands.BucketType.channel)
+    @commands.cooldown(5, 8, type=commands.BucketType.channel)
     async def raw(self, ctx, text, style="noun", meta_level = "0"):
         '''Returns a zip archive of the custom tile.
 
@@ -978,7 +978,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         
 
     @commands.command()
-    @commands.cooldown(5, 10, type=commands.BucketType.channel)
+    @commands.cooldown(5, 8, type=commands.BucketType.channel)
     async def rule(self, ctx, *, objects = ""):
         '''Renders the text tiles provided. 
         
@@ -1008,7 +1008,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
     # Generates an animated gif of the tiles provided, using the default palette
     @commands.command()
-    @commands.cooldown(5, 10, type=commands.BucketType.channel)
+    @commands.cooldown(5, 8, type=commands.BucketType.channel)
     async def tile(self, ctx, *, objects = ""):
         '''Renders the tiles provided.
 
@@ -1035,7 +1035,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         '''
         await self.render_tiles(ctx, objects=objects, rule=False)
 
-    @commands.cooldown(5, 10, commands.BucketType.channel)
+    @commands.cooldown(5, 8, commands.BucketType.channel)
     @commands.command(name="level")
     async def _level(self, ctx, *, query):
         '''Renders the given Baba Is You level.
