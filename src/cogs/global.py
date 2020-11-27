@@ -607,6 +607,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             tile_color = (1, 1, 1)
         if style not in ("noun", "property", "letter"):
             return await self.bot.error(ctx, f"The style `{style}` is not valid.")
+        if meta_level not in "0123":
+            return await self.bot.error(ctx, f"The meta level `{meta_level}` is invalid. It must be one of `0`, `1`, `2` or `3`.")
         try:
             meta_level = int(meta_level)
             buffer = BytesIO()
