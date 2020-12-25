@@ -2683,7 +2683,7 @@ play_data =
 {
 	tunes = 
 	{
-		baba = {"beep3","beep4","beep5"},
+		baba = {"beep3","beep4","beep5","beep6"},
 		box = "drum_kick",
 		rock = "drum_snare",
 		key = "drum_hat",
