@@ -197,7 +197,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
                     "This text tile doesn't exist, but you might be able to auto-generate it.",
                     "Auto-generated sprites support the `:noun`, `:letter`, and `:property` variants.",
                     "In addition, they support the following colors:" + \
-                    "`:red`, `:orange`, `:yellow`, `:lime`, `:green`, `:cyan`, `:blue`, `:purple`, `:pink`, `:rosy`, `:white`, `:silver`, `:grey`, `:black`, `:brown`,",
+                    "`:red`, `:orange`, `:yellow`, `:lime`, `:green`, `:cyan`, `:blue`, `:purple`, `:pink`, `:rosy`, `:white`, `:silver`, `:grey`, `:black`, `:brown`, `:maroon`",
                     "as well as the following filters: `:meta`, `:hide`."
                 ]
                 await self.bot.send(ctx, f"Valid sprite variants for '{clean_tile}'\n" + "\n".join(output) + "\n")
@@ -282,7 +282,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         if clean_tile.startswith("text_"):
             choice.append("It can also be auto-generated, supporting the `:noun`, `:letter`, and `:property` variants.",)
         choice.append("It also supports all of the following colors: " + \
-        "`:red`, `:orange`, `:yellow`, `:lime`, `:green`, `:cyan`, `:blue`, `:purple`, `:pink`, `:rosy`, `:white`, `:silver`, `:grey`, `:black`, `:brown`,")
+        "`:red`, `:orange`, `:yellow`, `:lime`, `:green`, `:cyan`, `:blue`, `:purple`, `:pink`, `:rosy`, `:white`, `:silver`, `:grey`, `:black`, `:brown`, `:maroon`")
         choice.append("As well as the following filters: `hide`, `meta`.")
 
         # Output
