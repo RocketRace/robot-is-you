@@ -17,6 +17,7 @@ from src.utils   import *
 from time        import time
 
 valid_colors = {
+    "maroon":(2, 1), # Not actually a word in the game
     "red":(2, 2),
     "orange":(2, 3),
     "yellow":(2, 4),
@@ -306,24 +307,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         width = len(grid[0])
         height = len(grid)
         palette_img = Image.open(f"data/palettes/{palette}.png").convert("RGB")
-        
-        colors = {
-            "red":(2, 2),
-            "orange":(2, 3),
-            "yellow":(2, 4),
-            "lime":(5, 3),
-            "green":(5, 2),
-            "cyan":(1, 4),
-            "blue":(1, 3),
-            "purple":(3, 1),
-            "pink":(4, 1),
-            "rosy":(4, 2),
-            "grey":(0, 1),
-            "black":(0, 4),
-            "silver":(0, 2),
-            "white":(0, 3),
-            "brown":(6, 1),
-        }
 
         clone_grid = [[[word for word in stack] for stack in row] for row in grid]
         for y, row in enumerate(clone_grid):
@@ -358,8 +341,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                         delete = []
                         for i, variant in enumerate(variants):
                             # COLORS
-                            if colors.get(variant) is not None:
-                                final.color = colors.get(variant)
+                            if valid_colors.get(variant) is not None:
+                                final.color = valid_colors.get(variant)
                                 delete.append(i)
                             elif ',' in variant:
                                 try:
