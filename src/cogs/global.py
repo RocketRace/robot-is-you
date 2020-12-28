@@ -692,7 +692,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             else:
                 raise ValueError(text, text, "char")
         elif size == 2 and style == "letter":
-            if text.isascii() and all(k.isalnum() or k == "*" for k in text):
+            if text.isascii() and all(k.isalnum() or k in "~*" for k in text):
                 paths = [
                     f"target/letters/thick/text_{text[0]}_0".replace("*", "asterisk"),
                     f"target/letters/thick/text_{text[1]}_0".replace("*", "asterisk"),
