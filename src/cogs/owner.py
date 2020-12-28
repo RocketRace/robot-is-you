@@ -496,9 +496,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
         # Background plates for type-2 text,
         # in 1 bit per pixel depth
-        plate_0 = Image.open("data/sprites/vanilla-extensions/plate_0_1.png").convert("RGBA").getchannel("A").convert("1")
-        plate_1 = Image.open("data/sprites/vanilla-extensions/plate_0_2.png").convert("RGBA").getchannel("A").convert("1")
-        plate_2 = Image.open("data/sprites/vanilla-extensions/plate_0_3.png").convert("RGBA").getchannel("A").convert("1")
+        plate_0 = Image.open("data/plates/plate_property_0_1.png").convert("RGBA").getchannel("A").convert("1")
+        plate_1 = Image.open("data/plates/plate_property_0_2.png").convert("RGBA").getchannel("A").convert("1")
+        plate_2 = Image.open("data/plates/plate_property_0_3.png").convert("RGBA").getchannel("A").convert("1")
         
         # Maps each character to three bounding boxes + images
         # (One box + image for each frame of animation)

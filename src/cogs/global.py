@@ -9,9 +9,8 @@ from functools   import partial
 from inspect     import Parameter
 from io          import BytesIO
 from json        import load
-from os          import listdir, name
-from os.path     import isfile
-from PIL         import Image, ImageChops, ImageFilter, ImageDraw, ImageOps
+from os          import listdir
+from PIL         import Image, ImageChops, ImageFilter, ImageDraw
 from string      import ascii_lowercase
 from src.utils   import *
 from time        import time
@@ -367,11 +366,20 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                         # Force custom-rendered text
                         # This has to be rendered beforehand (each sprite can't be generated separately)
                         # because generated sprites uses randomly picked letters
-                        if tile_data is None or "property" in variants or "noun" in variants or "letter" in variants:
+                        if tile_data is None or any(x in variants for x in ("property","noun", "letter")):
                             if tile.startswith("text_"):
                                 final.custom = True
                                 if "property" in variants:
-                                    final.style = "property"
+                                    if "right" in variants:
+                                        final.style = "propertyright"
+                                    elif "up" in variants:
+                                        final.style = "propertyup"
+                                    elif "left" in variants:
+                                        final.style = "propertyleft"
+                                    elif "down" in variants:
+                                        final.style = "propertydown"
+                                    else:
+                                        final.style = "property"
                                 if "noun" in variants:
                                     final.style = "noun"
                                 if "letter" in variants:
@@ -554,15 +562,19 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
     @commands.group(invoke_without_command=True)
     @commands.cooldown(5, 8, commands.BucketType.channel)
-    async def make(self, ctx, text, color = None, style = "noun", meta_level = "0", palette = "default"):
+    async def make(self, ctx, text, color = None, style = "noun", meta_level = "0", direction = "none", palette = "default"):
         '''Generates a custom text sprite. 
+        
         Use "/" in the text to force a line break.
 
         The `color` argument can be a hex color (`"#ffffff"`) or a string (`"red"`).
 
         The `style` argument may be "noun", "property", or "letter".
         
-        The `meta_level` argument may be "0", "1", "2" or "3".
+        The `meta_level` argument may be "0", "1", "2" or "3", and applies a metatext filter to the sprite.
+
+        The `direction` argument may be "none", "right", "up", "left", or "down". 
+        This can be used with the "property" style to generate directional properties (such as FALL or NUDGE).
 
         The `palette` argument can be set to the name of a palette.
         '''
@@ -589,7 +601,12 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         else:
             tile_color = (1, 1, 1)
         if style not in ("noun", "property", "letter"):
-            return await self.bot.error(ctx, f"The style `{style}` is not valid.")
+            return await self.bot.error(ctx, f"The style `{style}` is not valid. it must be one of `noun`, `property` or `letter`.")
+        if direction not in ("none", "up", "right", "left", "down"):
+            return await self.bot.error(ctx, f"The direction `{direction}` is not valid. It must be one of `none`, `up`, `right`, `left` or `down`.")
+        if "property" == style:
+            if direction in ("up", "right", "left", "down"):
+                style = style + direction
         if meta_level not in "0123":
             return await self.bot.error(ctx, f"The meta level `{meta_level}` is invalid. It must be one of `0`, `1`, `2` or `3`.")
         try:
@@ -619,7 +636,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         
     @make.command()
     @commands.cooldown(5, 8, type=commands.BucketType.channel)
-    async def raw(self, ctx, text, style="noun", meta_level = "0"):
+    async def raw(self, ctx, text, style="noun", meta_level = "0", direction = "none"):
         '''Returns a zip archive of the custom tile.
 
         A raw sprite has no color!
@@ -633,6 +650,11 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             return await self.bot.error(ctx, f"`{style}` is not a valid style. It must be one of `noun`, `property` or `letter`.")
         if meta_level not in "0123":
             return await self.bot.error(ctx, f"`{meta_level}` is not a valid meta level. It must be one of `0`, `1`, `2` or `3`.")
+        if direction not in ("none", "up", "right", "left", "down"):
+            return await self.bot.error(ctx, f"`{direction}` is not a valid direction. It must be one of `none`, `up`, `right`, `left` or `down`.")
+        if style == "property":
+            if direction in ("up", "right", "left", "down"):
+                style = style + direction
         try:
             meta_level = int(meta_level)
             buffer = BytesIO()
@@ -777,16 +799,20 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 s.getchannel("A") if s.mode == "RGBA" else s.convert("1")
                 for s in letter_sprites
             ]
-            base = Image.new("1", (24, 24), color=0)
-            if style == "property":
-                plate = Image.open(f"data/sprites/vanilla-extensions/plate_0_{frame+1}.png").convert("1")
+            offset_x, offset_y = 0,0
+            if "property" in style:
+                plate = Image.open(f"data/plates/plate_{style}_0_{frame+1}.png").convert("1")
+                base = Image.new("1", plate.size, color=0)
                 base = ImageChops.invert(ImageChops.add(base, plate))
-            
+                offset_x = (plate.width - 24) // 2
+                offset_y = (plate.height - 24) // 2
+            else:
+                base = Image.new("1", (24, 24), color=0)
             for (x, y), sprite in zip(positions, letter_sprites):
                 s_x, s_y = sprite.size
-                base.paste(sprite, box=(x - s_x // 2, y - s_y // 2), mask=sprite)
+                base.paste(sprite, box=(x - s_x // 2 + offset_x, y - s_y // 2 + offset_y), mask=sprite)
 
-            if style == "property":
+            if "property" in style:
                 base = ImageChops.invert(base)
 
             base = self.make_meta(clean, base, meta_level).convert("L")
