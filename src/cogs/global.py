@@ -800,7 +800,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 for s in letter_sprites
             ]
             offset_x, offset_y = 0,0
-            if "property" in style:
+            if style and "property" in style:
                 plate = Image.open(f"data/plates/plate_{style}_0_{frame+1}.png").convert("1")
                 base = Image.new("1", plate.size, color=0)
                 base = ImageChops.invert(ImageChops.add(base, plate))
@@ -812,7 +812,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 s_x, s_y = sprite.size
                 base.paste(sprite, box=(x - s_x // 2 + offset_x, y - s_y // 2 + offset_y), mask=sprite)
 
-            if "property" in style:
+            if style and "property" in style:
                 base = ImageChops.invert(base)
 
             base = self.make_meta(clean, base, meta_level).convert("L")
