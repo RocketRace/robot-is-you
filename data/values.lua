@@ -195,6 +195,10 @@ word_names =
 	nudgeup = "nudge (up)",
 	nudgeleft = "nudge (left)",
 	nudgedown = "nudge (down)",
+	lockedright = "locked (right)",
+	lockedup = "locked (up)",
+	lockedleft = "locked (left)",
+	lockeddown = "locked (down)",
 }
 
 decor_offsets =
