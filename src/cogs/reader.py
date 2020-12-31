@@ -279,19 +279,26 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         metadatas = {}
         total = len(levels)
         for i,level in enumerate(levels):
-            metadata = self.render_map(
-                level, source="vanilla", 
-                tile_data=tile_data, 
-                renderer=renderer, 
-                initialize=True, 
-                remove_borders=True,
-                keep_background=True,
-                tile_borders=True
-                )
-            await asyncio.sleep(0)
-            metadatas.update(metadata)
-            if i % 50 == 0:
-                await ctx.send(f"{i + 1} / {total}")
+            # Band-aid to patch weird crashy levels
+            if level in ("0level", "80level"): continue
+            try:
+                metadata = self.render_map(
+                    level, source="vanilla", 
+                    tile_data=tile_data, 
+                    renderer=renderer, 
+                    initialize=True, 
+                    remove_borders=True,
+                    keep_background=True,
+                    tile_borders=True
+                    )
+            except zlib.error as e:
+                print(level)
+            else:
+                metadatas.update(metadata)
+                if i % 50 == 0:
+                    await ctx.send(f"{i + 1} / {total}")
+            finally:
+                await asyncio.sleep(0)
         await ctx.send(f"{total} / {total} maps loaded.")
         await ctx.send(f"{ctx.author.mention} Done.")
 
