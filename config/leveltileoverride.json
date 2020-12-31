@@ -18,5 +18,29 @@
            "3"
         ],
         "source": "vanilla"
-     }
+     },
+   "belt": {
+      "tiling": "3",
+      "type": "0",
+      "sprite": "belt",
+      "color": [
+         "1",
+         "1"
+      ],
+      "source": "vanilla"
+  },
+  "text_belt": {
+     "source": "vanilla",
+      "tiling": "-1",
+      "type": "0",
+      "sprite": "text_belt",
+      "color": [
+         "1",
+         "2"
+      ],
+      "active": [
+         "1",
+         "3"
+      ]
+   }
 }
