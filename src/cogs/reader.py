@@ -1,3 +1,4 @@
+import asyncio
 import discord
 import json
 import zlib
@@ -287,6 +288,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                 keep_background=True,
                 tile_borders=True
                 )
+            await asyncio.sleep(0)
             metadatas.update(metadata)
             if i % 50 == 0:
                 await ctx.send(f"{i + 1} / {total}")
