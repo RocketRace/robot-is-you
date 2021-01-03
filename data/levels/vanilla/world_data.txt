@@ -3,6 +3,6 @@ name=Baba Is You (real)
 start=106level
 firstlevel=0level
 themecount=27
-author=hempuli
+author=Hempuli
 [levels]
 levelid=329

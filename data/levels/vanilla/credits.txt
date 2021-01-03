@@ -9,27 +9,33 @@ $4,1Baba Is You
  
 #credits_testers
 $4,2Aaron Dobbe $4,0-$4,2 Aaron Steed $4,0-$4,2 Alan Hazelden
-$4,2Anna Tarkov $4,0-$4,2 Antti Tiihonen
-$4,2Bateleur $4,0-$4,2 Ben Humphreys
-$4,2BlasphemousRoar $4,0-$4,2 Corey Martin
-$4,2Dario Zubovic $4,0-$4,2 Droqen $4,0-$4,2 Endurion
+$4,2Alejandro Cairols $4,0-$4,2 Alistair Buxton
+$4,2Anna Tarkov $4,0-$4,2 Antti Tiihonen $4,0-$4,2 at
+$4,2Bagenzo $4,0-$4,2 Bateleur $4,0-$4,2 BlasphemousRoar
+$4,2Blookerstein $4,0-$4,2 Corey Martin $4,0-$4,2 Dan Ho
+$4,2Dario Zubovic $4,0-$4,2 Devness $4,0-$4,2 Dieting Hippo
+$4,2Droqen $4,0-$4,2 Endurion $4,0-$4,2 Ethan Clark
 $4,2Exuno $4,0-$4,2 Farbs $4,0-$4,2 GreenZSaber
-$4,2Guilherme Töws $4,0-$4,2 Ian Snyder
-$4,2Jake Eakle $4,0-$4,2 Jan Willem Nijman
-$4,2Jonah $4,0-$4,2 Jonathan Blow
-$4,2Kevin Simmons $4,0-$4,2 Leon Arnott
-$4,2Lukas Meller $4,0-$4,2 Lyndsey Jane Moulds
-$4,2Marcos Donnantuoni $4,0-$4,2 Mathias Kærlev
-$4,2Matthew VanDevander $4,0-$4,2 Mattias Dittrich
-$4,2Michael Todd $4,0-$4,2 Mokesmoe
-$4,2Ncrecc $4,0-$4,2 Nick Vaccaro $4,0-$4,2 Nicklas Nygren
-$4,2Randomnine $4,0-$4,2 Rico $4,0-$4,2 Robert Yang
-$4,2Ryan Gerstein $4,0-$4,2 SirNiko
-$4,2Skalmantas Šimėnas
-$4,2Snowquill $4,0-$4,2 Stephen Lavelle
-$4,2Terry Cavanagh $4,0-$4,2 Thomas Goos 
-$4,2Tijmen Tio $4,0-$4,2 Tyriq Plummer
-$4,2Victor Selnæs Breum $4,0-$4,2 Zaphos
+$4,2Guilherme Töws $4,0-$4,2 Hayden Scott-Baron
+$4,2Henrique de Lima $4,0-$4,2 Ian MacLarty
+$4,2Ian Snyder $4,0-$4,2 Jack Kutilek $4,0-$4,2 Jake Eakle
+$4,2Jan Willem Nijman $4,0-$4,2 Jonah $4,0-$4,2 Jonathan Blow
+$4,2Jonathan Thomas $4,0-$4,2 Kevin Simmons
+$4,2knexator $4,0-$4,2 Leon Arnott $4,0-$4,2 Lukas Meller
+$4,2Lyndsey Jane Moulds $4,0-$4,2 Marcos Donnantuoni
+$4,2Mathias Kærlev $4,0-$4,2 Matthew VanDevander
+$4,2Mattias Dittrich $4,0-$4,2 Michael Todd
+$4,2Mischka Kamener $4,0-$4,2 Mokesmoe
+$4,2Nathan "ncrecc" Recchia $4,0-$4,2 Nick Vaccaro
+$4,2Nicklas Nygren $4,0-$4,2 Niels Bross
+$4,2NotAJumbleOfNumbers $4,0-$4,2 Pedro PSI
+$4,2Randomnine $4,0-$4,2 Rico $4,0-$4,2 Robert Pfeiffer
+$4,2Robert Yang $4,0-$4,2 Ryan Gerstein $4,0-$4,2 silverhawke
+$4,2SirNiko $4,0-$4,2 Skalmantas Šimėnas $4,0-$4,2 Snowquill
+$4,2Stephen Lavelle $4,0-$4,2 Tara Heather Kelly
+$4,2Terry Cavanagh $4,0-$4,2 Thomas Goos $4,0-$4,2 Tijmen Tio
+$4,2Tyriq Plummer $4,0-$4,2 UltraLuigi $4,0-$4,2 Valen Kostich
+$4,2Victor Selnæs Breum $4,0-$4,2 winterbeak $4,0-$4,2 Zaphos
  
 #credits_audioconsult
 $1,4Aaro Teikari
@@ -60,7 +66,7 @@ $4,2Darling $4,0-$4,2 DogeisCut $4,0-$4,2 eneb
 $4,2ForeDaMole $4,0-$4,2 FungusDude42
 $4,2Jmickle $4,0-$4,2 kadykunde $4,0-$4,2 Portponky
 $4,2twerps3 $4,0-$4,2 unsinnlos $4,0-$4,2 ZantGuy
-
+ 
 #credits_words
 $4,2lilybeevee $4,0-$0,3 Feeling
  
@@ -132,6 +138,7 @@ $2,314chh$0,3 #by $4,2vacuumfan7072
 $2,3kick-drum-e-1$0,3 #by $4,2rob10
 $2,3night-ambience-01-aug-2-
 $2,32013-back-yard$0,3 #by $4,2rgbrobot
+$2,3rain$0,3 #by $4,2idomusics
  
 #credits_extensions
 $2,3Tile Map $2,1-$2,3 Tile Map Viewport
