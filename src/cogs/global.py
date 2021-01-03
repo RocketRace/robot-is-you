@@ -1184,7 +1184,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             
             # Level subtitle, if any
             subtitle = ""
-            if level.get("subtitle").strip():
+            if level.get("subtitle") and level.get("subtitle").strip():
                 subtitle = "\nSubtitle: `" + level["subtitle"] + "`"
 
             # Any additional matches
