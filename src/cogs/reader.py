@@ -279,26 +279,19 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         metadatas = {}
         total = len(levels)
         for i,level in enumerate(levels):
-            # Band-aid to patch weird crashy levels
-            if level in ("0level", "80level"): continue
-            try:
-                metadata = self.render_map(
-                    level, source="vanilla", 
-                    tile_data=tile_data, 
-                    renderer=renderer, 
-                    initialize=True, 
-                    remove_borders=True,
-                    keep_background=True,
-                    tile_borders=True
-                    )
-            except zlib.error as e:
-                print(level)
-            else:
-                metadatas.update(metadata)
-                if i % 50 == 0:
-                    await ctx.send(f"{i + 1} / {total}")
-            finally:
-                await asyncio.sleep(0)
+            metadata = self.render_map(
+                level, source="vanilla", 
+                tile_data=tile_data, 
+                renderer=renderer, 
+                initialize=True, 
+                remove_borders=True,
+                keep_background=True,
+                tile_borders=True
+                )
+            metadatas.update(metadata)
+            await asyncio.sleep(0)
+            if i % 50 == 0:
+                await ctx.send(f"{i + 1} / {total}")
         await ctx.send(f"{total} / {total} maps loaded.")
         await ctx.send(f"{ctx.author.mention} Done.")
 
@@ -447,28 +440,12 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         '''
         grid = Grid(filename, source)
         with open(grid.fp, "rb") as stream:
-            header = int.from_bytes(stream.read(8), byteorder="little") & (2**64 - 1)
-            # ACHTUNG
-            assert header == 0x21474e5554484341
-            version = int.from_bytes(stream.read(2), byteorder="little") & (2**16 - 1)
-            assert version >= 256 and version <= 261
-            
-            buffer = None
-            while buffer != 0:
-                data = stream.read(8)
-                buffer = int.from_bytes(data, byteorder="little") & (2**32 - 1)
-                # MAP
-                if buffer == 0x2050414d:
-                    stream.read(2)
-                # LAYR
-                elif buffer == 0x5259414c:
-                    buffer = stream.read(2)
-                    # The layer count
-                    layer_count = int.from_bytes(buffer, byteorder="little") & (2**16 - 1)
-                    # Mysterious off-by-one magic
-                    for _ in range(layer_count + 1):
-                        self.read_layer(stream, grid, version)
-                    break
+            stream.read(28) # don't care about these headers
+            buffer = stream.read(2)
+            layer_count = int.from_bytes(buffer, byteorder="little")
+            # version is assumed to be 261 (it is for all levels as far as I can tell)
+            for _ in range(layer_count):
+                self.read_layer(stream, grid)
 
         # We've added the basic objects & their directions. 
         # Now we add everything else:
@@ -1039,53 +1016,35 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
 
         return grid
             
-    def read_layer(self, stream, grid, version):
+    def read_layer(self, stream, grid):
         buffer = stream.read(4)
-        
-        if buffer == b"":
-            return
-
-        grid.width = int.from_bytes(buffer, byteorder="little") & (2**32 - 1)
+        grid.width = int.from_bytes(buffer, byteorder="little")
         
         buffer = stream.read(4)
-        grid.height = int.from_bytes(buffer, byteorder="little") & (2**32 - 1)
-
-        if version >= 258:
-            stream.read(4)
-        stream.read(25)
-
-        if version == 260:
-            stream.read(2)
-        elif version == 261:
-            stream.read(3)
+        grid.height = int.from_bytes(buffer, byteorder="little")
         
         size = grid.width * grid.height
         if len(grid.cells) == 0:
             for _ in range(size):
                 grid.cells.append(Cell())
+        
+        stream.read(32) # don't care about these
 
-        data_blocks = int.from_bytes(stream.read(1), byteorder="little") & (2**8 - 1)
-        assert not (data_blocks < 1 and data_blocks > 2)
+        data_blocks = int.from_bytes(stream.read(1), byteorder="little")
 
         # MAIN
         stream.read(4)
         buffer = stream.read(4)
-        compressed_size = int.from_bytes(buffer, byteorder="little") & (2**32 - 1)
-        next_position = stream.tell() + compressed_size
+        compressed_size = int.from_bytes(buffer, byteorder="little")
+        compressed = stream.read(compressed_size)
 
         zobj = zlib.decompressobj()
-        map_buffer = zobj.decompress(stream.read(size * 2))
-        read = len(map_buffer)
-        
-        read >>= 1
-        
-
-        stream.seek(next_position)
+        map_buffer = zobj.decompress(compressed)
 
         items = []
-        for j,k in zip(range(read), range(0, 2 * read, 2)):
+        for j,k in enumerate(range(0, len(map_buffer), 2)):
             cell = grid.cells[j]
-            ID = int.from_bytes(map_buffer[k : k + 16], byteorder="little") & (2**16 - 1)
+            ID = int.from_bytes(map_buffer[k : k + 2], byteorder="little")
 
             item = self.defaults_by_id.get(ID)
             if item is not None:
@@ -1101,19 +1060,16 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
 
         if data_blocks == 2:
             # DATA
-            map_buffer = stream.read(13)
-            compressed_size = int.from_bytes(map_buffer[9:], byteorder="little") & (2**32 - 1)
-            next_position = stream.tell() + compressed_size
+            stream.read(9)
+            buffer = stream.read(4)
+            compressed_size = int.from_bytes(buffer, byteorder="little") & (2**32 - 1)
 
             zobj = zlib.decompressobj()
-            map_buffer = zobj.decompress(stream.read(size))
-            read = len(map_buffer)
+            dirs_buffer = zobj.decompress(stream.read(compressed_size))
 
-            stream.seek(next_position)
-
-            for j in range(read):
+            for j in range(len(dirs_buffer) - 1):
                 item = items[j]
-                item.direction = map_buffer[j]
+                item.direction = dirs_buffer[j]
 
 def setup(bot):
     bot.add_cog(Reader(bot))
