@@ -1,4 +1,7 @@
 import asyncio
+import io
+import aiohttp
+import base64
 import discord
 import json
 import zlib
@@ -136,7 +139,8 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         self.defaults_by_id = {}
         self.defaults_by_object = {}
         self.defaults_by_name = {}
-        self.level_data = {}
+        self.level_data = {} # id: level metadata
+        self.custom_levels = {} # code: level metadata
         # Intermediary, please don't access
         self._levels = {}
 
@@ -156,6 +160,46 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         levelcache = "cache/leveldata.json"
         if stat(levelcache).st_size != 0:
             self.level_data = json.load(open(levelcache))
+        custom = "cache/customlevels.json"
+        if stat(custom).st_size != 0:
+            self.custom_levels = json.load(open(custom))
+
+    async def render_custom(self, code: str):
+        '''Renders a custom level. code should be valid (but is checked regardless)'''
+        async with aiohttp.request("GET", f"https://baba-is-bookmark.herokuapp.com/api/level/raw/l?code={code}") as resp:
+            resp.raise_for_status()
+            data = await resp.json()
+            b64 = data["data"]
+            decoded = base64.b64decode(b64)
+            raw_l = io.BytesIO(decoded)
+        async with aiohttp.request("GET", f"https://baba-is-bookmark.herokuapp.com/api/level/raw/ld?code={code}") as resp:
+            resp.raise_for_status()
+            data = await resp.json()
+            raw_s = data["data"]
+            raw_ld = io.StringIO(raw_s)
+
+        grid = self.read_map(code, source="custom", data=raw_l)
+        grid = self.read_metadata(grid, data=raw_ld)
+
+        # First and last rows
+        m = grid.clean_up()
+        width = m["data"]["width"]
+        height = m["data"]["height"]
+        palette = m["data"]["palette"]
+        m["objects"].pop(height - 1)
+        m["objects"].pop(0)
+        # First and last columns of each row
+        for row in m["objects"]:
+            row.pop(m["data"]["width"] - 1)
+            row.pop(0)
+        out = f"target/renders/custom/{code}.gif"
+        renderer = self.bot.get_cog("Baba Is You")
+        tiles = renderer.handle_variants(m["objects"], tile_borders=True, is_level=True)
+        renderer.magick_images(tiles, width, height, palette=palette, background=(0, 4), out=out)
+        
+        metadata = m["data"]
+        self.custom_levels[code] = metadata
+        return metadata
 
     def render_map(
         self, 
@@ -172,7 +216,8 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         Shaves off the borders if specified.
         '''
         # Data
-        grid = self.read_map(filename, source=source, initialize=initialize)
+        grid = self.read_map(filename, source=source)
+        grid = self.read_metadata(grid, initialize=initialize)
 
         # Clean up the grid
         m = grid.clean_up()
@@ -434,34 +479,43 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         else:
             return (x, y)
 
-    def read_map(self, filename, source, initialize = False):
+    def read_map(self, filename, source, data=None):
         '''Parses a .l file's content, given its file path.
         Returns a Grid object containing the level data.
         '''
         grid = Grid(filename, source)
-        with open(grid.fp, "rb") as stream:
-            stream.read(28) # don't care about these headers
-            buffer = stream.read(2)
-            layer_count = int.from_bytes(buffer, byteorder="little")
-            # version is assumed to be 261 (it is for all levels as far as I can tell)
-            for _ in range(layer_count):
-                self.read_layer(stream, grid)
+        if data is None:
+            stream = open(grid.fp, "rb")
+        else:
+            stream = data
+        stream.read(28) # don't care about these headers
+        buffer = stream.read(2)
+        layer_count = int.from_bytes(buffer, byteorder="little")
+        # version is assumed to be 261 (it is for all levels as far as I can tell)
+        for _ in range(layer_count):
+            self.read_layer(stream, grid)
+        return grid
 
+
+    def read_metadata(self, grid, initialize=False, data=None):
         # We've added the basic objects & their directions. 
         # Now we add everything else:
-        with open(grid.fp + "d", errors="replace") as fp:
-            # Paths
-            grid = self.add_paths(grid, file=fp)
-            # Levels
-            grid = self.add_levels(grid, file=fp, initialize=initialize) # If we want to also initialize the level tree
-            # Images
-            grid = self.add_images(grid, file=fp)
-            # Level metadata (must be below add_specials)
-            grid = self.add_metadata(grid, file=fp)
-            # Special objects
-            grid = self.add_specials(grid, file=fp, initialize=initialize)
-            # Object changes
-            grid = self.add_changes(grid, file=fp)
+        if data is None:
+            fp = open(grid.fp + "d", errors="replace")
+        else:
+            fp = data
+        # Paths
+        grid = self.add_paths(grid, file=fp)
+        # Levels
+        grid = self.add_levels(grid, file=fp, initialize=initialize) # If we want to also initialize the level tree
+        # Images
+        grid = self.add_images(grid, file=fp)
+        # Level metadata (must be below add_specials)
+        grid = self.add_metadata(grid, file=fp)
+        # Special objects
+        grid = self.add_specials(grid, file=fp, initialize=initialize)
+        # Object changes
+        grid = self.add_changes(grid, file=fp)
 
         # Makes sure objects within a single cell are rendered in the right order
         grid = self.sort_layers(grid)

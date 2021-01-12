@@ -1,3 +1,5 @@
+import aiohttp
+import os
 import discord
 import random
 import re
@@ -1050,21 +1052,40 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         '''Renders the given Baba Is You level.
 
         Levels are searched for in the following order:
-        * Checks if the input matches the level ID (e.g. "20level")
-        * Checks if the input matches the level number (e.g. "space-3" or "lake-extra 1")
-        * Checks if the input matches the level name (e.g. "further fields")
+        * Checks if the input matches a level ID (e.g. "20level")
+        * Checks if the input matches a custom level code (e.g. "ABCD-1234")
+        * Checks if the input matches a level number (e.g. "space-3" or "lake-extra 1")
+        * Checks if the input matches a level name (e.g. "further fields")
         * Checks if the input is the ID of a world (e.g. "cavern")
         '''
         # User feedback
         await ctx.trigger_typing()
 
         levels = {}
+        custom = False
         # Lower case, make the query all nice
         fine_query = query.lower().strip()
         # Is it the level ID?
         level_data = self.bot.get_cog("Reader").level_data
         if level_data.get(fine_query) is not None:
             levels[fine_query] = level_data[fine_query]
+
+        # Check custom level from cache
+        if len(levels) == 0:
+            upper = fine_query.upper()
+            if re.match(r"^[A-Z0-9]{4}\-[A-Z0-9]{4}$", upper):
+                custom_levels = self.bot.get_cog("Reader").custom_levels
+                if custom_levels.get(upper) is not None:
+                    print("a")
+                    levels[upper] = custom_levels[upper]
+                    custom = True
+                else:
+                    async with aiohttp.request("GET", f"https://baba-is-bookmark.herokuapp.com/api/level/exists?code={upper}") as resp:
+                        if resp.status in (200, 304):
+                            data = await resp.json()
+                            if data["data"]["exists"]:
+                                levels[upper] = await self.bot.get_cog("Reader").render_custom(upper)
+                                custom = True
 
         # Does the query match a level tree?
         if len(levels) == 0:
@@ -1141,10 +1162,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             # Is there more than 1 match?
             matches = len(levels)
 
-            # The first match
-            data = list(levels.items())
-            level_id = data[0][0]
-            level = data[0][1]
+            level_id, level = [*levels.items()][0]
+            # 'source', 'name', 'subtitle'? checked for both vanilla & custom
+            # 'parent', 'mapID', 'style', 'number' checked for vanilla
 
             # The embedded file
             gif = discord.File(f"target/renders/{level['source']}/{level_id}.gif", spoiler=True)
@@ -1153,34 +1173,35 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             name = level["name"]
 
             # Level parent 
-            parent = level.get("parent")
-            map_id = level.get("mapID")
-            tree = ""
-            # Parse the display name
-            if parent is not None:
-                # With a custom mapID
-                if map_id is not None:
-                    # Format
-                    tree = parent + "-" + map_id + ": "
-                else:
-                    # Parse the level style
-                    style = level["style"]
-                    number = level["number"]
-                    identifier = None
-                    # Regular numbers
-                    if style == "0":
-                        identifier = number
-                    elif style == "1":
-                    # Letters
-                        identifier = ascii_lowercase[int(number)]
-                    elif style == "2":
-                    # Extra dots
-                        identifier = "extra " + str(int(number) + 1)
-                    else: 
-                    # In case the custom map ID wasn't already set
-                        identifier = map_id
-                    # format
-                    tree = parent + "-" + identifier + ": "
+            if not custom:
+                parent = level.get("parent")
+                map_id = level.get("mapID")
+                tree = ""
+                # Parse the display name
+                if parent is not None:
+                    # With a custom mapID
+                    if map_id is not None:
+                        # Format
+                        tree = parent + "-" + map_id + ": "
+                    else:
+                        # Parse the level style
+                        style = level["style"]
+                        number = level["number"]
+                        identifier = None
+                        # Regular numbers
+                        if style == "0":
+                            identifier = number
+                        elif style == "1":
+                        # Letters
+                            identifier = ascii_lowercase[int(number)]
+                        elif style == "2":
+                        # Extra dots
+                            identifier = "extra " + str(int(number) + 1)
+                        else: 
+                        # In case the custom map ID wasn't already set
+                            identifier = map_id
+                        # format
+                        tree = parent + "-" + identifier + ": "
             
             # Level subtitle, if any
             subtitle = ""
@@ -1191,7 +1212,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             matches_text = "" if matches == 1 else f"\nFound {matches} matches: `{', '.join([l for l in levels])}`, showing the first." 
 
             # Formatted output
-            formatted = f"{ctx.author.mention}{matches_text}\nName: `{tree}{name}`\nID: `{level_id}`{subtitle}"
+            formatted = f"{ctx.author.mention}{matches_text}\nName: `{'[Custom] ' if custom else tree}{name}`\n{'Code' if custom else 'ID'}: `{level_id}`{subtitle}"
 
             # Only the author should be mentioned
             mentions = discord.AllowedMentions(everyone=False, users=[ctx.author], roles=False)
