@@ -2455,9 +2455,9 @@ particletypes =
 	},
 	clouds =
 	{
-		amount = 10,
-		animation = 2,
-		colour = {0, 3},
+		amount = 90,
+		animation = {2, 12},
+		colour = {4, 3},
 		extra = 
 			function(unitid)
 				local unit = mmf.newObject(unitid)
