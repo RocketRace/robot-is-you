@@ -1,6 +1,6 @@
 import ast
 import asyncio
-from platform import platform
+import platform
 import discord
 import json
 import os
