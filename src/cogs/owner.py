@@ -458,7 +458,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                     if width != ".DS_Store":
                         small.setdefault(char, set()).add(int(width))
 
-        if "windows" in platform.system():
+        if "Windows" in platform.system():
             os.system("xcopy data\\letters\\ target\\ /E")
         else:
             os.system("cp -r data/letters target")
