@@ -345,9 +345,12 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                             if valid_colors.get(variant) is not None:
                                 final.color = valid_colors.get(variant)
                                 delete.append(i)
-                            elif ',' in variant:
+                            elif '/' in variant:
                                 try:
-                                    final.color = tuple(map(int, variant.split(',')))
+                                    tx, ty = tuple(map(int, variant.split('/')))
+                                    assert 0 <= tx <= 6
+                                    assert 0 <= ty <= 4
+                                    final.color = tx,ty
                                     delete.append(i)
                                 except:
                                     raise FileNotFoundError(word)
