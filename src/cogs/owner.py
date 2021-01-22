@@ -1,5 +1,6 @@
 import ast
 import asyncio
+from platform import platform
 import discord
 import json
 import os
@@ -457,7 +458,10 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                     if width != ".DS_Store":
                         small.setdefault(char, set()).add(int(width))
 
-        os.system("cp -r data/letters target")
+        if "windows" in platform.system():
+            os.system("xcopy data\\letters\\ target\\ /E")
+        else:
+            os.system("cp -r data/letters target")
 
         self.letter_widths = {"big":big, "small":small}
 
