@@ -1074,21 +1074,21 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             levels[fine_query] = level_data[fine_query]
 
         # Check custom level from cache
-        if len(levels) == 0:
-            upper = fine_query.upper()
-            if re.match(r"^[A-Z0-9]{4}\-[A-Z0-9]{4}$", upper):
-                custom_levels = self.bot.get_cog("Reader").custom_levels
-                if custom_levels.get(upper) is not None:
-                    print("a")
-                    levels[upper] = custom_levels[upper]
-                    custom = True
-                else:
-                    async with aiohttp.request("GET", f"https://baba-is-bookmark.herokuapp.com/api/level/exists?code={upper}") as resp:
-                        if resp.status in (200, 304):
-                            data = await resp.json()
-                            if data["data"]["exists"]:
-                                levels[upper] = await self.bot.get_cog("Reader").render_custom(upper)
-                                custom = True
+        # if len(levels) == 0:
+        #     upper = fine_query.upper()
+        #     if re.match(r"^[A-Z0-9]{4}\-[A-Z0-9]{4}$", upper):
+        #         custom_levels = self.bot.get_cog("Reader").custom_levels
+        #         if custom_levels.get(upper) is not None:
+        #             print("a")
+        #             levels[upper] = custom_levels[upper]
+        #             custom = True
+        #         else:
+        #             async with aiohttp.request("GET", f"https://baba-is-bookmark.herokuapp.com/api/level/exists?code={upper}") as resp:
+        #                 if resp.status in (200, 304):
+        #                     data = await resp.json()
+        #                     if data["data"]["exists"]:
+        #                         levels[upper] = await self.bot.get_cog("Reader").render_custom(upper)
+        #                         custom = True
 
         # Does the query match a level tree?
         if len(levels) == 0:
