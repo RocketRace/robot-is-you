@@ -459,7 +459,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                         small.setdefault(char, set()).add(int(width))
 
         if "Windows" in platform.system():
-            os.system("xcopy data\\letters\\ target\\ /E")
+            os.system("xcopy data\\letters\\ target\\letters\\ /E /Y /Q")
         else:
             os.system("cp -r data/letters target")
 
