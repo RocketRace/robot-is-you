@@ -313,5 +313,23 @@
          "0",
          "3"
       ]
+   },
+   {
+      "name": "cherry",
+      "sprite": "cherry",
+      "tiling": "-1",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "text_cherry",
+      "sprite": "text_cherry",
+      "tiling": "-1",
+      "color": [
+         "2",
+         "2"
+      ]
    }
 ]
