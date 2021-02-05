@@ -2693,6 +2693,9 @@ play_data =
 		key = "drum_hat",
 		keke = "tune_blop",
 		skull = "tune_short",
+		piano = "piano",
+		guitar = "guitar",
+		sax = "sax",
 	},
 	freqs = 
 	{

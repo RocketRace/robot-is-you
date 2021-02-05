@@ -130,6 +130,9 @@ $2,3kick-drum-e-1$0,3 #by $4,2rob10
 $2,3night-ambience-01-aug-2-
 $2,32013-back-yard$0,3 #by $4,2rgbrobot
 $2,3rain$0,3 #by $4,2idomusics
+$2,3guinot02$0,3 #by $4,2komponist
+$2,3piano-reverse$0,3 #by $4,2alayan
+$2,3fiddling-tenor-sax-bip$0,3 #by $4,2zinzan-101
  
 #credits_extensions
 $2,3Tile Map $2,1-$2,3 Tile Map Viewport
