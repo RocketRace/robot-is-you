@@ -1,5 +1,15 @@
 [
     {
+        "sprite":"plus",
+        "name":"plus",
+        "color":
+            [
+                "0",
+                "3"
+            ],
+            "tiling":"-1"
+    },
+    {
         "sprite":"goose",
         "name":"goose",
         "color":

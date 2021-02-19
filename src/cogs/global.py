@@ -189,7 +189,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                         else:
                             animation_offset = frame
                         # Certain sprites have to be hard-coded, since their file paths are not very neat
-                        if tile.name in ("icon", "plus"):
+                        if tile.name in ("icon",):
                             path = f"data/sprites/vanilla/{tile.name}.png"
                         elif tile.name in ["smiley", "hi"] or tile.name.startswith("icon"):
                             path = f"data/sprites/vanilla/{tile.name}_1.png"
