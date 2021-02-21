@@ -36,6 +36,45 @@ valid_colors = {
     "brown":(6, 1),
 }
 
+# boosh
+inactive_colors = {
+    (0, 0): (0, 4),
+    (1, 0): (0, 4),
+    (2, 0): (1, 1),
+    (3, 0): (0, 4),
+    (4, 0): (0, 4),
+    (5, 0): (6, 3),
+    (6, 0): (6, 3),
+    (0, 1): (1, 1),
+    (1, 1): (1, 0),
+    (2, 1): (2, 0),
+    (3, 1): (3, 0),
+    (4, 1): (4, 0),
+    (5, 1): (5, 0),
+    (6, 1): (6, 0),
+    (0, 2): (0, 1),
+    (1, 2): (1, 1),
+    (2, 2): (2, 1),
+    (3, 2): (1, 1),
+    (4, 2): (4, 1),
+    (5, 2): (5, 1),
+    (6, 2): (6, 1),
+    (0, 3): (0, 1),
+    (1, 3): (1, 2),
+    (2, 3): (2, 2),
+    (3, 3): (4, 3),
+    (4, 3): (1, 0),
+    (5, 3): (5, 1),
+    (6, 3): (0, 4),
+    (0, 4): (6, 4),
+    (1, 4): (1, 2),
+    (2, 4): (6, 1),
+    (3, 4): (6, 0),
+    (4, 4): (3, 2),
+    (5, 4): (5, 2),
+    (6, 4): (6, 4),
+}
+
 def flatten(items, seqtypes=(list, tuple)):
     '''Flattens nested iterables, of speficied types.
     Via https://stackoverflow.com/a/10824086
@@ -354,13 +393,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     delete.append(i)
                                 except:
                                     raise FileNotFoundError(word)
-                            elif variant == "inactive":
-                                # If an active variant exists, the default color is inactive
-                                if tile_data and tile_data.get("active"):
-                                    final.color = tuple(map(int, tile_data["color"]))
-                                    delete.append(i)
-                                else:
-                                    raise FileNotFoundError(word)
                             # META SPRITES
                             elif variant == "meta":
                                 final.meta_level += 1
@@ -368,6 +400,22 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                         delete.reverse()
                         for i in delete:
                             variants.pop(i)
+                        
+                        # This needs to be evaluated after color variants, so it can compute the proper inactive color
+                        if variants.count("inactive") > 0:
+                            # If an active variant exists, the default color is inactive
+                            for i in range(variants.count("inactive")):
+                                if tile_data and tile_data.get("active"):
+                                    if final.color is None or tile_data["color"] == final.color:
+                                        final.color = tuple(map(int, tile_data["color"]))
+                                    else:
+                                        final.color = inactive_colors[final.color or (0, 3)]
+                                    variants.remove("inactive")
+                                else:
+                                    final.color = inactive_colors[final.color or (0, 3)]
+                                    variants.remove("inactive")
+                                    
+
                         # Force custom-rendered text
                         # This has to be rendered beforehand (each sprite can't be generated separately)
                         # because generated sprites uses randomly picked letters
