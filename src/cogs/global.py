@@ -411,6 +411,11 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     else:
                                         final.color = inactive_colors[final.color or (0, 3)]
                                     variants.remove("inactive")
+                                elif tile_data:
+                                    if final.color is None:
+                                        final.color = tuple(map(int, tile_data["color"]))
+                                    final.color = inactive_colors[final.color or (0, 3)]
+                                    variants.remove("inactive")
                                 else:
                                     final.color = inactive_colors[final.color or (0, 3)]
                                     variants.remove("inactive")
