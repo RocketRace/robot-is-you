@@ -126,6 +126,14 @@
       ]
    },
    {
+      "name": "yes",
+      "sprite": "yes",
+      "color": [
+         "5",
+         "3"
+      ]
+   },
+   {
       "name": "hempuli",
       "sprite": "hempuli",
       "color": [
