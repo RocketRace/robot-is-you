@@ -24,7 +24,7 @@ function formatobjlist()
 	end
 end
 
-editor_objlist_order = {"algae","text_algae","arrow","text_arrow","baba","text_baba","banana","text_banana","bat","text_bat","bee","text_bee","belt","text_belt","bird","text_bird","boat","text_boat","bog","text_bog","bolt","text_bolt","book","text_book","box","text_box","brick","text_brick","bubble","text_bubble","bucket","text_bucket","bug","text_bug","burger","text_burger","cake","text_cake","cart","text_cart","cash","text_cash","circle","text_circle","cliff","text_cliff","cloud","text_cloud","cog","text_cog","crab","text_crab","crystal","text_crystal","cup","text_cup","door","text_door","dot","text_dot","drink","text_drink","dust","text_dust","ear","text_ear","eye","text_eye","fence","text_fence","fire","text_fire","fish","text_fish","flag","text_flag","flower","text_flower","fofo","text_fofo","foliage","text_foliage","foot","text_foot","fort","text_fort","fruit","text_fruit","fungi","text_fungi","fungus","text_fungus","gate","text_gate","gem","text_gem","ghost","text_ghost","grass","text_grass","guitar","text_guitar","hand","text_hand","hedge","text_hedge","house","text_house","husk","text_husk","husks","text_husks","ice","text_ice","it","text_it","jelly","text_jelly","jiji","text_jiji","keke","text_keke","key","text_key","ladder","text_ladder","lamp","text_lamp","lava","text_lava","leaf","text_leaf","lift","text_lift","line","text_line","lizard","text_lizard","love","text_love","me","text_me","monitor","text_monitor","moon","text_moon","nose","text_nose","orb","text_orb","pants","text_pants","piano","text_piano","pillar","text_pillar","pipe","text_pipe","pixel","text_pixel","plane","text_plane","planet","text_planet","pumpkin","text_pumpkin","reed","text_reed","ring","text_ring","road","text_road","robot","text_robot","rock","text_rock","rocket","text_rocket","rose","text_rose","rubble","text_rubble","sax","text_sax","seed","text_seed","shell","text_shell","shirt","text_shirt","shovel","text_shovel","sign","text_sign","skull","text_skull","spike","text_spike","sprout","text_sprout","square","text_square","star","text_star","statue","text_statue","stick","text_stick","stump","text_stump","sun","text_sun","tile","text_tile","tower","text_tower","track","text_track","train","text_train","tree","text_tree","trees","text_trees","triangle","text_triangle","turnip","text_turnip","ufo","text_ufo","vine","text_vine","wall","text_wall","water","text_water","wind","text_wind","worm","text_worm","text_all","text_text","text_level","text_group","text_empty","text_not","text_is","text_and","text_has","text_eat","text_fear","text_follow","text_make","text_mimic","text_play","text_auto","text_right","text_up","text_left","text_down","text_red","text_orange","text_yellow","text_lime","text_green","text_cyan","text_blue","text_purple","text_pink","text_rosy","text_black","text_grey","text_silver","text_white","text_brown","text_best","text_sad","text_wonder","text_broken","text_chill","text_defeat","text_back","text_fall","text_fallright","text_fallup","text_fallleft","text_nudgedown","text_nudgeright","text_nudgeup","text_nudgeleft","text_turn","text_deturn","text_float","text_phantom","text_hide","text_hot","text_melt","text_more","text_move","text_open","text_shut","text_powered","text_power","text_pull","text_push","text_safe","text_shift","text_sink","text_sleep","text_still","text_lockeddown","text_lockedright","text_lockedup","text_lockedleft","text_stop","text_swap","text_tele","text_weak","text_win","text_word","text_you2","text_you","text_bonus","text_end","text_done","text_revert","text_idle","text_lonely","text_often","text_seldom","text_on","text_near","text_facing","text_without","text_above","text_below","text_feeling","cursor","text_cursor","text_select","text_a","text_b","text_c","text_d","text_e","text_f","text_g","text_h","text_i","text_j","text_k","text_l","text_m","text_n","text_o","text_p","text_q","text_r","text_s","text_t","text_u","text_v","text_w","text_x","text_y","text_z","text_0","text_1","text_2","text_3","text_4","text_5","text_6","text_7","text_8","text_9","text_sharp","text_flat"}
+editor_objlist_order = {"algae","text_algae","arrow","text_arrow","baba","text_baba","banana","text_banana","bat","text_bat","bee","text_bee","belt","text_belt","bird","text_bird","blob","text_blob","boat","text_boat","bog","text_bog","bolt","text_bolt","book","text_book","box","text_box","brick","text_brick","bubble","text_bubble","bucket","text_bucket","bug","text_bug","burger","text_burger","cake","text_cake","cart","text_cart","cash","text_cash","circle","text_circle","cliff","text_cliff","cloud","text_cloud","cog","text_cog","crab","text_crab","crystal","text_crystal","cup","text_cup","door","text_door","dot","text_dot","drink","text_drink","drum","text_drum","dust","text_dust","ear","text_ear","eye","text_eye","fence","text_fence","fire","text_fire","fish","text_fish","flag","text_flag","flower","text_flower","fofo","text_fofo","foliage","text_foliage","foot","text_foot","fort","text_fort","fruit","text_fruit","fungi","text_fungi","fungus","text_fungus","gate","text_gate","gem","text_gem","ghost","text_ghost","grass","text_grass","guitar","text_guitar","hand","text_hand","hedge","text_hedge","hihat","text_hihat","house","text_house","husk","text_husk","husks","text_husks","ice","text_ice","it","text_it","jelly","text_jelly","jiji","text_jiji","keke","text_keke","key","text_key","ladder","text_ladder","lamp","text_lamp","lava","text_lava","leaf","text_leaf","lift","text_lift","line","text_line","lizard","text_lizard","love","text_love","me","text_me","monitor","text_monitor","moon","text_moon","nose","text_nose","orb","text_orb","pants","text_pants","piano","text_piano","pillar","text_pillar","pipe","text_pipe","pixel","text_pixel","plane","text_plane","planet","text_planet","pumpkin","text_pumpkin","reed","text_reed","ring","text_ring","road","text_road","robot","text_robot","rock","text_rock","rocket","text_rocket","rose","text_rose","rubble","text_rubble","sax","text_sax","seed","text_seed","shell","text_shell","shirt","text_shirt","shovel","text_shovel","sign","text_sign","skull","text_skull","spike","text_spike","sprout","text_sprout","square","text_square","star","text_star","statue","text_statue","stick","text_stick","stump","text_stump","sun","text_sun","tile","text_tile","tower","text_tower","track","text_track","train","text_train","tree","text_tree","trees","text_trees","triangle","text_triangle","turnip","text_turnip","ufo","text_ufo","vine","text_vine","wall","text_wall","water","text_water","wind","text_wind","worm","text_worm","text_all","text_text","text_level","text_group","text_empty","text_not","text_is","text_and","text_has","text_eat","text_fear","text_follow","text_make","text_mimic","text_play","text_auto","text_right","text_up","text_left","text_down","text_red","text_orange","text_yellow","text_lime","text_green","text_cyan","text_blue","text_purple","text_pink","text_rosy","text_black","text_grey","text_silver","text_white","text_brown","text_best","text_sad","text_wonder","text_broken","text_chill","text_defeat","text_back","text_fall","text_fallright","text_fallup","text_fallleft","text_nudgedown","text_nudgeright","text_nudgeup","text_nudgeleft","text_turn","text_deturn","text_float","text_phantom","text_hide","text_hot","text_melt","text_more","text_move","text_open","text_shut","text_powered","text_power","text_pull","text_push","text_safe","text_shift","text_sink","text_sleep","text_still","text_lockeddown","text_lockedright","text_lockedup","text_lockedleft","text_stop","text_swap","text_tele","text_weak","text_win","text_word","text_you2","text_you","text_bonus","text_end","text_done","text_revert","text_idle","text_lonely","text_often","text_seldom","text_on","text_near","text_facing","text_without","text_above","text_below","text_feeling","cursor","text_cursor","text_select","text_a","text_b","text_c","text_d","text_e","text_f","text_g","text_h","text_i","text_j","text_k","text_l","text_m","text_n","text_o","text_p","text_q","text_r","text_s","text_t","text_u","text_v","text_w","text_x","text_y","text_z","text_0","text_1","text_2","text_3","text_4","text_5","text_6","text_7","text_8","text_9","text_sharp","text_flat"}
 
 editor_objlist = {
 	[1] = {
@@ -3784,5 +3784,62 @@ editor_objlist = {
 		layer = 20,
 		colour = {6, 1},
 		colour_active = {3, 4},
+	},
+	[379] = {
+		name = "blob",
+		unittype = "object",
+		tags = {"obstacle","danger"},
+		tiling = 1,
+		type = 0,
+		layer = 16,
+		colour = {5, 2},
+	},
+	[380] = {
+		name = "text_blob",
+		unittype = "text",
+		tags = {"text","obstacle","danger"},
+		tiling = -1,
+		type = 0,
+		layer = 20,
+		colour = {5, 1},
+		colour_active = {5, 2},
+	},
+	[381] = {
+		name = "drum",
+		unittype = "object",
+		tags = {"item","decorative","music"},
+		tiling = -1,
+		type = 0,
+		layer = 17,
+		colour = {2, 3},
+	},
+	[382] = {
+		name = "text_drum",
+		unittype = "text",
+		tags = {"text","item","decorative","music"},
+		tiling = -1,
+		type = 0,
+		layer = 20,
+		colour = {2, 2},
+		colour_active = {2, 3},
+	},
+	[383] = {
+		name = "hihat",
+		unittype = "object",
+		tags = {"item","decorative","music"},
+		tiling = -1,
+		type = 0,
+		layer = 17,
+		colour = {2, 4},
+	},
+	[384] = {
+		name = "text_hihat",
+		unittype = "text",
+		tags = {"text","item","decorative","music"},
+		tiling = -1,
+		type = 0,
+		layer = 20,
+		colour = {6, 1},
+		colour_active = {2, 4},
 	},
 }
