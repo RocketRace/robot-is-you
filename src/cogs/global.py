@@ -1109,7 +1109,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
         Levels are searched for in the following order:
         * Checks if the input matches a level ID (e.g. "20level")
-        * Checks if the input matches a custom level code (e.g. "ABCD-1234")
         * Checks if the input matches a level number (e.g. "space-3" or "lake-extra 1")
         * Checks if the input matches a level name (e.g. "further fields")
         * Checks if the input is the ID of a world (e.g. "cavern")
