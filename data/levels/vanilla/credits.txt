@@ -20,7 +20,7 @@ $4,2Guilherme Töws $4,0-$4,2 Hayden Scott-Baron
 $4,2Henrique de Lima $4,0-$4,2 Ian MacLarty
 $4,2Ian Snyder $4,0-$4,2 Jack Kutilek $4,0-$4,2 Jake Eakle
 $4,2Jan Willem Nijman $4,0-$4,2 Jonah $4,0-$4,2 Jonathan Blow
-$4,2Jonathan Thomas $4,0-$4,2 Kevin Simmons
+$4,2Jonathan Thomas $4,0-$4,2 Jussi-Pekka Neilikka $4,0-$4,2 Kevin Simmons
 $4,2knexator $4,0-$4,2 Leon Arnott $4,0-$4,2 Lukas Meller
 $4,2Lyndsey Jane Moulds $4,0-$4,2 Marcos Donnantuoni
 $4,2Mathias Kærlev $4,0-$4,2 Matthew VanDevander
@@ -32,8 +32,8 @@ $4,2NotAJumbleOfNumbers $4,0-$4,2 Pedro PSI
 $4,2Randomnine $4,0-$4,2 Rico $4,0-$4,2 Robert Pfeiffer
 $4,2Robert Yang $4,0-$4,2 Ryan Gerstein $4,0-$4,2 silverhawke
 $4,2SirNiko $4,0-$4,2 Skalmantas Šimėnas $4,0-$4,2 Snowquill
-$4,2Stephen Lavelle $4,0-$4,2 Tara Heather Kelly
-$4,2Terry Cavanagh $4,0-$4,2 Thomas Goos $4,0-$4,2 Tijmen Tio
+$4,2Stephen Lavelle $4,0-$4,2 SysL $4,0-$4,2 Tara Heather Kelly
+$4,2Terry Cavanagh $4,0-$4,2 TetraxZ $4,0-$4,2 Thomas Goos $4,0-$4,2 Tijmen Tio
 $4,2Tyriq Plummer $4,0-$4,2 UltraLuigi $4,0-$4,2 Valen Kostich
 $4,2Victor Selnæs Breum $4,0-$4,2 winterbeak $4,0-$4,2 Zaphos
  
