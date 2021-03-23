@@ -236,7 +236,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     render_frame.paste(overlap, mask=mask)
             # bg color
             elif background is not None:
-                palette_img = Image.open(f"data/palettes/{palette}.png").convert("RGBA") # ensure alpha channel exists, even if blank
+                palette_img = Image.open(f"data/palettes/{palette}.png").convert("RGB") # ensure alpha channel exists, even if blank
                 palette_color = palette_img.getpixel(background)
                 render_frame = Image.new("RGBA", (total_width, total_height), color=palette_color)
             # neither
@@ -330,6 +330,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                             elif '/' in variant:
                                 try:
                                     tx, ty = tuple(map(int, variant.split('/')))
+                                    assert 0 <= tx <= 7
+                                    assert 0 <= ty <= 5
                                     final.color = tx,ty
                                     delete.append(i)
                                 except:
@@ -897,8 +899,15 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             palette = "default"
             to_delete = []
             for flag, x, y in potential_flags:
-                if re.fullmatch(r"--background|-b|background:true", flag):
-                    background = (0, 4)
+                bg_match = re.fullmatch(r"(--background|-b)(=(\d)/(\d))?", flag)
+                if bg_match:
+                    if bg_match.group(3) is not None:
+                        tx, ty = int(bg_match.group(3)), int(bg_match.group(4))
+                        if not (0 <= tx <= 7 and 0 <= ty <= 5):
+                            return await self.bot.error(ctx, "The provided background color is invalid.")
+                        background = tx, ty
+                    else:
+                        background = (0, 4)
                     to_delete.append((x, y))
                     continue
                 flag_match = re.fullmatch(r"(--palette=|-p=|palette:)(\w+)", flag)
