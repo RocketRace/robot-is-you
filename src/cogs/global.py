@@ -477,11 +477,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     direction = 0
                                 elif variant == "0":
                                     final.variant = variant
-                                else: 
-                                    if is_level:
-                                        direction = 0
-                                    else:
-                                        raise FileNotFoundError(word)
+                                elif is_level:
+                                    direction = 0
+                                else:
+                                    raise FileNotFoundError(word)
                             elif tiling == "0":
                                 if variant in ("r", "right"):
                                     direction = 0
@@ -493,13 +492,19 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     direction = 3
                                 elif variant in ( "0", "8", "16", "24"):
                                     final.variant = variant
+                                elif is_level:
+                                    direction = 0
                                 else:
-                                    if is_level:
-                                        direction = 0
-                                    else:
-                                        raise FileNotFoundError(word)
+                                    raise FileNotFoundError(word)
                             elif tiling == "1":
-                                if is_level:
+                                if variant in (
+                                    "0", "1", "2", "3",
+                                    "4", "5", "6", "7",
+                                    "8", "9", "10", "11",
+                                    "12", "13", "14", "15",
+                                ):
+                                    final.variant = variant
+                                elif is_level:
                                     direction = 0
                                 else:
                                     raise FileNotFoundError(word)
@@ -521,11 +526,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     "23", "24", "25", "26", "27",
                                 ): 
                                     final.variant = variant
+                                elif is_level:
+                                    direction = 0
                                 else:
-                                    if is_level:
-                                        direction = 0
-                                    else:
-                                        raise FileNotFoundError(word)
+                                    raise FileNotFoundError(word)
                             elif tiling == "3":
                                 if variant in ("r", "right"):
                                     direction = 0
@@ -542,11 +546,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     "24", "25", "26", "27",
                                 ): 
                                     final.variant = variant
+                                elif is_level:
+                                    direction = 0
                                 else:
-                                    if is_level:
-                                        direction = 0
-                                    else:
-                                        raise FileNotFoundError(word)
+                                    raise FileNotFoundError(word)
                             elif tiling == "4":
                                 if variant in ("r", "right"):
                                     direction = 0
@@ -554,11 +557,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     "0", "1", "2", "3", 
                                 ):
                                     final.variant = variant
+                                elif is_level:
+                                    direction = 0
                                 else:
-                                    if is_level:
-                                        direction = 0
-                                    else:
-                                        raise FileNotFoundError(word)
+                                    raise FileNotFoundError(word)
 
                         # Compute the final variant, if not already set
                         if tiling != "1":
