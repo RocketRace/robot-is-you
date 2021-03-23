@@ -517,6 +517,14 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     direction = 2
                                 elif variant in ("d", "down"):
                                     direction = 3
+                                elif variant == "a0": 
+                                    animation_frame = 0
+                                elif variant == "a1": 
+                                    animation_frame = 1
+                                elif variant == "a2": 
+                                    animation_frame = 2
+                                elif variant == "a3": 
+                                    animation_frame = 3
                                 elif variant in ("s", "sleep"): 
                                     animation_frame = -1
                                 elif variant in (
@@ -539,6 +547,12 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     direction = 2
                                 elif variant in ("d", "down"):
                                     direction = 3
+                                elif variant == "a1": 
+                                    animation_frame = 1
+                                elif variant == "a2": 
+                                    animation_frame = 2
+                                elif variant == "a3": 
+                                    animation_frame = 3
                                 elif variant in (
                                     "0", "1", "2", "3", 
                                     "8", "9", "10", "11",
@@ -553,6 +567,12 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                             elif tiling == "4":
                                 if variant in ("r", "right"):
                                     direction = 0
+                                elif variant == "a1": 
+                                    animation_frame = 1
+                                elif variant == "a2": 
+                                    animation_frame = 2
+                                elif variant == "a3": 
+                                    animation_frame = 3
                                 elif variant in (
                                     "0", "1", "2", "3", 
                                 ):
@@ -563,8 +583,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     raise FileNotFoundError(word)
 
                         # Compute the final variant, if not already set
-                        if tiling != "1":
-                            final.variant = str(final.variant or (8 * direction + animation_frame) % 32)
+                        final.variant = str(final.variant or (8 * direction + animation_frame) % 32)
 
                         # Finally, push the sprite to the grid
                         grid[y][x][z] = final
