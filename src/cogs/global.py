@@ -330,15 +330,22 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                             elif '/' in variant:
                                 try:
                                     tx, ty = tuple(map(int, variant.split('/')))
-                                    assert 0 <= tx <= 6
-                                    assert 0 <= ty <= 4
                                     final.color = tx,ty
                                     delete.append(i)
                                 except:
                                     raise FileNotFoundError(word)
                             # META SPRITES
-                            elif variant == "meta":
+                            elif variant in ("meta", "m"):
                                 final.meta_level += 1
+                                delete.append(i)
+                            elif variant == "m1":
+                                final.meta_level = 1
+                                delete.append(i)
+                            elif variant == "m2":
+                                final.meta_level = 2
+                                delete.append(i)
+                            elif variant == "m3":
+                                final.meta_level = 3
                                 delete.append(i)
                         delete.reverse()
                         for i in delete:
@@ -371,13 +378,13 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                             if tile.startswith("text_"):
                                 final.custom = True
                                 if "property" in variants:
-                                    if "right" in variants:
+                                    if "right" in variants or "r" in variants:
                                         final.style = "propertyright"
-                                    elif "up" in variants:
+                                    elif "up" in variants or "u" in variants:
                                         final.style = "propertyup"
-                                    elif "left" in variants:
+                                    elif "left" in variants or "l" in variants:
                                         final.style = "propertyleft"
-                                    elif "down" in variants:
+                                    elif "down" in variants or "d" in variants:
                                         final.style = "propertydown"
                                     else:
                                         final.style = "property"
