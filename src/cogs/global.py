@@ -14,66 +14,9 @@ from json        import load
 from os          import listdir
 from PIL         import Image, ImageChops, ImageFilter, ImageDraw
 from string      import ascii_lowercase
-from src.utils   import *
+from src.utils   import Tile, cached_open, constants
 from time        import time
 
-valid_colors = {
-    "maroon":(2, 1), # Not actually a word in the game
-    "red":(2, 2),
-    "orange":(2, 3),
-    "yellow":(2, 4),
-    "lime":(5, 3),
-    "green":(5, 2),
-    "cyan":(1, 4),
-    "blue":(1, 3),
-    "purple":(3, 1),
-    "pink":(4, 1),
-    "rosy":(4, 2),
-    "grey":(0, 1),
-    "black":(0, 4),
-    "silver":(0, 2),
-    "white":(0, 3),
-    "brown":(6, 1),
-}
-
-# boosh
-inactive_colors = {
-    (0, 0): (0, 4),
-    (1, 0): (0, 4),
-    (2, 0): (1, 1),
-    (3, 0): (0, 4),
-    (4, 0): (0, 4),
-    (5, 0): (6, 3),
-    (6, 0): (6, 3),
-    (0, 1): (1, 1),
-    (1, 1): (1, 0),
-    (2, 1): (2, 0),
-    (3, 1): (3, 0),
-    (4, 1): (4, 0),
-    (5, 1): (5, 0),
-    (6, 1): (6, 0),
-    (0, 2): (0, 1),
-    (1, 2): (1, 1),
-    (2, 2): (2, 1),
-    (3, 2): (1, 1),
-    (4, 2): (4, 1),
-    (5, 2): (5, 1),
-    (6, 2): (6, 1),
-    (0, 3): (0, 1),
-    (1, 3): (1, 2),
-    (2, 3): (2, 2),
-    (3, 3): (4, 3),
-    (4, 3): (1, 0),
-    (5, 3): (5, 1),
-    (6, 3): (0, 4),
-    (0, 4): (6, 4),
-    (1, 4): (1, 2),
-    (2, 4): (6, 1),
-    (3, 4): (6, 0),
-    (4, 4): (3, 2),
-    (5, 4): (5, 2),
-    (6, 4): (6, 4),
-}
 
 def flatten(items, seqtypes=(list, tuple)):
     '''Flattens nested iterables, of speficied types.
@@ -381,8 +324,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                         delete = []
                         for i, variant in enumerate(variants):
                             # COLORS
-                            if valid_colors.get(variant) is not None:
-                                final.color = valid_colors.get(variant)
+                            if constants.valid_colors.get(variant) is not None:
+                                final.color = constants.valid_colors.get(variant)
                                 delete.append(i)
                             elif '/' in variant:
                                 try:
@@ -409,15 +352,15 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     if final.color is None or tile_data["color"] == final.color:
                                         final.color = tuple(map(int, tile_data["color"]))
                                     else:
-                                        final.color = inactive_colors[final.color or (0, 3)]
+                                        final.color = constants.inactive_colors[final.color or (0, 3)]
                                     variants.remove("inactive")
                                 elif tile_data:
                                     if final.color is None:
                                         final.color = tuple(map(int, tile_data["color"]))
-                                    final.color = inactive_colors[final.color or (0, 3)]
+                                    final.color = constants.inactive_colors[final.color or (0, 3)]
                                     variants.remove("inactive")
                                 else:
-                                    final.color = inactive_colors[final.color or (0, 3)]
+                                    final.color = constants.inactive_colors[final.color or (0, 3)]
                                     variants.remove("inactive")
                                     
 
@@ -647,10 +590,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 int_color = int(real_color, base=16)
                 byte_color = (int_color >> 16, (int_color & 255 << 8) >> 8, int_color & 255)
                 tile_color = (byte_color[0] / 256, byte_color[1] / 256, byte_color[2] / 256)
-            elif real_color in valid_colors:
+            elif real_color in constants.valid_colors:
                 try:
                     palette_img = Image.open(f"data/palettes/{palette}.png").convert("RGB")
-                    color_index = valid_colors[real_color]
+                    color_index = constants.valid_colors[real_color]
                     tile_color = tuple(p/256 for p in palette_img.getpixel(color_index))
                 except FileNotFoundError:
                     return await self.bot.error(ctx, f"The palette `{palette}` is not valid.")

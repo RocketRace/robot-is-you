@@ -3,6 +3,7 @@ import re
 from datetime    import datetime
 from discord.ext import commands
 from os          import listdir
+from src.utils   import constants
 
 class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
     def __init__(self, bot):
@@ -191,14 +192,15 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
 
         # Does the tile exist?
         data = self.bot.get_cog("Admin").tile_data.get(clean_tile)
+        suffix = "It also supports the following colors:\n" + \
+            "".join(f"`:{name}`, " for name in constants.valid_colors) + \
+            "as well as the following filters:\n`:meta`, `:hide`."
         if data is None:
             if clean_tile.startswith("text_"):
                 output = [
                     "This text tile doesn't exist, but you might be able to auto-generate it.",
                     "Auto-generated sprites support the `:noun`, `:letter`, and `:property` variants.",
-                    "In addition, they support the following colors:" + \
-                    "`:red`, `:orange`, `:yellow`, `:lime`, `:green`, `:cyan`, `:blue`, `:purple`, `:pink`, `:rosy`, `:white`, `:silver`, `:grey`, `:black`, `:brown`, `:maroon`",
-                    "as well as the following filters: `:meta`, `:hide`."
+                    suffix
                 ]
                 await self.bot.send(ctx, f"Valid sprite variants for '{clean_tile}'\n" + "\n".join(output) + "\n")
             else:
@@ -281,9 +283,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         choice = output[tiling]
         if clean_tile.startswith("text_"):
             choice.append("It can also be auto-generated, supporting the `:noun`, `:letter`, and `:property` variants.",)
-        choice.append("It also supports all of the following colors: " + \
-        "`:red`, `:orange`, `:yellow`, `:lime`, `:green`, `:cyan`, `:blue`, `:purple`, `:pink`, `:rosy`, `:white`, `:silver`, `:grey`, `:black`, `:brown`, `:maroon`")
-        choice.append("As well as the following filters: `hide`, `meta`.")
+        choice.append(suffix)
 
         # Output
         await self.bot.send(ctx, f"Valid sprite variants for '{clean_tile}'\n" + "\n".join(choice) + "\n")
