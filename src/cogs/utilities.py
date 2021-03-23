@@ -193,19 +193,15 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         # Does the tile exist?
         data = self.bot.get_cog("Admin").tile_data.get(clean_tile)
         suffix = "It also supports the following colors:\n" + \
-            "".join(f"`:{name}`, " for name in constants.valid_colors) + \
-            "as well as the following filters:\n`:meta`, `:hide`."
+            ", ".join(f"`:{name}`" for name in constants.valid_colors) + \
+            ",\nas well as the following filters:\n`:meta`, `:hide`."
         if data is None:
-            if clean_tile.startswith("text_"):
-                output = [
-                    "This text tile doesn't exist, but you might be able to auto-generate it.",
-                    "Auto-generated sprites support the `:noun`, `:letter`, and `:property` variants.",
-                    suffix
-                ]
-                await self.bot.send(ctx, f"Valid sprite variants for '{clean_tile}'\n" + "\n".join(output) + "\n")
-            else:
-                await self.bot.error(ctx, f"Could not find a tile with name '{clean_tile}'.")
-            return
+            output = [
+                f"This tile doesn't exist, but you might be able to auto-generate the text tile `text_{clean_tile}`.",
+                "Auto-generated text supports the `:noun`, `:letter`, and `:property` variants.",
+                suffix
+            ]
+            return await self.bot.send(ctx, f"Valid sprite variants for '{clean_tile}'\n" + "\n".join(output) + "\n")
         
         # Determines the tiling type of the tile
         tiling = data.get("tiling")
