@@ -11,14 +11,13 @@ valid_colors = {
     "pink":(4, 1),
     "rosy":(4, 2),
     "grey":(0, 1),
-    "gray":(0, 1),
+    "gray":(0, 1), # alias
     "black":(0, 4),
     "silver":(0, 2),
     "white":(0, 3),
     "brown":(6, 1),
 }
 
-# boosh
 inactive_colors = {
     (0, 0): (0, 4),
     (1, 0): (0, 4),
@@ -56,3 +55,8 @@ inactive_colors = {
     (5, 4): (5, 2),
     (6, 4): (6, 4),
 }
+
+# limits
+max_stack = 4
+max_meta_depth = 3
+max_tiles = 256

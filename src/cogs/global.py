@@ -85,7 +85,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         if not isinstance(fp, str): fp.seek(0)
 
     def make_meta(self, name, img, meta_level):
-        if meta_level > 3:
+        if meta_level > constants.max_meta_depth:
             raise ValueError(name, meta_level, "meta")
         elif meta_level == 0:
             return img
@@ -340,15 +340,14 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                             elif variant in ("meta", "m"):
                                 final.meta_level += 1
                                 delete.append(i)
-                            elif variant == "m1":
-                                final.meta_level = 1
-                                delete.append(i)
-                            elif variant == "m2":
-                                final.meta_level = 2
-                                delete.append(i)
-                            elif variant == "m3":
-                                final.meta_level = 3
-                                delete.append(i)
+                            else:
+                                match = re.fullmatch("m(\d)", variant)
+                                if match:
+                                    level = int(match.group(1))
+                                    if level > constants.max_meta_depth:
+                                        raise FileNotFoundError
+                                    final.meta_level = level
+                                    delete.append(i)
                         delete.reverse()
                         for i in delete:
                             variants.pop(i)
@@ -593,7 +592,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
     @commands.group(invoke_without_command=True)
     @commands.cooldown(5, 8, commands.BucketType.channel)
-    async def make(self, ctx, text, color = None, style = "noun", meta_level = "0", direction = "none", palette = "default"):
+    async def make(self, ctx, text, color = None, style = "noun", meta_level: int = 0, direction = "none", palette = "default"):
         '''Generates a custom text sprite. 
         
         Use "/" in the text to force a line break.
@@ -602,7 +601,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
         The `style` argument may be "noun", "property", or "letter".
         
-        The `meta_level` argument may be "0", "1", "2" or "3", and applies a metatext filter to the sprite.
+        The `meta_level` argument should be some number, and applies a metatext filter to the sprite. It defaults to 0.
 
         The `direction` argument may be "none", "right", "up", "left", or "down". 
         This can be used with the "property" style to generate directional properties (such as FALL or NUDGE).
@@ -638,8 +637,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         if "property" == style:
             if direction in ("up", "right", "left", "down"):
                 style = style + direction
-        if meta_level not in "0123":
-            return await self.bot.error(ctx, f"The meta level `{meta_level}` is invalid. It must be one of `0`, `1`, `2` or `3`.")
+        if not 0 <= meta_level <= constants.max_meta_depth:
+            return await self.bot.error(ctx, f"The meta level `{meta_level}` is invalid. It must be one of: " + ", ".join(f"`{n}`" for n in range(constants.max_meta_depth + 1)) + ".")
         try:
             meta_level = int(meta_level)
             buffer = BytesIO()
@@ -667,20 +666,20 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         
     @make.command()
     @commands.cooldown(5, 8, type=commands.BucketType.channel)
-    async def raw(self, ctx, text, style="noun", meta_level = "0", direction = "none"):
+    async def raw(self, ctx, text, style="noun", meta_level: int = 0, direction = "none"):
         '''Returns a zip archive of the custom tile.
 
         A raw sprite has no color!
 
         The `style` argument may be "noun", "property", or "letter".
         
-        The `meta_level` argument may be "0", "1", "2" or "3".
+        The `meta_level` argument should be a number.
         '''
         real_text = text.lower()
         if style not in ("noun", "property", "letter"):
             return await self.bot.error(ctx, f"`{style}` is not a valid style. It must be one of `noun`, `property` or `letter`.")
-        if meta_level not in "0123":
-            return await self.bot.error(ctx, f"`{meta_level}` is not a valid meta level. It must be one of `0`, `1`, `2` or `3`.")
+        if not 0 <= meta_level <= constants.max_meta_depth:
+            return await self.bot.error(ctx, f"The meta level `{meta_level}` is invalid. It must be one of: " + ", ".join(f"`{n}`" for n in range(constants.max_meta_depth + 1)) + ".")
         if direction not in ("none", "up", "right", "left", "down"):
             return await self.bot.error(ctx, f"`{direction}` is not a valid direction. It must be one of `none`, `up`, `right`, `left` or `down`.")
         if style == "property":
@@ -864,7 +863,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     async def render_tiles(self, ctx, *, objects, rule):
         '''Performs the bulk work for both `tile` and `rule` commands.'''
         async with ctx.typing():
-            render_limit = 100
             tiles = objects.lower().strip().replace("\\", "")
             if tiles == "":
                 param = Parameter("objects", Parameter.KEYWORD_ONLY)
@@ -937,8 +935,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                         row[i] = [stack]
                     # Limit how many tiles can be rendered in one space
                     height = len(row[i])
-                    if height > 3 and ctx.author.id != self.bot.owner_id:
-                        return await self.bot.error(ctx, f"Stack too high ({height}).", "You may only stack up to 3 tiles on one space.")
+                    if height > constants.max_stack and ctx.author.id != self.bot.owner_id:
+                        return await self.bot.error(ctx, f"Stack too high ({height}).", f"You may only stack up to {constants.max_stack} tiles on one space.")
 
             # Prepends "text_" to words if invoked under the rule command
             if rule:
@@ -954,8 +952,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             # Don't proceed if the request is too large.
             # (It shouldn't be that long to begin with because of Discord's 2000 character limit)
             area = width * height
-            if area > render_limit and ctx.author.id != self.bot.owner_id:
-                return await self.bot.error(ctx, f"Too many tiles ({area}).", f"You may only render up to {render_limit} tiles at once, including empty tiles.")
+            if area > constants.max_tiles and ctx.author.id != self.bot.owner_id:
+                return await self.bot.error(ctx, f"Too many tiles ({area}).", f"You may only render up to {constants.max_tiles} tiles at once, including empty tiles.")
             elif area == 0:
                 return await self.bot.error(ctx, f"Can't render nothing.")
 
@@ -1002,7 +1000,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 if reason == "zero":
                     return await self.bot.error(ctx, f"Cannot apply variants to an empty tile.")
                 if reason == "meta":
-                    return await self.bot.error(ctx, "You can only go three layers of meta deep.")
+                    return await self.bot.error(ctx, f"You can only go {constants.max_meta_depth} layers of meta deep.")
                 if reason == "letter":
                     return await self.bot.error(ctx, "You can only apply the letter style for 1 or 2 letter words.")
                 return await self.bot.error(ctx, f"The tile `{tile}` was not found, and could not be automatically generated.")
