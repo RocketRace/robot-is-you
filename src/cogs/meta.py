@@ -1,4 +1,6 @@
+from __future__ import annotations
 import asyncio
+from typing import List, Optional
 import discord
 import itertools
 
@@ -11,15 +13,11 @@ from time         import time
 # Custom help command implementation
 class PrettyHelpCommand(commands.DefaultHelpCommand):
 
-    def __init__(self, embed_color, **options):
+    def __init__(self, embed_color: int, **kwargs):
         self.embed_color = embed_color
-        super().__init__(**options)
+        super().__init__(**kwargs)
 
-    async def send_error_message(self, error):
-        # No "no command found" messages
-        return
-
-    async def send_pages(self, note="", inline=False):
+    async def send_pages(self, note: str = "", inline: bool = False):
         # Overwrite the send method to send each page in an embed instead
         destination = self.get_destination()
 
@@ -47,7 +45,7 @@ class PrettyHelpCommand(commands.DefaultHelpCommand):
             
             await destination.send(embed=formatted)
 
-    def add_indented_commands(self, commands, *, heading, max_size=None):
+    def add_indented_commands(self, commands: List[commands.Command], *, heading: str, max_size: Optional[int] = None):
         if not commands:
             return
 
@@ -68,7 +66,7 @@ class PrettyHelpCommand(commands.DefaultHelpCommand):
             # <description> portion
             self.paginator.add_line(bot.description, empty=True)
 
-        def get_category(command, *, no_category='\u200b**{0.no_category}**'.format(self)):
+        def get_category(command, *, no_category: str = f'\u200b**{self.no_category}**') -> str:
             cog = command.cog
             return "**" + cog.qualified_name + '**' if cog is not None else no_category
 
@@ -85,12 +83,12 @@ class PrettyHelpCommand(commands.DefaultHelpCommand):
 
         await self.send_pages(note=note, inline=True)
 
-    def get_ending_note(self):
+    def get_ending_note(self) -> str:
         """Returns help command's ending note. This is mainly useful to override for i18n purposes."""
         command_name = self.invoked_with
         return "Type {0}{1} command for more info on a command.".format(self.clean_prefix, command_name)
 
-    def get_command_signature(self, command):
+    def get_command_signature(self, command: commands.Command) -> str:
         parent = command.full_parent_name
         if len(command.aliases) > 0:
             aliases = '|'.join(command.aliases)
@@ -104,7 +102,7 @@ class PrettyHelpCommand(commands.DefaultHelpCommand):
         return '`%s%s %s`' % (self.clean_prefix, alias, command.signature)
 
 class MetaCog(commands.Cog, name="Other Commands"):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
         self._original_help_command = bot.help_command
         # Sets up the help command
@@ -166,7 +164,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
     
     @commands.command(aliases=["interpret"])
     @commands.cooldown(5, 8, type=commands.BucketType.channel)
-    async def babalang(self, ctx, program, *program_input):
+    async def babalang(self, ctx, program: str, *program_input: str):
         '''Interpret a [Babalang v1.1.1](https://esolangs.org/wiki/Babalang) program.
         
         The first argument must be the source code for the program, escaped in quotes:
@@ -271,5 +269,5 @@ class MetaCog(commands.Cog, name="Other Commands"):
     def cog_unload(self):
         self.bot.help_command = self._original_help_command
 
-def setup(bot):
+def setup(bot: commands.Bot):
     bot.add_cog(MetaCog(bot))

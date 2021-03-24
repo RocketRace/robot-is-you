@@ -1,3 +1,4 @@
+from __future__ import annotations
 import discord
 import re
 from datetime    import datetime
@@ -6,7 +7,7 @@ from os          import listdir
 from src.utils   import constants
 
 class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.command()
@@ -285,5 +286,5 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         await self.bot.send(ctx, f"Valid sprite variants for '{clean_tile}'\n" + "\n".join(choice) + "\n")
 
 
-def setup(bot):
+def setup(bot: commands.Bot):
     bot.add_cog(UtilityCommandsCog(bot))

@@ -1,5 +1,5 @@
-import aiohttp
-import os
+from __future__ import annotations
+from typing import BinaryIO, List, Optional, Tuple, TypeVar, Union
 import discord
 import random
 import re
@@ -17,17 +17,7 @@ from string      import ascii_lowercase
 from src.utils   import Tile, cached_open, constants
 from time        import time
 
-
-def flatten(items, seqtypes=(list, tuple)):
-    '''Flattens nested iterables, of speficied types.
-    Via https://stackoverflow.com/a/10824086
-    '''
-    for i, _ in enumerate(items):
-        while i < len(items) and isinstance(items[i], seqtypes):
-            items[i:i+1] = items[i]
-    return items
-
-def try_index(string, value):
+def try_index(string: str, value: str) -> int:
     '''Returns the index of a substring within a string.
     Returns -1 if not found.
     '''
@@ -42,7 +32,7 @@ class SplittingException(BaseException):
     pass
 
 # Splits the "text_x,y,z..." shortcuts into "text_x", "text_y", ...
-def split_commas(grid, prefix):
+def split_commas(grid: List[List[str]], prefix: str):
     for row in grid:
         to_add = []
         for i, word in enumerate(row):
@@ -59,7 +49,7 @@ def split_commas(grid, prefix):
     return grid
 
 class GlobalCog(commands.Cog, name="Baba Is You"):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
         with open("config/leveltileoverride.json") as f:
             j = load(f)
@@ -70,7 +60,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         '''Only if the bot is not loading assets'''
         return not self.bot.loading
 
-    def save_frames(self, frames, fp):
+    def save_frames(self, frames: List[Image.Image], fp: Union[str, BinaryIO]):
         '''Saves a list of images as a gif to the specified file path.'''
         frames[0].save(fp, "GIF",
             save_all=True,
@@ -84,7 +74,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         )
         if not isinstance(fp, str): fp.seek(0)
 
-    def make_meta(self, name, img, meta_level):
+    def make_meta(self, name: str, img: Image.Image, meta_level: int) -> Image.Image:
         if meta_level > constants.max_meta_depth:
             raise ValueError(name, meta_level, "meta")
         elif meta_level == 0:
@@ -111,7 +101,19 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         return final
         
 
-    def magick_images(self, word_grid, width, height, *, palette="default", images=None, image_source="vanilla", out="target/renders/render.gif", background=None, rand=False):
+    def magick_images(
+        self,
+        word_grid: List[List[List[Tile]]],
+        width: int,
+        height: int,
+        *,
+        palette: str = "default",
+        images: Optional[List[Image.Image]] = None,
+        image_source: str = "vanilla",
+        out: str = "target/renders/render.gif",
+        background: Optional[Tuple[int, int]] = None,
+        rand: bool = False
+    ):
         '''Takes a list of Tile objects and generates a gif with the associated sprites.
 
         out is a file path or buffer. Renders will be saved there, otherwise to `target/renders/render.gif`.
@@ -273,7 +275,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
         self.save_frames(frames, out)
 
-    def handle_variants(self, grid, *, tile_borders=False, is_level=False, palette="default"):
+    def handle_variants(self, grid: List[List[List[str]]], *, tile_borders: bool = False, is_level: bool = False, palette: str = "default") -> List[List[List[Tile]]]:
         '''Appends variants to tiles in a grid.
 
         Returns a grid of `Tile` objects.
@@ -316,6 +318,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                         
                         # Certain tiles from levels are overridden with other tiles
                         tile_data = self.bot.get_cog("Admin").tile_data.get(tile)
+                        print(tile, is_level)
                         if is_level:
                             if self.level_tile_override.get(tile) is not None:
                                 tile_data = self.level_tile_override[tile]
@@ -592,7 +595,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
     @commands.group(invoke_without_command=True)
     @commands.cooldown(5, 8, commands.BucketType.channel)
-    async def make(self, ctx, text, color = None, style = "noun", meta_level: int = 0, direction = "none", palette = "default"):
+    async def make(self, ctx, text: str, color: str = "", style: str = "noun", meta_level: int = 0, direction: str = "none", palette = "default"):
         '''Generates a custom text sprite. 
         
         Use "/" in the text to force a line break.
@@ -609,7 +612,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         The `palette` argument can be set to the name of a palette.
         '''
         # These colors are based on the default palette
-        if color is not None:
+        if color:
             real_color = color.lower()
             if real_color.startswith("#"): 
                 int_color = int(real_color[1:], base=16) & (2 ** 24 - 1)
@@ -666,7 +669,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         
     @make.command()
     @commands.cooldown(5, 8, type=commands.BucketType.channel)
-    async def raw(self, ctx, text, style="noun", meta_level: int = 0, direction = "none"):
+    async def raw(self, ctx, text: str, style: str = "noun", meta_level: int = 0, direction: str = "none"):
         '''Returns a zip archive of the custom tile.
 
         A raw sprite has no color!
@@ -716,7 +719,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 return await self.bot.error(ctx, "You can only apply the letter style for 1 or 2 letter words.")
             return await self.bot.error(ctx, f"The text `{text}` could not be generated.")
 
-    def generate_tile(self, text, color, style, meta_level, seed=None):
+    def generate_tile(self, text: str, color: Tuple[int, int], style: str, meta_level: int, seed: Optional[int] = None) -> List[Image.Image]:
         '''
         Custom tile => rendered custom tile
         '''
@@ -860,7 +863,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         
         return images
 
-    async def render_tiles(self, ctx, *, objects, rule):
+    async def render_tiles(self, ctx, *, objects: str, rule: bool):
         '''Performs the bulk work for both `tile` and `rule` commands.'''
         async with ctx.typing():
             tiles = objects.lower().strip().replace("\\", "")
@@ -1024,7 +1027,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
     @commands.command()
     @commands.cooldown(5, 8, type=commands.BucketType.channel)
-    async def rule(self, ctx, *, objects = ""):
+    async def rule(self, ctx, *, objects: str = ""):
         '''Renders the text tiles provided. 
         
         If not found, the bot tries to auto-generate them! (See the `make` command for more.)
@@ -1054,7 +1057,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     # Generates an animated gif of the tiles provided, using the default palette
     @commands.command()
     @commands.cooldown(5, 8, type=commands.BucketType.channel)
-    async def tile(self, ctx, *, objects = ""):
+    async def tile(self, ctx, *, objects: str = ""):
         '''Renders the tiles provided.
 
        **Flags**
@@ -1082,7 +1085,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
     @commands.cooldown(5, 8, commands.BucketType.channel)
     @commands.command(name="level")
-    async def _level(self, ctx, *, query):
+    async def _level(self, ctx, *, query: str):
         '''Renders the given Baba Is You level.
 
         Levels are searched for in the following order:
@@ -1253,5 +1256,5 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             # Send the result
             await ctx.send(formatted, file=gif, allowed_mentions=mentions)
 
-def setup(bot):
+def setup(bot: commands.Bot):
     bot.add_cog(GlobalCog(bot))

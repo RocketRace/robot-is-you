@@ -1,3 +1,4 @@
+from __future__ import annotations
 import discord
 import sys
 import traceback
@@ -10,16 +11,16 @@ By EeviePy on GitHub: https://gist.github.com/EvieePy/7822af90858ef65012ea500bce
 """
 
 class CommandErrorHandler(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.webhook_id = bot.webhook_id
         self.logger = None
 
-    async def setup_logger(self, webhook_id):
+    async def setup_logger(self, webhook_id: int):
         return await self.bot.fetch_webhook(webhook_id)
 
     @commands.Cog.listener()
-    async def on_error(self, ctx, error):
+    async def on_error(self, ctx: commands.Context, error: Exception):
         if self.logger is None:
             self.logger = await self.setup_logger(self.webhook_id)
 
@@ -42,7 +43,7 @@ class CommandErrorHandler(commands.Cog):
 
     
     @commands.Cog.listener()
-    async def on_command_error(self, ctx, error):
+    async def on_command_error(self, ctx: commands.Context, error: Exception):
         """The event triggered when an error is raised while invoking a command.
         ctx   : Context
         error : Exception"""
@@ -165,5 +166,5 @@ class CommandErrorHandler(commands.Cog):
         print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
-def setup(bot):
+def setup(bot: commands.Bot):
     bot.add_cog(CommandErrorHandler(bot))

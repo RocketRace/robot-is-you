@@ -1,4 +1,5 @@
-import asyncio
+from __future__ import annotations
+from typing import Optional
 import discord
 import jishaku
 import logging
@@ -7,17 +8,16 @@ import sys
 from datetime     import datetime
 from discord.ext  import commands
 from json         import load
-from timeit       import timeit
 
 # Uses a custom bot class
 class BabaBot(commands.Bot):
     # Custom send that sends content in an embed
     # Note that due to AllowedMentions, mentions do not have to be "sanitized"
-    async def send(self, ctx, content, embed=None, tts=False, file=None):
+    async def send(self, ctx: commands.Context, content: str, embed: Optional[discord.Embed] = None, **kwargs) -> discord.Message:
         if len(content) > 2000:
             content = content[:1963] + " [...] \n\n (Character limit reached!)"
         if embed is not None:
-            return await ctx.send(content, embed=embed)
+            return await ctx.send(content, embed=embed, **kwargs)
         segments = content.split("\n")
         title = segments[0]
         description="\n".join(segments[1:])
@@ -25,19 +25,18 @@ class BabaBot(commands.Bot):
             title = None
             description = "\n".join(segments)
         container = discord.Embed(title=title, description=description, color=self.embed_color)
-        await ctx.send(embed=container, tts=tts, file=file)
+        return await ctx.send(embed=container, **kwargs)
 
     # Custom error message implementation
     # Sends the error message. Automatically deletes it after some time.
-    async def error(self, ctx, title, content=None):
-        description = content if content else None
+    async def error(self, ctx: commands.Context, title: str, content: Optional[str] = None) -> discord.Message:
         embed = discord.Embed(
             title=title, 
-            description=description,
+            description=content,
             color=self.embed_color
         )
         await ctx.message.add_reaction("⚠️")
-        await ctx.send(embed=embed, delete_after=20)
+        return await ctx.send(embed=embed, delete_after=30)
 
 # Sets up the config
 with open("config/setup.json") as config_file:

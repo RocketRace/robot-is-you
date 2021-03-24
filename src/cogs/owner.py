@@ -1,6 +1,6 @@
-import ast
-import asyncio
+from __future__ import annotations
 import platform
+from typing import Any, Iterable, Optional, Tuple
 import discord
 import json
 import os
@@ -10,7 +10,7 @@ from discord.ext  import commands
 from pathlib      import Path
 from PIL          import Image, ImageDraw, ImageChops
 
-def load_with_datetime(pairs, format='%Y-%m-%dT%H:%M:%S.%f'):
+def load_with_datetime(pairs: Iterable[Tuple[str, Any]], format: str='%Y-%m-%dT%H:%M:%S.%f'):
     '''Load json + datetime objects, in the speficied format.
     Via https://stackoverflow.com/a/14996040
     '''
@@ -32,10 +32,10 @@ def load_with_datetime(pairs, format='%Y-%m-%dT%H:%M:%S.%f'):
     
 class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     
-    def bot_check(self, ctx):
+    def bot_check(self, ctx: commands.Context):
         return ctx.author.id not in self.blacklist
 
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.tile_data = {}
         self.identifies = []
@@ -66,9 +66,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             
     @commands.command(aliases=["load", "reload"])
     @commands.is_owner()
-    async def reloadcog(self, ctx, cog = None):
+    async def reloadcog(self, ctx, cog: str = ""):
         '''Reloads extensions within the bot while the bot is running.'''
-        if cog is None:
+        if not cog:
             extensions = [a for a in self.bot.extensions.keys()]
             for extension in extensions:
                 self.bot.reload_extension(extension)
@@ -129,7 +129,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
     @commands.command()
     @commands.is_owner()
-    async def leave(self, ctx, guild: int = None):
+    async def leave(self, ctx, guild: Optional[int] = None):
         if guild is None:
             await ctx.send("Bye!")
             await ctx.guild.leave()
@@ -438,7 +438,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
     @commands.command()
     @commands.is_owner()
-    async def doc(self, ctx, command):
+    async def doc(self, ctx, command: str):
         '''Check a command's docstring.'''
         description = self.bot.get_command(command).help
         await self.bot.send(ctx, f"Command doc for {command}:\n{description}")
@@ -491,7 +491,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
         await ctx.send("pog")
 
-    def loadletter(self, word, tile_type):
+    def loadletter(self, word: str, tile_type: str):
         '''Scrapes letters from a sprite.'''
         chars = word[5:] # Strip "text_" prefix
 
@@ -631,7 +631,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         self.update_debug()
     
     @commands.Cog.listener()
-    async def on_guild_join(self, guild):
+    async def on_guild_join(self, guild: discord.Guild):
         webhook = await self.bot.fetch_webhook(self.bot.webhook_id)
         embed = discord.Embed(
             color = self.bot.embed_color,
@@ -661,5 +661,5 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         # update debug data file
         self.update_debug()
 
-def setup(bot):
+def setup(bot: commands.Bot):
     bot.add_cog(OwnerCog(bot))
