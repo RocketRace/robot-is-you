@@ -112,7 +112,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         image_source: str = "vanilla",
         out: str = "target/renders/render.gif",
         background: Optional[Tuple[int, int]] = None,
-        rand: bool = False
+        rand: bool = False,
+        use_overridden_colors: bool = False
     ):
         '''Takes a list of Tile objects and generates a gif with the associated sprites.
 
@@ -186,9 +187,13 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                             else:
                                 path = f"data/sprites/{tile.source}/{tile.name}_{tile.variant}_{animation_offset + 1}.png"
                         if tile.color is None:
-                            tile.color = self.bot.get_cog("Admin").tile_data.get(tile.name).get("active")
+                            base = None
+                            if use_overridden_colors:
+                                base = self.level_tile_override.get(tile.name)
+                            base = base if base is not None else self.bot.get_cog("Admin").tile_data[tile.name]
+                            tile.color = base.get("active")
                             if tile.color is None:
-                                tile.color = self.bot.get_cog("Admin").tile_data.get(tile.name).get("color")
+                                tile.color = base.get("color")
                             tile.color = tuple(map(int, tile.color))
                         img = cached_open(path, cache=cache, is_image=True).convert("RGBA")
                         img = self.make_meta(tile.name, img, tile.meta_level)
@@ -318,7 +323,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                         
                         # Certain tiles from levels are overridden with other tiles
                         tile_data = self.bot.get_cog("Admin").tile_data.get(tile)
-                        print(tile, is_level)
                         if is_level:
                             if self.level_tile_override.get(tile) is not None:
                                 tile_data = self.level_tile_override[tile]
@@ -471,6 +475,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                             
                             # Stringify
                             final.variant = str(out)
+                            if is_level: 
+                                grid[y][x][z] = final
+                                continue
 
                         # Apply actual sprite variants
                         for variant in variants:
@@ -587,7 +594,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     raise FileNotFoundError(word)
 
                         # Compute the final variant, if not already set
-                        final.variant = str(final.variant or (8 * direction + animation_frame) % 32)
+                        final.variant = final.variant or (8 * direction + animation_frame) % 32
 
                         # Finally, push the sprite to the grid
                         grid[y][x][z] = final

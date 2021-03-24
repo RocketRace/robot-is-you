@@ -62,7 +62,11 @@ class Grid:
                 z = []
                 for o in self.cells[y * w + x].objects:
                     # Cleaned up Item object
-                    new = f"{o.name or 'error'}:{'0' if o.direction is None else str(o.direction * 8)}{':' + ','.join(tuple(map(str,o.color))) if o.color else ''}" 
+                    new = "".join([
+                        o.name or "error",
+                        f":{o.direction * 8}" if o.direction is not None else "",
+                        ":" + "/".join(tuple(map(str, o.color))) if o.color is not None else ""
+                    ])
                     z.append(new)
                 a.append(z)
             grid.append(a)
@@ -244,7 +248,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         background = (0,4) if keep_background else None
 
         # Render the level
-        renderer.magick_images(tiles, width, height, palette=palette, images=images, image_source=source, background=background, out=out)
+        renderer.magick_images(tiles, width, height, palette=palette, images=images, image_source=source, background=background, out=out, use_overridden_colors=True)
         
         # Return level metadata
         return {grid.filename: m["data"]}
@@ -266,7 +270,6 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         metadata = self.render_map(
             filename, 
             source=source, 
-            tile_data=tile_data, 
             renderer=renderer, 
             initialize=initialize, 
             remove_borders=True,
@@ -323,8 +326,8 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         total = len(levels)
         for i,level in enumerate(levels):
             metadata = self.render_map(
-                level, source="vanilla", 
-                tile_data=tile_data, 
+                level,
+                source="vanilla", 
                 renderer=renderer, 
                 initialize=True, 
                 remove_borders=True,
@@ -550,7 +553,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
 
                     # Which objects are changed?
                     if data.startswith("changed="):
-                        changes = dict.fromkeys(line[8:].split(","), None)
+                        changes = dict.fromkeys(data[8:-1].split(","), None)
                         continue
                     
                     # We're done parsing
@@ -593,10 +596,9 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                         elif new.get("_image") is not None:
                             item.name = new["_image"]
                         if new.get("_activecolour") is not None and item.name.startswith("text_"):
-                            item.color = [int(new["_activecolour"][0]), int(new["_activecolour"][2])]
+                            item.color = (int(new["_activecolour"][0]), int(new["_activecolour"][2]))
                         elif new.get("_colour") is not None:
-                            item.color = [int(new["_colour"][0]), int(new["_colour"][2])]
-
+                            item.color = (int(new["_colour"][0]), int(new["_colour"][2]))
         
         return grid
 
