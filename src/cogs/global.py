@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import BinaryIO, List, Optional, Tuple, TypeVar, Union
+from typing import BinaryIO, List, Optional, Tuple, Union
 import aiohttp
 import discord
 import random
@@ -102,7 +102,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         return final
         
 
-    def magick_images(
+    def render(
         self,
         word_grid: List[List[List[Tile]]],
         width: int,
@@ -655,7 +655,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             buffer = BytesIO()
             tile = Tile(name=text.lower(), color=tile_color, style=style.lower(), custom=True)
             tile.images = self.generate_tile(tile.name, color=tile.color, style=style, meta_level=meta_level)
-            self.magick_images([[[tile]]], 1, 1, out=buffer)
+            self.render([[[tile]]], 1, 1, out=buffer)
             await ctx.send(ctx.author.mention, file=discord.File(buffer, filename=f"custom_'{text.replace('/','')}'.gif"))
         except ValueError as e:
             text = e.args[0]
@@ -1022,7 +1022,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             format_string = "render_%Y-%m-%d_%H.%M.%S"
             formatted = timestamp.strftime(format_string)
             filename = f"{formatted}.gif"
-            task = partial(self.magick_images, word_grid, width, height, palette=palette, background=background, out=buffer, rand=True)
+            task = partial(self.render, word_grid, width, height, palette=palette, background=background, out=buffer, rand=True)
             try:
                 await self.bot.loop.run_in_executor(None, task)
             except ValueError:
@@ -1093,7 +1093,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
     @commands.cooldown(5, 8, commands.BucketType.channel)
     @commands.command(name="level")
-    async def _level(self, ctx, *, query: str):
+    async def _level(self, ctx: commands.Context, *, query: str):
         '''Renders the given Baba Is You level.
 
         Levels are searched for in the following order:
@@ -1123,6 +1123,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     levels[upper] = custom_levels[upper]
                     custom = True
                 else:
+                    await ctx.send("Searching for custom level... this might take a while")
+                    await ctx.trigger_typing()
                     async with aiohttp.request("GET", f"https://baba-is-bookmark.herokuapp.com/api/level/exists?code={upper}") as resp:
                         if resp.status in (200, 304):
                             data = await resp.json()

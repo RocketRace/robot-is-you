@@ -8,7 +8,7 @@ import base64
 import json
 import zlib
 
-from discord.ext import commands
+from discord.ext import commands, tasks
 from os          import listdir, stat
 
 def flatten(x: int, y: int, width: int) -> int:
@@ -139,6 +139,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         custom = "cache/customlevels.json"
         if stat(custom).st_size != 0:
             self.custom_levels = json.load(open(custom))
+        self.update_custom_levels.start()
 
     async def render_custom(self, code: str) -> Dict[str, Any]:
         '''Renders a custom level. code should be valid (but is checked regardless)'''
@@ -166,9 +167,9 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             row.pop(grid.width - 1)
             row.pop(0)
         out = f"target/renders/custom/{code}.gif"
-        renderer = self.bot.get_cog("Baba Is You")
-        tiles = renderer.handle_variants(objects, tile_borders=True, is_level=True)
-        renderer.magick_images(tiles, grid.width, grid.height, palette=grid.palette, background=(0, 4), out=out)
+        cog = self.bot.get_cog("Baba Is You")
+        tiles = cog.handle_variants(objects, tile_borders=True, is_level=True)
+        cog.render(tiles, grid.width, grid.height, palette=grid.palette, background=(0, 4), out=out)
         
         self.custom_levels[code] = metadata = {
             "name": grid.name,
@@ -189,7 +190,6 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         filename: str, 
         source: str, 
         initialize: bool = False, 
-        renderer = None, 
         remove_borders: bool = False, 
         keep_background: bool = False, 
         tile_borders: bool = False
@@ -211,13 +211,14 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                 row.pop(0)
 
         # Handle sprite variants
-        tiles = renderer.handle_variants(objects, tile_borders=tile_borders, is_level=True)
+        cog = self.bot.get_cog("Baba Is You")
+        tiles = cog.handle_variants(objects, tile_borders=tile_borders, is_level=True)
 
         # (0,4) is the color index for level backgrounds
         background = (0,4) if keep_background else None
 
         # Render the level
-        renderer.magick_images(
+        cog.render(
             tiles,
             grid.width,
             grid.height,
@@ -245,24 +246,14 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             "style": grid.style,
         }
 
-    def pre_map_load(self) -> Tuple[Any, Any]:
-        '''Prerequisites for level rendering'''
-        tile_data = self.bot.get_cog("Admin").tile_data
-        # If the objects for some reason aren't well formed, they're replaced with error tiles
-        renderer = self.bot.get_cog("Baba Is You")
-        return tile_data, renderer
-
     @commands.command()
     @commands.is_owner()
     async def loadmap(self, ctx, source: str, filename: str, initialize: bool = False):
         '''Loads a given level. Initializes the level tree if so specified.'''
-        # For managing the directions of the items
-        tile_data, renderer = self.pre_map_load()
         # Parse and render
         metadata = self.render_map(
             filename, 
             source=source, 
-            renderer=renderer, 
             initialize=initialize, 
             remove_borders=True,
             keep_background=True,
@@ -311,9 +302,6 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         '''
         levels = [l[:-2] for l in listdir("data/levels/vanilla") if l.endswith(".l")]
 
-        # For managing the directions of the items
-        tile_data, renderer = self.pre_map_load()
-
         # Parse and render the level map
         await ctx.send("Loading maps...")
         metadatas = {}
@@ -322,7 +310,6 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             metadata = self.render_map(
                 level,
                 source="vanilla", 
-                renderer=renderer, 
                 initialize=True, 
                 remove_borders=True,
                 keep_background=True,
@@ -684,6 +671,9 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                     # Including both active and inactive tiles would require
                     # the bot to parse the rules of the level, which is a 
                     # lot of work for very little
+                    #
+                    # This unfortunately means that custom levels that use drastically
+                    # different active & inactive colors will look different in renders
                     if "colour" in change:
                         item.color = tuple(int(x) for x in change["colour"].split(","))
                     if "activecolour" in change and item.name.startswith("text_"):
@@ -752,6 +742,11 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             for j in range(len(dirs_buffer) - 1):
                 item = items[j]
                 item.direction = dirs_buffer[j]
+        
+    @tasks.loop(minutes=15)
+    async def update_custom_levels(self):
+        with open("cache/customlevels.json", "w") as f:
+            json.dump(self.custom_levels, f)
 
 def setup(bot: commands.Bot):
     bot.add_cog(Reader(bot))
