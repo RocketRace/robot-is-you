@@ -1070,7 +1070,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
        **Flags**
         * `--palette=<...>` (`-P=<...>`): Recolors the output gif. See the `palettes` command for more.
-        * `--background` (`-B`): Enables background color.
+        * `--background=[...]` (`-B=[...]`): Enables background color. If no argument is given, defaults to black. The argument must be a palette index ("x/y").
         
         **Variants**
         * `:variant`: Append `:variant` to a tile to change color or sprite of a tile. See the `variants` command for more.
