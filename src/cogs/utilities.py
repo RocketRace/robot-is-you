@@ -195,7 +195,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         data = self.bot.get_cog("Admin").tile_data.get(clean_tile)
         suffix = "It also supports the following colors:\n" + \
             ", ".join(f"`:{name}`" for name in constants.valid_colors) + \
-            ",\nas well as the following filters:\n`:meta`, `:hide`."
+            ",\nas well as the following filters:\n`:meta` / `:m`, :m2`, `:m3`, `:hide`."
         if data is None:
             output = [
                 f"This tile doesn't exist, but you might be able to auto-generate the text tile `text_{clean_tile}`.",
@@ -213,68 +213,43 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
                 "This tile does not exist, or has no tiling data."
             ],
             "-1": [
-                "This tile supports the right direction:",
-                "Facing right: `:0` / `:right` / `:r`",
+                "This tile has no sprite variants.",
             ],
             "0": [
                 "This tile supports directions:",
-                "Facing right: `:0` / `:right` / `:r`",
-                "Facing up: `:8` / `:up` / `:u`",
-                "Facing left: `:16` / `:left` / `:l`",
-                "Facing down: `:24` / `:down` / `:d`",
+                "Facing right: `:right` / `:r`",
+                "Facing up: `:up` / `:u`",
+                "Facing left: `:left` / `:l`",
+                "Facing down: `:down` / `:d`",
+                "You can also provide raw variants from `:0` to `:31` to alter its sprite. (Not all are valid.)"
             ],
             "1": [
                 "This is a tiling tile. It automatically applies sprite variants to itself.",
+                "You can provide raw variants from `:0` to `:15` to alter its sprite."
             ],
             "2": [
                 "This tile supports direction, animations, and sleeping sprites:",
                 "Sleeping (ANY DIRECTION): `:sleep` / `:s`",
-                "Facing right: `:0` / `:right` / `:r`",
-                "Facing right (alt): `:1`",
-                "Facing right (alt): `:2`",
-                "Facing right (alt): `:3`",
-                "Facing up (sleep): `:7`",
-                "Facing up: `:8` / `:up` / `:u`",
-                "Facing up (alt): `:9`",
-                "Facing up (alt): `:10`",
-                "Facing up (alt): `:11`",
-                "Facing left (sleep): `:15`",
-                "Facing left: `:16` / `:left` / `:l`",
-                "Facing left (alt): `:17`",
-                "Facing left (alt): `:18`",
-                "Facing left (alt): `:19`",
-                "Facing down (sleep): `:23`",
-                "Facing down: `:24` / `:down` / `:d`",
-                "Facing down (alt): `:25`",
-                "Facing down (alt): `:26`",
-                "Facing down (alt): `:27`",
-                "Facing right (sleep): `:31`",
+                "Animation frame (ANY DIRECTION): `:a0`, `:a1`, `:a2`, `:a3`",
+                "Facing right: `:right` / `:r`",
+                "Facing up: `:up` / `:u`",
+                "Facing left: `:left` / `:l`",
+                "Facing down: `:down` / `:d`",
+                "You can also provide raw variants from `:0` to `:31` to alter its sprite. (Not all are valid.)"
             ],
             "3": [
                 "This tile supports directions and animations:",
-                "Facing right: `:0` / `:right` / `:r`",
-                "Facing right (alt): `:1`",
-                "Facing right (alt): `:2`",
-                "Facing right (alt): `:3`",
-                "Facing up: `:8` / `:up` / `:u`",
-                "Facing up (alt): `:9`",
-                "Facing up (alt): `:10`",
-                "Facing up (alt): `:11`",
-                "Facing left: `:16` / `:left` / `:l`",
-                "Facing left (alt): `:17`",
-                "Facing left (alt): `:18`",
-                "Facing left (alt): `:19`",
-                "Facing down: `:24` / `:down` / `:d`",
-                "Facing down (alt): `:25`",
-                "Facing down (alt): `:26`",
-                "Facing down (alt): `:27`",
+                "Animation frame (ANY DIRECTION): `:a0`, `:a1`, `:a2`, `:a3`",
+                "Facing right: `:right` / `:r`",
+                "Facing up: `:up` / `:u`",
+                "Facing left: `:left` / `:l`",
+                "Facing down: `:down` / `:d`",
+                "You can also provide raw variants from `:0` to `:31` to alter its sprite. (Not all are valid.)"
             ],
             "4": [
                 "This tile supports animations:",
-                "Facing right: `:0` / `:right` / `:r`",
-                "Facing right (alt): `:1`",
-                "Facing right (alt): `:2`",
-                "Facing right (alt): `:3`",
+                "Animation frame (ANY DIRECTION): `:a0`, `:a1`, `:a2`, `:a3`",
+                "You can also provide raw variants from `:0` to `:31` to alter its sprite. (Not all are valid.)"
             ]
         }
         choice = output[tiling]
