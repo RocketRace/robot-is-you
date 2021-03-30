@@ -195,7 +195,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         data = self.bot.get_cog("Admin").tile_data.get(clean_tile)
         suffix = "It also supports the following colors:\n" + \
             ", ".join(f"`:{name}`" for name in constants.valid_colors) + \
-            ",\nas well as the following filters:\n`:meta` / `:m`, :m2`, `:m3`, `:hide`."
+            ",\nas well as the following filters:\n`:meta` / `:m`, `:m2`, `:m3`, `:hide`."
         if data is None:
             output = [
                 f"This tile doesn't exist, but you might be able to auto-generate the text tile `text_{clean_tile}`.",
