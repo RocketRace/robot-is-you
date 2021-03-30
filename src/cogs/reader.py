@@ -657,12 +657,17 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             for item in cell:
                 if item.obj in changes:
                     change = changes[item.obj]
-                    # TODO: what happens if the name isn't valid?
                     if "name" in change:
-                        item.name = change["name"]
+                        if change["name"] in self.bot.get_cog("Admin").tile_data:
+                            item.name = change["name"]
+                        else:
+                            item.name = "default"
                     # The sprite overrides the name in this case
                     if "image" in change:
-                        item.name = change["image"]
+                        if change["image"] in self.bot.get_cog("Admin").tile_data:
+                            item.name = change["image"]
+                        else:
+                            item.name = "default"
                     if "layer" in change:
                         item.layer = int(change["layer"])
                     # Text tiles always use their active color in renders,
