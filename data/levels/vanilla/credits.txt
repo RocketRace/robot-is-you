@@ -19,7 +19,7 @@ $4,2Exuno $4,0-$4,2 Farbs $4,0-$4,2 GreenZSaber
 $4,2Guilherme Töws $4,0-$4,2 Hayden Scott-Baron
 $4,2Henrique de Lima $4,0-$4,2 Ian MacLarty
 $4,2Ian Snyder $4,0-$4,2 Jack Kutilek $4,0-$4,2 Jake Eakle
-$4,2Jan Willem Nijman $4,0-$4,2 Jonah $4,0-$4,2 Jonathan Blow
+$4,2Jan Willem Nijman $4,0-$4,2 Joel Fox  $4,0-$4,2 Jonah $4,0-$4,2 Jonathan Blow
 $4,2Jonathan Thomas $4,0-$4,2 Jussi-Pekka Neilikka $4,0-$4,2 Kevin Simmons
 $4,2knexator $4,0-$4,2 Leon Arnott $4,0-$4,2 Lukas Meller
 $4,2Lyndsey Jane Moulds $4,0-$4,2 Marcos Donnantuoni
