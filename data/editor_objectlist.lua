@@ -2454,7 +2454,7 @@ editor_objlist = {
 		layer = 20,
 		colour = {0, 1},
 		colour_active = {0, 3},
-		special = true,
+		advanced = true,
 	},
 	[244] = {
 		name = "text_mimic",
@@ -2932,7 +2932,7 @@ editor_objlist = {
 		tags = {"animal","common"},
 		tiling = 2,
 		type = 0,
-		layer = 20,
+		layer = 18,
 		colour = {2, 3},
 
 	},
@@ -2952,7 +2952,7 @@ editor_objlist = {
 		tags = {"animal","common"},
 		tiling = 2,
 		type = 0,
-		layer = 20,
+		layer = 18,
 		colour = {5, 2},
 
 	},
