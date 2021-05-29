@@ -199,6 +199,8 @@ word_names =
 	lockedup = "locked (up)",
 	lockedleft = "locked (left)",
 	lockeddown = "locked (down)",
+	besideright = "beside (right)",
+	besideleft = "beside (left)",
 }
 
 decor_offsets =

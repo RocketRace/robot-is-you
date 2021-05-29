@@ -36,12 +36,12 @@ $1,4Niilo Takalainen
 #credits_translation
 $1,4Čeština$0,3 $4,0-$4,2 Eva Jany
 $1,4中文 (简体 )$0,3 $4,0-$4,2 User670 $4,0&$4,2 旋律星萤
-$1,4Deutsch$0,3 $4,0-$4,2 pepperonisecret
+$1,4Deutsch$0,3 $4,0-$4,2 pepperonisecret & Tobias Gut
 $1,4Español$0,3 $4,0-$4,2 Álex Hernández-Puertas
 $1,4Français$0,3 $4,0-$4,2 Naomi Kodo
 $1,4Italiano$0,3 $4,0-$4,2 Sara Cascianelli
 $1,4日本語$0,3 $4,0-$4,2 Hiago Kanomata
-$1,4Korean$0,3 $4,0-$4,2 Hoyeon Ryu
+$1,4Korean$0,3 $4,0-$4,2 Hoyeon Ryu & Elisa
 $1,4Nederlands$0,3 $4,0-$4,2 Zeno van Ditzhuijzen
 $1,4Norsk$0,3 $4,0-$4,2 Aurora Robb Kristiansen
 $1,4Polski$0,3 $4,0-$4,2 Jędrzej Haracewiat
