@@ -2735,6 +2735,7 @@ play_data =
 		piano = "piano2",
 		guitar = "guitar2",
 		sax = "sax2",
+		trumpet = "sax2",
 		drum = "drum_snare",
 		hihat = "drum_hat",
 	},
