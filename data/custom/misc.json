@@ -152,33 +152,6 @@
       "tiling": "-1"
    },
    {
-      "name": "sword",
-      "sprite": "sword",
-      "tiling": "0",
-      "color": [
-         "0",
-         "3"
-      ]
-   },
-   {
-      "name": "text_sword",
-      "sprite": "text_sword",
-      "tiling": "-1",
-      "color": [
-         "0",
-         "3"
-      ]
-   },
-   {
-      "name": "trident",
-      "sprite": "trident",
-      "tiling": "0",
-      "color": [
-         "0",
-         "3"
-      ]
-   },
-   {
       "name": "ant",
       "sprite": "ant",
       "tiling": "0",
