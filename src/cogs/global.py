@@ -656,7 +656,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             tile = Tile(name=text.lower(), color=tile_color, style=style.lower(), custom=True)
             tile.images = self.generate_tile(tile.name, color=tile.color, style=style, meta_level=meta_level)
             self.render([[[tile]]], 1, 1, out=buffer)
-            await ctx.send(ctx.author.mention, file=discord.File(buffer, filename=f"custom_'{text.replace('/','')}'.gif"))
+            await ctx.reply("", file=discord.File(buffer, filename=f"custom_'{text.replace('/','')}'.gif"))
         except ValueError as e:
             text = e.args[0]
             culprit = e.args[1]
@@ -707,8 +707,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     img_buffer.seek(0)
                     archive.writestr(f"text_{meta_level*'meta_'}{real_text.replace('/','')}_0_{i + 1}.png", data=img_buffer.getbuffer())
             buffer.seek(0)
-            await ctx.send(
-                f"{ctx.author.mention} *Raw sprites for `text_{meta_level*'meta_'}{real_text.replace('/','')}`*", 
+            await ctx.reply(
+                f"*Raw sprites for `text_{meta_level*'meta_'}{real_text.replace('/','')}`*", 
                 file = discord.File(buffer, filename=f"custom_{meta_level*'meta_'}{real_text.replace('/','')}_sprites.zip")
             )
         except ValueError as e:
@@ -1029,8 +1029,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 return await self.bot.error(ctx, f"You can only apply apply three layers of meta.")
             delta = time() - start
         # Sends the image through discord
-        msg = f"{ctx.author.mention}\n*Rendered in {delta:.2f} s*"
-        await ctx.send(content=msg, file=discord.File(buffer, filename=filename, spoiler=spoiler))
+        msg = f"*Rendered in {delta:.2f} s*"
+        await ctx.reply(content=msg, file=discord.File(buffer, filename=filename, spoiler=spoiler))
         
 
     @commands.command()
@@ -1124,7 +1124,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     levels[upper] = custom_levels[upper]
                     custom = True
                 else:
-                    await ctx.send("Searching for custom level... this might take a while")
+                    await ctx.reply("Searching for custom level... this might take a while", mention_author=False)
                     await ctx.trigger_typing()
                     async with aiohttp.request("GET", f"https://baba-is-bookmark.herokuapp.com/api/level/exists?code={upper}") as resp:
                         if resp.status in (200, 304):
@@ -1269,15 +1269,15 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
             # Formatted output
             if custom:
-                formatted = f"{ctx.author.mention}{matches_text} (Custom Level)\nName: `{name}`\nCode: `{level_id}`{author}{subtitle}"
+                formatted = f"{matches_text} (Custom Level)\nName: `{name}`\nCode: `{level_id}`{author}{subtitle}"
             else:
-                formatted = f"{ctx.author.mention}{matches_text}\nName: `{tree}{name}`\nID: `{level_id}`{subtitle}"
+                formatted = f"{matches_text}\nName: `{tree}{name}`\nID: `{level_id}`{subtitle}"
 
             # Only the author should be mentioned
             mentions = discord.AllowedMentions(everyone=False, users=[ctx.author], roles=False)
 
             # Send the result
-            await ctx.send(formatted, file=gif, allowed_mentions=mentions)
+            await ctx.reply(formatted, file=gif, allowed_mentions=mentions)
 
 def setup(bot: commands.Bot):
     bot.add_cog(GlobalCog(bot))
