@@ -17,7 +17,7 @@ class BabaBot(commands.Bot):
         if len(content) > 2000:
             content = content[:1963] + " [...] \n\n (Character limit reached!)"
         if embed is not None:
-            return await ctx.send(content, embed=embed, **kwargs)
+            return await ctx.reply(content, embed=embed, **kwargs)
         segments = content.split("\n")
         title = segments[0]
         description="\n".join(segments[1:])
@@ -25,7 +25,7 @@ class BabaBot(commands.Bot):
             title = None
             description = "\n".join(segments)
         container = discord.Embed(title=title, description=description, color=self.embed_color)
-        return await ctx.send(embed=container, **kwargs)
+        return await ctx.reply(embed=container, **kwargs)
 
     # Custom error message implementation
     # Sends the error message. Automatically deletes it after some time.
@@ -36,7 +36,7 @@ class BabaBot(commands.Bot):
             color=self.embed_color
         )
         await ctx.message.add_reaction("⚠️")
-        return await ctx.send(embed=embed, delete_after=30)
+        return await ctx.reply(embed=embed, delete_after=30)
 
 # Sets up the config
 with open("config/setup.json") as config_file:
