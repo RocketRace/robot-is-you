@@ -1109,7 +1109,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         levels = {}
         custom = False
         # Lower case, make the query all nice
-        fine_query = query.lower().strip()
+        spoiler = query.count("||") >= 2
+        fine_query = query.lower().strip().replace("|", "")
         # Is it the level ID?
         level_data = self.bot.get_cog("Reader").level_data
         if level_data.get(fine_query) is not None:
@@ -1269,9 +1270,17 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
             # Formatted output
             if custom:
-                formatted = f"{matches_text} (Custom Level)\nName: `{name}`\nCode: `{level_id}`{author}{subtitle}"
+                if spoiler:
+                    wrapped_name = f"||`{name}`||"
+                else:
+                    wrapped_name = f"`{name}`"
+                formatted = f"{matches_text} (Custom Level)\nName: {wrapped_name}\nCode: `{level_id}`{author}{subtitle}"
             else:
-                formatted = f"{matches_text}\nName: `{tree}{name}`\nID: `{level_id}`{subtitle}"
+                if spoiler:
+                    wrapped_name = f"||`{tree}{name}`||"
+                else:
+                    wrapped_name = f"`{tree}{name}`"
+                formatted = f"{matches_text}\nName: {wrapped_name}\nID: `{level_id}`{subtitle}"
 
             # Only the author should be mentioned
             mentions = discord.AllowedMentions(everyone=False, users=[ctx.author], roles=False)

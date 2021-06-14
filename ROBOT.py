@@ -32,9 +32,10 @@ class BabaBot(commands.Bot):
     async def error(self, ctx: commands.Context, title: str, content: Optional[str] = None) -> discord.Message:
         embed = discord.Embed(
             title=title, 
-            description=content,
             color=self.embed_color
         )
+        if content is not None:
+            embed.description = content
         await ctx.message.add_reaction("⚠️")
         return await ctx.reply(embed=embed, delete_after=30)
 

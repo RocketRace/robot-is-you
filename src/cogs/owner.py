@@ -85,7 +85,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         '''Restarts the bot process.'''
         await ctx.send("Restarting bot process...")
         self.bot.exit_code = 1
-        await self.bot.logout()
+        await self.bot.close()
 
     @commands.command(aliases=["kill", "yeet"])
     @commands.is_owner()
@@ -95,7 +95,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             await ctx.send("Yeeting bot process...")
         else:
             await ctx.send("Killing bot process...")
-        await self.bot.logout()
+        await self.bot.close()
 
     @commands.command()
     @commands.is_owner()
