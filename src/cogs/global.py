@@ -656,7 +656,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             tile = Tile(name=text.lower(), color=tile_color, style=style.lower(), custom=True)
             tile.images = self.generate_tile(tile.name, color=tile.color, style=style, meta_level=meta_level)
             self.render([[[tile]]], 1, 1, out=buffer)
-            await ctx.reply("", file=discord.File(buffer, filename=f"custom_'{text.replace('/','')}'.gif"))
+            await ctx.reply(file=discord.File(buffer, filename=f"custom_'{text.replace('/','')}'.gif"))
         except ValueError as e:
             text = e.args[0]
             culprit = e.args[1]
