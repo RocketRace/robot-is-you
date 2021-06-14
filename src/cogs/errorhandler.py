@@ -18,29 +18,6 @@ class CommandErrorHandler(commands.Cog):
 
     async def setup_logger(self, webhook_id: int):
         return await self.bot.fetch_webhook(webhook_id)
-
-    @commands.Cog.listener()
-    async def on_error(self, ctx: commands.Context, error: Exception):
-        if self.logger is None:
-            self.logger = await self.setup_logger(self.webhook_id)
-
-        error = getattr(error, 'original', error)
-        
-        emb = discord.Embed(title="Error", color=0xffff00)
-        emb.description = str(error)
-        chan = "`Direct Message`"
-        gui = "Guild: [None]"
-        if isinstance(ctx.channel, discord.TextChannel):
-            chan = ctx.channel.name
-            gui = f"Guild: {ctx.guild.name} (ID:{ctx.guild.id})"
-        emb.add_field(name="Error Context", 
-            value="".join([f"Message: `{ctx.message.content}` (ID: {ctx.message.id})\n",
-                f"User: {ctx.author.name}#{ctx.author.discriminator} (ID: {ctx.author.id}\n",
-                f"Channel: #{chan} (ID: {ctx.channel.id})\n", 
-                gui
-            ])
-        )
-
     
     @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error: Exception):
@@ -144,12 +121,20 @@ class CommandErrorHandler(commands.Cog):
         elif isinstance(error, commands.UnexpectedQuoteError):
             return await self.bot.error(ctx, f"Got unexpected quotation mark `{error.quote}` inside a string.")
 
+        elif isinstance(error, commands.ConversionError):
+            await self.logger.send(embed=emb)
+            return await self.bot.error(ctx, "Invalid function arguments provided. Check the help command for the proper format.")
+        
+        elif isinstance(error, commands.BadArgument):
+            await self.logger.send(embed=emb)
+            return await self.bot.error(ctx, f"Invalid argument provided. Check the help command for the proper format.\nOriginal error:\n{error.args[0]}")
+
         elif isinstance(error, commands.ArgumentParsingError):
             await self.logger.send(embed=emb)
             return await self.bot.error(ctx, "Invalid function arguments provided.")
 
         elif isinstance(error, commands.MissingRequiredArgument):
-            return await self.bot.error(ctx, "Required arguments are missing.")
+            return await self.bot.error(ctx, f"Required argument {error.param} is missing.")
 
         elif isinstance(error, discord.HTTPException):
             if error.status == 400:
@@ -158,10 +143,10 @@ class CommandErrorHandler(commands.Cog):
                 return await self.bot.error(ctx, "We're being ratelimited. Try again later.")
             if error.status == 401:
                 return await self.bot.error(ctx, "This action cannot be performed.")
-            return await self.bot.error(ctx, "There was an error while processing this request.")
+            return await self.bot.error(ctx, "There was an error while processing this action.")
         
         # All other Errors not returned come here... And we can just print the default TraceBack + log
-        await self.bot.error(ctx, f"An exception occurred: {type(error)}", f"{error}\n{''.join(traceback.format_tb(error.__traceback__))}")
+        await self.bot.error(ctx, f"An exception occurred: {type(error)}\n{error}\n```{''.join(traceback.format_tb(error.__traceback__))}```")
         await self.logger.send(embed=emb)
         print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)

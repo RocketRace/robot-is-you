@@ -11,6 +11,9 @@ import zlib
 from discord.ext import commands, tasks
 from os          import listdir, stat
 
+class LevelTooLarge(ValueError):
+    pass
+
 def flatten(x: int, y: int, width: int) -> int:
     '''Return the flattened position of a coordinate in a grid of specified width'''
     return int(y) * width + int(x)
@@ -700,7 +703,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         
         size = grid.width * grid.height
         if size > 10_000:
-            raise Exception("oh frick")
+            raise LevelTooLarge(size)
         if len(grid.cells) == 0:
             for _ in range(size):
                 grid.cells.append([])

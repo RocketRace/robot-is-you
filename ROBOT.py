@@ -29,15 +29,9 @@ class BabaBot(commands.Bot):
 
     # Custom error message implementation
     # Sends the error message. Automatically deletes it after some time.
-    async def error(self, ctx: commands.Context, title: str, content: Optional[str] = None) -> discord.Message:
-        embed = discord.Embed(
-            title=title, 
-            color=self.embed_color
-        )
-        if content is not None:
-            embed.description = content
+    async def error(self, ctx: commands.Context, msg: str) -> discord.Message:
         await ctx.message.add_reaction("⚠️")
-        return await ctx.reply(embed=embed, delete_after=30)
+        return await ctx.reply(msg)
 
 # Sets up the config
 with open("config/setup.json") as config_file:
