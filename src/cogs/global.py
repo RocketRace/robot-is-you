@@ -1015,10 +1015,12 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 return await self.bot.error(ctx, f"The tile `{word}` has a tiling type of `{tiling}`, meaning the variant `{variant}` isn't valid for it.")
             except NotFound as e:
                 word = e.args[0]
-                if word.startswith("tile_") and tile_data.get(word[5:]) is not None:
-                    return await self.bot.error(ctx, f"The tile `{word}` could not be found. Perhaps you meant {word[5:]}?")
+                if (word.startswith("tile_") or word.startswith("text_")) and tile_data.get(word[5:]) is not None:
+                    return await self.bot.error(ctx, f"The tile `{word}` could not be found. Perhaps you meant `{word[5:]}`?")
                 if word == "":
                     return await self.bot.error(ctx, "The name of a text tile can't be blank. Make sure there aren't any typos in your input.")
+                if tile_data.get("text_" + word) is not None:
+                    return await self.bot.error(ctx, f"The tile `{word}` could not be found. Perhaps you meant `{'text_'+word}`?")
                 return await self.bot.error(ctx, f"The tile `{word}` could not be found or automatically generated.")
             except TooManyLineBreaks as e:
                 text, count = e.args
