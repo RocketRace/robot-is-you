@@ -977,7 +977,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     # Limit how many tiles can be rendered in one space
                     height = len(row[i])
                     if height > constants.max_stack and ctx.author.id != self.bot.owner_id:
-                        return await self.bot.error(ctx, f"Stack too high ({height}).", f"You may only stack up to {constants.max_stack} tiles on one space.")
+                        return await self.bot.error(ctx, f"Stack too high ({height}).\nYou may only stack up to {constants.max_stack} tiles on one space.")
 
             # Prepends "text_" to words if invoked under the rule command
             if rule:
