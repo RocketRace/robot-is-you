@@ -789,7 +789,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 raise BadCharacter(text, text)
         elif size == 2 and style == "letter":
             for c in text:
-                if not c.isascii() or not c.isalnum() or c not in "~*":
+                if not c.isascii() and not c.isalnum() and c not in "~*":
                     raise BadCharacter(text, c)
             paths = [
                 f"target/letters/thick/text_{text[0]}_0".replace("*", "asterisk"),
