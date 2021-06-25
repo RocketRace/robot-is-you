@@ -994,7 +994,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             # (It shouldn't be that long to begin with because of Discord's 2000 character limit)
             area = width * height
             if area > constants.max_tiles and ctx.author.id != self.bot.owner_id:
-                return await self.bot.error(ctx, f"Too many tiles ({area}).", f"You may only render up to {constants.max_tiles} tiles at once, including empty tiles.")
+                return await self.bot.error(ctx, f"Too many tiles ({area}). You may only render up to {constants.max_tiles} tiles at once, including empty tiles.")
             elif area == 0:
                 return await self.bot.error(ctx, f"Can't render nothing.")
 
