@@ -5,7 +5,6 @@ import discord
 import random
 import re
 import zipfile
-from src.cogs.reader import LevelTooLarge
 
 from datetime    import datetime
 from discord.ext import commands
@@ -1163,9 +1162,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 try:
                                     levels[upper] = await self.bot.get_cog("Reader").render_custom(upper)
                                     custom = True
-                                except LevelTooLarge as e:
+                                except ValueError as e:
                                     size = e.args[0]
-                                    return await self.bot.error(ctx, f"The level code is valid, but the level is way too big ({size} tiles)!")
+                                    return await self.bot.error(ctx, f"The level code is valid, but the leve's width, height or area is way too big ({size})!")
                                 except aiohttp.ClientResponseError as e:
                                     return await self.bot.error(ctx, f"The Baba Is Bookmark site returned a bad response. Try again later.")
 
