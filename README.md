@@ -47,7 +47,6 @@ Bot configuration is in `config.py`. It contains the following values:
 * `prefixes`: `list[str]` - A list of strings that can be used to trigger commands.
 * `trigger_on_mention`: `bool` - Whether or not bot @mentions will behave as a command prefix.
 * `webhook_id`: `int` - The ID of a webhook to report command errors to. Requires the `manage webhooks` permission in the webhook's channel.
-* `owner_id`: `int` - The ID of the bot owner.
 * `embed_color`: `discord.Color` - The color of embedded messages.
 * `log_file`: `str` - The file to report logs to.
 * `cogs`: `list[str]` - A list of strings -- cogs to load into the bot.

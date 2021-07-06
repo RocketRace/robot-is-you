@@ -30,36 +30,31 @@ class Context(commands.Context):
 
 class Bot(commands.Bot):
     '''Custom bot class :)'''
-    def __init__(self, *args, cogs: list[str], embed_color: discord.Color, webhook_id: int, prefixes: list[str], exit_code: int = 0, **kwargs):
-        self.started=datetime.utcnow()
-        self.loading=False
-        self.embed_color=embed_color
-        self.webhook_id=webhook_id
-        self.prefixes=prefixes
-        self.exit_code=exit_code
+    def __init__(self, *args, cogs: list[str], embed_color: discord.Color, webhook_id: int, prefixes: list[str], **kwargs):
+        self.started = datetime.utcnow()
+        self.loading = True
+        self.exit_code = 0
+        self.embed_color = embed_color
+        self.webhook_id = webhook_id
+        self.prefixes = prefixes
         
         super().__init__(*args, **kwargs)
         # has to be after __init__
         for cog in cogs:
             self.load_extension(cog, package="ROBOT")
-        
 
     async def get_context(self, message: discord.Message) -> Context:
         return await super().get_context(message, cls=Context)
 
 logging.basicConfig(filename=config.log_file, level=logging.WARNING)
-default_activity = discord.Game(name=config.activity)
-prefixes = config.prefixes
-bot_trigger = commands.when_mentioned_or(*prefixes) if config.trigger_on_mention else prefixes
 
 # Establishes the bot
 bot = Bot(
     # Prefixes
-    bot_trigger,
+    commands.when_mentioned_or(*config.prefixes) if config.trigger_on_mention else config.prefixes,
     # Other behavior parameters
     case_insensitive=True, 
-    activity=default_activity, 
-    owner_id=config.owner_id,
+    activity=discord.Game(name=config.activity), 
     description=config.description,
     # Never mention roles, @everyone or @here
     allowed_mentions=discord.AllowedMentions(everyone=False, roles=False),
@@ -75,7 +70,7 @@ bot = Bot(
     cogs=config.cogs,
     embed_color=config.embed_color,
     webhook_id=config.webhook_id,
-    prefixes=prefixes,
+    prefixes=config.prefixes,
 )
 
 bot.run(auth.token)

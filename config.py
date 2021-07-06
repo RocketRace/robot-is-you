@@ -5,7 +5,6 @@ description = "*An entertainment bot for rendering levels and custom scenes base
 prefixes = ["+", "Robot is ", "robot is ", "ROBOT IS "]
 trigger_on_mention = True
 webhook_id = 594692503014473729
-owner_id = 156021301654454272
 embed_color = discord.Color(9077635)
 auth_file = "config/auth.json"
 log_file = "log.txt"

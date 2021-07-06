@@ -3,9 +3,9 @@ from __future__ import annotations
 import json
 import os
 import platform
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Optional
 
 import discord
 from discord.ext import commands
@@ -13,27 +13,6 @@ from PIL import Image, ImageChops, ImageDraw
 
 from .types import Bot, Context
 
-
-def load_with_datetime(pairs: Iterable[tuple[str, Any]], format: str='%Y-%m-%dT%H:%M:%S.%f'):
-    '''Load json + datetime objects, in the speficied format.
-    Via https://stackoverflow.com/a/14996040
-    '''
-    d = {}
-    for k, l in pairs:
-        if isinstance(l, list):
-            t = []
-            for v in l:
-                try:
-                    x = datetime.strptime(v, format)
-                except ValueError:
-                    x = v
-                finally:
-                    t.append(x)
-            d[k] = t
-        else:
-            d[k] = l             
-    return d
-    
 class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     
     def bot_check(self, ctx: Context):
@@ -47,13 +26,15 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         self.blacklist = []
         # Loads the caches
         # Loads the tile colors, if it exists
-        colors_file = "cache/tiledata.json"
-        if os.stat(colors_file).st_size != 0:
-            self.tile_data = json.load(open(colors_file))
+        with open("cache/tiledata.json") as fp:
+            tile_data = fp.read()
+            if tile_data:
+                self.tile_data = json.loads(tile_data)
 
-        bl_file = "cache/blacklist.json"
-        if os.stat(bl_file).st_size != 0:
-            self.blacklist = json.load(open(bl_file))
+        with open("cache/blacklist.json") as fp:
+            blacklist = fp.read()
+            if blacklist:
+                self.blacklist = json.loads(blacklist)
 
         self.initialize_letters()
         
@@ -93,7 +74,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             await ctx.send("Killing bot process...")
         await self.bot.close()
 
-
     @commands.command()
     @commands.is_owner()
     async def ban(self, ctx: Context, user: int):
@@ -104,16 +84,16 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
     @commands.command()
     @commands.is_owner()
-    async def leave(self, ctx: Context, guild: int | None = None):
+    async def leave(self, ctx: Context, guild: Optional[discord.Guild] = None):
         if guild is None:
-            await ctx.send("Bye!")
-            await ctx.guild.leave()
+            if ctx.guild is not None:
+                await ctx.send("Bye!")
+                await ctx.guild.leave()
+            else:
+                await ctx.send("Not possible in DMs.")
         else:
-            try:
-                await self.bot.get_guild(guild).leave()
-                await ctx.send(f"Left {guild}.")
-            except:
-                await ctx.send(f"Couldn't leave {guild}.")
+            await guild.leave()
+            await ctx.send(f"Left {guild}.")
 
     @commands.command()
     @commands.is_owner()
@@ -399,8 +379,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             all_tiles.write("\n".join(sorted([(f"{(tile + ' ').ljust(max_length, '-')} {data['source']}") for tile, data in self.tile_data.items()])))
 
         # Dumps the gathered data to tiledata.json
-        with open("cache/tiledata.json", "wt") as emote_file:
-            json.dump(self.tile_data, emote_file, indent=3)
+        with open("cache/tiledata.json", "wt") as tile_data:
+            json.dump(self.tile_data, tile_data, indent=3)
 
         await ctx.send("Saved cached tile data.")
     
@@ -413,10 +393,10 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
     @commands.command()
     @commands.is_owner()
-    async def doc(self, ctx: Context, command: str):
+    async def doc(self, ctx: Context, command: commands.Command):
         '''Check a command's docstring.'''
-        description = self.bot.get_command(command).help
-        await ctx.send(f"Command doc for {command}:\n{description}")
+        help = command.help
+        await ctx.send(f"Command doc for {command}:\n{help}")
 
     def initialize_letters(self):
         big = {}
