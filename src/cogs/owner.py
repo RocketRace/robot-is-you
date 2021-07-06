@@ -50,17 +50,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         colors_file = "cache/tiledata.json"
         if os.stat(colors_file).st_size != 0:
             self.tile_data = json.load(open(colors_file))
-            
-        # Loads the alternate tiles if possible
-        # Loads debug data, if any
-        debug_file = "cache/debug.json"
-        if os.stat(debug_file).st_size != 0:
-            debug_data = json.load(open(debug_file), object_pairs_hook=load_with_datetime)
-            self.identifies = debug_data.get("identifies")
-            self.resumes = debug_data.get("resumes")
 
         bl_file = "cache/blacklist.json"
-        if os.stat(debug_file).st_size != 0:
+        if os.stat(bl_file).st_size != 0:
             self.blacklist = json.load(open(bl_file))
 
         self.initialize_letters()
@@ -101,27 +93,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             await ctx.send("Killing bot process...")
         await self.bot.close()
 
-    @commands.command()
-    @commands.is_owner()
-    async def debug(self, ctx: Context):
-        '''Gives some debug stats.'''
-        yesterday = datetime.utcnow() - timedelta(days=1)
-        identifies_day = [event for event in self.identifies if event > yesterday]
-        resumes_day = [event for event in self.resumes if event > yesterday]
-        i_count = len(identifies_day)
-        r_count = len(resumes_day)
-
-        global_rate_limit = not self.bot.http._global_over.is_set()
-
-        msg = discord.Embed(
-            title="Debug",
-            description="".join([f"IDENTIFYs in the past 24 hours: {i_count}\n",
-                f"RESUMEs in the past 24 hours: {r_count}\n",
-                f"Global rate limit: {global_rate_limit}"]),
-            color=self.bot.embed_color
-        )
-
-        await ctx.send(embed=msg)
 
     @commands.command()
     @commands.is_owner()
@@ -604,37 +575,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                     Path(f"target/letters/{height}/{char}/{width}").mkdir(parents=True, exist_ok=True)
                     frame.save(f"target/letters/{height}/{char}/{width}/{now}_{i}.png")
 
-        # await ctx.send(f":) {saved}")
-
-    def update_debug(self):
-        # Updates the debug file
-        debug_file = "cache/debug.json"
-        debug_data = {"identifies": [], "resumes": []}
-
-        # Prevent leaking
-        yesterday = datetime.utcnow() - timedelta(days=1)
-        identifies_day = [event for event in self.identifies if event > yesterday]
-        resumes_day = [event for event in self.resumes if event > yesterday]
-        self.identifies = identifies_day
-        self.resumes = resumes_day
-
-        debug_data["identifies"] = identifies_day
-        debug_data["resumes"] = resumes_day
-        json.dump(debug_data, open(debug_file, "w"), indent=2, default=lambda obj:obj.isoformat() if hasattr(obj, 'isoformat') else obj)
-
-    def _clear_gateway_data(self):
-        week_ago = datetime.utcnow() - timedelta(days=7)
-        to_remove = [index for index, dt in enumerate(self.resumes) if dt < week_ago]
-        for index in reversed(to_remove):
-            del self.resumes[index]
-
-        to_remove = [index for index, dt in enumerate(self.resumes) if dt < week_ago]
-        for index in reversed(to_remove):
-            del self.identifies[index]
-        
-        # update debug data file
-        self.update_debug()
-    
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
         webhook = await self.bot.fetch_webhook(self.bot.webhook_id)
@@ -646,25 +586,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         embed.add_field(name="ID", value=str(guild.id))
         embed.add_field(name="Member Count", value=str(guild.member_count))
         await webhook.send(embed=embed)
-
-    @commands.Cog.listener()
-    async def on_socket_raw_send(self, data):
-        # unconventional way to discern RESUMES from IDENTIFYs
-        if '"op":2' not in data and '"op":6' not in data:
-            return
-
-        back_to_json = json.loads(data)
-        if back_to_json['op'] == 2:
-            self.identifies.append(datetime.utcnow())
-            self.started = datetime.utcnow()
-        else:
-            self.resumes.append(datetime.utcnow())
-
-        # don't want to permanently grow memory
-        self._clear_gateway_data()   
-
-        # update debug data file
-        self.update_debug()
 
 def setup(bot: Bot):
     bot.add_cog(OwnerCog(bot))
