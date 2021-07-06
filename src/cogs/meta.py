@@ -1,14 +1,16 @@
 from __future__ import annotations
-import asyncio
-from typing import List, Optional
-import discord
-import itertools
 
-from datetime     import datetime, timedelta
-from discord.ext  import commands
-from json         import load
-from subprocess   import run, TimeoutExpired, PIPE, STDOUT
-from time         import time
+import asyncio
+import itertools
+from datetime import datetime
+from subprocess import PIPE, STDOUT, TimeoutExpired, run
+from time import time
+
+import discord
+from discord.ext import commands
+
+from .types import Bot, Context
+
 
 # Custom help command implementation
 class PrettyHelpCommand(commands.DefaultHelpCommand):
@@ -45,7 +47,7 @@ class PrettyHelpCommand(commands.DefaultHelpCommand):
             
             await destination.send(embed=formatted)
 
-    def add_indented_commands(self, commands: List[commands.Command], *, heading: str, max_size: Optional[int] = None):
+    def add_indented_commands(self, commands: list[commands.Command], *, heading: str, max_size: int | None = None):
         if not commands:
             return
 
@@ -102,7 +104,7 @@ class PrettyHelpCommand(commands.DefaultHelpCommand):
         return '`%s%s %s`' % (self.clean_prefix, alias, command.signature)
 
 class MetaCog(commands.Cog, name="Other Commands"):
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: Bot):
         self.bot = bot
         self._original_help_command = bot.help_command
         # Sets up the help command
@@ -110,12 +112,12 @@ class MetaCog(commands.Cog, name="Other Commands"):
         bot.help_command.cog = self
 
     # Check if the bot is loading
-    async def cog_check(self, ctx):
+    async def cog_check(self, ctx: Context):
         return not self.bot.loading
 
     @commands.command(aliases=["info", "you"])
     @commands.cooldown(5, 8, commands.BucketType.channel)
-    async def about(self, ctx):
+    async def about(self, ctx: Context):
         """
         Displays bot information.
         """
@@ -145,13 +147,13 @@ class MetaCog(commands.Cog, name="Other Commands"):
     
     @commands.command(aliases=["pong"])
     @commands.cooldown(5, 8, commands.BucketType.channel)
-    async def ping(self, ctx):
+    async def ping(self, ctx: Context):
         '''Returns bot latency.'''
-        await self.bot.send(ctx, f"Latency: {round(self.bot.latency, 3)} seconds")
+        await ctx.send(f"Latency: {round(self.bot.latency, 3)} seconds")
 
     @commands.command()
     @commands.cooldown(5, 8, type=commands.BucketType.channel)
-    async def invite(self, ctx):
+    async def invite(self, ctx: Context):
         '''Links for the bot support server'''
         msg = discord.Embed(colour=self.bot.embed_color, title="Invite Links", description="Due to an API change, this bot is no longer able to join any new guilds.\n" + \
             "This is a Discord mandated change and there is no way to bypass it.\n" + \
@@ -164,7 +166,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
     
     @commands.command(aliases=["interpret"])
     @commands.cooldown(5, 8, type=commands.BucketType.channel)
-    async def babalang(self, ctx, program: str, *program_input: str):
+    async def babalang(self, ctx: Context, program: str, *program_input: str):
         '''Interpret a [Babalang v1.1.1](https://esolangs.org/wiki/Babalang) program.
         
         The first argument must be the source code for the program, escaped in quotes:
@@ -233,7 +235,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
         else:
             message.append(f"```\n{output}\n```")
 
-        await self.bot.send(ctx, "".join(message))
+        await ctx.send("".join(message))
 
     @commands.Cog.listener()
     async def on_disconnect(self):
@@ -269,5 +271,5 @@ class MetaCog(commands.Cog, name="Other Commands"):
     def cog_unload(self):
         self.bot.help_command = self._original_help_command
 
-def setup(bot: commands.Bot):
+def setup(bot: Bot):
     bot.add_cog(MetaCog(bot))

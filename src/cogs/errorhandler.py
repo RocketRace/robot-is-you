@@ -1,17 +1,17 @@
 from __future__ import annotations
-import discord
+
 import sys
 import traceback
+from asyncio import create_task
 
-from asyncio      import create_task
-from discord.ext  import commands
+import discord
+from discord.ext import commands
 
-"""
-By EeviePy on GitHub: https://gist.github.com/EvieePy/7822af90858ef65012ea500bcecf1612
-"""
+from .types import Bot, Context
+
 
 class CommandErrorHandler(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: Bot):
         self.bot = bot
         self.webhook_id = bot.webhook_id
         self.logger = None
@@ -20,7 +20,7 @@ class CommandErrorHandler(commands.Cog):
         return await self.bot.fetch_webhook(webhook_id)
     
     @commands.Cog.listener()
-    async def on_command_error(self, ctx: commands.Context, error: Exception):
+    async def on_command_error(self, ctx: Context, error: Exception):
         """The event triggered when an error is raised while invoking a command.
         ctx   : Context
         error : Exception"""
@@ -98,58 +98,58 @@ class CommandErrorHandler(commands.Cog):
             if ctx.author.id == self.bot.owner_id:
                 return await ctx.reinvoke()
             else:
-                await self.bot.error(ctx, str(error))
+                await ctx.error(str(error))
                 return await self.logger.send(embed=emb)
 
         elif isinstance(error, commands.DisabledCommand):
-            await self.bot.error(ctx, f'{ctx.command} has been disabled.')
+            await ctx.error(f'{ctx.command} has been disabled.')
             return await self.logger.send(embed=emb)
 
         elif isinstance(error, commands.NoPrivateMessage):
             try:
-                await self.bot.error(ctx.author, f'{ctx.command} can not be used in Private Messages.')
+                await ctx.author.send(f'{ctx.command} can not be used in Private Messages.')
             except:
                 emb.add_field(name="Notes", value="Could not send private messages to user.")
             return await self.logger.send(embed=emb)
 
         elif isinstance(error, commands.ExpectedClosingQuoteError):
-            return await self.bot.error(ctx, f"Expected closing quotation mark `{error.close_quote}`.")
+            return await ctx.error(f"Expected closing quotation mark `{error.close_quote}`.")
         
         elif isinstance(error, commands.InvalidEndOfQuotedStringError):
-            return await self.bot.error(ctx, f"Expected a space after a quoted string, got `{error.char}` instead.")
+            return await ctx.error(f"Expected a space after a quoted string, got `{error.char}` instead.")
         
         elif isinstance(error, commands.UnexpectedQuoteError):
-            return await self.bot.error(ctx, f"Got unexpected quotation mark `{error.quote}` inside a string.")
+            return await ctx.error(f"Got unexpected quotation mark `{error.quote}` inside a string.")
 
         elif isinstance(error, commands.ConversionError):
             await self.logger.send(embed=emb)
-            return await self.bot.error(ctx, "Invalid function arguments provided. Check the help command for the proper format.")
+            return await ctx.error("Invalid function arguments provided. Check the help command for the proper format.")
         
         elif isinstance(error, commands.BadArgument):
             await self.logger.send(embed=emb)
-            return await self.bot.error(ctx, f"Invalid argument provided. Check the help command for the proper format.\nOriginal error:\n{error.args[0]}")
+            return await ctx.error(f"Invalid argument provided. Check the help command for the proper format.\nOriginal error:\n{error.args[0]}")
 
         elif isinstance(error, commands.ArgumentParsingError):
             await self.logger.send(embed=emb)
-            return await self.bot.error(ctx, "Invalid function arguments provided.")
+            return await ctx.error("Invalid function arguments provided.")
 
         elif isinstance(error, commands.MissingRequiredArgument):
-            return await self.bot.error(ctx, f"Required argument {error.param} is missing.")
+            return await ctx.error(f"Required argument {error.param} is missing.")
 
         elif isinstance(error, discord.HTTPException):
             if error.status == 400:
-                return await self.bot.error(ctx, "This action could not be performed.")
+                return await ctx.error("This action could not be performed.")
             if error.status == 429:
-                return await self.bot.error(ctx, "We're being ratelimited. Try again later.")
+                return await ctx.error("We're being ratelimited. Try again later.")
             if error.status == 401:
-                return await self.bot.error(ctx, "This action cannot be performed.")
-            return await self.bot.error(ctx, "There was an error while processing this action.")
+                return await ctx.error("This action cannot be performed.")
+            return await ctx.error("There was an error while processing this action.")
         
         # All other Errors not returned come here... And we can just print the default TraceBack + log
-        await self.bot.error(ctx, f"An exception occurred: {type(error)}\n{error}\n```{''.join(traceback.format_tb(error.__traceback__))}```")
+        await ctx.error(f"An exception occurred: {type(error)}\n{error}\n```{''.join(traceback.format_tb(error.__traceback__))}```")
         await self.logger.send(embed=emb)
         print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
-def setup(bot: commands.Bot):
+def setup(bot: Bot):
     bot.add_cog(CommandErrorHandler(bot))

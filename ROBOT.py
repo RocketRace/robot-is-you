@@ -1,86 +1,82 @@
 from __future__ import annotations
-from typing import Optional
-import discord
-import jishaku
+
 import logging
 import sys
+from datetime import datetime
 
-from datetime     import datetime
-from discord.ext  import commands
-from json         import load
+import discord
+import jishaku
+from discord.ext import commands
 
-# Uses a custom bot class
-class BabaBot(commands.Bot):
-    # Custom send that sends content in an embed
-    # Note that due to AllowedMentions, mentions do not have to be "sanitized"
-    async def send(self, ctx: commands.Context, content: str, embed: Optional[discord.Embed] = None, **kwargs) -> discord.Message:
+import auth
+import config
+
+class Context(commands.Context):
+    async def error(self, msg: str) -> discord.Message:
+        await self.message.add_reaction("\u26a0\ufe0f")
+        return await self.reply(msg)
+
+    async def send(self, content: str = "", embed: discord.Embed | None = None, **kwargs) -> discord.Message:
         if len(content) > 2000:
-            content = content[:1963] + " [...] \n\n (Character limit reached!)"
+            msg = " [...] \n\n (Character limit reached!)"
+            content = content[:2000-len(msg)] + msg
         if embed is not None:
-            return await ctx.reply(content, embed=embed, **kwargs)
-        segments = content.split("\n")
-        title = segments[0]
-        description="\n".join(segments[1:])
-        if len(title) > 256:
-            title = None
-            description = "\n".join(segments)
-        container = discord.Embed(title=title, description=description, color=self.embed_color)
-        return await ctx.reply(embed=container, **kwargs)
+            if content:
+                return await self.reply(content, embed=embed, **kwargs)
+            return await self.reply(embed=embed, **kwargs)
+        elif content:
+            return await self.reply(content, embed=embed, **kwargs)
+        return await self.reply(**kwargs)
 
-    # Custom error message implementation
-    # Sends the error message. Automatically deletes it after some time.
-    async def error(self, ctx: commands.Context, msg: str) -> discord.Message:
-        await ctx.message.add_reaction("⚠️")
-        return await ctx.reply(msg)
+class Bot(commands.Bot):
+    '''Custom bot class :)'''
+    def __init__(self, *args, cogs: list[str], embed_color: discord.Color, webhook_id: int, prefixes: list[str], exit_code: int = 0, **kwargs):
+        self.started=datetime.utcnow()
+        self.loading=False
+        self.embed_color=embed_color
+        self.webhook_id=webhook_id
+        self.prefixes=prefixes
+        self.exit_code=exit_code
+        
+        super().__init__(*args, **kwargs)
+        # has to be after __init__
+        for cog in cogs:
+            self.load_extension(cog, package="ROBOT")
+        
 
-# Sets up the config
-with open("config/setup.json") as config_file:
-    conf = load(config_file)
+    async def get_context(self, message: discord.Message) -> Context:
+        return await super().get_context(message, cls=Context)
 
-logging.basicConfig(filename=conf.get("log_file"), level=logging.WARNING)
-default_activity = discord.Game(name=conf.get("activity"))
-prefixes = conf.get("prefixes")
-bot_trigger = commands.when_mentioned_or(*prefixes) if conf.get("trigger_on_mention") else prefixes
+logging.basicConfig(filename=config.log_file, level=logging.WARNING)
+default_activity = discord.Game(name=config.activity)
+prefixes = config.prefixes
+bot_trigger = commands.when_mentioned_or(*prefixes) if config.trigger_on_mention else prefixes
 
-default_mentions = discord.AllowedMentions(everyone=False, roles=False)
-intents = discord.Intents(messages=True, reactions=True, guilds=True)
-member_cache = discord.MemberCacheFlags.none()
 # Establishes the bot
-bot = BabaBot(
+bot = Bot(
     # Prefixes
     bot_trigger,
     # Other behavior parameters
     case_insensitive=True, 
     activity=default_activity, 
-    owner_id=conf.get("owner_id"),
-    description=conf.get("description"),
+    owner_id=config.owner_id,
+    description=config.description,
     # Never mention roles, @everyone or @here
-    allowed_mentions=default_mentions, 
+    allowed_mentions=discord.AllowedMentions(everyone=False, roles=False),
     # Only receive message and reaction events
-    intents=intents,
+    intents=discord.Intents(messages=True, reactions=True, guilds=True),
     # Disable the member cache
-    member_cache_flags=member_cache,
+    member_cache_flags=discord.MemberCacheFlags.none(),
     # Disable the message cache
     max_messages=None,
     # Don't chunk guilds
-    chunk_guilds_at_startup=False
+    chunk_guilds_at_startup=False,
+    # custom fields
+    cogs=config.cogs,
+    embed_color=config.embed_color,
+    webhook_id=config.webhook_id,
+    prefixes=prefixes,
 )
 
-bot.started = datetime.utcnow()
-bot.loading = False
-bot.embed_color = conf.get("embed_color")
-bot.webhook_id = conf.get("webhook_id")
-bot.prefixes = prefixes
-bot.exit_code = 0
-
-# Loads the modules of the bot
-for cog in conf.get("cogs"):
-    bot.load_extension(cog)
-
-# Run
-with open(conf.get("auth_file")) as f:
-    auth_conf = load(f)
-
-bot.run(auth_conf.get("token"))
-
+bot.run(auth.token)
 sys.exit(bot.exit_code)

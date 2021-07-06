@@ -1,18 +1,23 @@
 from __future__ import annotations
-import discord
+
 import re
-from datetime    import datetime
+from datetime import datetime
+from os import listdir
+
+import discord
 from discord.ext import commands
-from os          import listdir
-from src.utils   import constants
+
+from ..utils import constants
+from .types import Bot, Context
+
 
 class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: Bot):
         self.bot = bot
 
     @commands.command()
     @commands.cooldown(5, 8, type=commands.BucketType.channel)
-    async def search(self, ctx, *, query: str):
+    async def search(self, ctx: Context, *, query: str):
         '''Searches for tiles based on a query.
 
         **You may use these flags to navigate the output:**
@@ -155,11 +160,11 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         
         # Tidy up our output with this mess
         content = "\n".join([f"**{x.get('name')}** : {', '.join([f'{k}: `{v[0]},{v[1]}`' if isinstance(v, list) else f'{k}: `{v}`' for k, v in sorted(x.items(), key=lambda λ: λ[0]) if k not in ['name', 'tags']])}" if not isinstance(x, str) else x for x in [matches[0]] + sorted(matches[1:], key=lambda λ: (λ[sort_by], λ[secondary_sort_by]), reverse=reverse)[first_result:last_result + 1]])
-        await self.bot.send(ctx, content)
+        await ctx.send(content)
 
     @commands.cooldown(5, 8, type=commands.BucketType.channel)
     @commands.command(name="list")
-    async def list_tiles(self, ctx):
+    async def list_tiles(self, ctx: Context):
         '''Lists valid tiles for rendering.
 
         Returns all valid tiles in a text file.
@@ -171,7 +176,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
 
     @commands.cooldown(5, 8, type=commands.BucketType.channel)
     @commands.command(name="palettes")
-    async def list_palettes(self, ctx):
+    async def list_palettes(self, ctx: Context):
         '''Lists palettes usable for rendering.
 
         Palettes can be used as arguments for the `tile` (and subsequently `rule`) commands.
@@ -182,11 +187,11 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
                 msg.append(palette[:-4])
         msg.sort()
         msg.insert(0, "Valid palettes:")
-        await self.bot.send(ctx, "\n".join(msg))
+        await ctx.send("\n".join(msg))
 
     @commands.cooldown(5, 8, type=commands.BucketType.channel)
     @commands.command(name="variants")
-    async def list_variants(self, ctx, tile):
+    async def list_variants(self, ctx: Context, tile: str):
         '''List valid sprite variants for a given tile.'''
         # Clean the input
         clean_tile = tile.strip().lower()
@@ -202,7 +207,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
                 "Auto-generated text supports the `:noun`, `:letter`, and `:property` variants.",
                 suffix
             ]
-            return await self.bot.send(ctx, f"Valid sprite variants for '{clean_tile}'\n" + "\n".join(output) + "\n")
+            return await ctx.send(f"Valid sprite variants for '{clean_tile}'\n" + "\n".join(output) + "\n")
         
         # Determines the tiling type of the tile
         tiling = data.get("tiling")
@@ -258,8 +263,8 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         choice.append(suffix)
 
         # Output
-        await self.bot.send(ctx, f"Valid sprite variants for '{clean_tile}'\n" + "\n".join(choice) + "\n")
+        await ctx.send(f"Valid sprite variants for '{clean_tile}'\n" + "\n".join(choice) + "\n")
 
 
-def setup(bot: commands.Bot):
+def setup(bot: Bot):
     bot.add_cog(UtilityCommandsCog(bot))

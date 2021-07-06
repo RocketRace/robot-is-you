@@ -1,5 +1,4 @@
-
-auth.json
+auth.py
 log.txt
 .DS_Store
 .vscode/

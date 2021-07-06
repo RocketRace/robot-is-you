@@ -29,9 +29,7 @@ class Tile:
             return f"<Custom tile {self.name}>"
         return f"<Tile {self.name} : {self.variant} with {self.color} from {self.source}>"
 
-_T = TypeVar("_T")
-
-def cached_open(path, *, cache: Dict[str, _T], is_image: bool = False) -> _T:
+def cached_open(path, *, cache: Dict[str, Any], is_image: bool = False) -> Any:
     '''Checks whether a path is in the cache, and if so, returns that element. Otherwise calls open() or Image.open() on the path. '''
     if path in cache:
         return cache[path]

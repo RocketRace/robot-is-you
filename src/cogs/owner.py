@@ -1,16 +1,20 @@
 from __future__ import annotations
-import platform
-from typing import Any, Iterable, Optional, Tuple
-import discord
+
 import json
 import os
+import platform
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Any, Iterable
 
-from datetime     import datetime, timedelta
-from discord.ext  import commands
-from pathlib      import Path
-from PIL          import Image, ImageDraw, ImageChops
+import discord
+from discord.ext import commands
+from PIL import Image, ImageChops, ImageDraw
 
-def load_with_datetime(pairs: Iterable[Tuple[str, Any]], format: str='%Y-%m-%dT%H:%M:%S.%f'):
+from .types import Bot, Context
+
+
+def load_with_datetime(pairs: Iterable[tuple[str, Any]], format: str='%Y-%m-%dT%H:%M:%S.%f'):
     '''Load json + datetime objects, in the speficied format.
     Via https://stackoverflow.com/a/14996040
     '''
@@ -32,10 +36,10 @@ def load_with_datetime(pairs: Iterable[Tuple[str, Any]], format: str='%Y-%m-%dT%
     
 class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     
-    def bot_check(self, ctx: commands.Context):
+    def bot_check(self, ctx: Context):
         return ctx.author.id not in self.blacklist
 
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: Bot):
         self.bot = bot
         self.tile_data = {}
         self.identifies = []
@@ -66,7 +70,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             
     @commands.command(aliases=["load", "reload"])
     @commands.is_owner()
-    async def reloadcog(self, ctx, cog: str = ""):
+    async def reloadcog(self, ctx: Context, cog: str = ""):
         '''Reloads extensions within the bot while the bot is running.'''
         if not cog:
             extensions = [a for a in self.bot.extensions.keys()]
@@ -81,7 +85,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
     @commands.command(aliases=["reboot"])
     @commands.is_owner()
-    async def restart(self, ctx):
+    async def restart(self, ctx: Context):
         '''Restarts the bot process.'''
         await ctx.send("Restarting bot process...")
         self.bot.exit_code = 1
@@ -89,7 +93,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
     @commands.command(aliases=["kill", "yeet"])
     @commands.is_owner()
-    async def logout(self, ctx):
+    async def logout(self, ctx: Context):
         '''Kills the bot process.'''
         if ctx.invoked_with == "yeet":
             await ctx.send("Yeeting bot process...")
@@ -99,7 +103,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
     @commands.command()
     @commands.is_owner()
-    async def debug(self, ctx):
+    async def debug(self, ctx: Context):
         '''Gives some debug stats.'''
         yesterday = datetime.utcnow() - timedelta(days=1)
         identifies_day = [event for event in self.identifies if event > yesterday]
@@ -117,11 +121,11 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             color=self.bot.embed_color
         )
 
-        await self.bot.send(ctx, " ", embed=msg)
+        await ctx.send(embed=msg)
 
     @commands.command()
     @commands.is_owner()
-    async def ban(self, ctx, user: int):
+    async def ban(self, ctx: Context, user: int):
         self.blacklist.append(user)
         with open("cache/blacklist.json", "w") as f:
             json.dump(self.blacklist, f)
@@ -129,7 +133,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
     @commands.command()
     @commands.is_owner()
-    async def leave(self, ctx, guild: Optional[int] = None):
+    async def leave(self, ctx: Context, guild: int | None = None):
         if guild is None:
             await ctx.send("Bye!")
             await ctx.guild.leave()
@@ -142,7 +146,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
     @commands.command()
     @commands.is_owner()
-    async def loadchanges(self, ctx):
+    async def loadchanges(self, ctx: Context):
         '''Scrapes alternate tile data from level metadata (`.ld`) files.'''
         self.bot.loading = True
         
@@ -228,7 +232,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     
     @commands.command()
     @commands.is_owner()
-    async def loaddata(self, ctx):
+    async def loaddata(self, ctx: Context):
         '''Reloads tile data from `data/values.lua`, `data/editor_objectlist.lua` and `.ld` files.'''
         alt_tiles = await ctx.invoke(self.bot.get_command("loadchanges"))
         await ctx.invoke(self.bot.get_command("loadcolors"), alternate_tiles = alt_tiles)
@@ -239,7 +243,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
     @commands.command()
     @commands.is_owner()
-    async def loadcolors(self, ctx, alternate_tiles):
+    async def loadcolors(self, ctx: Context, alternate_tiles):
         '''Loads tile data from `data/values.lua.` and merges it with tile data from `.ld` files.'''
         self.tile_data = {}
         alt_tiles = alternate_tiles
@@ -344,7 +348,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
     @commands.command()
     @commands.is_owner()
-    async def loadcustom(self, ctx):
+    async def loadcustom(self, ctx: Context):
         '''Loads custom tile data from `data/custom/*.json` into self.tile_data'''
         
         # Load custom tile data from a json files
@@ -371,7 +375,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
     @commands.command()
     @commands.is_owner()
-    async def loadeditor(self, ctx):
+    async def loadeditor(self, ctx: Context):
         '''Loads tile data from `data/editor_objectlist.lua` into `self.tile_data`.'''
 
         lines = ""
@@ -414,7 +418,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
     @commands.command()
     @commands.is_owner()
-    async def dumpdata(self, ctx):
+    async def dumpdata(self, ctx: Context):
         '''Dumps cached tile data from `self.tile_data` into `cache/tiledata.json` and `target/tilelist.txt`.'''
 
         max_length = len(max(self.tile_data, key=lambda x: len(x))) + 1
@@ -431,17 +435,17 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     
     @commands.command()
     @commands.is_owner()
-    async def hidden(self, ctx):
+    async def hidden(self, ctx: Context):
         '''Lists all hidden commands.'''
         cmds = "\n".join([cmd.name for cmd in self.bot.commands if cmd.hidden])
-        await self.bot.send(ctx, f"All hidden commands:\n{cmds}")
+        await ctx.send(f"All hidden commands:\n{cmds}")
 
     @commands.command()
     @commands.is_owner()
-    async def doc(self, ctx, command: str):
+    async def doc(self, ctx: Context, command: str):
         '''Check a command's docstring.'''
         description = self.bot.get_command(command).help
-        await self.bot.send(ctx, f"Command doc for {command}:\n{description}")
+        await ctx.send(f"Command doc for {command}:\n{description}")
 
     def initialize_letters(self):
         big = {}
@@ -467,7 +471,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
     @commands.command()
     @commands.is_owner()
-    async def loadletters(self, ctx):
+    async def loadletters(self, ctx: Context):
         '''Scrapes individual letters from vanilla sprites.'''
         ignored = json.load(open("config/letterignore.json"))
 
@@ -485,7 +489,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 tile_type = data["type"]
             except:
                 print(data)
-            self.loadletter(sprite, tile_type)
+            else:
+                self.loadletter(sprite, tile_type)
 
         self.initialize_letters()
 
@@ -554,7 +559,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 # There's a letter at this position
                 else:
                     clone = alpha.copy()
-                    ImageDraw.floodfill(clone, (x, y), 1) # 1 placeholder
+                    ImageDraw.floodfill(clone, (x, y), 1, 1) # 1 placeholder
                     clone = Image.eval(clone, lambda x: 255 if x == 1 else 0)
                     clone = clone.convert("1")
                     
@@ -604,7 +609,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     def update_debug(self):
         # Updates the debug file
         debug_file = "cache/debug.json"
-        debug_data = {"identifies":None,"resumes":None}
+        debug_data = {"identifies": [], "resumes": []}
 
         # Prevent leaking
         yesterday = datetime.utcnow() - timedelta(days=1)
@@ -661,5 +666,5 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         # update debug data file
         self.update_debug()
 
-def setup(bot: commands.Bot):
+def setup(bot: Bot):
     bot.add_cog(OwnerCog(bot))

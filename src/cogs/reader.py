@@ -1,15 +1,19 @@
 from __future__ import annotations
+
 import asyncio
+import base64
 import configparser
 import io
-from typing import Any, Dict, List, Optional, TextIO, Tuple
-import aiohttp
-import base64
 import json
 import zlib
+from os import listdir, stat
+from typing import Any, TextIO
 
+import aiohttp
 from discord.ext import commands, tasks
-from os          import listdir, stat
+
+from .types import Bot, Context
+
 
 def flatten(x: int, y: int, width: int) -> int:
     '''Return the flattened position of a coordinate in a grid of specified width'''
@@ -40,11 +44,11 @@ class Grid:
         self.name = ""
         self.subtitle = ""
         self.palette = ""
-        self.images: List[str] = []
+        self.images: list[str] = []
         # Object information
         self.width = 0
         self.height = 0
-        self.cells: List[List[Item]] = []
+        self.cells: list[list[Item]] = []
         # Parent level and map identification
         self.parent = None
         self.map_id = None
@@ -52,7 +56,7 @@ class Grid:
         self.number = None
         self.extra = None
     
-    def unflatten(self) -> List[List[List[str]]]:
+    def unflatten(self) -> list[list[list[str]]]:
         '''Returns an unflattened version of the grid.'''
         height = self.height
         width = self.width
@@ -75,7 +79,7 @@ class Item:
     '''Represents an object within a level.
     This may be a regular object, a path object, a level object, a special object or empty.
     '''
-    def __init__(self, *, ID: Optional[int] = None, obj: Optional[str] = None, name: Optional[str] = None, color: Optional[Tuple[int, int]] = None, position: int = None, direction: int = None, extra = None, layer: int = 0):
+    def __init__(self, *, ID: int | None = None, obj: str | None = None, name: str | None = None, color: tuple[int, int] | None = None, position: int = None, direction: int = None, extra = None, layer: int = 0):
         '''Returns an Item with the given parameters.'''
         self.ID = ID
         self.obj = obj
@@ -101,13 +105,13 @@ class Item:
         return Item(ID=-1, obj="empty", name="empty", layer=0)
     
     @classmethod
-    def level(cls, color: Tuple[int, int] = (0, 3)) -> Item:
+    def level(cls, color: tuple[int, int] = (0, 3)) -> Item:
         '''Returns an Item representing a level object.'''
         return Item(ID=-2, obj="level", name="level", color=color, layer=20)
 
 class Reader(commands.Cog, command_attrs=dict(hidden=True)):
     '''A class for parsing the contents of level files.'''
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: Bot):
         '''Initializes the Reader cog.
         Populates the default objects cache from a data/values.lua file.
         '''
@@ -141,7 +145,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             self.custom_levels = json.load(open(custom))
         self.update_custom_levels.start()
 
-    async def render_custom(self, code: str) -> Dict[str, Any]:
+    async def render_custom(self, code: str) -> dict[str, Any]:
         '''Renders a custom level. code should be valid (but is checked regardless)'''
         async with aiohttp.request("GET", f"https://baba-is-bookmark.herokuapp.com/api/level/raw/l?code={code}") as resp:
             resp.raise_for_status()
@@ -193,7 +197,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         remove_borders: bool = False, 
         keep_background: bool = False, 
         tile_borders: bool = False
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         '''Loads and renders a level, given its file path and source. 
         Shaves off the borders if specified.
         '''
@@ -248,7 +252,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
 
     @commands.command()
     @commands.is_owner()
-    async def loadmap(self, ctx, source: str, filename: str, initialize: bool = False):
+    async def loadmap(self, ctx: Context, source: str, filename: str, initialize: bool = False):
         '''Loads a given level. Initializes the level tree if so specified.'''
         # Parse and render
         metadata = self.render_map(
@@ -264,7 +268,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             self.clean_metadata({filename: metadata})
         await ctx.send(f"Rendered level at `{source}/{filename}`.")
 
-    def clean_metadata(self, metadata: Dict[str, Any]):
+    def clean_metadata(self, metadata: dict[str, Any]):
         '''Cleans up level metadata from `self.parent_levels` as well as the given dict, and populates the cleaned data into `self.level_data`.'''
         # Clean up basic level data
         self.level_data.update(metadata)
@@ -295,7 +299,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
 
     @commands.command()
     @commands.is_owner()
-    async def loadmaps(self, ctx):
+    async def loadmaps(self, ctx: Context):
         '''Loads and renders all levels.
         Initializes the level tree unless otherwise specified.
         Cuts off borders from rendered levels unless otherwise specified.
@@ -461,7 +465,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         else:
             return (x, y)
 
-    def read_map(self, filename: str, source: str, data: Optional[TextIO] = None) -> Grid:
+    def read_map(self, filename: str, source: str, data: TextIO | None = None) -> Grid:
         '''Parses a .l file's content, given its file path.
         Returns a Grid object containing the level data.
         '''
@@ -479,7 +483,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         return grid
 
 
-    def read_metadata(self, grid: Grid, initialize: bool = False, data: Optional[TextIO] = None, custom: bool = False) -> Grid:
+    def read_metadata(self, grid: Grid, initialize: bool = False, data: TextIO | None = None, custom: bool = False) -> Grid:
         '''Add everything that's not just basic tile positions & IDs'''
         # We've added the basic objects & their directions. 
         # Now we add everything else:
@@ -757,5 +761,5 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         with open("cache/customlevels.json", "w") as f:
             json.dump(self.custom_levels, f)
 
-def setup(bot: commands.Bot):
+def setup(bot: Bot):
     bot.add_cog(Reader(bot))

@@ -40,18 +40,21 @@ Run the bot using `python3 ROBOT.py`.
 
 ## Required files
 
-Bot configuration is in `config/setup.json`. It contains the following fields:
+Bot configuration is in `config.py`. It contains the following values:
 
-* `auth_file` Should point to a JSON file with a `token` field with your bot token.
-* `activity` A "playing" message to set at login.
-* `description` A description to use in the help command.
-* `prefixes` A list of strings that can be used to trigger commands.
-* `trigger_on_mention` A boolean dictating whether bot @mentions will behave as a command prefix.
-* `webhook_id` The ID of a webhook to report command errors to. Requires the `manage webhooks` permission in the webhook's channel.
-* `owner_id` The ID of the bot owner.
-* `embed_color` The color of embedded messages.
-* `log_file` The file to report logs to.
-* `cogs` A list of strings -- cogs to load into the bot.
+* `activity`: `str` - A "playing" message to set at login.
+* `description`: `str` - A description to use in the help command.
+* `prefixes`: `list[str]` - A list of strings that can be used to trigger commands.
+* `trigger_on_mention`: `bool` - Whether or not bot @mentions will behave as a command prefix.
+* `webhook_id`: `int` - The ID of a webhook to report command errors to. Requires the `manage webhooks` permission in the webhook's channel.
+* `owner_id`: `int` - The ID of the bot owner.
+* `embed_color`: `discord.Color` - The color of embedded messages.
+* `log_file`: `str` - The file to report logs to.
+* `cogs`: `list[str]` - A list of strings -- cogs to load into the bot.
+
+In addition, authentication information should be placed in `auth.py`:
+
+* `token`: `str` - The bot token.
 
 If the bot complains about missing files or directories in `cache/` or `target/`, create them. Specifically, you should have the following paths created:
 * `cache/tiledata.json` A JSON file defaulting to the empty object `{}`. Contains tile data for rendering objects.

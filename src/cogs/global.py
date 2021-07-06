@@ -1,22 +1,24 @@
 from __future__ import annotations
-from typing import BinaryIO, List, Optional, Tuple, Union
-import aiohttp
-import discord
+
+import functools
 import random
 import re
 import zipfile
+from datetime import datetime
+from inspect import Parameter
+from io import BytesIO
+from json import load
+from os import listdir
+from string import ascii_lowercase
+from time import time
+from typing import BinaryIO
 
-from datetime    import datetime
+import aiohttp
+import discord
 from discord.ext import commands
-from functools   import partial
-from inspect     import Parameter
-from io          import BytesIO
-from json        import load
-from os          import listdir
-from PIL         import Image, ImageChops, ImageFilter, ImageDraw
-from string      import ascii_lowercase
-from src.utils   import Tile, cached_open, constants
-from time        import time
+from PIL import Image, ImageChops, ImageDraw, ImageFilter
+from ..utils import Tile, cached_open, constants
+from .types import Bot, Context
 
 def try_index(string: str, value: str) -> int:
     '''Returns the index of a substring within a string.
@@ -63,7 +65,7 @@ class BadLetterStyle(ValueError):
     pass
 
 # Splits the "text_x,y,z..." shortcuts into "text_x", "text_y", ...
-def split_commas(grid: List[List[str]], prefix: str):
+def split_commas(grid: list[list[str]], prefix: str):
     for row in grid:
         to_add = []
         for i, word in enumerate(row):
@@ -80,7 +82,7 @@ def split_commas(grid: List[List[str]], prefix: str):
     return grid
 
 class GlobalCog(commands.Cog, name="Baba Is You"):
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: Bot):
         self.bot = bot
         with open("config/leveltileoverride.json") as f:
             j = load(f)
@@ -91,7 +93,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         '''Only if the bot is not loading assets'''
         return not self.bot.loading
 
-    def save_frames(self, frames: List[Image.Image], fp: Union[str, BinaryIO]):
+    def save_frames(self, frames: list[Image.Image], fp: str | BinaryIO):
         '''Saves a list of images as a gif to the specified file path.'''
         frames[0].save(fp, "GIF",
             save_all=True,
@@ -119,7 +121,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             base.paste(final, (3, 3), alpha)
             base = ImageChops.invert(base)
             base = base.filter(ImageFilter.FIND_EDGES)
-            ImageDraw.floodfill(base, (0, 0), 0)
+            ImageDraw.floodfill(base, (0, 0), 0, 0)
             base = base.crop((2, 2, base.width - 2, base.height - 2))
             base = base.convert("1")
             final = base.convert("RGBA")
@@ -134,15 +136,15 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
     def render(
         self,
-        word_grid: List[List[List[Tile]]],
+        word_grid: list[list[list[Tile]]],
         width: int,
         height: int,
         *,
         palette: str = "default",
-        images: Optional[List[Image.Image]] = None,
+        images: list[Image.Image] | None = None,
         image_source: str = "vanilla",
         out: str = "target/renders/render.gif",
-        background: Optional[Tuple[int, int]] = None,
+        background: tuple[int, int] | None = None,
         rand: bool = False,
         use_overridden_colors: bool = False
     ):
@@ -311,7 +313,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
         self.save_frames(frames, out)
 
-    def handle_variants(self, grid: List[List[List[str]]], *, tile_borders: bool = False, is_level: bool = False, palette: str = "default") -> List[List[List[Tile]]]:
+    def handle_variants(self, grid: list[list[list[str]]], *, tile_borders: bool = False, is_level: bool = False, palette: str = "default") -> list[list[list[Tile]]]:
         '''Appends variants to tiles in a grid.
 
         Returns a grid of `Tile` objects.
@@ -633,7 +635,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
     @commands.group(invoke_without_command=True)
     @commands.cooldown(5, 8, commands.BucketType.channel)
-    async def make(self, ctx, text: str, color: str = "", style: str = "noun", meta_level: int = 0, direction: str = "none", palette = "default"):
+    async def make(self, ctx: Context, text: str, color: str = "", style: str = "noun", meta_level: int = 0, direction: str = "none", palette = "default"):
         '''Generates a custom text sprite. 
         
         Use "/" in the text to force a line break.
@@ -666,20 +668,20 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     color_index = constants.valid_colors[real_color]
                     tile_color = tuple(p/256 for p in palette_img.getpixel(color_index))
                 except FileNotFoundError:
-                    return await self.bot.error(ctx, f"The palette `{palette}` is not valid.")
+                    return await ctx.error(f"The palette `{palette}` is not valid.")
             else:
-                return await self.bot.error(ctx, f"The color `{color}` is invalid.")
+                return await ctx.error(f"The color `{color}` is invalid.")
         else:
             tile_color = (1, 1, 1)
         if style not in ("noun", "property", "letter"):
-            return await self.bot.error(ctx, f"The style `{style}` is not valid. it must be one of `noun`, `property` or `letter`.")
+            return await ctx.error(f"The style `{style}` is not valid. it must be one of `noun`, `property` or `letter`.")
         if direction not in ("none", "up", "right", "left", "down"):
-            return await self.bot.error(ctx, f"The direction `{direction}` is not valid. It must be one of `none`, `up`, `right`, `left` or `down`.")
+            return await ctx.error(f"The direction `{direction}` is not valid. It must be one of `none`, `up`, `right`, `left` or `down`.")
         if "property" == style:
             if direction in ("up", "right", "left", "down"):
                 style = style + direction
         if not 0 <= meta_level <= constants.max_meta_depth:
-            return await self.bot.error(ctx, f"The meta level `{meta_level}` is invalid. It must be one of: " + ", ".join(f"`{n}`" for n in range(constants.max_meta_depth + 1)) + ".")
+            return await ctx.error(f"The meta level `{meta_level}` is invalid. It must be one of: " + ", ".join(f"`{n}`" for n in range(constants.max_meta_depth + 1)) + ".")
         try:
             meta_level = int(meta_level)
             buffer = BytesIO()
@@ -689,25 +691,25 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             await ctx.reply(file=discord.File(buffer, filename=f"custom_'{text.replace('/','')}'.gif"))
         except TooManyLineBreaks as e:
             text, count = e.args
-            return await self.bot.error(ctx, f"The text `{text}` could not be generated, because it contains {count} `/` characters (max 1).")
+            return await ctx.error(f"The text `{text}` could not be generated, because it contains {count} `/` characters (max 1).")
         except LeadingTrailingLineBreaks as e:
             text = e.args[0]
-            return await self.bot.error(ctx, f"The text `{text}` could not be generated, because it starts or ends with a `/` character.")
+            return await ctx.error(f"The text `{text}` could not be generated, because it starts or ends with a `/` character.")
         except BlankCustomText as e:
-            return await self.bot.error(ctx, "The name of a text tile can't be blank. Make sure there aren't any typos in your input.")
+            return await ctx.error("The name of a text tile can't be blank. Make sure there aren't any typos in your input.")
         except BadCharacter as e:
             text, char = e.args
-            return await self.bot.error(ctx, f"The text `{text}` could not be generated, because no appropriate letter sprite exists for `{char}`.")
+            return await ctx.error(f"The text `{text}` could not be generated, because no appropriate letter sprite exists for `{char}`.")
         except CustomTextTooLong as e:
             text, length = e.args
-            return await self.bot.error(ctx, f"The text `{text}` could not be generated, because it is too long ({length}).")
+            return await ctx.error(f"The text `{text}` could not be generated, because it is too long ({length}).")
         except BadLetterStyle as e:
             text = e.args[0]
-            return await self.bot.error(ctx, f"The text `{text}` could not be generated, because the `letter` variant can only be used on text that's two letters long.")
+            return await ctx.error(f"The text `{text}` could not be generated, because the `letter` variant can only be used on text that's two letters long.")
         
     @make.command()
     @commands.cooldown(5, 8, type=commands.BucketType.channel)
-    async def raw(self, ctx, text: str, style: str = "noun", meta_level: int = 0, direction: str = "none"):
+    async def raw(self, ctx: Context, text: str, style: str = "noun", meta_level: int = 0, direction: str = "none"):
         '''Returns a zip archive of the custom tile.
 
         A raw sprite has no color!
@@ -718,11 +720,11 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         '''
         real_text = text.lower()
         if style not in ("noun", "property", "letter"):
-            return await self.bot.error(ctx, f"`{style}` is not a valid style. It must be one of `noun`, `property` or `letter`.")
+            return await ctx.error(f"`{style}` is not a valid style. It must be one of `noun`, `property` or `letter`.")
         if not 0 <= meta_level <= constants.max_meta_depth:
-            return await self.bot.error(ctx, f"The meta level `{meta_level}` is invalid. It must be one of: " + ", ".join(f"`{n}`" for n in range(constants.max_meta_depth + 1)) + ".")
+            return await ctx.error(f"The meta level `{meta_level}` is invalid. It must be one of: " + ", ".join(f"`{n}`" for n in range(constants.max_meta_depth + 1)) + ".")
         if direction not in ("none", "up", "right", "left", "down"):
-            return await self.bot.error(ctx, f"`{direction}` is not a valid direction. It must be one of `none`, `up`, `right`, `left` or `down`.")
+            return await ctx.error(f"`{direction}` is not a valid direction. It must be one of `none`, `up`, `right`, `left` or `down`.")
         if style == "property":
             if direction in ("up", "right", "left", "down"):
                 style = style + direction
@@ -743,23 +745,23 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             )
         except TooManyLineBreaks as e:
             text, count = e.args
-            return await self.bot.error(ctx, f"The text `{text}` could not be generated, because it contains {count} `/` characters (max 1).")
+            return await ctx.error(f"The text `{text}` could not be generated, because it contains {count} `/` characters (max 1).")
         except LeadingTrailingLineBreaks as e:
             text = e.args[0]
-            return await self.bot.error(ctx, f"The text `{text}` could not be generated, because it starts or ends with a `/` character.")
+            return await ctx.error(f"The text `{text}` could not be generated, because it starts or ends with a `/` character.")
         except BlankCustomText as e:
-            return await self.bot.error(ctx, "The name of a text tile can't be blank. Make sure there aren't any typos in your input.")
+            return await ctx.error("The name of a text tile can't be blank. Make sure there aren't any typos in your input.")
         except BadCharacter as e:
             text, char = e.args
-            return await self.bot.error(ctx, f"The text `{text}` could not be generated, because no appropriate letter sprite exists for `{char}`.")
+            return await ctx.error(f"The text `{text}` could not be generated, because no appropriate letter sprite exists for `{char}`.")
         except CustomTextTooLong as e:
             text, length = e.args
-            return await self.bot.error(ctx, f"The text `{text}` could not be generated, because it is too long ({length}).")
+            return await ctx.error(f"The text `{text}` could not be generated, because it is too long ({length}).")
         except BadLetterStyle as e:
             text = e.args[0]
-            return await self.bot.error(ctx, f"The text `{text}` could not be generated, because the `letter` variant can only be used on text that's two letters long.")
+            return await ctx.error(f"The text `{text}` could not be generated, because the `letter` variant can only be used on text that's two letters long.")
 
-    def generate_tile(self, text: str, color: Tuple[int, int], style: str, meta_level: int, seed: Optional[int] = None) -> List[Image.Image]:
+    def generate_tile(self, text: str, color: tuple[int, int, int], style: str, meta_level: int, seed: int | None = None) -> list[Image.Image]:
         '''
         Custom tile => rendered custom tile
         '''
@@ -900,7 +902,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         
         return images
 
-    async def render_tiles(self, ctx, *, objects: str, rule: bool):
+    async def render_tiles(self, ctx: Context, *, objects: str, rule: bool):
         '''Performs the bulk work for both `tile` and `rule` commands.'''
         async with ctx.typing():
             tiles = objects.lower().strip().replace("\\", "")
@@ -914,7 +916,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             
             # Check for empty input
             if not tiles:
-                return await self.bot.error(ctx, "Input cannot be blank.")
+                return await ctx.error("Input cannot be blank.")
 
             # Split input into lines
             word_rows = tiles.splitlines()
@@ -942,7 +944,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     if bg_match.group(3) is not None:
                         tx, ty = int(bg_match.group(3)), int(bg_match.group(4))
                         if not (0 <= tx <= 7 and 0 <= ty <= 5):
-                            return await self.bot.error(ctx, "The provided background color is invalid.")
+                            return await ctx.error("The provided background color is invalid.")
                         background = tx, ty
                     else:
                         background = (0, 4)
@@ -952,7 +954,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 if flag_match:
                     palette = flag_match.group(2)
                     if palette + ".png" not in listdir("data/palettes"):
-                        return await self.bot.error(ctx, f"Could not find a palette with name \"{palette}\".")
+                        return await ctx.error(f"Could not find a palette with name \"{palette}\".")
                     to_delete.append((x, y))
             for x, y in reversed(to_delete):
                 del word_grid[y][x]
@@ -964,7 +966,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     word_grid = split_commas(word_grid, "text_")
             except SplittingException as e:
                 source_of_exception = e.args[0]
-                return await self.bot.error(ctx, f"I couldn't split the following input into separate objects: \"{source_of_exception}\".")
+                return await ctx.error(f"I couldn't split the following input into separate objects: \"{source_of_exception}\".")
 
             # Splits "&"-joined words into stacks
             for row in word_grid:
@@ -976,7 +978,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     # Limit how many tiles can be rendered in one space
                     height = len(row[i])
                     if height > constants.max_stack and ctx.author.id != self.bot.owner_id:
-                        return await self.bot.error(ctx, f"Stack too high ({height}).\nYou may only stack up to {constants.max_stack} tiles on one space.")
+                        return await ctx.error(f"Stack too high ({height}).\nYou may only stack up to {constants.max_stack} tiles on one space.")
 
             # Prepends "text_" to words if invoked under the rule command
             if rule:
@@ -993,9 +995,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             # (It shouldn't be that long to begin with because of Discord's 2000 character limit)
             area = width * height
             if area > constants.max_tiles and ctx.author.id != self.bot.owner_id:
-                return await self.bot.error(ctx, f"Too many tiles ({area}). You may only render up to {constants.max_tiles} tiles at once, including empty tiles.")
+                return await ctx.error(f"Too many tiles ({area}). You may only render up to {constants.max_tiles} tiles at once, including empty tiles.")
             elif area == 0:
-                return await self.bot.error(ctx, f"Can't render nothing.")
+                return await ctx.error(f"Can't render nothing.")
 
             # Pad the word rows from the end to fit the dimensions
             [row.extend([["-"]] * (width - len(row))) for row in word_grid]
@@ -1010,42 +1012,42 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             except BadTilingVariant as e:
                 word, tiling, variant = e.args
                 if variant == "":
-                    return await self.bot.error(ctx, f"The name of a variant can't be blank. Make sure there aren't any typos or trailing `:`s in your input around `{word}`.")
-                return await self.bot.error(ctx, f"The tile `{word}` has a tiling type of `{tiling}`, meaning the variant `{variant}` isn't valid for it.")
+                    return await ctx.error(f"The name of a variant can't be blank. Make sure there aren't any typos or trailing `:`s in your input around `{word}`.")
+                return await ctx.error(f"The tile `{word}` has a tiling type of `{tiling}`, meaning the variant `{variant}` isn't valid for it.")
             except NotFound as e:
                 word = e.args[0]
                 if (word.startswith("tile_") or word.startswith("text_")) and tile_data.get(word[5:]) is not None:
-                    return await self.bot.error(ctx, f"The tile `{word}` could not be found. Perhaps you meant `{word[5:]}`?")
+                    return await ctx.error(f"The tile `{word}` could not be found. Perhaps you meant `{word[5:]}`?")
                 if word == "":
-                    return await self.bot.error(ctx, "The name of a text tile can't be blank. Make sure there aren't any typos in your input.")
+                    return await ctx.error("The name of a text tile can't be blank. Make sure there aren't any typos in your input.")
                 if tile_data.get("text_" + word) is not None:
-                    return await self.bot.error(ctx, f"The tile `{word}` could not be found. Perhaps you meant `{'text_'+word}`?")
-                return await self.bot.error(ctx, f"The tile `{word}` could not be found or automatically generated.")
+                    return await ctx.error(f"The tile `{word}` could not be found. Perhaps you meant `{'text_'+word}`?")
+                return await ctx.error(f"The tile `{word}` could not be found or automatically generated.")
             except TooManyLineBreaks as e:
                 text, count = e.args
-                return await self.bot.error(ctx, f"The text `{text}` could not be generated, because it contains {count} `/` characters (max 1).")
+                return await ctx.error(f"The text `{text}` could not be generated, because it contains {count} `/` characters (max 1).")
             except LeadingTrailingLineBreaks as e:
                 text = e.args[0]
-                return await self.bot.error(ctx, f"The text `{text}` could not be generated, because it starts or ends with a `/` character.")
+                return await ctx.error(f"The text `{text}` could not be generated, because it starts or ends with a `/` character.")
             except BlankCustomText as e:
-                return await self.bot.error(ctx, "The name of a text tile can't be blank. Make sure there aren't any typos in your input.")
+                return await ctx.error("The name of a text tile can't be blank. Make sure there aren't any typos in your input.")
             except BadCharacter as e:
                 text, char = e.args
                 if text.startswith("text_") and char == "_":
-                    return await self.bot.error(ctx, f"The text `{text}` could not be generated. Did you mean to generate the text for `{text[5:]}` instead?")
-                return await self.bot.error(ctx, f"The text `{text}` could not be generated, because no appropriate letter sprite exists for `{char}`.")
+                    return await ctx.error(f"The text `{text}` could not be generated. Did you mean to generate the text for `{text[5:]}` instead?")
+                return await ctx.error(f"The text `{text}` could not be generated, because no appropriate letter sprite exists for `{char}`.")
             except CustomTextTooLong as e:
                 text, length = e.args
-                return await self.bot.error(ctx, f"The text `{text}` could not be generated, because it is too long ({length}).")
+                return await ctx.error(f"The text `{text}` could not be generated, because it is too long ({length}).")
             except BadLetterStyle as e:
                 text = e.args[0]
-                return await self.bot.error(ctx, f"The text `{text}` could not be generated, because the `letter` variant can only be used on text that's two letters long.")
+                return await ctx.error(f"The text `{text}` could not be generated, because the `letter` variant can only be used on text that's two letters long.")
             except BadMetaLevel as e:
                 text, depth = e.args
-                return await self.bot.error(ctx, f"The text `{text}` is too meta ({depth} layers). You can only go up to {constants.max_meta_depth} layers deep.")
+                return await ctx.error(f"The text `{text}` is too meta ({depth} layers). You can only go up to {constants.max_meta_depth} layers deep.")
             except BadPaletteIndex as e:
                 text, variant = e.args
-                return await self.bot.error(ctx, f"The text `{text}` could not be generated because the variant `{variant}` is not a valid palette index. The maximum is `4/6`.")
+                return await ctx.error(f"The text `{text}` could not be generated because the variant `{variant}` is not a valid palette index. The maximum is `4/6`.")
 
             # Merges the images found
             buffer = BytesIO()
@@ -1053,7 +1055,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             format_string = "render_%Y-%m-%d_%H.%M.%S"
             formatted = timestamp.strftime(format_string)
             filename = f"{formatted}.gif"
-            task = partial(self.render, word_grid, width, height, palette=palette, background=background, out=buffer, rand=True)
+            task = functools.partial(self.render, word_grid, width, height, palette=palette, background=background, out=buffer, rand=True)
             await self.bot.loop.run_in_executor(None, task)
             delta = time() - start
         # Sends the image through discord
@@ -1063,7 +1065,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
     @commands.command()
     @commands.cooldown(5, 8, type=commands.BucketType.channel)
-    async def rule(self, ctx, *, objects: str = ""):
+    async def rule(self, ctx: Context, *, objects: str = ""):
         '''Renders the text tiles provided. 
         
         If not found, the bot tries to auto-generate them! (See the `make` command for more.)
@@ -1093,7 +1095,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     # Generates an animated gif of the tiles provided, using the default palette
     @commands.command()
     @commands.cooldown(5, 8, type=commands.BucketType.channel)
-    async def tile(self, ctx, *, objects: str = ""):
+    async def tile(self, ctx: Context, *, objects: str = ""):
         '''Renders the tiles provided.
 
        **Flags**
@@ -1121,7 +1123,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
     @commands.cooldown(5, 8, commands.BucketType.channel)
     @commands.command(name="level")
-    async def _level(self, ctx: commands.Context, *, query: str):
+    async def _level(self, ctx: Context, *, query: str):
         '''Renders the given Baba Is You level.
 
         Levels are searched for in the following order:
@@ -1164,9 +1166,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     custom = True
                                 except ValueError as e:
                                     size = e.args[0]
-                                    return await self.bot.error(ctx, f"The level code is valid, but the leve's width, height or area is way too big ({size})!")
+                                    return await ctx.error(f"The level code is valid, but the leve's width, height or area is way too big ({size})!")
                                 except aiohttp.ClientResponseError as e:
-                                    return await self.bot.error(ctx, f"The Baba Is Bookmark site returned a bad response. Try again later.")
+                                    return await ctx.error(f"The Baba Is Bookmark site returned a bad response. Try again later.")
 
 
         # Does the query match a level tree?
@@ -1238,7 +1240,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
         # If not found: error message
         if len(levels) == 0:
-            return await self.bot.error(ctx, f'Could not find a level matching the query `{fine_query}`.')
+            return await ctx.error(f'Could not find a level matching the query `{fine_query}`.')
 
         # If found:
         else:
@@ -1317,5 +1319,5 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             # Send the result
             await ctx.reply(formatted, file=gif, allowed_mentions=mentions)
 
-def setup(bot: commands.Bot):
+def setup(bot: Bot):
     bot.add_cog(GlobalCog(bot))
