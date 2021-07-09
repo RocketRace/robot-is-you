@@ -5,7 +5,6 @@ import random
 import re
 import zipfile
 from datetime import datetime
-from inspect import Parameter
 from io import BytesIO
 from json import load
 from os import listdir
@@ -17,8 +16,10 @@ import aiohttp
 import discord
 from discord.ext import commands
 from PIL import Image, ImageChops, ImageDraw, ImageFilter
-from ..utils import Tile, cached_open, constants
-from .types import Bot, Context
+from ..utils import cached_open
+from .. import constants, variants, errors
+from ..types import Bot, Context
+from ..tile import FullGrid, RawGrid, RawTile, FullTile
 
 def try_index(string: str, value: str) -> int:
     '''Returns the index of a substring within a string.
@@ -30,39 +31,6 @@ def try_index(string: str, value: str) -> int:
     except:
         pass
     return index
-
-class SplittingException(ValueError):
-    pass
-
-class BadMetaLevel(ValueError):
-    pass
-
-class BadPaletteIndex(ValueError):
-    pass
-
-class NotFound(ValueError):
-    pass
-
-class BadTilingVariant(ValueError):
-    pass
-
-class TooManyLineBreaks(ValueError):
-    pass
-
-class LeadingTrailingLineBreaks(ValueError):
-    pass
-
-class BlankCustomText(ValueError):
-    pass
-
-class BadCharacter(ValueError):
-    pass
-
-class CustomTextTooLong(ValueError):
-    pass
-
-class BadLetterStyle(ValueError):
-    pass
 
 # Splits the "text_x,y,z..." shortcuts into "text_x", "text_y", ...
 def split_commas(grid: list[list[str]], prefix: str):
@@ -76,7 +44,7 @@ def split_commas(grid: list[list[str]], prefix: str):
                     expanded.extend([prefix + segment for segment in each[1:]])
                     to_add.append((i, expanded))
                 else:
-                    raise SplittingException(word)
+                    raise errors.SplittingException(word)
         for change in reversed(to_add):
             row[change[0]:change[0] + 1] = change[1]
     return grid
@@ -87,6 +55,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         with open("config/leveltileoverride.json") as f:
             j = load(f)
             self.level_tile_override = j
+        self.variant_handlers = variants.get_handlers(bot)
 
     # Check if the bot is loading
     async def cog_check(self, ctx):
@@ -108,8 +77,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         if not isinstance(fp, str): fp.seek(0)
 
     def make_meta(self, name: str, img: Image.Image, meta_level: int) -> Image.Image:
-        if meta_level > constants.max_meta_depth:
-            raise BadMetaLevel(name, meta_level)
+        if meta_level > constants.MAX_META_DEPTH:
+            raise errors.BadMetaLevel(name, meta_level)
         elif meta_level == 0:
             return img
 
@@ -132,11 +101,41 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             final.paste(ImageChops.invert(original), (i + 1, i + 1), original.convert("L"))
         
         return final
-        
+
+    async def handle_variant_errors(self, ctx: Context, err: errors.VariantError):
+        '''Handle errors raised in a command context by variant handlers'''
+        word, variant, *rest = err.args
+        msg = f"The variant `{variant}` for `{word}` is invalid"
+        if isinstance(err, errors.BadTilingVariant):
+            tiling = rest[0]
+            return await ctx.error(
+                f"{msg}, since it can't be applied to tiles with tiling type `{tiling}`."
+            )
+        elif isinstance(err, errors.TileNotText):
+            return await ctx.error(
+                f"{msg}, since the tile is not text."
+            )
+        elif isinstance(err, errors.BadPaletteIndex):
+            return await ctx.error(
+                f"{msg}, since the color is outside the palette."
+            )
+        elif isinstance(err, errors.BadLetterVariant):
+            return await ctx.error(
+                f"{msg}, since letter-style text can only be 1 or 2 letters wide."
+            )
+        elif isinstance(err, errors.BadMetaVariant):
+            depth = rest[0]
+            return await ctx.error(
+                f"{msg}. `{depth}` is greater than the maximum meta depth, which is `{constants.MAX_META_DEPTH}`."
+            )
+        elif isinstance(err, errors.UnknownVariant):
+            return await ctx.error(
+                f"The variant `{variant}` is not valid."
+            )
 
     def render(
         self,
-        word_grid: list[list[list[Tile]]],
+        word_grid: FullGrid,
         width: int,
         height: int,
         *,
@@ -313,326 +312,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
         self.save_frames(frames, out)
 
-    def handle_variants(self, grid: list[list[list[str]]], *, tile_borders: bool = False, is_level: bool = False, palette: str = "default") -> list[list[list[Tile]]]:
-        '''Appends variants to tiles in a grid.
-
-        Returns a grid of `Tile` objects.
-
-        * No variant -> "0" sprite variant, default color
-        * Shortcut sprite variant -> The associated sprite variant
-        * Given sprite variant -> Same sprite variant
-        * Sprite variants for a tiling object -> Sprite variant auto-generated according to adjacent tiles
-        * Shortcut color variant -> Associated color index 
-        * (Source based on tile)
-        If tile_borders is given, sprite variants depend on whether the tile is adjacent to the edge of the image.
-        '''
-
-        width = len(grid[0])
-        height = len(grid)
-        palette_img = Image.open(f"data/palettes/{palette}.png").convert("RGB")
-
-        clone_grid = [[[word for word in stack] for stack in row] for row in grid]
-        for y, row in enumerate(clone_grid):
-            for x, stack in enumerate(row):
-                for z, word in enumerate(stack):
-                    tile = word
-                    final = Tile()
-                    if tile in ("-", "empty"):
-                        grid[y][x][z] = final
-                    else:
-                        # Get variants from string
-                        if ":" in tile:
-                            segments = tile.split(":")
-                            tile = segments[0]
-                            final.name = tile
-                            variants = segments[1:]
-                        else:
-                            variants = []
-                            final.name = word
-                        # Easter egg
-                        if "hide" in variants:
-                            grid[y][x][z] = Tile()
-                            continue
-                        
-                        # Certain tiles from levels are overridden with other tiles
-                        tile_data = self.bot.get_cog("Admin").tile_data.get(tile)
-                        if is_level:
-                            if self.level_tile_override.get(tile) is not None:
-                                tile_data = self.level_tile_override[tile]
-
-                        # Apply globally valid variants
-                        delete = []
-                        for i, variant in enumerate(variants):
-                            # COLORS
-                            if constants.valid_colors.get(variant) is not None:
-                                final.color = constants.valid_colors.get(variant)
-                                delete.append(i)
-                            elif '/' in variant:
-                                try:
-                                    tx, ty = tuple(map(int, variant.split('/')))
-                                    assert 0 <= tx <= 7
-                                    assert 0 <= ty <= 5
-                                    final.color = tx,ty
-                                    delete.append(i)
-                                except AssertionError:
-                                    raise BadPaletteIndex(word, variant)
-                            # META SPRITES
-                            elif variant in ("meta", "m"):
-                                final.meta_level += 1
-                                delete.append(i)
-                            else:
-                                match = re.fullmatch(r"m(\d)", variant)
-                                if match:
-                                    level = int(match.group(1))
-                                    if level > constants.max_meta_depth:
-                                        raise BadMetaLevel(tile, level)
-                                    final.meta_level = level
-                                    delete.append(i)
-                        delete.reverse()
-                        for i in delete:
-                            variants.pop(i)
-                        
-                        # This needs to be evaluated after color variants, so it can compute the proper inactive color
-                        if variants.count("inactive") > 0:
-                            # If an active variant exists, the default color is inactive
-                            for i in range(variants.count("inactive")):
-                                if tile_data and tile_data.get("active"):
-                                    if final.color is None or tile_data["color"] == final.color:
-                                        final.color = tuple(map(int, tile_data["color"]))
-                                    else:
-                                        final.color = constants.inactive_colors[final.color or (0, 3)]
-                                    variants.remove("inactive")
-                                elif tile_data:
-                                    if final.color is None:
-                                        final.color = tuple(map(int, tile_data["color"]))
-                                    final.color = constants.inactive_colors[final.color or (0, 3)]
-                                    variants.remove("inactive")
-                                else:
-                                    final.color = constants.inactive_colors[final.color or (0, 3)]
-                                    variants.remove("inactive")
-                                    
-
-                        # Force custom-rendered text
-                        # This has to be rendered beforehand (each sprite can't be generated separately)
-                        # because generated sprites uses randomly picked letters
-                        if tile_data is None or any(x in variants for x in ("property","noun", "letter")):
-                            if tile.startswith("text_"):
-                                final.custom = True
-                                if "property" in variants:
-                                    if "right" in variants or "r" in variants:
-                                        final.style = "propertyright"
-                                    elif "up" in variants or "u" in variants:
-                                        final.style = "propertyup"
-                                    elif "left" in variants or "l" in variants:
-                                        final.style = "propertyleft"
-                                    elif "down" in variants or "d" in variants:
-                                        final.style = "propertydown"
-                                    else:
-                                        final.style = "property"
-                                if "noun" in variants:
-                                    final.style = "noun"
-                                if "letter" in variants:
-                                    final.style = "letter"
-                                if final.color is None:
-                                    # Seed used for RNG to ensure that two identical sprites get generated the same way regardless of stack position
-                                    final.images = self.generate_tile(tile[5:], (1,1,1), final.style, final.meta_level, y*100+x) 
-                                else:
-                                    whites = self.generate_tile(tile[5:], (1,1,1), final.style, final.meta_level, y*100+x)
-                                    colored = []
-                                    for im in whites:
-                                        c_r, c_g, c_b = palette_img.getpixel(final.color)
-                                        _r, _g, _b, a = im.split()
-                                        color_matrix = (c_r / 256, 0, 0, 0,
-                                                        0, c_g / 256, 0, 0,
-                                                    0, 0, c_b / 256, 0)
-                                        color = im.convert("RGB").convert("RGB", matrix=color_matrix)
-                                        color.putalpha(a)
-                                        colored.append(color)
-                                    final.images = colored
-                                grid[y][x][z] = final
-                                continue
-                            raise NotFound(tile)
-
-                        # Tiles from here on are guaranteed to exist
-                        final.source = tile_data.get("source") or "vanilla"
-
-                        tiling = tile_data.get("tiling")
-                        direction = 0
-                        animation_frame = 0
-                        
-                        # Is this a tiling object (e.g. wall, water)?
-                        if tiling == "1":
-                            #  The final variation of the tile
-                            out = 0
-
-                            # Tiles that join together
-                            def does_tile(stack):
-                                return any(t == tile or t == "level" for t in stack)
-
-                            # Is there the same tile adjacent right?
-                            if x != width - 1:
-                                # The tiles right of this (with variants stripped)
-                                adjacent_right = [t.split(":")[0] for t in clone_grid[y][x + 1]]
-                                if does_tile(adjacent_right):
-                                    out += 1
-                            if tile_borders:
-                                if x == width - 1:
-                                    out += 1
-
-                            # Is there the same tile adjacent above?
-                            if y != 0:
-                                adjacent_up = [t.split(":")[0] for t in clone_grid[y - 1][x]]
-                                if does_tile(adjacent_up):
-                                    out += 2
-                            if tile_borders:
-                                if y == 0:
-                                    out += 2
-
-                            # Is there the same tile adjacent left?
-                            if x != 0:
-                                adjacent_left = [t.split(":")[0] for t in clone_grid[y][x - 1]]
-                                if does_tile(adjacent_left):
-                                    out += 4
-                            if tile_borders:
-                                if x == 0:
-                                    out += 4
-
-                            # Is there the same tile adjacent below?
-                            if y != height - 1:
-                                adjacent_down = [t.split(":")[0] for t in clone_grid[y + 1][x]]
-                                if does_tile(adjacent_down):
-                                    out += 8
-                            if tile_borders:
-                                if y == height - 1:
-                                    out += 8
-                            
-                            # Stringify
-                            final.variant = str(out)
-                            if is_level: 
-                                grid[y][x][z] = final
-                                continue
-
-                        # Apply actual sprite variants
-                        for variant in variants:
-                            # SPRITE VARIANTS
-                            # TODO: clean this up big time
-                            if tiling == "-1":
-                                if variant in ("r", "right"):
-                                    direction = 0
-                                elif variant == "0":
-                                    final.variant = variant
-                                elif is_level:
-                                    direction = 0
-                                else:
-                                    raise BadTilingVariant(word, tiling, variant)
-                            elif tiling == "0":
-                                if variant in ("r", "right"):
-                                    direction = 0
-                                elif variant in ("u", "up"):
-                                    direction = 1
-                                elif variant in ("l", "left"):
-                                    direction = 2
-                                elif variant in ("d", "down"):
-                                    direction = 3
-                                elif variant in ( "0", "8", "16", "24"):
-                                    final.variant = variant
-                                elif is_level:
-                                    direction = 0
-                                else:
-                                    raise BadTilingVariant(word, tiling, variant)
-                            elif tiling == "1":
-                                if variant in (
-                                    "0", "1", "2", "3",
-                                    "4", "5", "6", "7",
-                                    "8", "9", "10", "11",
-                                    "12", "13", "14", "15",
-                                ):
-                                    final.variant = variant
-                                elif is_level:
-                                    direction = 0
-                                else:
-                                    raise BadTilingVariant(word, tiling, variant)
-                            elif tiling == "2":
-                                if variant in ("r", "right"):
-                                    direction = 0
-                                elif variant in ("u", "up"):
-                                    direction = 1
-                                elif variant in ("l", "left"):
-                                    direction = 2
-                                elif variant in ("d", "down"):
-                                    direction = 3
-                                elif variant == "a0": 
-                                    animation_frame = 0
-                                elif variant == "a1": 
-                                    animation_frame = 1
-                                elif variant == "a2": 
-                                    animation_frame = 2
-                                elif variant == "a3": 
-                                    animation_frame = 3
-                                elif variant in ("s", "sleep"): 
-                                    animation_frame = -1
-                                elif variant in (
-                                    "31", "0", "1", "2", "3", 
-                                    "7", "8", "9", "10", "11",
-                                    "15", "16", "17", "18", "19",
-                                    "23", "24", "25", "26", "27",
-                                ): 
-                                    final.variant = variant
-                                elif is_level:
-                                    direction = 0
-                                else:
-                                    raise BadTilingVariant(word, tiling, variant)
-                            elif tiling == "3":
-                                if variant in ("r", "right"):
-                                    direction = 0
-                                elif variant in ("u", "up"):
-                                    direction = 1
-                                elif variant in ("l", "left"):
-                                    direction = 2
-                                elif variant in ("d", "down"):
-                                    direction = 3
-                                elif variant == "a1": 
-                                    animation_frame = 1
-                                elif variant == "a2": 
-                                    animation_frame = 2
-                                elif variant == "a3": 
-                                    animation_frame = 3
-                                elif variant in (
-                                    "0", "1", "2", "3", 
-                                    "8", "9", "10", "11",
-                                    "16", "17", "18", "19",
-                                    "24", "25", "26", "27",
-                                ): 
-                                    final.variant = variant
-                                elif is_level:
-                                    direction = 0
-                                else:
-                                    raise BadTilingVariant(word, tiling, variant)
-                            elif tiling == "4":
-                                if variant in ("r", "right"):
-                                    direction = 0
-                                elif variant == "a1": 
-                                    animation_frame = 1
-                                elif variant == "a2": 
-                                    animation_frame = 2
-                                elif variant == "a3": 
-                                    animation_frame = 3
-                                elif variant in (
-                                    "0", "1", "2", "3", 
-                                ):
-                                    final.variant = variant
-                                elif is_level:
-                                    direction = 0
-                                else:
-                                    raise BadTilingVariant(word, tiling, variant)
-
-                        # Compute the final variant, if not already set
-                        final.variant = final.variant or (8 * direction + animation_frame) % 32
-
-                        # Finally, push the sprite to the grid
-                        grid[y][x][z] = final
-        return grid
-
     @commands.group(invoke_without_command=True)
     @commands.cooldown(5, 8, commands.BucketType.channel)
     async def make(self, ctx: Context, text: str, color: str = "", style: str = "noun", meta_level: int = 0, direction: str = "none", palette = "default"):
@@ -662,10 +341,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 int_color = int(real_color, base=16)
                 byte_color = (int_color >> 16, (int_color & 255 << 8) >> 8, int_color & 255)
                 tile_color = (byte_color[0] / 256, byte_color[1] / 256, byte_color[2] / 256)
-            elif real_color in constants.valid_colors:
+            elif real_color in constants.COLOR_NAMES:
                 try:
                     palette_img = Image.open(f"data/palettes/{palette}.png").convert("RGB")
-                    color_index = constants.valid_colors[real_color]
+                    color_index = constants.COLOR_NAMES[real_color]
                     tile_color = tuple(p/256 for p in palette_img.getpixel(color_index))
                 except FileNotFoundError:
                     return await ctx.error(f"The palette `{palette}` is not valid.")
@@ -680,8 +359,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         if "property" == style:
             if direction in ("up", "right", "left", "down"):
                 style = style + direction
-        if not 0 <= meta_level <= constants.max_meta_depth:
-            return await ctx.error(f"The meta level `{meta_level}` is invalid. It must be one of: " + ", ".join(f"`{n}`" for n in range(constants.max_meta_depth + 1)) + ".")
+        if not 0 <= meta_level <= constants.MAX_META_DEPTH:
+            return await ctx.error(f"The meta level `{meta_level}` is invalid. It must be one of: " + ", ".join(f"`{n}`" for n in range(constants.MAX_META_DEPTH + 1)) + ".")
         try:
             meta_level = int(meta_level)
             buffer = BytesIO()
@@ -721,8 +400,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         real_text = text.lower()
         if style not in ("noun", "property", "letter"):
             return await ctx.error(f"`{style}` is not a valid style. It must be one of `noun`, `property` or `letter`.")
-        if not 0 <= meta_level <= constants.max_meta_depth:
-            return await ctx.error(f"The meta level `{meta_level}` is invalid. It must be one of: " + ", ".join(f"`{n}`" for n in range(constants.max_meta_depth + 1)) + ".")
+        if not 0 <= meta_level <= constants.MAX_META_DEPTH:
+            return await ctx.error(f"The meta level `{meta_level}` is invalid. It must be one of: " + ", ".join(f"`{n}`" for n in range(constants.MAX_META_DEPTH + 1)) + ".")
         if direction not in ("none", "up", "right", "left", "down"):
             return await ctx.error(f"`{direction}` is not a valid direction. It must be one of `none`, `up`, `right`, `left` or `down`.")
         if style == "property":
@@ -902,162 +581,164 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         
         return images
 
+    def parse_raw(self, grid: list[list[list[str]]], *, rule: bool) -> RawGrid:
+        '''Parses a string grid into a RawTile grid'''
+        return [
+            [
+                [
+                    RawTile.from_str(
+                        "-" if tile == "-" else tile[5:] if tile.startswith("tile_") else f"text_{tile}"
+                    ) if rule else RawTile.from_str(
+                        "-" if tile == "text_-" else tile
+                    )
+                    for tile in stack
+                ]
+                for stack in row
+            ]
+            for row in grid
+        ]
+
     async def render_tiles(self, ctx: Context, *, objects: str, rule: bool):
         '''Performs the bulk work for both `tile` and `rule` commands.'''
-        async with ctx.typing():
-            tiles = objects.lower().strip().replace("\\", "")
-            if tiles == "":
-                param = Parameter("objects", Parameter.KEYWORD_ONLY)
-                raise commands.MissingRequiredArgument(param)
+        await ctx.trigger_typing()
+        start = time()
+        tiles = objects.lower().strip().replace("\\", "")
 
-            # Determines if this should be a spoiler
-            spoiler = "|" in tiles
-            tiles = tiles.replace("|", "")
-            
-            # Check for empty input
-            if not tiles:
-                return await ctx.error("Input cannot be blank.")
+        # Determines if this should be a spoiler
+        spoiler = "|" in tiles
+        tiles = tiles.replace("|", "")
+        
+        # Check for empty input
+        if not tiles:
+            return await ctx.error("Input cannot be blank.")
 
-            # Split input into lines
-            word_rows = tiles.splitlines()
-            
-            # Split each row into words
-            word_grid = [row.split() for row in word_rows]
+        # Split input into lines
+        word_rows = tiles.splitlines()
+        
+        # Split each row into words
+        word_grid = [row.split() for row in word_rows]
 
-            # Check palette & bg flags
-            potential_flags = []
-            potential_count = 0
-            try:
-                for y, row in enumerate(word_grid):
-                    for x, word in enumerate(row):
-                        if potential_count == 2:
-                            raise Exception
-                        potential_flags.append((word, x, y))
-                        potential_count += 1
-            except: pass
-            background = None
-            palette = "default"
-            to_delete = []
-            for flag, x, y in potential_flags:
-                bg_match = re.fullmatch(r"(--background|-b)(=(\d)/(\d))?", flag)
-                if bg_match:
-                    if bg_match.group(3) is not None:
-                        tx, ty = int(bg_match.group(3)), int(bg_match.group(4))
-                        if not (0 <= tx <= 7 and 0 <= ty <= 5):
-                            return await ctx.error("The provided background color is invalid.")
-                        background = tx, ty
-                    else:
-                        background = (0, 4)
-                    to_delete.append((x, y))
-                    continue
-                flag_match = re.fullmatch(r"(--palette=|-p=|palette:)(\w+)", flag)
-                if flag_match:
-                    palette = flag_match.group(2)
-                    if palette + ".png" not in listdir("data/palettes"):
-                        return await ctx.error(f"Could not find a palette with name \"{palette}\".")
-                    to_delete.append((x, y))
-            for x, y in reversed(to_delete):
-                del word_grid[y][x]
-            
-            try:
-                if rule:
-                    word_grid = split_commas(word_grid, "tile_")
+        # Check palette & bg flags
+        potential_flags = []
+        potential_count = 0
+        try:
+            for y, row in enumerate(word_grid):
+                for x, word in enumerate(row):
+                    if potential_count == 2:
+                        raise Exception
+                    potential_flags.append((word, x, y))
+                    potential_count += 1
+        except Exception: pass
+        background = None
+        palette = "default"
+        to_delete = []
+        for flag, x, y in potential_flags:
+            bg_match = re.fullmatch(r"(--background|-b)(=(\d)/(\d))?", flag)
+            if bg_match:
+                if bg_match.group(3) is not None:
+                    tx, ty = int(bg_match.group(3)), int(bg_match.group(4))
+                    if not (0 <= tx <= 7 and 0 <= ty <= 5):
+                        return await ctx.error("The provided background color is invalid.")
+                    background = tx, ty
                 else:
-                    word_grid = split_commas(word_grid, "text_")
-            except SplittingException as e:
-                source_of_exception = e.args[0]
-                return await ctx.error(f"I couldn't split the following input into separate objects: \"{source_of_exception}\".")
-
-            # Splits "&"-joined words into stacks
-            for row in word_grid:
-                for i,stack in enumerate(row):
-                    if "&" in stack:
-                        row[i] = stack.split("&")
-                    else:
-                        row[i] = [stack]
-                    # Limit how many tiles can be rendered in one space
-                    height = len(row[i])
-                    if height > constants.max_stack and ctx.author.id != self.bot.owner_id:
-                        return await ctx.error(f"Stack too high ({height}).\nYou may only stack up to {constants.max_stack} tiles on one space.")
-
-            # Prepends "text_" to words if invoked under the rule command
+                    background = (0, 4)
+                to_delete.append((x, y))
+                continue
+            flag_match = re.fullmatch(r"(--palette=|-p=|palette:)(\w+)", flag)
+            if flag_match:
+                palette = flag_match.group(2)
+                if palette + ".png" not in listdir("data/palettes"):
+                    return await ctx.error(f"Could not find a palette with name \"{palette}\".")
+                to_delete.append((x, y))
+        for x, y in reversed(to_delete):
+            del word_grid[y][x]
+        
+        try:
             if rule:
-                word_grid = [[["-" if word == "-" else word[5:] if word.startswith("tile_") else "text_" + word for word in stack] for stack in row] for row in word_grid]
+                comma_grid = split_commas(word_grid, "tile_")
             else:
-                word_grid = [[["-" if word in ("-", "text_-") else word for word in stack] for stack in row] for row in word_grid]
+                comma_grid = split_commas(word_grid, "text_")
+        except SplittingException as e:
+            cause = e.args[0]
+            return await ctx.error(f"I couldn't split the following input into separate objects: \"{cause}\".")
 
-            # Get the dimensions of the grid
-            lengths = [len(row) for row in word_grid]
-            width = max(lengths)
-            height = len(word_rows)
+        # Splits "&"-joined words into stacks
+        stacked_grid: list[list[list[str]]] = []
+        for row in comma_grid:
+            stacked_row: list[list[str]] = []
+            for stack in row:
+                split = stack.split("&")
+                stacked_row.append(split)
+                if len(split) > constants.MAX_STACK and ctx.author.id != self.bot.owner_id:
+                    return await ctx.error(f"Stack too high ({len(split)}).\nYou may only stack up to {constants.MAX_STACK} tiles on one space.")
+            stacked_grid.append(stacked_row)
 
-            # Don't proceed if the request is too large.
-            # (It shouldn't be that long to begin with because of Discord's 2000 character limit)
-            area = width * height
-            if area > constants.max_tiles and ctx.author.id != self.bot.owner_id:
-                return await ctx.error(f"Too many tiles ({area}). You may only render up to {constants.max_tiles} tiles at once, including empty tiles.")
-            elif area == 0:
-                return await ctx.error(f"Can't render nothing.")
 
-            # Pad the word rows from the end to fit the dimensions
-            [row.extend([["-"]] * (width - len(row))) for row in word_grid]
-            # Finds the associated image sprite for each word in the input
-            # Throws an exception which sends an error message if a word is not found.
-            
-            # Handles variants based on `:` suffixes
-            start = time()
-            tile_data = self.bot.get_cog("Admin").tile_data
-            try:
-                word_grid = self.handle_variants(word_grid, palette=palette)
-            except BadTilingVariant as e:
-                word, tiling, variant = e.args
-                if variant == "":
-                    return await ctx.error(f"The name of a variant can't be blank. Make sure there aren't any typos or trailing `:`s in your input around `{word}`.")
-                return await ctx.error(f"The tile `{word}` has a tiling type of `{tiling}`, meaning the variant `{variant}` isn't valid for it.")
-            except NotFound as e:
-                word = e.args[0]
-                if (word.startswith("tile_") or word.startswith("text_")) and tile_data.get(word[5:]) is not None:
-                    return await ctx.error(f"The tile `{word}` could not be found. Perhaps you meant `{word[5:]}`?")
-                if word == "":
-                    return await ctx.error("The name of a text tile can't be blank. Make sure there aren't any typos in your input.")
-                if tile_data.get("text_" + word) is not None:
-                    return await ctx.error(f"The tile `{word}` could not be found. Perhaps you meant `{'text_'+word}`?")
-                return await ctx.error(f"The tile `{word}` could not be found or automatically generated.")
-            except TooManyLineBreaks as e:
-                text, count = e.args
-                return await ctx.error(f"The text `{text}` could not be generated, because it contains {count} `/` characters (max 1).")
-            except LeadingTrailingLineBreaks as e:
-                text = e.args[0]
-                return await ctx.error(f"The text `{text}` could not be generated, because it starts or ends with a `/` character.")
-            except BlankCustomText as e:
-                return await ctx.error("The name of a text tile can't be blank. Make sure there aren't any typos in your input.")
-            except BadCharacter as e:
-                text, char = e.args
-                if text.startswith("text_") and char == "_":
-                    return await ctx.error(f"The text `{text}` could not be generated. Did you mean to generate the text for `{text[5:]}` instead?")
-                return await ctx.error(f"The text `{text}` could not be generated, because no appropriate letter sprite exists for `{char}`.")
-            except CustomTextTooLong as e:
-                text, length = e.args
-                return await ctx.error(f"The text `{text}` could not be generated, because it is too long ({length}).")
-            except BadLetterStyle as e:
-                text = e.args[0]
-                return await ctx.error(f"The text `{text}` could not be generated, because the `letter` variant can only be used on text that's two letters long.")
-            except BadMetaLevel as e:
-                text, depth = e.args
-                return await ctx.error(f"The text `{text}` is too meta ({depth} layers). You can only go up to {constants.max_meta_depth} layers deep.")
-            except BadPaletteIndex as e:
-                text, variant = e.args
-                return await ctx.error(f"The text `{text}` could not be generated because the variant `{variant}` is not a valid palette index. The maximum is `4/6`.")
+        # Get the dimensions of the grid
+        width = max(len(row) for row in stacked_grid)
+        height = len(stacked_grid)
 
-            # Merges the images found
-            buffer = BytesIO()
-            timestamp = datetime.now()
-            format_string = "render_%Y-%m-%d_%H.%M.%S"
-            formatted = timestamp.strftime(format_string)
-            filename = f"{formatted}.gif"
-            task = functools.partial(self.render, word_grid, width, height, palette=palette, background=background, out=buffer, rand=True)
-            await self.bot.loop.run_in_executor(None, task)
-            delta = time() - start
+        # Don't proceed if the request is too large.
+        # (It shouldn't be that long to begin with because of Discord's 2000 character limit)
+        area = width * height
+        if area > constants.MAX_TILES and ctx.author.id != self.bot.owner_id:
+            return await ctx.error(f"Too many tiles ({area}). You may only render up to {constants.MAX_TILES} tiles at once, including empty tiles.")
+        elif area == 0:
+            return await ctx.error(f"Can't render nothing.")
+
+        # Pad the word rows from the end to fit the dimensions
+        for row in stacked_grid:
+            row.extend([["-"]] * (width - len(row)))
+
+        grid = self.parse_raw(stacked_grid, rule=rule)
+        # Finds the associated image sprite for each word in the input
+        # Throws an exception which sends an error message if a word is not found.
+        
+        # Handles variants based on `:` suffixes
+        tile_data = self.bot.get_cog("Admin").tile_data
+        try:
+            full_grid = self.variant_handlers.handle_grid(grid)
+        except errors.TileNotFound as e:
+            word = e.args[0]
+            if word.startswith("tile_") and tile_data.get(word[5:]) is not None:
+                return await ctx.error(f"The tile `{word}` could not be found. Perhaps you meant `{word[5:]}`?")
+            if tile_data.get("text_" + word) is not None:
+                return await ctx.error(f"The tile `{word}` could not be found. Perhaps you meant `{'text_'+word}`?")
+            return await ctx.error(f"The tile `{word}` could not be found.")
+        except errors.VariantError as e:
+            return await self.handle_variant_errors(ctx, e)
+        except TooManyLineBreaks as e:
+            text, count = e.args
+            return await ctx.error(f"The text `{text}` could not be generated, because it contains {count} `/` characters (max 1).")
+        except LeadingTrailingLineBreaks as e:
+            text = e.args[0]
+            return await ctx.error(f"The text `{text}` could not be generated, because it starts or ends with a `/` character.")
+        except BlankCustomText as e:
+            return await ctx.error("The name of a text tile can't be blank. Make sure there aren't any typos in your input.")
+        except BadCharacter as e:
+            text, char = e.args
+            if text.startswith("text_") and char == "_":
+                return await ctx.error(f"The text `{text}` could not be generated. Did you mean to generate the text for `{text[5:]}` instead?")
+            return await ctx.error(f"The text `{text}` could not be generated, because no appropriate letter sprite exists for `{char}`.")
+        except CustomTextTooLong as e:
+            text, length = e.args
+            return await ctx.error(f"The text `{text}` could not be generated, because it is too long ({length}).")
+        except BadLetterStyle as e:
+            text = e.args[0]
+            return await ctx.error(f"The text `{text}` could not be generated, because the `letter` variant can only be used on text that's two letters long.")
+        except BadMetaLevel as e:
+            text, depth = e.args
+            return await ctx.error(f"The text `{text}` is too meta ({depth} layers). You can only go up to {constants.MAX_META_DEPTH} layers deep.")
+
+        # Merges the images found
+        buffer = BytesIO()
+        timestamp = datetime.now()
+        format_string = "render_%Y-%m-%d_%H.%M.%S"
+        formatted = timestamp.strftime(format_string)
+        filename = f"{formatted}.gif"
+        task = functools.partial(self.render, full_grid, width, height, palette=palette, background=background, out=buffer, rand=True)
+        await self.bot.loop.run_in_executor(None, task)
+        delta = time() - start
         # Sends the image through discord
         msg = f"*Rendered in {delta:.2f} s*"
         await ctx.reply(content=msg, file=discord.File(buffer, filename=filename, spoiler=spoiler))

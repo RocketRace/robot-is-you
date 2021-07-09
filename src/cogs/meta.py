@@ -9,7 +9,7 @@ from time import time
 import discord
 from discord.ext import commands
 
-from .types import Bot, Context
+from ..types import Bot, Context
 
 
 # Custom help command implementation

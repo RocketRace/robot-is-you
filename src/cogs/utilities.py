@@ -7,8 +7,8 @@ from os import listdir
 import discord
 from discord.ext import commands
 
-from ..utils import constants
-from .types import Bot, Context
+from .. import constants
+from ..types import Bot, Context
 
 
 class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
@@ -199,7 +199,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         # Does the tile exist?
         data = self.bot.get_cog("Admin").tile_data.get(clean_tile)
         suffix = "It also supports the following colors:\n" + \
-            ", ".join(f"`:{name}`" for name in constants.valid_colors) + \
+            ", ".join(f"`:{name}`" for name in constants.COLOR_NAMES) + \
             ",\nas well as the following filters:\n`:meta` / `:m`, `:m2`, `:m3`, `:hide`."
         if data is None:
             output = [

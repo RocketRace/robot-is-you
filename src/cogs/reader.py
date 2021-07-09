@@ -12,7 +12,7 @@ from typing import Any, TextIO
 import aiohttp
 from discord.ext import commands, tasks
 
-from .types import Bot, Context
+from ..types import Bot, Context
 
 
 def flatten(x: int, y: int, width: int) -> int:

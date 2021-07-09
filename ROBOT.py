@@ -28,6 +28,22 @@ class Context(commands.Context):
             return await self.reply(content, embed=embed, **kwargs)
         return await self.reply(**kwargs)
 
+class DataAccess:
+    '''Means through which most bot data is accessed.
+    
+    This will be hooked up to a database driver eventually.
+    '''
+    def __init__(self, bot: Bot) -> None:
+        self.bot = bot
+        self._tile_data = {}
+
+    def tile_data(self, tile: str) -> dict | None:
+        '''Tile data'''
+        return self.bot.get_cog("Admin").tile_data.get(tile)
+    
+    def level_tile_data(self, tile: str) -> dict | None:
+        '''Level tile overrides'''
+
 class Bot(commands.Bot):
     '''Custom bot class :)'''
     def __init__(self, *args, cogs: list[str], embed_color: discord.Color, webhook_id: int, prefixes: list[str], **kwargs):
@@ -37,6 +53,7 @@ class Bot(commands.Bot):
         self.embed_color = embed_color
         self.webhook_id = webhook_id
         self.prefixes = prefixes
+        self.get = DataAccess(self)
         
         super().__init__(*args, **kwargs)
         # has to be after __init__

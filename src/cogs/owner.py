@@ -11,7 +11,7 @@ import discord
 from discord.ext import commands
 from PIL import Image, ImageChops, ImageDraw
 
-from .types import Bot, Context
+from ..types import Bot, Context
 
 class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     

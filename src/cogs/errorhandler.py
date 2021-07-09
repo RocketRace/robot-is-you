@@ -7,7 +7,7 @@ from asyncio import create_task
 import discord
 from discord.ext import commands
 
-from .types import Bot, Context
+from ..types import Bot, Context
 
 
 class CommandErrorHandler(commands.Cog):

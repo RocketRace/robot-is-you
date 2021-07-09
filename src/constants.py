@@ -1,4 +1,63 @@
-valid_colors = {
+from __future__ import annotations
+
+# limits
+MAX_STACK = 4
+MAX_META_DEPTH = 3
+MAX_TILES = 256
+
+# variants
+DIRECTION_TILINGS = {
+    "0", "2", "3"
+}
+
+DIRECTION_VARIANTS = {
+    "right": 0,
+    "r": 0,
+    "up": 8,
+    "u": 8,
+    "left": 16,
+    "l": 16,
+    "down": 24,
+    "d": 24,
+}
+
+ANIMATION_TILINGS = {
+    "2", "3", "4"
+}
+
+ANIMATION_VARIANTS = {
+    "a0": 0,
+    "a1": 1,
+    "a2": 2,
+    "a3": 3,
+}
+
+SLEEP_TILINGS = {
+    "2"
+}
+
+SLEEP_VARIANTS = {
+    "sleep": -1,
+    "s": -1,
+}
+
+AUTO_TILINGS = {
+    "1"
+}
+
+AUTO_VARIANTS = {
+    "tr": 1,
+    "tileright": 1,
+    "eu": 2,
+    "tileup": 2,
+    "tl": 4,
+    "tileleft": 4,
+    "td": 8,
+    "tiledown": 8,
+}
+
+# colors
+COLOR_NAMES = {
     "maroon": (2, 1), # Not actually a word in the game
     "red":    (2, 2),
     "orange": (2, 3),
@@ -18,7 +77,7 @@ valid_colors = {
     "brown":  (6, 1),
 }
 
-inactive_colors = {
+INACTIVE_COLORS: dict[tuple[int, int], tuple[int, int]] = {
     (0, 0): (0, 4),
     (1, 0): (0, 4),
     (2, 0): (1, 1),
@@ -55,8 +114,3 @@ inactive_colors = {
     (5, 4): (5, 2),
     (6, 4): (6, 4),
 }
-
-# limits
-max_stack = 4
-max_meta_depth = 3
-max_tiles = 256
