@@ -114,3 +114,12 @@ INACTIVE_COLORS: dict[tuple[int, int], tuple[int, int]] = {
     (5, 4): (5, 2),
     (6, 4): (6, 4),
 }
+
+# other constants
+DIRECTIONS = {
+    0: "right",
+    8: "up",
+    16: "left",
+    24: "down"
+}
+DEFAULT_SPRITE_SIZE = 24

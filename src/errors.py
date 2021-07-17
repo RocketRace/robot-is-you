@@ -2,10 +2,22 @@ class BabaError(Exception):
     '''Base class for convenient catching'''
 
 class SplittingException(BabaError):
-    '''Couldn't split `text_a,b,c` ... somehow'''
+    '''Couldn't split `text_a,b,c` ... somehow
+    
+    args: cause
+    '''
 
 class TileNotFound(BabaError):
     '''Unknown tile
+    
+    args: tile
+    '''
+
+class EmptyTile(BabaError):
+    '''Blank tiles not allowed'''
+
+class EmptyVariant(BabaError):
+    '''Empty variants not allowed
     
     args: tile
     '''

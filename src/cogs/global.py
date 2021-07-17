@@ -10,16 +10,20 @@ from json import load
 from os import listdir
 from string import ascii_lowercase
 from time import time
-from typing import BinaryIO
+from typing import TYPE_CHECKING
 
 import aiohttp
 import discord
 from discord.ext import commands
-from PIL import Image, ImageChops, ImageDraw, ImageFilter
-from ..utils import cached_open
-from .. import constants, variants, errors
+from PIL import Image, ImageChops
+
+if TYPE_CHECKING:
+    from ..tile import RawGrid
+
+from .. import constants, errors, variants
+from ..tile import RawTile
 from ..types import Bot, Context
-from ..tile import FullGrid, RawGrid, RawTile, FullTile
+
 
 def try_index(string: str, value: str) -> int:
     '''Returns the index of a substring within a string.
@@ -62,46 +66,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         '''Only if the bot is not loading assets'''
         return not self.bot.loading
 
-    def save_frames(self, frames: list[Image.Image], fp: str | BinaryIO):
-        '''Saves a list of images as a gif to the specified file path.'''
-        frames[0].save(fp, "GIF",
-            save_all=True,
-            append_images=frames[1:],
-            loop=0,
-            duration=200,
-            disposal=2, # Frames don't overlap
-            transparency=255,
-            background=255,
-            optimize=False # Important in order to keep the color palettes from being unpredictable
-        )
-        if not isinstance(fp, str): fp.seek(0)
-
-    def make_meta(self, name: str, img: Image.Image, meta_level: int) -> Image.Image:
-        if meta_level > constants.MAX_META_DEPTH:
-            raise errors.BadMetaLevel(name, meta_level)
-        elif meta_level == 0:
-            return img
-
-        original = img.copy()
-        final = img
-        for i in range(meta_level):
-            _, _, _, alpha = final.convert("RGBA").split()
-            base = Image.new("L", (final.width + 6, final.width + 6))
-            base.paste(final, (3, 3), alpha)
-            base = ImageChops.invert(base)
-            base = base.filter(ImageFilter.FIND_EDGES)
-            ImageDraw.floodfill(base, (0, 0), 0, 0)
-            base = base.crop((2, 2, base.width - 2, base.height - 2))
-            base = base.convert("1")
-            final = base.convert("RGBA")
-            final.putalpha(base)
-        if meta_level >= 2 and meta_level % 2 == 0:
-            final.paste(original, (i + 1, i + 1), original.convert("L"))
-        elif meta_level >= 2 and meta_level % 2 == 1:
-            final.paste(ImageChops.invert(original), (i + 1, i + 1), original.convert("L"))
-        
-        return final
-
     async def handle_variant_errors(self, ctx: Context, err: errors.VariantError):
         '''Handle errors raised in a command context by variant handlers'''
         word, variant, *rest = err.args
@@ -132,185 +96,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             return await ctx.error(
                 f"The variant `{variant}` is not valid."
             )
-
-    def render(
-        self,
-        word_grid: FullGrid,
-        width: int,
-        height: int,
-        *,
-        palette: str = "default",
-        images: list[Image.Image] | None = None,
-        image_source: str = "vanilla",
-        out: str = "target/renders/render.gif",
-        background: tuple[int, int] | None = None,
-        rand: bool = False,
-        use_overridden_colors: bool = False
-    ):
-        '''Takes a list of Tile objects and generates a gif with the associated sprites.
-
-        out is a file path or buffer. Renders will be saved there, otherwise to `target/renders/render.gif`.
-
-        palette is the name of the color palette to refer to when rendering.
-
-        images is a list of background image filenames. Each image is retrieved from `data/images/{imageSource}/image`.
-
-        background is a palette index. If given, the image background color is set to that color, otherwise transparent. Background images overwrite this. 
-        '''
-        frames = []
-        palette_img = Image.open(f"data/palettes/{palette}.png").convert("RGB")
-
-        # Calculates padding based on image sizes
-        left_pad = 0
-        right_pad = 0
-        up_pad = 0
-        down_pad = 0
-
-        # Get sprites to be pasted
-        cache= {}
-        imgs = []
-        for frame in range(3):
-            temp_frame = []
-            for y, row in enumerate(word_grid):
-                temp_row = []
-                for x, stack in enumerate(row):
-                    temp_stack = []
-                    for _z, tile in enumerate(stack):
-                        if tile.name is None:
-                            continue
-                        # Custom tiles
-                        if tile.custom:
-                            # Custom tiles are already rendered, and have their meta level applied properly
-                            img = tile.images[frame]
-                            if y == 0:
-                                diff = img.size[1] - 24
-                                if diff > up_pad:
-                                    up_pad = diff
-                            if y == len(word_grid) - 1:
-                                diff = img.size[1] - 24
-                                if diff > down_pad:
-                                    down_pad = diff
-                            if x == 0:
-                                diff = img.size[0] - 24
-                                if diff > left_pad:
-                                    left_pad = diff
-                            if x == len(row) - 1:
-                                diff = img.size[0] - 24
-                                if diff > right_pad:
-                                    right_pad = diff
-                            temp_stack.append(img)
-                            continue
-                        if rand:
-                            # Random animations
-                            animation_offset = (hash(x + y) + frame) % 3
-                        else:
-                            animation_offset = frame
-                        # Certain sprites have to be hard-coded, since their file paths are not very neat
-                        if tile.name in ("icon",):
-                            path = f"data/sprites/vanilla/{tile.name}.png"
-                        elif tile.name in ["smiley", "hi"] or tile.name.startswith("icon"):
-                            path = f"data/sprites/vanilla/{tile.name}_1.png"
-                        elif tile.name == "default":
-                            path = f"data/sprites/vanilla/default_{animation_offset + 1}.png"
-                        else:
-                            maybe_sprite = self.bot.get_cog("Admin").tile_data.get(tile.name).get("sprite")
-                            if maybe_sprite != tile.name:
-                                path = f"data/sprites/{tile.source}/{maybe_sprite}_{tile.variant}_{animation_offset + 1}.png"
-                            else:
-                                path = f"data/sprites/{tile.source}/{tile.name}_{tile.variant}_{animation_offset + 1}.png"
-                        if tile.color is None:
-                            base = None
-                            if use_overridden_colors:
-                                base = self.level_tile_override.get(tile.name)
-                            base = base if base is not None else self.bot.get_cog("Admin").tile_data[tile.name]
-                            tile.color = base.get("active")
-                            if tile.color is None:
-                                tile.color = base.get("color")
-                            tile.color = tuple(map(int, tile.color))
-                        img = cached_open(path, cache=cache, is_image=True).convert("RGBA")
-                        img = self.make_meta(tile.name, img, tile.meta_level)
-                        c_r, c_g, c_b = palette_img.getpixel(tile.color)
-                        _r, _g, _b, a = img.split()
-                        color_matrix = (c_r / 256, 0, 0, 0,
-                                        0, c_g / 256, 0, 0,
-                                    0, 0, c_b / 256, 0)
-                        img = img.convert("RGB").convert("RGB", matrix=color_matrix)
-                        img.putalpha(a)
-                        temp_stack.append(img)
-                        # Check image sizes and calculate padding
-                        if y == 0:
-                            diff = img.size[1] - 24
-                            if diff > up_pad:
-                                up_pad = diff
-                        if y == len(word_grid) - 1:
-                            diff = img.size[1] - 24
-                            if diff > down_pad:
-                                down_pad = diff
-                        if x == 0:
-                            diff = img.size[0] - 24
-                            if diff > left_pad:
-                                left_pad = diff
-                        if x == len(row) - 1:
-                            diff = img.size[0] - 24
-                            if diff > right_pad:
-                                right_pad = diff
-                    temp_row.append(temp_stack)
-                temp_frame.append(temp_row)
-            imgs.append(temp_frame)
-
-         
-        for i,frame in enumerate(imgs):
-            # Get new image dimensions, with appropriate padding
-            total_width = len(frame[0]) * 24 + left_pad + right_pad 
-            total_height = len(frame) * 24 + up_pad + down_pad 
-
-            # Montage image
-            # bg images
-            if bool(images) and image_source is not None:
-                render_frame = Image.new("RGBA", (total_width, total_height))
-                # for loop in case multiple background images are used (i.e. baba's world map)
-                for image in images:
-                    overlap = Image.open(f"data/images/{image_source}/{image}_{i + 1}.png") # i + 1 because 1-indexed
-                    mask = overlap.getchannel("A")
-                    render_frame.paste(overlap, mask=mask)
-            # bg color
-            elif background is not None:
-                palette_img = Image.open(f"data/palettes/{palette}.png").convert("RGB") # ensure alpha channel exists, even if blank
-                palette_color = palette_img.getpixel(background)
-                render_frame = Image.new("RGBA", (total_width, total_height), color=palette_color)
-            # neither
-            else: 
-                render_frame = Image.new("RGBA", (total_width, total_height))
-
-            # Pastes each image onto the frame
-            # For each row
-            y_offset = up_pad # For padding: the cursor for example doesn't render fully when alone
-            for row in frame:
-                # For each image
-                x_offset = left_pad # Padding
-                for stack in row:
-                    for tile in stack:
-                        if tile is not None:
-                            if isinstance(tile, list):
-                                elem = tile[i]
-                            else:
-                                elem = tile
-
-                            width = elem.width
-                            height = elem.height
-                            # For tiles that don't adhere to the 24x24 sprite size
-                            offset = (x_offset + (24 - width) // 2, y_offset + (24 - height) // 2)
-
-                            render_frame.paste(elem, offset, elem)
-                    x_offset += 24
-                y_offset += 24
-
-            # Resizes to 200%
-            render_frame = render_frame.resize((2 * total_width, 2 * total_height), resample=Image.NEAREST)
-            # Saves the final image
-            frames.append(render_frame)
-
-        self.save_frames(frames, out)
 
     @commands.group(invoke_without_command=True)
     @commands.cooldown(5, 8, commands.BucketType.channel)
@@ -658,7 +443,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 comma_grid = split_commas(word_grid, "tile_")
             else:
                 comma_grid = split_commas(word_grid, "text_")
-        except SplittingException as e:
+        except errors.SplittingException as e:
             cause = e.args[0]
             return await ctx.error(f"I couldn't split the following input into separate objects: \"{cause}\".")
 
@@ -691,60 +476,58 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             row.extend([["-"]] * (width - len(row)))
 
         grid = self.parse_raw(stacked_grid, rule=rule)
-        # Finds the associated image sprite for each word in the input
-        # Throws an exception which sends an error message if a word is not found.
-        
-        # Handles variants based on `:` suffixes
-        tile_data = self.bot.get_cog("Admin").tile_data
         try:
+            # Handles variants based on `:` affixes
             full_grid = self.variant_handlers.handle_grid(grid)
+            buffer = BytesIO()
+            task = functools.partial(
+                self.bot.renderer.render,
+                full_grid,
+                palette=palette,
+                background=background, 
+                out=buffer,
+                random_animations=True
+            )
+            await self.bot.loop.run_in_executor(None, task)
         except errors.TileNotFound as e:
             word = e.args[0]
-            if word.startswith("tile_") and tile_data.get(word[5:]) is not None:
-                return await ctx.error(f"The tile `{word}` could not be found. Perhaps you meant `{word[5:]}`?")
-            if tile_data.get("text_" + word) is not None:
-                return await ctx.error(f"The tile `{word}` could not be found. Perhaps you meant `{'text_'+word}`?")
+            if word.name.startswith("tile_") and self.bot.get.tile_data(word.name[5:]) is not None:
+                return await ctx.error(f"The tile `{word}` could not be found. Perhaps you meant `{word.name[5:]}`?")
+            if self.bot.get.tile_data("text_" + word.name) is not None:
+                return await ctx.error(f"The tile `{word}` could not be found. Perhaps you meant `{'text_' + word.name}`?")
             return await ctx.error(f"The tile `{word}` could not be found.")
         except errors.VariantError as e:
             return await self.handle_variant_errors(ctx, e)
-        except TooManyLineBreaks as e:
-            text, count = e.args
-            return await ctx.error(f"The text `{text}` could not be generated, because it contains {count} `/` characters (max 1).")
-        except LeadingTrailingLineBreaks as e:
-            text = e.args[0]
-            return await ctx.error(f"The text `{text}` could not be generated, because it starts or ends with a `/` character.")
-        except BlankCustomText as e:
-            return await ctx.error("The name of a text tile can't be blank. Make sure there aren't any typos in your input.")
-        except BadCharacter as e:
-            text, char = e.args
-            if text.startswith("text_") and char == "_":
-                return await ctx.error(f"The text `{text}` could not be generated. Did you mean to generate the text for `{text[5:]}` instead?")
-            return await ctx.error(f"The text `{text}` could not be generated, because no appropriate letter sprite exists for `{char}`.")
-        except CustomTextTooLong as e:
-            text, length = e.args
-            return await ctx.error(f"The text `{text}` could not be generated, because it is too long ({length}).")
-        except BadLetterStyle as e:
-            text = e.args[0]
-            return await ctx.error(f"The text `{text}` could not be generated, because the `letter` variant can only be used on text that's two letters long.")
-        except BadMetaLevel as e:
-            text, depth = e.args
-            return await ctx.error(f"The text `{text}` is too meta ({depth} layers). You can only go up to {constants.MAX_META_DEPTH} layers deep.")
+        # except TooManyLineBreaks as e:
+        #     text, count = e.args
+        #     return await ctx.error(f"The text `{text}` could not be generated, because it contains {count} `/` characters (max 1).")
+        # except LeadingTrailingLineBreaks as e:
+        #     text = e.args[0]
+        #     return await ctx.error(f"The text `{text}` could not be generated, because it starts or ends with a `/` character.")
+        # except BlankCustomText as e:
+        #     return await ctx.error("The name of a text tile can't be blank. Make sure there aren't any typos in your input.")
+        # except BadCharacter as e:
+        #     text, char = e.args
+        #     if text.startswith("text_") and char == "_":
+        #         return await ctx.error(f"The text `{text}` could not be generated. Did you mean to generate the text for `{text[5:]}` instead?")
+        #     return await ctx.error(f"The text `{text}` could not be generated, because no appropriate letter sprite exists for `{char}`.")
+        # except CustomTextTooLong as e:
+        #     text, length = e.args
+        #     return await ctx.error(f"The text `{text}` could not be generated, because it is too long ({length}).")
+        # except BadLetterStyle as e:
+        #     text = e.args[0]
+        #     return await ctx.error(f"The text `{text}` could not be generated, because the `letter` variant can only be used on text that's two letters long.")
+        # except BadMetaLevel as e:
+        #     text, depth = e.args
+        #     return await ctx.error(f"The text `{text}` is too meta ({depth} layers). You can only go up to {constants.MAX_META_DEPTH} layers deep.")
 
-        # Merges the images found
-        buffer = BytesIO()
-        timestamp = datetime.now()
-        format_string = "render_%Y-%m-%d_%H.%M.%S"
-        formatted = timestamp.strftime(format_string)
-        filename = f"{formatted}.gif"
-        task = functools.partial(self.render, full_grid, width, height, palette=palette, background=background, out=buffer, rand=True)
-        await self.bot.loop.run_in_executor(None, task)
+        filename = datetime.utcnow().strftime(r"render_%Y-%m-%d_%H.%M.%S.gif")
         delta = time() - start
-        # Sends the image through discord
         msg = f"*Rendered in {delta:.2f} s*"
         await ctx.reply(content=msg, file=discord.File(buffer, filename=filename, spoiler=spoiler))
         
 
-    @commands.command()
+    @commands.command(aliases=["text"])
     @commands.cooldown(5, 8, type=commands.BucketType.channel)
     async def rule(self, ctx: Context, *, objects: str = ""):
         '''Renders the text tiles provided. 

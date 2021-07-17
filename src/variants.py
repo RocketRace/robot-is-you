@@ -2,11 +2,12 @@ from __future__ import annotations
 
 import re
 from .types import Bot
-from typing import Any, Callable
+from typing import Any, Callable, TYPE_CHECKING
 
-from discord.ext import commands
+if TYPE_CHECKING:
+    from .tile import FullGrid, GridIndex, RawGrid
 
-from .tile import FullGrid, FullTile, GridIndex, RawGrid, RawTile, TileFields
+from .tile import FullTile, RawTile, TileFields
 from . import constants, errors
 
 HandlerFn = Callable[['HandlerContext'], TileFields]
@@ -14,17 +15,17 @@ DefaultFn = Callable[['DefaultContext'], TileFields]
 
 class ContextBase:
     '''The context that the (something) was invoked in.'''
-    def __init__(self, *, bot: Bot, tile: RawTile, grid: RawGrid, index: GridIndex, is_level: bool = False) -> None:
+    def __init__(self, *, bot: Bot, tile: RawTile, grid: RawGrid, index: GridIndex, **flags: Any) -> None:
         self.bot = bot
         self.tile = tile
         self.grid = grid
         self.index = index
-        self.is_level = is_level
+        self.flags = flags
 
     @property
     def tile_data(self) -> dict | None:
         '''Associated tile data'''
-        if self.is_level:
+        if self.flags.get("is_level"):
             override = self.bot.get.level_tile_data(self.tile.name)
             if override is not None:
                 return override
@@ -36,22 +37,23 @@ class HandlerContext(ContextBase):
         fields: TileFields,
         variant: str,
         groups: tuple[str, ...],
+        extras: dict[str, Any],
         **kwargs: Any,
     ) -> None:
         self.fields = fields
         self.variant = variant
         self.groups = groups
+        self.extras = extras
         super().__init__(**kwargs)
 
 class DefaultContext(ContextBase):
     '''The context that a default factory was invoked in.'''
 
 class VariantHandlers:
-    def __init__(self, bot: Bot, *, is_level: bool = False) -> None:
+    def __init__(self, bot: Bot) -> None:
         self.handlers: list[Handler] = []
         self.bot = bot
         self.default_fields: DefaultFn = lambda ctx: {}
-        self.is_level = is_level
 
     def handler(self, *, pattern: str, order: int | None = None) -> Callable[[HandlerFn], Handler]:
         '''Registers a variant handler.
@@ -83,16 +85,17 @@ class VariantHandlers:
         '''
         self.default_fields = fn
     
-    def handle_tile(self, tile: RawTile, grid: RawGrid, index: GridIndex) -> FullTile:
+    def handle_tile(self, tile: RawTile, grid: RawGrid, index: GridIndex, **flags: Any) -> FullTile:
         '''Take a RawTile and apply its variants to it'''
         default_ctx = DefaultContext(
             bot=self.bot,
             tile=tile,
             grid=grid,
             index=index,
-            is_level=self.is_level,
+            **flags
         )
         fields: TileFields = self.default_fields(default_ctx)
+        extras = {}
         for variant in tile.variants:
             failed = True
             for handler in reversed(self.handlers):
@@ -107,24 +110,25 @@ class VariantHandlers:
                         tile=tile,
                         grid=grid,
                         index=index,
-                        is_level=self.is_level,
+                        extras=extras,
+                        **flags
                     )
                     fields.update(handler.handle(ctx))
             if failed:
                 raise errors.UnknownVariant(tile, variant)
         return FullTile.from_tile_fields(tile, fields)
     
-    def handle_grid(self, grid: RawGrid) -> FullGrid:
+    def handle_grid(self, grid: RawGrid, **flags: Any) -> FullGrid:
         '''Apply variants to a full grid of raw tiles'''
         return [
             [
                 [
-                    self.handle_tile(tile, grid, (x, y, z))
+                    self.handle_tile(tile, grid, (x, y, z), **flags)
                     for z, tile in enumerate(stack)
                 ]
-                for y, stack in enumerate(row)
+                for x, stack in enumerate(row)
             ]
-            for x, row in enumerate(grid)
+            for y, row in enumerate(grid)
         ]
 
 class Handler:
@@ -164,23 +168,32 @@ def is_adjacent(
     grid: RawGrid,
     tile: RawTile,
     coordinate: tuple[int, int],
-    *,
-    tile_borders: bool = False
+    **flags: Any
 ) -> bool:
     '''Tile is next to a joining tile'''
     x, y = coordinate
     joining_tiles = (tile.name, "level")
     if x < 0 or y < 0 or y >= len(grid) or x >= len(grid[0]):
-        return tile_borders
+        return bool(flags.get("tile_borders"))
     return any(t.name in joining_tiles for t in grid[y][x])
 
-def get_handlers(bot: Bot, *, tile_borders: bool = False, is_level: bool = False) -> VariantHandlers:
+handler_store: dict[Bot, VariantHandlers] = {}
+
+# TODO use a different design pattern here
+def get_handlers(bot: Bot) -> VariantHandlers:
     '''Get the variant handler instance'''
-    handlers = VariantHandlers(bot, is_level=is_level)
+    if bot in handler_store:
+        return handler_store[bot]
+    
+    handlers = VariantHandlers(bot)
 
     @handlers.default
     def default(ctx: DefaultContext) -> TileFields:
         '''Handles default colors, facing right, and auto-tiling'''
+        if ctx.tile.name == "-":
+            return {
+                "empty": True
+            }
         tile_data = ctx.tile_data
         color = (0, 3)
         variant = 0
@@ -192,11 +205,19 @@ def get_handlers(bot: Bot, *, tile_borders: bool = False, is_level: bool = False
             if tile_data["tiling"] in constants.AUTO_TILINGS:
                 x, y, _ = ctx.index
                 variant = (
-                      1 * is_adjacent(ctx.grid, ctx.tile, (x + 1, y), tile_borders=tile_borders)
-                    + 2 * is_adjacent(ctx.grid, ctx.tile, (x, y - 1), tile_borders=tile_borders)
-                    + 4 * is_adjacent(ctx.grid, ctx.tile, (x - 1, y), tile_borders=tile_borders)
-                    + 8 * is_adjacent(ctx.grid, ctx.tile, (x, y + 1), tile_borders=tile_borders)
+                    + 1 * is_adjacent(ctx.grid, ctx.tile, (x + 1, y), **ctx.flags)
+                    + 2 * is_adjacent(ctx.grid, ctx.tile, (x, y - 1), **ctx.flags)
+                    + 4 * is_adjacent(ctx.grid, ctx.tile, (x - 1, y), **ctx.flags)
+                    + 8 * is_adjacent(ctx.grid, ctx.tile, (x, y + 1), **ctx.flags)
                 )
+            return {
+                "variant_number": variant,
+                "color_index": color,
+                "meta_level": 0,
+                "sprite": (tile_data["source"], tile_data["sprite"]),
+            }
+        
+        print(ctx.tile_data)
         if not ctx.tile.is_text:
             raise errors.TileNotFound(ctx.tile)
         return {
@@ -255,14 +276,14 @@ def get_handlers(bot: Bot, *, tile_borders: bool = False, is_level: bool = False
         if tile_data is not None:
             tiling = tile_data["tiling"]
             if tiling in constants.AUTO_TILINGS:
-                if ctx.fields.get("auto_override") is None:
+                if ctx.extras.get("auto_override", False):
                     num = ctx.fields.get("variant_number") or 0
                     return {
                         "variant_number": num | constants.AUTO_VARIANTS[ctx.variant]
                     }
                 else:
+                    ctx.extras["auto_override"] = True
                     return {
-                        "auto_override": True,
                         "variant_number": constants.AUTO_VARIANTS[ctx.variant]
                     }
         raise errors.BadTilingVariant(ctx.tile.name, tiling, ctx.variant)
@@ -307,6 +328,16 @@ def get_handlers(bot: Bot, *, tile_borders: bool = False, is_level: bool = False
             raise errors.BadPaletteIndex(ctx.tile.name, ctx.variant)
         return {
             "color_index": (int(ctx.groups[0]), int(ctx.groups[1]))
+        }
+    
+    @handlers.handler(pattern=r"#([0-9a-fA-F]{1,6})")
+    def color_rgb(ctx: HandlerContext) -> TileFields:
+        color = int(ctx.groups[0], base=16)
+        red = color >> 16
+        green = (color | 0x00ff00) >> 8
+        blue = color | 0x0000ff
+        return {
+            "color_rgb": (red, green, blue)
         }
 
     @handlers.handler(pattern=r"inactive|in")
@@ -355,10 +386,11 @@ def get_handlers(bot: Bot, *, tile_borders: bool = False, is_level: bool = False
         if tile_data is not None:
             if tile_data["type"] == "2":
                 return {
+                    "style_flip": True,
                     "custom_style": "noun"
                 }
         return {
-            "generate": True,
+            "custom": True,
             "custom_style": "noun"
         }
     
@@ -369,7 +401,7 @@ def get_handlers(bot: Bot, *, tile_borders: bool = False, is_level: bool = False
         if len(ctx.tile.name[5:]) > 2:
             raise errors.BadLetterVariant(ctx.tile.name, "letter")
         return {
-            "generate": True,
+            "custom": True,
             "custom_style": "letter"
         }
     
@@ -380,6 +412,7 @@ def get_handlers(bot: Bot, *, tile_borders: bool = False, is_level: bool = False
             if tile_data is not None:
                 # this will be funny
                 return {
+                    "style_flip": True,
                     "custom_style": "property"
                 }
             else:
@@ -387,11 +420,12 @@ def get_handlers(bot: Bot, *, tile_borders: bool = False, is_level: bool = False
         if tile_data is not None:
             if tile_data["type"] == "0":
                 return {
+                    "style_flip": True,
                     "custom_style": "property"
                 }
         return {
             "custom_style": "property",
-            "generate": True
+            "custom": True,
         }
 
     return handlers

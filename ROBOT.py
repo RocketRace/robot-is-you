@@ -7,9 +7,12 @@ from datetime import datetime
 import discord
 import jishaku
 from discord.ext import commands
+from PIL import Image
 
 import auth
 import config
+from src.constants import DIRECTIONS
+
 
 class Context(commands.Context):
     async def error(self, msg: str) -> discord.Message:
@@ -43,6 +46,18 @@ class DataAccess:
     
     def level_tile_data(self, tile: str) -> dict | None:
         '''Level tile overrides'''
+
+    def plate(self, direction: int | None, wobble: int) -> tuple[Image.Image, tuple[int, int]]:
+        '''Plate sprites'''
+        if direction is None:
+            return (
+                Image.open(f"data/plates/plate_property_0_{wobble}.png"),
+                (0, 0)
+            )
+        return (
+            Image.open(f"data/plates/plate_property{DIRECTIONS[direction]}_0_{wobble}.png"),
+            (3, 3)
+        )
 
 class Bot(commands.Bot):
     '''Custom bot class :)'''
