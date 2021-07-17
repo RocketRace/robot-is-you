@@ -9,7 +9,7 @@ from PIL import Image, ImageChops, ImageFilter
 if TYPE_CHECKING:
     from ..tile import FullGrid
 
-from .. import constants
+from .. import constants, errors
 from ..types import Bot
 from ..utils import cached_open
 
@@ -134,7 +134,8 @@ class Renderer:
         style: Literal["noun", "property", "letter"],
         direction: int | None,
         meta_level: int,
-        wobble: int
+        wobble: int,
+        seed: int | None = None
     ) -> Image.Image:
         '''Do the thing'''
 
@@ -152,40 +153,50 @@ class Renderer:
         tile_data = self.bot.get.tile_data(name)
         assert style != "letter"
         assert tile_data is not None
-        original_style = tile_data["type"]
-        original_direction = tile_data["type"]
-        
-        if style is not None and (meta_level != 0 or original_style != style or  original_direction != direction):
+        original_style = constants.TEXT_STYLES[tile_data.get("type", "0")]
+        original_direction = None # tile_data["text_direction"]
+        if meta_level != 0 or style is not None and (original_style != style or original_direction != direction):
             if original_style == "property":
                 # box: position of upper-left coordinate of "inner text" in the larger text tile
                 plate, box = self.bot.get.plate(original_direction, wobble)
                 plate_alpha = ImageChops.invert(plate.getchannel("A"))
                 sprite_alpha = ImageChops.invert(sprite.getchannel("A"))
                 alpha = ImageChops.subtract(sprite_alpha, plate_alpha)
-                sprite = Image.new("L", sprite.size, color=255)
-                sprite.putalpha(alpha)
+                sprite = Image.merge("RGBA", (alpha, alpha, alpha, alpha))
                 sprite = sprite.crop((box[0], box[1], constants.DEFAULT_SPRITE_SIZE + box[0], constants.DEFAULT_SPRITE_SIZE + box[1]))
             if style == "property":
                 plate, box = self.bot.get.plate(direction, wobble)
                 plate = self.make_meta(plate, meta_level)
                 plate_alpha = plate.getchannel("A")
-                sprite_alpha = sprite.getchannel("A").crop()
-                sprite = ImageChops.add(sprite_alpha, plate_alpha).convert("RGBA")
+                sprite_alpha = sprite.getchannel("A").crop(
+                    (-meta_level, -meta_level, sprite.width + meta_level, sprite.height + meta_level)
+                )
+                if meta_level % 2 == 0:
+                    alpha = ImageChops.subtract(plate_alpha, sprite_alpha)
+                else:
+                    alpha = ImageChops.add(plate_alpha, sprite_alpha)
+                sprite = Image.merge("RGBA", (alpha, alpha, alpha, alpha))
             else:
-                sprite = self.make_meta(sprite.getchannel("A"), meta_level)
+                sprite = self.make_meta(sprite, meta_level)
         return sprite
 
     def make_meta(self, img: Image.Image, level: int) -> Image.Image:
         '''Applies a meta filter to an image.'''
         if level > constants.MAX_META_DEPTH:
             raise ValueError(level)
-    
+        
+        orig = img.copy()
+        base = img.getchannel("A")
         for _ in range(level):
-            base = img.crop((-2, -2, img.width + 2, img.height + 2))
-            filtered = ImageChops.invert(base).filter(ImageFilter.FIND_EDGES)
-            img = filtered.crop((1, 1, filtered.width - 1, filtered.height - 1))
-    
-        return img
+            temp = base.crop((-2, -2, base.width + 2, base.height + 2))
+            filtered = ImageChops.invert(temp).filter(ImageFilter.FIND_EDGES)
+            base = filtered.crop((1, 1, filtered.width - 1, filtered.height - 1))
+        
+        base = Image.merge("RGBA", (base, base, base, base))
+        if level % 2 == 0 and level != 0:
+            base.paste(orig, (level, level), mask=orig)
+        
+        return base
 
     def save_frames(self, imgs: list[Image.Image], out: str | BinaryIO) -> None:
         '''Saves the images as a gif to the given file or buffer.

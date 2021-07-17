@@ -122,4 +122,9 @@ DIRECTIONS = {
     16: "left",
     24: "down"
 }
+TEXT_STYLES = {
+    "0": "noun",
+    "2": "property",
+    "5": "letter"
+}  
 DEFAULT_SPRITE_SIZE = 24

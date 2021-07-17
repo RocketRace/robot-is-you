@@ -15,6 +15,7 @@ cogs = [
     "src.cogs.errorhandler",
     "src.cogs.reader",
     "src.cogs.render",
+    "src.cogs.variants",
     "src.cogs.utilities",
     "jishaku"
 ]

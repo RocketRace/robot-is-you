@@ -51,11 +51,11 @@ class DataAccess:
         '''Plate sprites'''
         if direction is None:
             return (
-                Image.open(f"data/plates/plate_property_0_{wobble}.png"),
+                Image.open(f"data/plates/plate_property_0_{wobble+1}.png"),
                 (0, 0)
             )
         return (
-            Image.open(f"data/plates/plate_property{DIRECTIONS[direction]}_0_{wobble}.png"),
+            Image.open(f"data/plates/plate_property{DIRECTIONS[direction]}_0_{wobble+1}.png").convert("RGBA"),
             (3, 3)
         )
 

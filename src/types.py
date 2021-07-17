@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import datetime
-from typing import TYPE_CHECKING, Any, Coroutine, Optional, TypeVar
+from typing import TYPE_CHECKING, Any, Coroutine, Optional
 
 import discord
 from discord.ext import commands
@@ -9,6 +9,7 @@ from PIL import Image
 
 if TYPE_CHECKING:
     from .cogs.render import Renderer
+    from .cogs.variants import VariantHandlers
 
 class Context(commands.Context):
     async def error(self, msg: str) -> discord.Message: ...
@@ -32,6 +33,7 @@ class Bot(commands.Bot):
     loading: bool
     started: datetime.datetime
     renderer: Renderer
+    handlers: VariantHandlers
     def __init__(self, *args, cogs: list[str], embed_color: discord.Color, webhook_id: int, prefixes: list[str], exit_code: int = 0, **kwargs):...
     async def get_context(self, message: discord.Message) -> Coroutine[Any, Any, Context]:...
     def get_tile(self, tile: str) -> dict | None:...

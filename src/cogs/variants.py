@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 import re
-from .types import Bot
+from ..types import Bot
 from typing import Any, Callable, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .tile import FullGrid, GridIndex, RawGrid
+    from ..tile import FullGrid, GridIndex, RawGrid
 
-from .tile import FullTile, RawTile, TileFields
-from . import constants, errors
+from ..tile import FullTile, RawTile, TileFields
+from .. import constants, errors
 
 HandlerFn = Callable[['HandlerContext'], TileFields]
 DefaultFn = Callable[['DefaultContext'], TileFields]
@@ -177,15 +177,10 @@ def is_adjacent(
         return bool(flags.get("tile_borders"))
     return any(t.name in joining_tiles for t in grid[y][x])
 
-handler_store: dict[Bot, VariantHandlers] = {}
-
-# TODO use a different design pattern here
-def get_handlers(bot: Bot) -> VariantHandlers:
+def setup(bot: Bot):
     '''Get the variant handler instance'''
-    if bot in handler_store:
-        return handler_store[bot]
-    
     handlers = VariantHandlers(bot)
+    bot.handlers = handlers
 
     @handlers.default
     def default(ctx: DefaultContext) -> TileFields:
@@ -211,16 +206,17 @@ def get_handlers(bot: Bot) -> VariantHandlers:
                     + 8 * is_adjacent(ctx.grid, ctx.tile, (x, y + 1), **ctx.flags)
                 )
             return {
+                "custom_style": constants.TEXT_STYLES[tile_data.get("type", "0")], # type:ignore
                 "variant_number": variant,
                 "color_index": color,
                 "meta_level": 0,
                 "sprite": (tile_data["source"], tile_data["sprite"]),
             }
-        
-        print(ctx.tile_data)
         if not ctx.tile.is_text:
             raise errors.TileNotFound(ctx.tile)
         return {
+            "custom": True,
+            "custom_style": "noun",
             "variant_number": variant,
             "color_index": color,
             "meta_level": 0,
@@ -384,7 +380,7 @@ def get_handlers(bot: Bot) -> VariantHandlers:
             raise errors.TileNotText(ctx.tile.name, "noun")
         tile_data = ctx.tile_data
         if tile_data is not None:
-            if tile_data["type"] == "2":
+            if constants.TEXT_STYLES[tile_data["type"]] == "property":
                 return {
                     "style_flip": True,
                     "custom_style": "noun"
@@ -394,7 +390,7 @@ def get_handlers(bot: Bot) -> VariantHandlers:
             "custom_style": "noun"
         }
     
-    @handlers.handler(pattern=r"letter")
+    @handlers.handler(pattern=r"letter|let")
     def letter(ctx: HandlerContext) -> TileFields:
         if not ctx.tile.is_text:
             raise errors.TileNotText(ctx.tile.name, "letter")
@@ -405,7 +401,7 @@ def get_handlers(bot: Bot) -> VariantHandlers:
             "custom_style": "letter"
         }
     
-    @handlers.handler(pattern=r"property")
+    @handlers.handler(pattern=r"property|prop")
     def property(ctx: HandlerContext) -> TileFields:
         tile_data = ctx.tile_data
         if not ctx.tile.is_text:
@@ -418,7 +414,7 @@ def get_handlers(bot: Bot) -> VariantHandlers:
             else:
                 raise ValueError("yet again (but this time on a technicality)")
         if tile_data is not None:
-            if tile_data["type"] == "0":
+            if constants.TEXT_STYLES[tile_data["type"]] == "noun":
                 return {
                     "style_flip": True,
                     "custom_style": "property"

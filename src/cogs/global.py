@@ -20,7 +20,7 @@ from PIL import Image, ImageChops
 if TYPE_CHECKING:
     from ..tile import RawGrid
 
-from .. import constants, errors, variants
+from .. import constants, errors
 from ..tile import RawTile
 from ..types import Bot, Context
 
@@ -59,7 +59,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         with open("config/leveltileoverride.json") as f:
             j = load(f)
             self.level_tile_override = j
-        self.variant_handlers = variants.get_handlers(bot)
 
     # Check if the bot is loading
     async def cog_check(self, ctx):
@@ -478,7 +477,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         grid = self.parse_raw(stacked_grid, rule=rule)
         try:
             # Handles variants based on `:` affixes
-            full_grid = self.variant_handlers.handle_grid(grid)
+            full_grid = self.bot.handlers.handle_grid(grid)
             buffer = BytesIO()
             task = functools.partial(
                 self.bot.renderer.render,

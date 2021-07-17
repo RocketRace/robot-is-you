@@ -47,9 +47,9 @@ class FullTile:
     '''A tile ready to be rendered'''
     def __init__(self, *,
         name: str,
-        sprite: tuple[str, str] | None = None, 
-        variant_number: int | None = None,
-        color_index: tuple[int, int] | None = None,
+        sprite: tuple[str, str] = ("vanilla", "error"),
+        variant_number: int = 0,
+        color_index: tuple[int, int] = (0, 3),
         color_rgb: tuple[int, int, int] | None = None,
         custom: bool = False,
         style_flip: bool = False,
