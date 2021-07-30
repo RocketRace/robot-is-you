@@ -81,8 +81,9 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         results = 0
         matches = []
 
-       # Searches through a list of the names of each tile
-        data = self.bot.get_cog("Admin").tile_data
+        # Searches through a list of the names of each tile
+        # BIG BIG TODO HERE
+        data = self.bot.get._tile_data
         for name,tile in data.items():
             if has_flags:
                 # Checks if the object matches all the flag parameters
@@ -197,7 +198,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         clean_tile = tile.strip().lower()
 
         # Does the tile exist?
-        data = self.bot.get_cog("Admin").tile_data.get(clean_tile)
+        data = self.bot.get.tile_data(clean_tile)
         suffix = "It also supports the following colors:\n" + \
             ", ".join(f"`:{name}`" for name in constants.COLOR_NAMES) + \
             ",\nas well as the following filters:\n`:meta` / `:m`, `:m2`, `:m3`, `:hide`."

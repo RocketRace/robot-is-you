@@ -77,7 +77,7 @@ class Renderer:
                         if tile.custom:
                             sprite = self.generate_sprite(
                                 tile.name,
-                                style=tile.custom_style, # type: ignore
+                                style=tile.custom_style or "noun",
                                 direction=tile.custom_direction,
                                 meta_level=tile.meta_level,
                                 wobble=wobble,
@@ -94,10 +94,10 @@ class Renderer:
                                 path = f"data/sprites/{source}/{sprite_name}_{tile.variant_number}_{wobble + 1}.png"
                             sprite = cached_open(path, cache=sprite_cache, fn=Image.open).convert("RGBA")
                             
-                            sprite = self.apply_options(
+                            sprite = self.apply_options_name(
                                 tile.name,
                                 sprite,
-                                style=tile.custom_style, # type: ignore
+                                style=tile.custom_style or "noun",
                                 direction=tile.custom_direction,
                                 meta_level=tile.meta_level,
                                 wobble=wobble,
@@ -131,30 +131,227 @@ class Renderer:
         self,
         text: str,
         *,
-        style: Literal["noun", "property", "letter"],
+        style: str,
         direction: int | None,
         meta_level: int,
         wobble: int,
         seed: int | None = None
     ) -> Image.Image:
-        '''Do the thing'''
+        '''Generates a custom text sprite'''
+        raw = text[5:].replace("/", "")
+        newline_count = text.count("/")
 
-    def apply_options(
+        # This is to prevent possible DOS attacks using massive text
+        # Note however that this is unlikely to be an issue unless this
+        # function takes input from unexpected sources, as even 8 ** 4000
+        # is relatively okay to compute
+        # The default is low enough to prevent abuse, but high enough to 
+        # ensure that no actual text can be excluded.
+        if len(raw) > constants.MAX_TEXT_LENGTH:
+            raise errors.CustomTextTooLong(text)
+
+        if seed is None:
+            seed = random.randint(0, 8 ** len(raw))
+        
+        # Get mode and split status
+        if newline_count > 1:
+            raise errors.TooManyLines(text, newline_count)
+        elif newline_count == 1:
+            fixed = True
+            mode = "small"
+            index = text.index("/")
+        else:
+            fixed = False
+            mode = "big"
+            index = -1
+            if len(raw) >= 4:
+                mode = "small"
+                index = len(raw) - len(raw) // 2
+    
+        if style == "letter":
+            if mode == "big":
+                mode = "letter"
+            else:
+                raise errors.BadLetterStyle(text)
+        
+        if index == 0 or index == len(raw):
+            raise errors.LeadingTrailingLineBreaks(text)
+
+        # fetch the minimum possible widths first
+        try:
+            widths: list[int] = [self.bot.get.letter_width(c, mode, greater_than=0) for c in raw]
+        except KeyError as e:
+            raise errors.BadCharacter(text, mode, e.args[0])
+
+        max_width = constants.DEFAULT_SPRITE_SIZE
+        def check_or_adjust(widths: list[int], index: int) -> int:
+            '''Is the arrangement valid?'''
+            if mode == "small":
+                if fixed:
+                    if sum(widths[:index]) > max_width or sum(widths[index:]) > max_width:
+                        raise errors.CustomTextTooLong(text)        
+                else:
+                    if sum(widths) > 2 * max_width:
+                        raise errors.CustomTextTooLong(text)
+                    while sum(widths[:index]) > max_width:
+                        index -= 1
+                    while sum(widths[index:]) > max_width:
+                        index += 1
+                    if sum(widths[:index]) > max_width or sum(widths[index:]) > max_width:
+                        raise errors.CustomTextTooLong(text)
+                    if index == 0 or index == len(raw):
+                        raise errors.CustomTextTooLong(text)
+                    return index
+            else:
+                if sum(widths) > max_width:
+                    raise errors.CustomTextTooLong(text)
+            return index
+        
+        def too_squished(widths: list[int], index: int) -> bool:
+            '''Is the arrangement too squished? (bad letter spacing)'''
+            if mode == "small":
+                top = widths[:index]
+                top_gaps = max_width - sum(top)
+                bottom = widths[index:]
+                bottom_gaps = max_width - sum(bottom)
+                return top_gaps < len(top) - 1 or bottom_gaps < len(bottom) - 1
+            else:
+                gaps = max_width - sum(widths)
+                return gaps < len(widths) - 1
+        
+        # Check if the arrangement is valid with minimum sizes
+        # If allowed, shift the index to make the arrangement valid
+        index = check_or_adjust(widths, index)
+
+        # Wxpand widths where possible
+        stable = [False for _ in range(len(widths))]
+        while not all(stable):
+            old_width, i = min((w, i) for i, w in enumerate(widths) if not stable[i])
+            try:
+                new_width = self.bot.get.letter_width(raw[i], mode, greater_than=old_width)
+            except KeyError:
+                stable[i] = True
+                continue
+            widths[i] = new_width
+            try:
+                index = check_or_adjust(widths, index)
+            except errors.CustomTextTooLong:
+                widths[i] = old_width
+                stable[i] = True
+            else:
+                if too_squished(widths, index):
+                    # We've shown that a "perfect" width already exists below this
+                    # So stick to the "perfect" one
+                    widths[i] = old_width
+                    stable[i] = True
+
+        # Arrangement is now the widest it can be
+        # Kerning: try for 1 pixel between sprites, and rest to the edges
+        gaps: list[int] = []
+        if mode == "small":
+            rows = [widths[:index], widths[index:]]
+        else:
+            rows = [widths[:]]
+        for row in rows:
+            space = max_width - sum(row)
+            # Extra -1 is here to not give kerning space outside the left/rightmost char
+            chars = len(row) - 1
+            if space >= chars:
+                # left edge
+                gaps.append((space - chars) // 2)
+                # char gap
+                gaps.extend([1] * chars)
+                # right edge gap is implied
+            else:
+                # left edge
+                gaps.append(0)
+                # as many char gaps as possible, starting from the left
+                gaps.extend([1] * space)
+                gaps.extend([0] * (chars - space))
+
+        letters: list[Image.Image] = []
+        for c, w in zip(raw, widths):
+            letters.append(self.bot.get.letter_sprite(c, mode, w, wobble, seed=seed | 0b11111111))
+            seed >>= 8
+        
+        sprite = Image.new("L", (constants.DEFAULT_SPRITE_SIZE, constants.DEFAULT_SPRITE_SIZE))
+        if mode == "small":
+            x = gaps[0]
+            y_center = 6
+            for i in range(index):
+                letter = letters[i]
+                y_top = y_center - letter.height // 2
+                sprite.paste(letter, (x, y_top), mask=letter)
+                x += widths[i]
+                if i != index - 1:
+                    x += gaps[i + 1]
+            x = gaps[index]
+            y_center = 18
+            for i in range(index, len(raw)):
+                letter = letters[i]
+                y_top = y_center - letter.height // 2
+                sprite.paste(letter, (x, y_top), mask=letter)
+                x += widths[i]
+                if i != len(raw) - 1:
+                    x += gaps[i + 1]
+        else:
+            x = gaps[0]
+            y_center = 12
+            for i in range(index):
+                letter = letters[i]
+                y_top = y_center - letter.height // 2
+                sprite.paste(letter, (x, y_top), mask=letter)
+                x += widths[i]
+                x += gaps[i + 1]
+            
+        sprite = Image.merge("RGBA", (sprite, sprite, sprite, sprite))
+        return self.apply_options(
+            sprite, 
+            original_style="noun",
+            style=style,
+            original_direction=None,
+            direction=direction,
+            meta_level=meta_level,
+            wobble=wobble
+        )
+
+    def apply_options_name(
         self,
         name: str,
         sprite: Image.Image,
         *,
-        style: Literal["noun", "property", "letter"] | None,
+        style: str,
         direction: int | None,
         meta_level: int,
         wobble: int
     ) -> Image.Image:
-        '''Takes an image, with or without a plate, and applies the given options to it.'''
+        '''Takes an image, taking tile data from its name, and applies the given options to it.'''
         tile_data = self.bot.get.tile_data(name)
-        assert style != "letter"
         assert tile_data is not None
         original_style = constants.TEXT_STYLES[tile_data.get("type", "0")]
-        original_direction = None # tile_data["text_direction"]
+        original_direction = tile_data.get("text_direction")
+        return self.apply_options(
+            sprite,
+            original_style=original_style,
+            style=style,
+            original_direction=original_direction,
+            direction=direction,
+            meta_level=meta_level,
+            wobble=wobble,
+        )
+
+    def apply_options(
+        self,
+        sprite: Image.Image,
+        *, 
+        original_style: str,
+        style: str,
+        original_direction: int | None,
+        direction: int | None,
+        meta_level: int,
+        wobble: int
+    ):
+        '''Takes an image, with or without a plate, and applies the given options to it.'''
         if meta_level != 0 or style is not None and (original_style != style or original_direction != direction):
             if original_style == "property":
                 # box: position of upper-left coordinate of "inner text" in the larger text tile

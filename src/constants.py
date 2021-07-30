@@ -4,6 +4,7 @@ from __future__ import annotations
 MAX_STACK = 4
 MAX_META_DEPTH = 3
 MAX_TILES = 256
+MAX_TEXT_LENGTH = 48
 
 # variants
 DIRECTION_TILINGS = {

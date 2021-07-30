@@ -56,19 +56,28 @@ class UnknownVariant(VariantError):
 
 # === Custom text ===
 class TextGenerationError(BabaError):
-    '''Base class for custom text'''
+    '''Base class for custom text
+    
+    extra args: text
+    '''
 
-class TooManyLineBreaks(TextGenerationError):
+class BadLetterStyle(TextGenerationError):
+    '''Letter style provided but it's not possible'''
+
+class TooManyLines(TextGenerationError):
     '''Max 1 newline'''
 
 class LeadingTrailingLineBreaks(TextGenerationError):
     '''Can't start or end with newlines'''
 
-class BlankCustomText(TextGenerationError):
-    '''Can't be empty'''
-
 class BadCharacter(TextGenerationError):
-    '''Unknown character in text'''
+    '''Invalid character in text
+    
+    Extra args: mode, char
+    '''
 
 class CustomTextTooLong(TextGenerationError):
-    '''Can't fit'''
+    '''Can't fit
+    
+    Extra args: mode
+    '''

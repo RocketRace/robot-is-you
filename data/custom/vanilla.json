@@ -400,16 +400,6 @@
      "tiling":"-1"
   },
   {
-   "sprite":"text_falldown",
-   "name":"text_falldown",
-   "color":
-     [
-       "5",
-       "3"
-     ],
-     "tiling":"-1"
-  },
-  {
    "sprite":"blossom",
    "name":"blossom",
    "color":
@@ -482,6 +472,7 @@
   {
     "name":"text_scary",
     "sprite":"text_scary",
+    "type":"2",
     "color":[
       "2",
       "0"
@@ -490,5 +481,195 @@
       "2",
       "1"
     ]
-  }
+  },
+  {
+    "sprite":"text_falldown",
+    "name":"text_falldown",
+    "type":"2",
+    "color":
+    [
+      "5",
+      "1"
+    ],
+    "active":[
+      "5",
+      "3"
+    ],
+    "tiling":"-1",
+    "text_direction": 24
+  },
+  {
+    "sprite":"text_fallleft",
+    "name":"text_fallleft",
+    "type":"2",
+    "color":
+    [
+      "5",
+      "1"
+    ],
+    "active":[
+      "5",
+      "3"
+    ],
+    "tiling":"-1",
+    "text_direction": 16
+  },
+  {
+    "sprite":"text_fallup",
+    "name":"text_fallup",
+    "type":"2",
+    "color":
+    [
+      "5",
+      "1"
+    ],
+    "active":[
+      "5",
+      "3"
+    ],
+    "tiling":"-1",
+    "text_direction": 8
+  },
+  {
+    "sprite":"text_fallright",
+    "name":"text_fallright",
+    "type":"2",
+    "color":
+    [
+      "5",
+      "1"
+    ],
+    "active":[
+      "5",
+      "3"
+    ],
+    "tiling":"-1",
+    "text_direction": 0
+  },
+  {
+    "name": "text_lockeddown",
+    "tiling": "-1",
+    "type": "2",
+    "text_direction": 24,
+    "sprite": "text_lockeddown",
+    "color": [
+       "4",
+       "1"
+    ],
+    "active": [
+       "4",
+       "2"
+    ],
+    "source": "vanilla"
+ },
+ {
+   "name": "text_lockedright",
+    "tiling": "-1",
+    "type": "2",
+    "text_direction": 0,
+    "sprite": "text_lockedright",
+    "color": [
+       "4",
+       "1"
+    ],
+    "active": [
+       "4",
+       "2"
+    ],
+    "source": "vanilla"
+ },
+ {
+   "name": "text_lockedup",
+    "tiling": "-1",
+    "type": "2",
+    "text_direction": 8,
+    "sprite": "text_lockedup",
+    "color": [
+       "4",
+       "1"
+    ],
+    "active": [
+       "4",
+       "2"
+    ]
+ },
+ {
+   "name":"text_lockedleft",
+    "tiling": "-1",
+    "type": "2",
+    "text_direction": 16,
+    "sprite": "text_lockedleft",
+    "color": [
+       "4",
+       "1"
+    ],
+    "active": [
+       "4",
+       "2"
+    ]
+ },
+ {
+   "name": "text_nudgeright",
+  "tiling": "-1",
+  "type": "2",
+  "text_direction": 0,
+  "sprite": "text_nudgeright",
+  "color": [
+     "5",
+     "1"
+  ],
+  "active": [
+     "5",
+     "3"
+  ],
+  "source": "vanilla"
+},
+{
+  "name":"text_nudgeup",
+  "tiling": "-1",
+  "type": "2",
+  "text_direction": 8,
+  "sprite": "text_nudgeup",
+  "color": [
+     "5",
+     "1"
+  ],
+  "active": [
+     "5",
+     "3"
+  ],
+  "source": "vanilla"
+},
+{
+  "name": "text_nudgeleft",
+  "tiling": "-1",
+  "type": "2",
+  "text_direction": 16,
+  "sprite": "text_nudgeleft",
+  "color": [
+     "5",
+     "1"
+  ],
+  "active": [
+     "5",
+     "3"
+  ],
+  "source": "vanilla"
+},
+{
+  "name":"text_nudgedown",
+  "tiling": "-1",
+  "type": "2",
+  "text_direction": 24,
+  "sprite": "text_nudgedown",
+  "color": [
+    "5",
+    "1"
+  ],
+  "active": [
+    "5",
+    "3"
+  ],
+  "source": "vanilla"
+}
 ]

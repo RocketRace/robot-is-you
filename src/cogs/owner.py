@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import pathlib
 import platform
 from datetime import datetime
 from pathlib import Path
@@ -20,24 +21,18 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
     def __init__(self, bot: Bot):
         self.bot = bot
-        self.tile_data = {}
         self.identifies = []
+        self.tile_data = {}
         self.resumes = []
         self.blacklist = []
         # Loads the caches
         # Loads the tile colors, if it exists
-        with open("cache/tiledata.json") as fp:
-            tile_data = fp.read()
-            if tile_data:
-                self.tile_data = json.loads(tile_data)
 
         with open("cache/blacklist.json") as fp:
             blacklist = fp.read()
             if blacklist:
                 self.blacklist = json.loads(blacklist)
 
-        self.initialize_letters()
-        
         # Are assets loading?
         self.bot.loading = False
             
@@ -95,9 +90,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             await guild.leave()
             await ctx.send(f"Left {guild}.")
 
-    @commands.command()
-    @commands.is_owner()
-    async def loadchanges(self, ctx: Context):
+    def loadchanges(self):
         '''Scrapes alternate tile data from level metadata (`.ld`) files.'''
         self.bot.loading = True
         
@@ -176,8 +169,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                     if not duplicate:
                         alternate_tiles[key].extend([alts[key]])
     
-
-        await ctx.send("Scraped preexisting tile data from `.ld` files.")
         self.bot.loading = False
         return alternate_tiles
     
@@ -185,16 +176,14 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.is_owner()
     async def loaddata(self, ctx: Context):
         '''Reloads tile data from `data/values.lua`, `data/editor_objectlist.lua` and `.ld` files.'''
-        alt_tiles = await ctx.invoke(self.bot.get_command("loadchanges"))
-        await ctx.invoke(self.bot.get_command("loadcolors"), alternate_tiles = alt_tiles)
-        await ctx.invoke(self.bot.get_command("loadeditor"))
-        await ctx.invoke(self.bot.get_command("loadcustom"))
-        await ctx.invoke(self.bot.get_command("dumpdata"))
+        alt_tiles = self.loadchanges()
+        self.loadcolors(alt_tiles)
+        self.loadeditor()
+        self.loadcustom()
+        self.dumpdata()
         return await ctx.send("Done. Loaded all tile data.")
 
-    @commands.command()
-    @commands.is_owner()
-    async def loadcolors(self, ctx: Context, alternate_tiles):
+    def loadcolors(self, alternate_tiles):
         '''Loads tile data from `data/values.lua.` and merges it with tile data from `.ld` files.'''
         self.tile_data = {}
         alt_tiles = alternate_tiles
@@ -293,13 +282,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             elif line == "tileslist =\n":
                 tileslist = True
 
-        await ctx.send("Loaded default tile data from `data/values.lua`.")
-
         self.bot.loading = False
 
-    @commands.command()
-    @commands.is_owner()
-    async def loadcustom(self, ctx: Context):
+    def loadcustom(self):
         '''Loads custom tile data from `data/custom/*.json` into self.tile_data'''
         
         # Load custom tile data from a json files
@@ -322,11 +307,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 if name is not None:
                     self.tile_data[name] = rewritten
 
-        await ctx.send("Loaded custom tile data from `data/custom/*.json`.")
-
-    @commands.command()
-    @commands.is_owner()
-    async def loadeditor(self, ctx: Context):
+    def loadeditor(self):
         '''Loads tile data from `data/editor_objectlist.lua` into `self.tile_data`.'''
 
         lines = ""
@@ -365,11 +346,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 ...
 
         self.tile_data.update(objects)
-        await ctx.send("Loaded tile data from `data/editor_objectlist.lua`.")
 
-    @commands.command()
-    @commands.is_owner()
-    async def dumpdata(self, ctx: Context):
+    def dumpdata(self):
         '''Dumps cached tile data from `self.tile_data` into `cache/tiledata.json` and `target/tilelist.txt`.'''
 
         max_length = len(max(self.tile_data, key=lambda x: len(x))) + 1
@@ -381,9 +359,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         # Dumps the gathered data to tiledata.json
         with open("cache/tiledata.json", "wt") as tile_data:
             json.dump(self.tile_data, tile_data, indent=3)
+        
+        self.bot.get._tile_data = self.tile_data
 
-        await ctx.send("Saved cached tile data.")
-    
     @commands.command()
     @commands.is_owner()
     async def hidden(self, ctx: Context):
@@ -398,28 +376,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         help = command.help
         await ctx.send(f"Command doc for {command}:\n{help}")
 
-    def initialize_letters(self):
-        big = {}
-        small = {}
-        for char in os.listdir("target/letters/big"):
-            if char != ".DS_Store":
-                for width in os.listdir(f"target/letters/big/{char}"):
-                    if width != ".DS_Store":
-                        big.setdefault(char, set()).add(int(width))
-
-        for char in os.listdir("target/letters/small"):
-            if char != ".DS_Store":
-                for width in os.listdir(f"target/letters/small/{char}"):
-                    if width != ".DS_Store":
-                        small.setdefault(char, set()).add(int(width))
-
-        if "Windows" in platform.system():
-            os.system("xcopy data\\letters\\ target\\letters\\ /E /Y /Q")
-        else:
-            os.system("cp -r data/letters target")
-
-        self.letter_widths = {"big":big, "small":small}
-
     @commands.command()
     @commands.is_owner()
     async def loadletters(self, ctx: Context):
@@ -427,23 +383,25 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         ignored = json.load(open("config/letterignore.json"))
 
         def check(data):
+            name, value = data
             return all([
-                data["sprite"].startswith("text_"),
-                data["source"] == "vanilla",
-                data["sprite"] not in ignored,
-                len(data["sprite"]) >= 7
+                value["sprite"].startswith("text_"),
+                value["source"] == "vanilla",
+                value["sprite"] not in ignored,
+                value.get("text_direction") is None,
+                len(value["sprite"]) >= 7
             ])
 
-        for data in filter(check, self.tile_data.values()):
+        for _, data in filter(check, self.bot.get.tile_datas()):
             sprite = data["sprite"]
             try:
                 tile_type = data["type"]
             except:
-                print(data)
+                print("", data)
             else:
                 self.loadletter(sprite, tile_type)
 
-        self.initialize_letters()
+        self.bot.get.load_letters()
 
         await ctx.send("pog")
 
@@ -456,9 +414,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
         # Background plates for type-2 text,
         # in 1 bit per pixel depth
-        plate_0 = Image.open("data/plates/plate_property_0_1.png").convert("RGBA").getchannel("A").convert("1")
-        plate_1 = Image.open("data/plates/plate_property_0_2.png").convert("RGBA").getchannel("A").convert("1")
-        plate_2 = Image.open("data/plates/plate_property_0_3.png").convert("RGBA").getchannel("A").convert("1")
+        plates = [self.bot.get.plate(None, i)[0].getchannel("A").convert("1") for i in range(3)]
         
         # Maps each character to three bounding boxes + images
         # (One box + image for each frame of animation)
@@ -466,14 +422,12 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         char_sizes = {}
         
         # Scrape the sprites for the sprite characters in each of the three frames
-        for i, plate in enumerate([plate_0, plate_1, plate_2]):
+        for i, plate in enumerate(plates):
             # Get the alpha channel in 1-bit depth
             alpha = Image.open(f"data/sprites/vanilla/{word}_0_{i + 1}.png") \
                 .convert("RGBA") \
                 .getchannel("A") \
                 .convert("1")
-
-            w, h = alpha.size
             
             # Type-2 text has inverted text on a background plate
             if tile_type == "2":
@@ -483,10 +437,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
             # Get the point from which characters are seeked for
             x = 0
-            if two_rows:
-                y = h // 4
-            else:
-                y = h // 2
+            y = 6 if two_rows else 18
 
             # Flags
             skip = False
@@ -499,10 +450,10 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                     continue
 
                 while alpha.getpixel((x, y)) == 0:
-                    if x == w - 1:
-                        if two_rows and y == h // 4:
+                    if x == alpha.width - 1:
+                        if two_rows and y == 6:
                             x = 0
-                            y = 3 * h // 4
+                            y = 18
                         else:
                             break
                     else:
@@ -510,20 +461,20 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 # There's a letter at this position
                 else:
                     clone = alpha.copy()
-                    ImageDraw.floodfill(clone, (x, y), 1, 1) # 1 placeholder
-                    clone = Image.eval(clone, lambda x: 255 if x == 1 else 0)
+                    ImageDraw.floodfill(clone, (x, y), 128) # 1 placeholder
+                    clone = Image.eval(clone, lambda x: 255 if x == 128 else 0)
                     clone = clone.convert("1")
                     
                     # Get bounds of character blob 
                     x1, y1, x2, y2 = clone.getbbox()
                     # Run some checks
                     # Too wide => Skip 2 characters (probably merged two chars)
-                    if x2 - x1 > (1.5 * w * (1 + two_rows) / len(chars)):
+                    if x2 - x1 > (1.5 * alpha.width * (1 + two_rows) / len(chars)):
                         skip = True
                         continue
                     
                     # Too tall? Scrap the rest of the characters
-                    if y2 - y1 > 1.5 * h / (1 + two_rows):
+                    if y2 - y1 > 1.5 * alpha.height / (1 + two_rows):
                         break
                     
                     # Remove character from sprite, push to char_sizes
@@ -537,7 +488,6 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         saved = []
         # Save scraped characters
         for (char, _), entries in char_sizes.items():
-            ...
             # All three frames clearly found the character in the sprite
             if len(entries) == 3:
                 saved.append(char)
