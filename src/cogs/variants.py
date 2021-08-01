@@ -25,7 +25,7 @@ class ContextBase:
     @property
     def tile_data(self) -> dict | None:
         '''Associated tile data'''
-        if self.flags.get("is_level"):
+        if self.flags.get("ignore_editor_overrides"):
             override = self.bot.get.level_tile_data(self.tile.name)
             if override is not None:
                 return override

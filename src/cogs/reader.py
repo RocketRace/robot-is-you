@@ -221,7 +221,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                 row.pop(0)
 
         # Handle sprite variants
-        tiles = self.bot.handlers.handle_grid(objects, ignore_bad_directions=True, tile_borders=tile_borders)
+        tiles = self.bot.handlers.handle_grid(objects, ignore_bad_directions=True, tile_borders=tile_borders, ignore_editor_overrides=True)
 
         # (0,4) is the color index for level backgrounds
         background = (0,4) if keep_background else None
