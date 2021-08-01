@@ -2633,21 +2633,21 @@ particletypes =
 
 namegivingtitles =
 {
-	[1] = {"namegiving_newworldname","maxlen24"},
-	[2] = {"namegiving_changelevelname","maxlen24"},
-	[3] = {"namegiving_newlevelname","maxlen24"},
-	[4] = {"namegiving_changeunitname","lower,maxlen24"},
-	[5] = {"namegiving_changeunittype","lower,maxlen12"},
-	[6] = {"namegiving_newthemename","maxlen16"},
-	[7] = {"namegiving_objectsearchstring","lower,maxlen12"},
-	[8] = {"namegiving_newthemename","maxlen16"},
+	[1] = {"namegiving_newworldname","minlen1,maxlen24"},
+	[2] = {"namegiving_changelevelname","minlen1,maxlen24"},
+	[3] = {"namegiving_newlevelname","minlen1,maxlen24"},
+	[4] = {"namegiving_changeunitname","lower,minlen1,maxlen24"},
+	[5] = {"namegiving_changeunittype","lower,minlen1,maxlen12"},
+	[6] = {"namegiving_newthemename","minlen1,maxlen16"},
+	[7] = {"namegiving_objectsearchstring","lower,minlen1,maxlen12"},
+	[8] = {"namegiving_newthemename","minlen1,maxlen16"},
 	[9] = {"namegiving_levelauthor","maxlen16"},
 	[10] = {"namegiving_worldauthor","maxlen16"},
-	[11] = {"namegiving_changeworldname","maxlen24"},
+	[11] = {"namegiving_changeworldname","minlen1,maxlen24"},
 	[12] = {"namegiving_downloadcode","upper,maxlen9"},
-	[13] = {"namegiving_levelsearchstring","maxlen24"},
-	[14] = {"namegiving_spritesearchstring","lower,maxlen24"},
-	[15] = {"namegiving_slotname","maxlen16"},
+	[13] = {"namegiving_levelsearchstring","minlen1,maxlen24"},
+	[14] = {"namegiving_spritesearchstring","lower,minlen1,maxlen24"},
+	[15] = {"namegiving_slotname","minlen1,maxlen16"},
 	[16] = {"namegiving_subtitle","maxlen26"},
 	[17] = {"namegiving_editor_autopick","lower"},
 	[18] = {"namegiving_currobjlist_autoadd","lower"},
@@ -2698,6 +2698,7 @@ bicons =
 	m_settings_shake = 43,
 	yes = 44,
 	no = 45,
+	m_settings_language = 46,
 }
 
 lookup_table =
@@ -2719,7 +2720,7 @@ lookup_table =
 	-- capital letters a-z
 	65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 59, 34,
 	-- capitalized umlauts etc
-	197,
+	197, 201, 217, 223, 7838, 284, 348, 346, 379, 171, 187,
 }
 
 play_data =
@@ -2767,5 +2768,5 @@ controlnames =
 	-- Editor gamepad controls
 	{"move","rotate","place","copy","drag","undo","scrollright_hotbar","scrollleft_hotbar","scrollright_tool","scrollleft_tool","currobjlist","quickmenu","swap","scrollright_layer","scrollleft_layer","moveall","altpress","emptytile","showdir","cut","autopick","pickempty","lock","empty_hotbar","save","test"},
 	-- Currobjlist gamepad controls
-	{"move","select","swap","drag","tooltip","scrollleft","scrollright","closemenu","tags","remove","edit","addnew","search","autoadd"},
+	{"move","select","swap","drag","tooltip","scrollleft","scrollright","closemenu","tags","remove","edit","addnew","search","autoadd","altsave","settings","menu"},
 }

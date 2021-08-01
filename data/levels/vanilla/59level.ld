@@ -219,11 +219,13 @@ total=0
 18root=
 19file=
 19root=
+[levels]
+levelid=
 [tiles]
-changed=object046,object012,object045,object109,object117,object005,object036,object058,object023,object000,object047,object020,object022,
+changed=object046,object012,object045,object109,object117,object005,object036,object058,object022,object000,object047,object020,object023,
 object012_colour=6,1
 object117_activecolour=0,3
-object023_activecolour=0,3
 object000_activecolour=0,3
+object023_activecolour=0,3
 changed_count=1
-changed_short=046,012,045,109,117,005,036,058,023,000,047,020,022,
+changed_short=046,012,045,109,117,005,036,058,022,000,047,020,023,
