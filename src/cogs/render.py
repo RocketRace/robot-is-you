@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import random
-from typing import TYPE_CHECKING, BinaryIO, Literal
+from typing import TYPE_CHECKING, BinaryIO, Literal, overload
 
 import numpy as np
 from PIL import Image, ImageChops, ImageFilter
@@ -26,7 +26,7 @@ class Renderer:
         grid: FullGrid,
         *,
         palette: str = "default",
-        images: list[Image.Image] | None = None,
+        images: list[str] | None = None,
         image_source: str = "vanilla",
         out: str | BinaryIO = "target/renders/render.gif",
         background: tuple[int, int] | None = None,
@@ -54,13 +54,12 @@ class Renderer:
             img_height =  height * constants.DEFAULT_SPRITE_SIZE + 2 * padding
             # keeping track of the amount of padding we can slice off
             pad_r=pad_u=pad_l=pad_d=0
-            if images is not None and image_source is not None:
+            if images and image_source is not None:
                 img = Image.new("RGBA", (img_width, img_height))
                 # for loop in case multiple background images are used (i.e. baba's world map)
                 for image in images:
                     overlap = Image.open(f"data/images/{image_source}/{image}_{frame + 1}.png") # bg images are 1-indexed
-                    mask = overlap.getchannel("A")
-                    img.paste(overlap, mask=mask)
+                    img.paste(overlap, (padding, padding), mask=overlap)
             # bg color
             elif background is not None:
                 palette_color = palette_img.getpixel(background)
@@ -138,7 +137,8 @@ class Renderer:
         seed: int | None = None
     ) -> Image.Image:
         '''Generates a custom text sprite'''
-        raw = text[5:].replace("/", "")
+        text = text[5:]
+        raw = text.replace("/", "")
         newline_count = text.count("/")
 
         # This is to prevent possible DOS attacks using massive text
@@ -297,12 +297,13 @@ class Renderer:
         else:
             x = gaps[0]
             y_center = 12
-            for i in range(index):
+            for i in range(len(raw)):
                 letter = letters[i]
                 y_top = y_center - letter.height // 2
                 sprite.paste(letter, (x, y_top), mask=letter)
                 x += widths[i]
-                x += gaps[i + 1]
+                if i != len(raw) - 1:
+                    x += gaps[i + 1]
             
         sprite = Image.merge("RGBA", (sprite, sprite, sprite, sprite))
         return self.apply_options(
@@ -330,15 +331,19 @@ class Renderer:
         assert tile_data is not None
         original_style = constants.TEXT_STYLES[tile_data.get("type", "0")]
         original_direction = tile_data.get("text_direction")
-        return self.apply_options(
-            sprite,
-            original_style=original_style,
-            style=style,
-            original_direction=original_direction,
-            direction=direction,
-            meta_level=meta_level,
-            wobble=wobble,
-        )
+        try:
+            return self.apply_options(
+                sprite,
+                original_style=original_style,
+                style=style,
+                original_direction=original_direction,
+                direction=direction,
+                meta_level=meta_level,
+                wobble=wobble,
+            )
+        except ValueError as e:
+            size = e.args[0]
+            raise errors.BadTileProperty(name, size)
 
     def apply_options(
         self,
@@ -352,7 +357,7 @@ class Renderer:
         wobble: int
     ):
         '''Takes an image, with or without a plate, and applies the given options to it.'''
-        if meta_level != 0 or style is not None and (original_style != style or original_direction != direction):
+        if meta_level != 0 or style != "noun" and (original_style != style or original_direction != direction):
             if original_style == "property":
                 # box: position of upper-left coordinate of "inner text" in the larger text tile
                 plate, box = self.bot.get.plate(original_direction, wobble)
@@ -362,11 +367,15 @@ class Renderer:
                 sprite = Image.merge("RGBA", (alpha, alpha, alpha, alpha))
                 sprite = sprite.crop((box[0], box[1], constants.DEFAULT_SPRITE_SIZE + box[0], constants.DEFAULT_SPRITE_SIZE + box[1]))
             if style == "property":
+                if sprite.height != constants.DEFAULT_SPRITE_SIZE or sprite.width != constants.DEFAULT_SPRITE_SIZE:
+                    raise ValueError(sprite.size)
                 plate, box = self.bot.get.plate(direction, wobble)
                 plate = self.make_meta(plate, meta_level)
                 plate_alpha = plate.getchannel("A")
                 sprite_alpha = sprite.getchannel("A").crop(
                     (-meta_level, -meta_level, sprite.width + meta_level, sprite.height + meta_level)
+                ).crop(
+                    (-box[0], -box[0], constants.DEFAULT_SPRITE_SIZE + box[0], constants.DEFAULT_SPRITE_SIZE + box[1])
                 )
                 if meta_level % 2 == 0:
                     alpha = ImageChops.subtract(plate_alpha, sprite_alpha)

@@ -360,6 +360,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         with open("cache/tiledata.json", "wt") as tile_data:
             json.dump(self.tile_data, tile_data, indent=3)
         
+        # TODO don't do this
         self.bot.get._tile_data = self.tile_data
 
     @commands.command()
@@ -401,6 +402,13 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             else:
                 self.loadletter(sprite, tile_type)
 
+        for path in pathlib.Path("data/letters").glob("*/*/*/*.png"):
+            *_, mode, char, width, name = path.parts
+            img = Image.open(path)
+            p = pathlib.Path("target/letters").joinpath(mode, char, width)
+            p.mkdir(parents=True, exist_ok=True)
+            img.save(p.joinpath(name))
+
         self.bot.get.load_letters()
 
         await ctx.send("pog")
@@ -437,14 +445,14 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
             # Get the point from which characters are seeked for
             x = 0
-            y = 6 if two_rows else 18
+            y = 6 if two_rows else 12
 
             # Flags
             skip = False
             
             # More than 1 bit per pixel is required for the flood fill
             alpha = alpha.convert("L")
-            for j, char in enumerate(chars):
+            for char in chars:
                 if skip:
                     skip = False
                     continue
@@ -468,29 +476,36 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                     # Get bounds of character blob 
                     x1, y1, x2, y2 = clone.getbbox()
                     # Run some checks
-                    # Too wide => Skip 2 characters (probably merged two chars)
-                    if x2 - x1 > (1.5 * alpha.width * (1 + two_rows) / len(chars)):
-                        skip = True
-                        continue
+                    # # Too wide => Skip 2 characters (probably merged two chars)
+                    # if x2 - x1 > (1.5 * alpha.width * (1 + two_rows) / len(chars)):
+                    #     skip = True
+                    #     alpha = ImageChops.difference(alpha, clone)
+                    #     continue
                     
                     # Too tall? Scrap the rest of the characters
                     if y2 - y1 > 1.5 * alpha.height / (1 + two_rows):
                         break
+
+                    # too thin! bad letter.
+                    if x2 - x1 <= 2:
+                        alpha = ImageChops.difference(alpha, clone)
+                        continue
                     
                     # Remove character from sprite, push to char_sizes
                     alpha = ImageChops.difference(alpha, clone)
                     clone = clone.crop((x1, y1, x2, y2))
                     entry = ((x1, y1, x2, y2), clone)
-                    char_sizes.setdefault((char, j), []).append(entry)
+                    char_sizes.setdefault(char, []).append(entry)
                     continue
                 return
 
         saved = []
         # Save scraped characters
-        for (char, _), entries in char_sizes.items():
+        for char, entries in char_sizes.items():
             # All three frames clearly found the character in the sprite
             if len(entries) == 3:
                 saved.append(char)
+                
                 x1_min = min(entries, key=lambda x: x[0][0])[0][0]
                 y1_min = min(entries, key=lambda x: x[0][1])[0][1]
                 x2_max = max(entries, key=lambda x: x[0][2])[0][2]

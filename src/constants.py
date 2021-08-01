@@ -123,9 +123,15 @@ DIRECTIONS = {
     16: "left",
     24: "down"
 }
+# While not all of these are nouns, their appearance is very noun-like
 TEXT_STYLES = {
     "0": "noun",
+    "1": "noun",
     "2": "property",
-    "5": "letter"
+    "3": "noun",
+    "4": "noun",
+    "5": "letter",
+    "6": "noun",
+    "7": "noun",
 }  
 DEFAULT_SPRITE_SIZE = 24

@@ -30,6 +30,14 @@ class ContextBase:
             if override is not None:
                 return override
         return self.bot.get.tile_data(self.tile.name)
+    
+    def is_adjacent(self, coordinate: tuple[int, int],) -> bool:
+        '''Tile is next to a joining tile'''
+        x, y = coordinate
+        joining_tiles = (self.tile.name, "level")
+        if x < 0 or y < 0 or y >= len(self.grid) or x >= len(self.grid[0]):
+            return bool(self.flags.get("tile_borders"))
+        return any(t.name in joining_tiles for t in self.grid[y][x])
 
 class HandlerContext(ContextBase):
     '''The context that the handler was invoked in.'''
@@ -164,19 +172,6 @@ def join_variant(dir: int, anim: int) -> int:
     '''The sleeping animation is slightly inconvenient'''
     return (dir + anim) % 32
 
-def is_adjacent(
-    grid: RawGrid,
-    tile: RawTile,
-    coordinate: tuple[int, int],
-    **flags: Any
-) -> bool:
-    '''Tile is next to a joining tile'''
-    x, y = coordinate
-    joining_tiles = (tile.name, "level")
-    if x < 0 or y < 0 or y >= len(grid) or x >= len(grid[0]):
-        return bool(flags.get("tile_borders"))
-    return any(t.name in joining_tiles for t in grid[y][x])
-
 def setup(bot: Bot):
     '''Get the variant handler instance'''
     handlers = VariantHandlers(bot)
@@ -200,10 +195,10 @@ def setup(bot: Bot):
             if tile_data["tiling"] in constants.AUTO_TILINGS:
                 x, y, _ = ctx.index
                 variant = (
-                    + 1 * is_adjacent(ctx.grid, ctx.tile, (x + 1, y), **ctx.flags)
-                    + 2 * is_adjacent(ctx.grid, ctx.tile, (x, y - 1), **ctx.flags)
-                    + 4 * is_adjacent(ctx.grid, ctx.tile, (x - 1, y), **ctx.flags)
-                    + 8 * is_adjacent(ctx.grid, ctx.tile, (x, y + 1), **ctx.flags)
+                    + 1 * ctx.is_adjacent((x + 1, y))
+                    + 2 * ctx.is_adjacent((x, y - 1))
+                    + 4 * ctx.is_adjacent((x - 1, y))
+                    + 8 * ctx.is_adjacent((x, y + 1))
                 )
             return {
                 "custom_style": constants.TEXT_STYLES[tile_data.get("type", "0")], # type:ignore
@@ -232,6 +227,8 @@ def setup(bot: Bot):
                 "variant_number": join_variant(dir, anim),
                 "custom_direction": dir
             }
+        elif ctx.flags.get("ignore_bad_directions"):
+            return {}
         else:
             return {
                 "custom_direction": dir

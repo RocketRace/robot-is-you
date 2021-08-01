@@ -140,6 +140,9 @@ class Bot(commands.Bot):
 
     async def get_context(self, message: discord.Message) -> Context:
         return await super().get_context(message, cls=Context)
+    
+    async def on_ready(self) -> None:
+        print(f"Logged in as {self.user}!")
 
 logging.basicConfig(filename=config.log_file, level=logging.WARNING)
 

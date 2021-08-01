@@ -7,11 +7,12 @@ import io
 import json
 import zlib
 from os import listdir, stat
-from typing import Any, TextIO
+from typing import Any, BinaryIO, TextIO
 
 import aiohttp
 from discord.ext import commands, tasks
 
+from ..tile import RawTile
 from ..types import Bot, Context
 
 
@@ -56,18 +57,24 @@ class Grid:
         self.number = None
         self.extra = None
     
-    def unflatten(self) -> list[list[list[str]]]:
+    def raw_grid(self) -> list[list[list[RawTile]]]:
         '''Returns an unflattened version of the grid.'''
         height = self.height
         width = self.width
+        dirs = "ruld"
         return [
             [
                 [
-                    "".join([
-                        o.name or "error",
-                        f":{o.direction * 8}" if o.direction is not None else "",
-                        ":" + "/".join(tuple(map(str, o.color))) if o.color is not None else ""
-                    ])
+                    RawTile(name=o.name or "error", variants=[
+                        dirs[(o.direction or 0) // 8]
+                    ] + 
+                        ["/".join(tuple(map(str, o.color)))] if o.color is not None else []
+                    )
+                    # "".join([
+                    #     o.name or "error",
+                    #     f":{o.direction * 8}" if o.direction is not None else "",
+                    #     ":" + "/".join(tuple(map(str, o.color))) if o.color is not None else ""
+                    # ])
                     for o in self.cells[y * width + x]
                 ]
                 for x in range(width)
@@ -162,7 +169,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         grid = self.read_map(code, source="custom", data=raw_l)
         grid = self.read_metadata(grid, data=raw_ld, custom=True)
 
-        objects = grid.unflatten()
+        objects = grid.raw_grid()
         # Strips the borders from the render
         # (last must be popped before first to preserve order)
         objects.pop(grid.height - 1)
@@ -171,9 +178,8 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             row.pop(grid.width - 1)
             row.pop(0)
         out = f"target/renders/custom/{code}.gif"
-        cog = self.bot.get_cog("Baba Is You")
-        tiles = cog.handle_variants(objects, tile_borders=True, is_level=True)
-        cog.render(tiles, grid.width, grid.height, palette=grid.palette, background=(0, 4), out=out)
+        tiles = self.bot.handlers.handle_grid(objects, tile_borders=True, ignore_bad_directions=True)
+        self.bot.renderer.render(tiles, palette=grid.palette, background=(0, 4), out=out)
         
         self.custom_levels[code] = metadata = {
             "name": grid.name,
@@ -204,7 +210,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         # Data
         grid = self.read_map(filename, source=source)
         grid = self.read_metadata(grid, initialize=initialize)
-        objects = grid.unflatten()
+        objects = grid.raw_grid()
 
         # Shave off the borders:
         if remove_borders:
@@ -215,25 +221,20 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                 row.pop(0)
 
         # Handle sprite variants
-        cog = self.bot.get_cog("Baba Is You")
-        tiles = cog.handle_variants(objects, tile_borders=tile_borders, is_level=True)
+        tiles = self.bot.handlers.handle_grid(objects, ignore_bad_directions=True, tile_borders=tile_borders)
 
         # (0,4) is the color index for level backgrounds
         background = (0,4) if keep_background else None
 
         # Render the level
-        cog.render(
+        self.bot.renderer.render(
             tiles,
-            grid.width,
-            grid.height,
             palette=grid.palette,
             images=grid.images,
             image_source=grid.source,
             background=background,
             out=f"target/renders/{grid.source}/{grid.filename}.gif",
-            use_overridden_colors=True
         )
-        
         # Return level metadata
         return {
             "name": grid.name,
@@ -441,7 +442,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         # elif obj == "grid":
             # item.grid = self.CTS(value)
 
-    def parse_literal(self, value: str, shift: bool = True) -> int:
+    def parse_literal(self, value: str) -> int:
         '''Converts a string from the output of data/values.lua to a number.
         Examples:
         "{1}" -> 1
@@ -460,12 +461,9 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             return int(value)
         x = int(value[start_index: index - start_index + 1])
         y = int(value[index + 1: end_index].strip())
-        if shift:
-            return (y << 8) | x
-        else:
-            return (x, y)
+        return (y << 8) | x
 
-    def read_map(self, filename: str, source: str, data: TextIO | None = None) -> Grid:
+    def read_map(self, filename: str, source: str, data: BinaryIO | None = None) -> Grid:
         '''Parses a .l file's content, given its file path.
         Returns a Grid object containing the level data.
         '''
@@ -549,7 +547,8 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             if color is None:
                 level = Item.level()
             else:
-                level = Item.level(tuple(int(x) for x in color.split(",")))
+                c_0, c_1 = color.split(",")
+                level = Item.level((int(c_0), int(c_1)))
             
             x = config.getint("levels", f"{i}X") # no fallback
             y = config.getint("levels", f"{i}Y") # if you can't locate it, it's fricked
@@ -598,7 +597,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                     "name"   : name,
                     "style"  : style
                 }
-                print("adding norm to node", parent, grid.map_id, level_file, child)
+                # print("adding norm to node", parent, grid.map_id, level_file, child)
                 node["levels"][level_file] = child
         
         # Initialize the level tree
@@ -616,7 +615,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                         "name"   : None,
                         "style"  : int(style)
                     }
-                    print("adding spec to node", parent, grid.map_id, level_file, child)
+                    # print("adding spec to node", parent, grid.map_id, level_file, child)
                     node["levels"][level_file] = child
                 
             # merges both normal level & special level data together
@@ -662,13 +661,13 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                 if item.obj in changes:
                     change = changes[item.obj]
                     if "name" in change:
-                        if change["name"] in self.bot.get_cog("Admin").tile_data:
+                        if self.bot.get.tile_data(change["name"]) is not None:
                             item.name = change["name"]
                         else:
                             item.name = "default"
                     # The sprite overrides the name in this case
                     if "image" in change:
-                        if change["image"] in self.bot.get_cog("Admin").tile_data:
+                        if self.bot.get.tile_data(change["image"]) is not None:
                             item.name = change["image"]
                         else:
                             item.name = "default"
@@ -695,7 +694,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         
         return grid
         
-    def read_layer(self, stream: io.BytesIO, grid: Grid):
+    def read_layer(self, stream: BinaryIO, grid: Grid):
         buffer = stream.read(4)
         grid.width = int.from_bytes(buffer, byteorder="little")
         

@@ -7,6 +7,12 @@ class SplittingException(BabaError):
     args: cause
     '''
 
+class BadTileProperty(BabaError):
+    '''Tried to make a tile a property but it's tooo big
+
+    args: name, size
+    '''
+
 class TileNotFound(BabaError):
     '''Unknown tile
     
