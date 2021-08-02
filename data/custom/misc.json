@@ -260,7 +260,7 @@
       ]
    },
    {
-      "name": "text_badbad",
+      "name": "text_badbad_old",
       "sprite": "text_badbad",
       "tiling": "-1",
       "color": [
@@ -269,7 +269,7 @@
       ]
    },
    {
-      "name": "badbad",
+      "name": "badbad_old",
       "sprite": "badbad",
       "tiling": "2",
       "color": [

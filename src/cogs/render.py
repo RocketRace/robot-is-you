@@ -189,7 +189,7 @@ class Renderer:
             if mode == "small":
                 if fixed:
                     if sum(widths[:index]) > max_width or sum(widths[index:]) > max_width:
-                        raise errors.CustomTextTooLong(text)        
+                        raise errors.CustomTextTooLong(text)
                 else:
                     if sum(widths) > 2 * max_width:
                         raise errors.CustomTextTooLong(text)

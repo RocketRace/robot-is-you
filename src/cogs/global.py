@@ -95,6 +95,38 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             return await ctx.error(
                 f"The variant `{variant}` is not valid."
             )
+        else:
+            return await ctx.error(f"{msg}.")
+
+    async def handle_custom_text_errors(self, ctx: Context, err: errors.TextGenerationError):
+        '''Handle errors raised in a command context by variant handlers'''
+        text, *rest = err.args
+        msg = f"The text {text} couldn't be generated automatically"
+        if isinstance(err, errors.BadLetterStyle):
+            return await ctx.error(
+                f"{msg}, since letter style can only applied to a single row of text."
+            )
+        elif isinstance(err, errors.TooManyLines):
+            return await ctx.error(
+                f"{msg}, since it has too many lines."
+            )
+        elif isinstance(err, errors.LeadingTrailingLineBreaks):
+            return await ctx.error(
+                f"{msg}, since there's `/` characters at the start or end of the text."
+            )
+        elif isinstance(err, errors.BadCharacter):
+            mode, char = rest
+            return await ctx.error(
+                f"{msg}, since the letter {char} doesn't exist in '{mode}' mode."
+            )
+        elif isinstance(err, errors.CustomTextTooLong):
+            mode, size = rest
+            return await ctx.error(
+                f"{msg}, since it's too long ({size}) for '{mode}' mode."
+            )
+        else:
+            return await ctx.error(f"{msg}.")
+        
 
     @commands.group(invoke_without_command=True)
     @commands.cooldown(5, 8, commands.BucketType.channel)
@@ -354,30 +386,13 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             if self.bot.get.tile_data("text_" + word.name) is not None:
                 return await ctx.error(f"The tile `{word}` could not be found. Perhaps you meant `{'text_' + word.name}`?")
             return await ctx.error(f"The tile `{word}` could not be found.")
+        except errors.BadTileProperty as e:
+            word, (w, h) = e.args
+            return await ctx.error(f"The tile `{word}` could not be made into a property, because it's too big (`{w} by {h}`).")
         except errors.VariantError as e:
             return await self.handle_variant_errors(ctx, e)
-        # except TooManyLineBreaks as e:
-        #     text, count = e.args
-        #     return await ctx.error(f"The text `{text}` could not be generated, because it contains {count} `/` characters (max 1).")
-        # except LeadingTrailingLineBreaks as e:
-        #     text = e.args[0]
-        #     return await ctx.error(f"The text `{text}` could not be generated, because it starts or ends with a `/` character.")
-        # except BlankCustomText as e:
-        #     return await ctx.error("The name of a text tile can't be blank. Make sure there aren't any typos in your input.")
-        # except BadCharacter as e:
-        #     text, char = e.args
-        #     if text.startswith("text_") and char == "_":
-        #         return await ctx.error(f"The text `{text}` could not be generated. Did you mean to generate the text for `{text[5:]}` instead?")
-        #     return await ctx.error(f"The text `{text}` could not be generated, because no appropriate letter sprite exists for `{char}`.")
-        # except CustomTextTooLong as e:
-        #     text, length = e.args
-        #     return await ctx.error(f"The text `{text}` could not be generated, because it is too long ({length}).")
-        # except BadLetterStyle as e:
-        #     text = e.args[0]
-        #     return await ctx.error(f"The text `{text}` could not be generated, because the `letter` variant can only be used on text that's two letters long.")
-        # except BadMetaLevel as e:
-        #     text, depth = e.args
-        #     return await ctx.error(f"The text `{text}` is too meta ({depth} layers). You can only go up to {constants.MAX_META_DEPTH} layers deep.")
+        except errors.TextGenerationError as e:
+            return await self.handle_custom_text_errors(ctx, e)
 
         filename = datetime.utcnow().strftime(r"render_%Y-%m-%d_%H.%M.%S.gif")
         delta = time() - start

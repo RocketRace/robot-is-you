@@ -327,8 +327,8 @@ def setup(bot: Bot):
     def color_rgb(ctx: HandlerContext) -> TileFields:
         color = int(ctx.groups[0], base=16)
         red = color >> 16
-        green = (color | 0x00ff00) >> 8
-        blue = color | 0x0000ff
+        green = (color & 0x00ff00) >> 8
+        blue = color & 0x0000ff
         return {
             "color_rgb": (red, green, blue)
         }

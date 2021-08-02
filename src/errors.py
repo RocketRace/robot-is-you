@@ -83,7 +83,4 @@ class BadCharacter(TextGenerationError):
     '''
 
 class CustomTextTooLong(TextGenerationError):
-    '''Can't fit
-    
-    Extra args: mode
-    '''
+    '''Can't fit'''
