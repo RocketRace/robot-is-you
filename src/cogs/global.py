@@ -128,8 +128,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             return await ctx.error(f"{msg}.")
         
 
-    @commands.group(invoke_without_command=True)
-    @commands.cooldown(5, 8, commands.BucketType.channel)
+    # @commands.group(invoke_without_command=True)
+    # @commands.cooldown(5, 8, commands.BucketType.channel)
     async def make(self, ctx: Context, text: str, color: str = "", style: str = "noun", meta_level: int = 0, direction: str = "none", palette = "default"):
         '''Generates a custom text sprite. 
         
@@ -202,8 +202,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             text = e.args[0]
             return await ctx.error(f"The text `{text}` could not be generated, because the `letter` variant can only be used on text that's two letters long.")
         
-    @make.command()
-    @commands.cooldown(5, 8, type=commands.BucketType.channel)
+    # @make.command()
+    # @commands.cooldown(5, 8, type=commands.BucketType.channel)
     async def raw(self, ctx: Context, text: str, style: str = "noun", meta_level: int = 0, direction: str = "none"):
         '''Returns a zip archive of the custom tile.
 

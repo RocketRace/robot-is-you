@@ -15,8 +15,8 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
     def __init__(self, bot: Bot):
         self.bot = bot
 
-    @commands.command()
-    @commands.cooldown(5, 8, type=commands.BucketType.channel)
+    # @commands.command()
+    # @commands.cooldown(5, 8, type=commands.BucketType.channel)
     async def search(self, ctx: Context, *, query: str):
         '''Searches for tiles based on a query.
 
