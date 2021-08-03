@@ -266,7 +266,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             word = e.args[0]
             if word.name.startswith("tile_") and self.bot.get.tile_data(word.name[5:]) is not None:
                 return await ctx.error(f"The tile `{word}` could not be found. Perhaps you meant `{word.name[5:]}`?")
-            if self.bot.get.tile_data("text_" + word.name) is not None:
+            if await self.bot.db.tile("text_" + word.name) is not None:
                 return await ctx.error(f"The tile `{word}` could not be found. Perhaps you meant `{'text_' + word.name}`?")
             return await ctx.error(f"The tile `{word}` could not be found.")
         except errors.BadTileProperty as e:

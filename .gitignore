@@ -9,3 +9,6 @@ target/letters/letter/*
 target/tilelist.txt
 cache/*
 **/__pycache__
+*.db
+*.db-shm
+*.db-wal

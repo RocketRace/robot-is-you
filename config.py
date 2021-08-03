@@ -8,6 +8,7 @@ webhook_id = 594692503014473729
 embed_color = discord.Color(9077635)
 auth_file = "config/auth.json"
 log_file = "log.txt"
+db_path = "robot.db"
 cogs = [
     "src.cogs.owner",
     "src.cogs.global",

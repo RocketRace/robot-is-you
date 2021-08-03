@@ -17,7 +17,7 @@ from PIL import Image
 import auth
 import config
 from src.constants import DIRECTIONS
-
+from src.db import Database
 
 class Context(commands.Context):
     async def error(self, msg: str) -> discord.Message:
@@ -36,95 +36,20 @@ class Context(commands.Context):
             return await super().send(content, embed=embed, **kwargs)
         return await super().send(**kwargs)
 
-class DataAccess:
-    '''Means through which most bot data is accessed.
-    
-    This will be hooked up to a database driver eventually.
-    '''
-    _tile_data: dict
-    _level_tile_data: dict
-    _letter_data: dict
-    def __init__(self, bot: Bot) -> None:
-        self.bot = bot
-        # this is all temporary until I migrate to a DB
-        self._late_init_dict("cache/tiledata.json", "_tile_data")
-        self._late_init_dict("config/leveltileoverride.json", "_level_tile_data")
-        self.load_letters()
-
-    def load_letters(self) -> None:
-        self._letter_data = {}
-        prefix = "_0.png"
-        for path in pathlib.Path("target/letters").glob("*/*/*/*" + prefix):
-            *_, mode, char, width, name = path.parts
-            (
-                self._letter_data
-                .setdefault(mode, {})
-                .setdefault(char, {})
-                .setdefault(int(width), [])
-                .append(name[:-len(prefix)])
-            )
-
-    def _late_init_dict(self, path: str, attr: str) -> None:
-        with open(path) as fp:
-            data = fp.read()
-            setattr(self, attr, json.loads(data) if data else {})
-
-    def tile_datas(self) -> Iterable[tuple[str, dict]]:
-        '''All them'''
-        yield from self._tile_data.items()
-
-    def tile_data(self, tile: str) -> dict | None:
-        '''Tile data. Returns None on failure.'''
-        return self._tile_data.get(tile)
-    
-    def level_tile_data(self, tile: str) -> dict | None:
-        '''Level tile overrides. Returns None on failure.'''
-        return self._level_tile_data.get(tile)
-
-    def plate(self, direction: int | None, wobble: int) -> tuple[Image.Image, tuple[int, int]]:
-        '''Plate sprites. Raises FileNotFoundError on failure.'''
-        if direction is None:
-            return (
-                Image.open(f"data/plates/plate_property_0_{wobble+1}.png").convert("RGBA"),
-                (0, 0)
-            )
-        return (
-            Image.open(f"data/plates/plate_property{DIRECTIONS[direction]}_0_{wobble+1}.png").convert("RGBA"),
-            (3, 3)
-        )
-    
-    def letter_width(self, char: str, mode: str, *, greater_than: int) -> int:
-        '''The minimum letter width for the given char of the give mode,
-        such that the width is more than the given width.
-
-        Raises KeyError(char) on failure.
-        '''
-        extras = {
-            "*": "asterisk"
-        }
-        char = extras.get(char, char)
-        try:
-            return min(width for width in self._letter_data[mode][char] if width > greater_than)
-        # given width too large
-        except ValueError:
-            raise KeyError(char)
-
-    def letter_sprite(self, char: str, mode: str, width: int, wobble: int, *, seed: int | None) -> Image.Image:
-        '''Letter sprites. Raises FileNotFoundError on failure.'''
-        choices = self._letter_data[mode][char][width]
-        if seed is None:
-            choice = random.choice(choices)
-        else:
-            # This isn't uniformly random since `seed` ranges from 0 to 255,
-            # but it's "good enough" for me and "random enough" for an observer.
-            choice = choices[seed % len(choices)]
-        return Image.open(
-            f"target/letters/{mode}/{char}/{width}/{choice}_{wobble}.png"
-        )
 
 class Bot(commands.Bot):
     '''Custom bot class :)'''
-    def __init__(self, *args, cogs: list[str], embed_color: discord.Color, webhook_id: int, prefixes: list[str], **kwargs):
+    db: Database
+    def __init__(
+        self, 
+        *args, 
+        cogs: list[str], 
+        embed_color: discord.Color, 
+        webhook_id: int, 
+        prefixes: list[str], 
+        db_path: str, 
+        **kwargs
+    ):
         self.started = datetime.utcnow()
         self.loading = True
         self.exit_code = 0
@@ -132,6 +57,8 @@ class Bot(commands.Bot):
         self.webhook_id = webhook_id
         self.prefixes = prefixes
         self.get = DataAccess(self)
+        self.db = Database()
+        self.db_path = db_path
         
         super().__init__(*args, **kwargs)
         # has to be after __init__
@@ -140,8 +67,13 @@ class Bot(commands.Bot):
 
     async def get_context(self, message: discord.Message) -> Context:
         return await super().get_context(message, cls=Context)
-    
+
+    async def close(self) -> None:
+        await self.db.close()
+        await super().close()
+
     async def on_ready(self) -> None:
+        await self.db.connect(self.db_path)
         print(f"Logged in as {self.user}!")
 
 logging.basicConfig(filename=config.log_file, level=logging.WARNING)
@@ -169,6 +101,7 @@ bot = Bot(
     embed_color=config.embed_color,
     webhook_id=config.webhook_id,
     prefixes=config.prefixes,
+    db_path=config.db_path
 )
 
 bot.run(auth.token)

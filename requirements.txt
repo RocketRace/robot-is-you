@@ -1,3 +1,4 @@
 discord.py>=1.7.3
 Pillow>=7.0
 jishaku>=1.18
+git+https://github.com/Rapptz/asqlite
