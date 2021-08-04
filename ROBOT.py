@@ -30,11 +30,11 @@ class Context(commands.Context):
             content = content[:2000-len(msg)] + msg
         if embed is not None:
             if content:
-                return await self.reply(content, embed=embed, **kwargs)
-            return await self.reply(embed=embed, **kwargs)
+                return await super().send(content, embed=embed, **kwargs)
+            return await super().send(embed=embed, **kwargs)
         elif content:
-            return await self.reply(content, embed=embed, **kwargs)
-        return await self.reply(**kwargs)
+            return await super().send(content, embed=embed, **kwargs)
+        return await super().send(**kwargs)
 
 class DataAccess:
     '''Means through which most bot data is accessed.

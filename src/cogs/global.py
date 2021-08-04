@@ -128,133 +128,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             return await ctx.error(f"{msg}.")
         
 
-    # @commands.group(invoke_without_command=True)
-    # @commands.cooldown(5, 8, commands.BucketType.channel)
-    async def make(self, ctx: Context, text: str, color: str = "", style: str = "noun", meta_level: int = 0, direction: str = "none", palette = "default"):
-        '''Generates a custom text sprite. 
-        
-        Use "/" in the text to force a line break.
-
-        The `color` argument can be a hex color (`"#ffffff"`) or a string (`"red"`).
-
-        The `style` argument may be "noun", "property", or "letter".
-        
-        The `meta_level` argument should be some number, and applies a metatext filter to the sprite. It defaults to 0.
-
-        The `direction` argument may be "none", "right", "up", "left", or "down". 
-        This can be used with the "property" style to generate directional properties (such as FALL or NUDGE).
-
-        The `palette` argument can be set to the name of a palette.
-        '''
-        # These colors are based on the default palette
-        if color:
-            real_color = color.lower()
-            if real_color.startswith("#"): 
-                int_color = int(real_color[1:], base=16) & (2 ** 24 - 1)
-                byte_color = (int_color >> 16, (int_color & 255 << 8) >> 8, int_color & 255)
-                tile_color = (byte_color[0] / 256, byte_color[1] / 256, byte_color[2] / 256)
-            elif real_color.startswith("0x"):
-                int_color = int(real_color, base=16)
-                byte_color = (int_color >> 16, (int_color & 255 << 8) >> 8, int_color & 255)
-                tile_color = (byte_color[0] / 256, byte_color[1] / 256, byte_color[2] / 256)
-            elif real_color in constants.COLOR_NAMES:
-                try:
-                    palette_img = Image.open(f"data/palettes/{palette}.png").convert("RGB")
-                    color_index = constants.COLOR_NAMES[real_color]
-                    tile_color = tuple(p/256 for p in palette_img.getpixel(color_index))
-                except FileNotFoundError:
-                    return await ctx.error(f"The palette `{palette}` is not valid.")
-            else:
-                return await ctx.error(f"The color `{color}` is invalid.")
-        else:
-            tile_color = (1, 1, 1)
-        if style not in ("noun", "property", "letter"):
-            return await ctx.error(f"The style `{style}` is not valid. it must be one of `noun`, `property` or `letter`.")
-        if direction not in ("none", "up", "right", "left", "down"):
-            return await ctx.error(f"The direction `{direction}` is not valid. It must be one of `none`, `up`, `right`, `left` or `down`.")
-        if "property" == style:
-            if direction in ("up", "right", "left", "down"):
-                style = style + direction
-        if not 0 <= meta_level <= constants.MAX_META_DEPTH:
-            return await ctx.error(f"The meta level `{meta_level}` is invalid. It must be one of: " + ", ".join(f"`{n}`" for n in range(constants.MAX_META_DEPTH + 1)) + ".")
-        try:
-            meta_level = int(meta_level)
-            buffer = BytesIO()
-            tile = Tile(name=text.lower(), color=tile_color, style=style.lower(), custom=True)
-            tile.images = self.generate_tile(tile.name, color=tile.color, style=style, meta_level=meta_level)
-            self.render([[[tile]]], 1, 1, out=buffer)
-            await ctx.reply(file=discord.File(buffer, filename=f"custom_'{text.replace('/','')}'.gif"))
-        except TooManyLineBreaks as e:
-            text, count = e.args
-            return await ctx.error(f"The text `{text}` could not be generated, because it contains {count} `/` characters (max 1).")
-        except LeadingTrailingLineBreaks as e:
-            text = e.args[0]
-            return await ctx.error(f"The text `{text}` could not be generated, because it starts or ends with a `/` character.")
-        except BlankCustomText as e:
-            return await ctx.error("The name of a text tile can't be blank. Make sure there aren't any typos in your input.")
-        except BadCharacter as e:
-            text, char = e.args
-            return await ctx.error(f"The text `{text}` could not be generated, because no appropriate letter sprite exists for `{char}`.")
-        except CustomTextTooLong as e:
-            text, length = e.args
-            return await ctx.error(f"The text `{text}` could not be generated, because it is too long ({length}).")
-        except BadLetterStyle as e:
-            text = e.args[0]
-            return await ctx.error(f"The text `{text}` could not be generated, because the `letter` variant can only be used on text that's two letters long.")
-        
-    # @make.command()
-    # @commands.cooldown(5, 8, type=commands.BucketType.channel)
-    async def raw(self, ctx: Context, text: str, style: str = "noun", meta_level: int = 0, direction: str = "none"):
-        '''Returns a zip archive of the custom tile.
-
-        A raw sprite has no color!
-
-        The `style` argument may be "noun", "property", or "letter".
-        
-        The `meta_level` argument should be a number.
-        '''
-        real_text = text.lower()
-        if style not in ("noun", "property", "letter"):
-            return await ctx.error(f"`{style}` is not a valid style. It must be one of `noun`, `property` or `letter`.")
-        if not 0 <= meta_level <= constants.MAX_META_DEPTH:
-            return await ctx.error(f"The meta level `{meta_level}` is invalid. It must be one of: " + ", ".join(f"`{n}`" for n in range(constants.MAX_META_DEPTH + 1)) + ".")
-        if direction not in ("none", "up", "right", "left", "down"):
-            return await ctx.error(f"`{direction}` is not a valid direction. It must be one of `none`, `up`, `right`, `left` or `down`.")
-        if style == "property":
-            if direction in ("up", "right", "left", "down"):
-                style = style + direction
-        try:
-            meta_level = int(meta_level)
-            buffer = BytesIO()
-            images = self.generate_tile(real_text, (1, 1, 1), style, meta_level)
-            with zipfile.ZipFile(buffer, mode="w") as archive:
-                for i, image in enumerate(images):
-                    img_buffer = BytesIO()
-                    image.save(img_buffer, format="PNG")
-                    img_buffer.seek(0)
-                    archive.writestr(f"text_{meta_level*'meta_'}{real_text.replace('/','')}_0_{i + 1}.png", data=img_buffer.getbuffer())
-            buffer.seek(0)
-            await ctx.reply(
-                f"*Raw sprites for `text_{meta_level*'meta_'}{real_text.replace('/','')}`*", 
-                file = discord.File(buffer, filename=f"custom_{meta_level*'meta_'}{real_text.replace('/','')}_sprites.zip")
-            )
-        except TooManyLineBreaks as e:
-            text, count = e.args
-            return await ctx.error(f"The text `{text}` could not be generated, because it contains {count} `/` characters (max 1).")
-        except LeadingTrailingLineBreaks as e:
-            text = e.args[0]
-            return await ctx.error(f"The text `{text}` could not be generated, because it starts or ends with a `/` character.")
-        except BlankCustomText as e:
-            return await ctx.error("The name of a text tile can't be blank. Make sure there aren't any typos in your input.")
-        except BadCharacter as e:
-            text, char = e.args
-            return await ctx.error(f"The text `{text}` could not be generated, because no appropriate letter sprite exists for `{char}`.")
-        except CustomTextTooLong as e:
-            text, length = e.args
-            return await ctx.error(f"The text `{text}` could not be generated, because it is too long ({length}).")
-        except BadLetterStyle as e:
-            text = e.args[0]
-            return await ctx.error(f"The text `{text}` could not be generated, because the `letter` variant can only be used on text that's two letters long.")
 
     def parse_raw(self, grid: list[list[list[str]]], *, rule: bool) -> RawGrid:
         '''Parses a string grid into a RawTile grid'''
@@ -293,7 +166,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         # Split each row into words
         word_grid = [row.split() for row in word_rows]
 
-        # Check palette & bg flags
+        # Check flags
         potential_flags = []
         potential_count = 0
         try:
@@ -307,6 +180,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         background = None
         palette = "default"
         to_delete = []
+        raw_output = False
         for flag, x, y in potential_flags:
             bg_match = re.fullmatch(r"(--background|-b)(=(\d)/(\d))?", flag)
             if bg_match:
@@ -324,6 +198,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 palette = flag_match.group(2)
                 if palette + ".png" not in listdir("data/palettes"):
                     return await ctx.error(f"Could not find a palette with name \"{palette}\".")
+                to_delete.append((x, y))
+            raw_match = re.fullmatch(r"--raw|-r", flag)
+            if raw_match:
+                raw_output = True
                 to_delete.append((x, y))
         for x, y in reversed(to_delete):
             del word_grid[y][x]
@@ -368,15 +246,20 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         grid = self.parse_raw(stacked_grid, rule=rule)
         try:
             # Handles variants based on `:` affixes
-            full_grid = self.bot.handlers.handle_grid(grid)
             buffer = BytesIO()
+            extra_buffer = BytesIO() if raw_output else None
+            extra_names = [] if raw_output else None
+            full_grid = self.bot.handlers.handle_grid(grid, raw_output=raw_output, extra_names=extra_names)
             task = functools.partial(
                 self.bot.renderer.render,
                 full_grid,
                 palette=palette,
                 background=background, 
                 out=buffer,
-                random_animations=True
+                random_animations=True,
+                upscale=not raw_output,
+                extra_out=extra_buffer,
+                extra_name=extra_names[0] if raw_output else None, # type: ignore
             )
             await self.bot.loop.run_in_executor(None, task)
         except errors.TileNotFound as e:
@@ -398,6 +281,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         delta = time() - start
         msg = f"*Rendered in {delta:.2f} s*"
         await ctx.reply(content=msg, file=discord.File(buffer, filename=filename, spoiler=spoiler))
+        if extra_buffer is not None and extra_names is not None:
+            extra_buffer.seek(0)
+            await ctx.send("*Raw files:*", file=discord.File(extra_buffer, filename=f"{extra_names[0]}_raw.zip"))
         
 
     @commands.command(aliases=["text"])
@@ -410,6 +296,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         **Flags**
         * `--palette=<...>` (`-P=<...>`): Recolors the output gif. See the `palettes` command for more.
         * `--background` (`-B`): Enables background color.
+        * `--raw` (`-R`): Enables raw mode. The sprites are sent in a ZIP file as well as normally. By default, sprites have no color.
         
         **Variants**
         * `:variant`: Append `:variant` to a tile to change color or sprite of a tile. See the `variants` command for more.
@@ -438,7 +325,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
        **Flags**
         * `--palette=<...>` (`-P=<...>`): Recolors the output gif. See the `palettes` command for more.
         * `--background=[...]` (`-B=[...]`): Enables background color. If no argument is given, defaults to black. The argument must be a palette index ("x/y").
-        
+        * `--raw` (`-R`): Enables raw mode. The sprites are sent in a ZIP file as well as normally. By default, sprites have no color.
+
         **Variants**
         * `:variant`: Append `:variant` to a tile to change color or sprite of a tile. See the `variants` command for more.
 

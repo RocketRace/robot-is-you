@@ -1,7 +1,9 @@
 from __future__ import annotations
+from io import BytesIO
 
 import random
 from typing import TYPE_CHECKING, BinaryIO, Literal, overload
+import zipfile
 
 import numpy as np
 from PIL import Image, ImageChops, ImageFilter
@@ -31,6 +33,9 @@ class Renderer:
         out: str | BinaryIO = "target/renders/render.gif",
         background: tuple[int, int] | None = None,
         random_animations: bool = False,
+        upscale: bool = True,
+        extra_out: str | BinaryIO | None = None,
+        extra_name: str | None = None,
     ):
         '''Takes a list of tile objects and generates a gif with the associated sprites.
 
@@ -121,10 +126,16 @@ class Renderer:
                         img.paste(sprite, (x * constants.DEFAULT_SPRITE_SIZE + padding - x_offset, y * constants.DEFAULT_SPRITE_SIZE + padding - y_offset), mask=sprite)
             
             img = img.crop((padding - pad_l, padding - pad_u, img.width - padding + pad_r, img.height - padding + pad_d))
-            img = img.resize((2 * img.width, 2 * img.height), resample=Image.NEAREST)
+            if upscale:
+                img = img.resize((2 * img.width, 2 * img.height), resample=Image.NEAREST)
             imgs.append(img)
 
-        self.save_frames(imgs, out)
+        self.save_frames(
+            imgs,
+            out,
+            extra_out=extra_out,
+            extra_name=extra_name
+        )
 
     def generate_sprite(
         self,
@@ -404,10 +415,18 @@ class Renderer:
         
         return base
 
-    def save_frames(self, imgs: list[Image.Image], out: str | BinaryIO) -> None:
+    def save_frames(
+        self,
+        imgs: list[Image.Image],
+        out: str | BinaryIO,
+        extra_out: str | BinaryIO | None = None,
+        extra_name: str | None = None
+    ) -> None:
         '''Saves the images as a gif to the given file or buffer.
         
         If a buffer, this also conveniently seeks to the start of the buffer.
+
+        If extra_out is provided, the frames are also saved as a zip file there.
         '''
         imgs[0].save(
             out, 
@@ -423,6 +442,13 @@ class Renderer:
         )
         if not isinstance(out, str):
             out.seek(0)
+        if extra_name is not None and extra_out is not None:
+            file = zipfile.PyZipFile(extra_out, "x")
+            for i, img in enumerate(imgs):
+                buffer = BytesIO()
+                img.save(buffer, "PNG")
+                file.writestr(f"{extra_name}_{i+1}.png", buffer.getvalue())
+            file.close()
 
 def setup(bot: Bot):
     bot.renderer = Renderer(bot)

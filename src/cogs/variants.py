@@ -93,6 +93,13 @@ class VariantHandlers:
         '''
         self.default_fields = fn
     
+    def finalize(self, fn: Callable[[FullTile], None]):
+        '''Registers a finalizer.
+        
+        There can only be one.
+        '''
+        self.finalizer = fn
+
     def handle_tile(self, tile: RawTile, grid: RawGrid, index: GridIndex, **flags: Any) -> FullTile:
         '''Take a RawTile and apply its variants to it'''
         default_ctx = DefaultContext(
@@ -124,7 +131,10 @@ class VariantHandlers:
                     fields.update(handler.handle(ctx))
             if failed:
                 raise errors.UnknownVariant(tile, variant)
-        return FullTile.from_tile_fields(tile, fields)
+        full = FullTile.from_tile_fields(tile, fields)
+        self.finalizer(full, **flags)
+        return full
+
     
     def handle_grid(self, grid: RawGrid, **flags: Any) -> FullGrid:
         '''Apply variants to a full grid of raw tiles'''
@@ -200,6 +210,8 @@ def setup(bot: Bot):
                     + 4 * ctx.is_adjacent((x - 1, y))
                     + 8 * ctx.is_adjacent((x, y + 1))
                 )
+            if ctx.flags.get("raw_output"):
+                color = (0, 3)
             return {
                 "custom_style": constants.TEXT_STYLES[tile_data.get("type", "0")], # type:ignore
                 "variant_number": variant,
@@ -216,6 +228,20 @@ def setup(bot: Bot):
             "color_index": color,
             "meta_level": 0,
         }
+
+    @handlers.finalize
+    def finalize(tile: FullTile, **flags) -> None:
+        if flags.get("extra_names") is not None:
+            if flags["extra_names"]:
+                flags["extra_names"][0] = "render"
+            else:
+                name = tile.name.replace("/", "")
+                variant = tile.variant_number
+                meta_level = tile.meta_level
+                flags["extra_names"].append(
+                    meta_level * "meta_" + f"{name}_{variant}"
+                )
+        pass
 
     @handlers.handler(pattern=r"|".join(constants.DIRECTION_VARIANTS))
     def directions(ctx: HandlerContext) -> TileFields:
