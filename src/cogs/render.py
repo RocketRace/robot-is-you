@@ -23,7 +23,7 @@ class Renderer:
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    def render(
+    async def render(
         self,
         grid: FullGrid,
         *,
@@ -98,7 +98,7 @@ class Renderer:
                                 path = f"data/sprites/{source}/{sprite_name}_{tile.variant_number}_{wobble + 1}.png"
                             sprite = cached_open(path, cache=sprite_cache, fn=Image.open).convert("RGBA")
                             
-                            sprite = self.apply_options_name(
+                            sprite = await self.apply_options_name(
                                 tile.name,
                                 sprite,
                                 style=tile.custom_style or "noun",
@@ -190,7 +190,7 @@ class Renderer:
 
         # fetch the minimum possible widths first
         try:
-            widths: list[int] = [self.bot.get.letter_width(c, mode, greater_than=0) for c in raw]
+            widths: list[int] = [self.bot.db.letter_width(c, mode, greater_than=0) for c in raw]
         except KeyError as e:
             raise errors.BadCharacter(text, mode, e.args[0])
 
@@ -239,7 +239,7 @@ class Renderer:
         while not all(stable):
             old_width, i = min((w, i) for i, w in enumerate(widths) if not stable[i])
             try:
-                new_width = self.bot.get.letter_width(raw[i], mode, greater_than=old_width)
+                new_width = self.bot.db.letter_width(raw[i], mode, greater_than=old_width)
             except KeyError:
                 stable[i] = True
                 continue
@@ -282,7 +282,7 @@ class Renderer:
 
         letters: list[Image.Image] = []
         for c, w in zip(raw, widths):
-            letters.append(self.bot.get.letter_sprite(c, mode, w, wobble, seed=seed | 0b11111111))
+            letters.append(self.bot.db.letter_sprite(c, mode, w, wobble, seed=seed | 0b11111111))
             seed >>= 8
         
         sprite = Image.new("L", (constants.DEFAULT_SPRITE_SIZE, constants.DEFAULT_SPRITE_SIZE))
@@ -327,7 +327,7 @@ class Renderer:
             wobble=wobble
         )
 
-    def apply_options_name(
+    async def apply_options_name(
         self,
         name: str,
         sprite: Image.Image,
@@ -338,7 +338,7 @@ class Renderer:
         wobble: int
     ) -> Image.Image:
         '''Takes an image, taking tile data from its name, and applies the given options to it.'''
-        tile_data = self.bot.get.tile_data(name)
+        tile_data = await self.bot.db.tile(name)
         assert tile_data is not None
         original_style = constants.TEXT_STYLES[tile_data.get("type", "0")]
         original_direction = tile_data.get("text_direction")

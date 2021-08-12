@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import pathlib
-from sqlite3.dbapi2 import Cursor
-
+from dataclasses import dataclass
+from sqlite3.dbapi2 import Row
 import asqlite
-
-
+from PIL import Image
+from .constants import DIRECTIONS
 class Database:
     '''Everything relating to persistent readable & writable data'''
     conn: asqlite.Connection
@@ -21,48 +20,75 @@ class Database:
         await self.conn.close()
     
     async def create_tables(self) -> None:
-        '''Ensure tables exist, provide schema in code'''
-        # context-managed cursor transactions auto-commit
+        '''Creates tables in the database according to 
+        a schema in code. (Useful for documentation.)
+        '''
         async with self.conn.cursor() as cur:
             await cur.execute(
+                # `name` is not specified to be a unique field.
+                # We allow multiple "versions" of a tile to exist, 
+                # to account for differences between "world" and "editor" tiles.
+                # One example of this is with `belt` -- its color inside levels 
+                # (which use "world" tiles) is different from its editor color.
+                # These versions are differentiated by `version`.
+                #
+                # For tiles where the active/inactive distinction doesn't apply
+                # (i.e. all non-text tiles), only `active_color` fields are
+                # guaranteed to hold a meaningful, non-null value.
+                #
+                # `text_direction` defines whether a property text tile is 
+                # "pointed towards" any direction. It is null otherwise. 
+                # The directions are right: 0, up: 8, left: 16, down: 24.
+                # 
+                # `tags` is a tab-delimited sequence of strings. The empty
+                # string denotes no tags.
                 '''
                 CREATE TABLE IF NOT EXISTS tiles (
-                    name TEXT UNIQUE NOT NULL,
+                    name TEXT NOT NULL,
                     sprite TEXT NOT NULL,
                     source TEXT NOT NULL,
-                    inactive_color_x INTEGER,
-                    inactive_color_y INTEGER,
-                    active_color_x INTEGER,
-                    active_color_y INTEGER,
-                    editor_inactive_color_x INTEGER,
-                    editor_inactive_color_y INTEGER,
-                    editor_active_color_x INTEGER,
-                    editor_active_color_y INTEGER,
-                    tiling INTEGER,
+                    version INTEGER NOT NULL,
+                    inactive_color_x INTEGER DEFAULT 3,
+                    inactive_color_y INTEGER DEFAULT 0,
+                    active_color_x INTEGER NOT NULL DEFAULT 0,
+                    active_color_y INTEGER NOT NULL DEFAULT 3,
+                    tiling INTEGER NOT NULL DEFAULT -1,
+                    text_type INTEGER,
                     text_direction INTEGER,
-                    tags TEXT
+                    tags TEXT NOT NULL DEFAULT "",
+                    UNIQUE(name, version)
                 );
                 '''
             )
+            # We create different tables for levelpacks and custom levels.
+            # While both share some fields, there are mutually exclusive
+            # fields which are more sensible in separate tables.
+            #
+            # The world/id combination is unique across levels. However,
+            # a world can have multiple levels and multiple worlds can share
+            # a level id. Thus neither is unique alone.
             await cur.execute(
                 '''
                 CREATE TABLE IF NOT EXISTS levels (
-                    id TEXT UNIQUE NOT NULL,
+                    level_id TEXT NOT NULL,
                     world TEXT NOT NULL,
-                    name TEXT,
+                    name TEXT NOT NULL,
                     subtitle TEXT,
                     number INTEGER,
                     style INTEGER,
                     parent TEXT,
-                    map_id TEXT
+                    map_id TEXT,
+                    UNIQUE(level_id, world)
                 );
                 '''
             )
             await cur.execute(
+                # There have been multiple valid formats of level 
+                # codes, so we don't assume a constant-width format.
                 '''
                 CREATE TABLE IF NOT EXISTS custom_levels (
                     code TEXT UNIQUE NOT NULL,
-                    name TEXT,
+                    name TEXT NOT NULL,
                     subtitle TEXT,
                     difficulty INTEGER,
                     author TEXT
@@ -72,15 +98,19 @@ class Database:
             await cur.execute(
                 '''
                 CREATE TABLE IF NOT EXISTS letters (
-                    char CHARACTER(1),
+                    mode TEXT,
+                    char TEXT,
                     width INTEGER,
-                    mode INTEGER
+                    sprite_0 BLOB,
+                    sprite_1 BLOB,
+                    sprite_2 BLOB
                 );
                 '''
             )
             await cur.execute(
                 '''
                 CREATE TABLE IF NOT EXISTS users (
+                    user_id INTEGER PRIMARY KEY,
                     blacklisted INTEGER,
                     silent_commands INTEGER,
                     render_background INTEGER
@@ -88,20 +118,60 @@ class Database:
                 '''
             )
 
-    async def tile(self, name: str, use_editor_colors: bool = True) -> dict | None:
-        '''A single thing of tile data. Returns None on failure.'''
+    async def tile(self, name: str, *, editor: bool = True) -> TileData | None:
+        '''Convenience method to fetch a single thing of tile data. Returns None on failure.'''
+        version = 1 if editor else 0
         async with self.conn.cursor() as cur:
             await cur.execute(
                 '''
-                SELECT * FROM tiles WHERE name == ?;
+                SELECT * FROM tiles WHERE name == ? AND version == ?;
                 ''',
-                name
+                name, version
             )
             row = await cur.fetchone()
             if row is None:
                 return None
-            return dict(zip(row.keys(), row))
-        
+            return TileData.from_row(row)
+    
+    def plate(self, direction: int | None, wobble: int) -> tuple[Image.Image, tuple[int, int]]:
+        '''Plate sprites. Raises FileNotFoundError on failure.'''
+        if direction is None:
+            return (
+                Image.open(f"data/plates/plate_property_0_{wobble+1}.png").convert("RGBA"),
+                (0, 0)
+            )
+        return (
+            Image.open(f"data/plates/plate_property{DIRECTIONS[direction]}_0_{wobble+1}.png").convert("RGBA"),
+            (3, 3)
+        )
+
+@dataclass
+class TileData:
+    name: str
+    sprite: str
+    source: str
+    inactive_color: tuple[int, int]
+    active_color: tuple[int, int]
+    tiling: int
+    text_type: int | None
+    text_direction: int | None
+    tags: list[str]
+
+    @classmethod
+    def from_row(cls, row: Row) -> TileData:
+        '''Create a tiledata object from a database row'''
+        return TileData(
+            row["name"],
+            row["sprite"],
+            row["source"],
+            (row["inactive_color_x"], row["inactive_color_y"]),
+            (row["active_color_x"], row["active_color_y"]),
+            row["tiling"],
+            row["text_type"],
+            row["text_direction"],
+            row["tags"].split("\t")
+        )
+
 class DataAccess:
     '''Means through which most bot data is accessed.
     
@@ -125,18 +195,6 @@ class DataAccess:
     def level_tile_data(self, tile: str) -> dict | None:
         '''Level tile overrides. Returns None on failure.'''
         return self._level_tile_data.get(tile)
-
-    def plate(self, direction: int | None, wobble: int) -> tuple[Image.Image, tuple[int, int]]:
-        '''Plate sprites. Raises FileNotFoundError on failure.'''
-        if direction is None:
-            return (
-                Image.open(f"data/plates/plate_property_0_{wobble+1}.png").convert("RGBA"),
-                (0, 0)
-            )
-        return (
-            Image.open(f"data/plates/plate_property{DIRECTIONS[direction]}_0_{wobble+1}.png").convert("RGBA"),
-            (3, 3)
-        )
     
     def letter_width(self, char: str, mode: str, *, greater_than: int) -> int:
         '''The minimum letter width for the given char of the give mode,

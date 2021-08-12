@@ -250,8 +250,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             extra_buffer = BytesIO() if raw_output else None
             extra_names = [] if raw_output else None
             full_grid = self.bot.handlers.handle_grid(grid, raw_output=raw_output, extra_names=extra_names)
-            task = functools.partial(
-                self.bot.renderer.render,
+            await self.bot.renderer.render(
                 full_grid,
                 palette=palette,
                 background=background, 
@@ -261,10 +260,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 extra_out=extra_buffer,
                 extra_name=extra_names[0] if raw_output else None, # type: ignore
             )
-            await self.bot.loop.run_in_executor(None, task)
         except errors.TileNotFound as e:
             word = e.args[0]
-            if word.name.startswith("tile_") and self.bot.get.tile_data(word.name[5:]) is not None:
+            if word.name.startswith("tile_") and await self.bot.db.tile(word.name[5:]) is not None:
                 return await ctx.error(f"The tile `{word}` could not be found. Perhaps you meant `{word.name[5:]}`?")
             if await self.bot.db.tile("text_" + word.name) is not None:
                 return await ctx.error(f"The tile `{word}` could not be found. Perhaps you meant `{'text_' + word.name}`?")

@@ -56,7 +56,6 @@ class Bot(commands.Bot):
         self.embed_color = embed_color
         self.webhook_id = webhook_id
         self.prefixes = prefixes
-        self.get = DataAccess(self)
         self.db = Database()
         self.db_path = db_path
         

@@ -1,38 +1,40 @@
 from __future__ import annotations
 
+import configparser
+import io
 import json
 import os
 import pathlib
-import platform
-from datetime import datetime
-from pathlib import Path
-from typing import Optional
+import re
+import itertools
+import collections
+from typing import Any, Optional
 
 import discord
 from discord.ext import commands
 from PIL import Image, ImageChops, ImageDraw
 
+from ..db import TileData
 from ..types import Bot, Context
 
-class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
-    
-    def bot_check(self, ctx: Context):
-        return ctx.author.id not in self.blacklist
 
+class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
+    async def bot_check(self, ctx: Context):
+        row = await self.bot.db.conn.fetchone(
+            '''
+            SELECT (blacklisted) FROM users
+            WHERE user_id == ?;
+            ''',
+            ctx.author.id
+        )
+        if row is None:
+            return True
+        return row["blacklisted"]
+        
     def __init__(self, bot: Bot):
         self.bot = bot
         self.identifies = []
-        self.tile_data = {}
         self.resumes = []
-        self.blacklist = []
-        # Loads the caches
-        # Loads the tile colors, if it exists
-
-        with open("cache/blacklist.json") as fp:
-            blacklist = fp.read()
-            if blacklist:
-                self.blacklist = json.loads(blacklist)
-
         # Are assets loading?
         self.bot.loading = False
             
@@ -72,10 +74,16 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.command()
     @commands.is_owner()
     async def ban(self, ctx: Context, user: int):
-        self.blacklist.append(user)
-        with open("cache/blacklist.json", "w") as f:
-            json.dump(self.blacklist, f)
-        await ctx.send(f"{user} bent.")
+        await self.bot.db.conn.execute(
+            '''
+            INSERT INTO users (user_id, blacklisted)
+            VALUES(?, 1) 
+            ON CONFLICT(user_id) 
+            DO UPDATE SET blacklisted=1;
+            ''',
+            user
+        )
+        await ctx.send(f"`{user}` bent.")
 
     @commands.command()
     @commands.is_owner()
@@ -90,278 +98,318 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             await guild.leave()
             await ctx.send(f"Left {guild}.")
 
-    def loadchanges(self):
-        '''Scrapes alternate tile data from level metadata (`.ld`) files.'''
-        self.bot.loading = True
-        
-        alternate_tiles = {}
-
-        levels = [l for l in os.listdir("data/levels/vanilla") if l.endswith(".ld")]
-        with open("config/editortileignore.json") as fp:
-            ignored_tiles = json.load(fp)
-        for level in levels:
-            # Reads each line of the level file
-            lines = ""
-            with open(f"data/levels/vanilla/{level}", errors="ignore") as fp:
-                lines = fp.readlines()
-
-            IDs = []
-            alts = {}
-
-            # Loop through the lines
-            for line in lines:
-                # Only considers lines starting with objectXYZ
-                if line.startswith("changed="):
-                    if len(line) > 16:
-                        IDs = line[8:].strip().split(",")[:-1]
-                        alts = {ID: {"name":"", "sprite":"", "tiling":"", "color":[], "active":[],"type":""} for ID in IDs}
-                else:
-                    if line.startswith("object"):
-                        ID = line[:][:9]
-                        # If the line matches "objectZYX_name="
-                        # Sets the changed name
-                        if line[10:].startswith("name="):
-                            # Magic numbers used to grab only the name of the sprite
-                            # Same is used below for sprites/colors
-                            name = line[:][15:-1]
-                            alts[ID]["name"] = name
-                        # Sets the changed sprite
-                        elif line.startswith("image=", 10):
-                            sprite = line[:][16:-1]
-                            alts[ID]["sprite"] = sprite
-                        # Tiling type
-                        elif line.startswith("tiling=", 10):
-                            alts[ID]["tiling"] = line[:][17:-1]
-                        # Text type
-                        elif line.startswith("type=", 10):
-                            alts[ID]["type"] = line[:][15:-1]
-                        # Sets the changed color (all tiles)
-                        elif line.startswith("colour=", 10):
-                            color_raw = line[:][17:-1]
-                            # Splits the color into a list 
-                            # "a,b" -> [a,b]
-                            color = color_raw.split(",")
-                            # if not alts[ID].get("color"):
-                            alts[ID]["color"] = color
-                        # Sets the changed color (active text only), overrides previous
-                        elif line.startswith("activecolour=", 10):
-                            color_raw = line[:][23:-1]
-                            # Splits the color into a list 
-                            # "a,b" -> [a,b]
-                            active = color_raw.split(",")
-                            alts[ID]["active"] = active
-                    
-            # Adds the data to the list of changed objects
-            for key in alts:
-                if alternate_tiles.get(key) is None:
-                    if alts[key].get("name") in ignored_tiles:
-                        continue
-                    alternate_tiles[key] = [alts[key]]
-                else:
-                    if alts[key].get("name") in ignored_tiles:
-                        continue
-                    duplicate = False
-                    for tile in alternate_tiles[key]:
-                        a = tile.get("name")
-                        b = alts[key].get("name")
-                        if a == b:
-                            duplicate = True
-                    if not duplicate:
-                        alternate_tiles[key].extend([alts[key]])
-    
-        self.bot.loading = False
-        return alternate_tiles
-    
     @commands.command()
     @commands.is_owner()
     async def loaddata(self, ctx: Context):
-        '''Reloads tile data from `data/values.lua`, `data/editor_objectlist.lua` and `.ld` files.'''
-        alt_tiles = self.loadchanges()
-        self.loadcolors(alt_tiles)
-        self.loadeditor()
-        self.loadcustom()
-        self.dumpdata()
+        '''Reloads tile data from the world map, editor, and custom files.'''
+        self.bot.loading = True
+        await self.load_initial_tiles()
+        await self.load_editor_tiles()
+        await self.load_custom_tiles()
+        self.bot.loading = False
         return await ctx.send("Done. Loaded all tile data.")
 
-    def loadcolors(self, alternate_tiles):
-        '''Loads tile data from `data/values.lua.` and merges it with tile data from `.ld` files.'''
-        self.tile_data = {}
-        alt_tiles = alternate_tiles
-
-        self.bot.loading = True
+    async def load_initial_tiles(self):
+        '''Loads tile data from `data/values.lua` and `.ld` files.'''
         # values.lua contains the data about which color (on the palette) is associated with each tile.
-        lines = ""
-        with open("data/values.lua", errors="replace") as colorvalues:
-            lines = colorvalues.readlines()
-        # Skips the parts we don't need
-        tileslist = False
-        # Data
-        name = ID = sprite = tiling = ""
-        # Color
-        color_raw = active_raw = ""
-        color = active = []
-        # Reads each line
-        for line in lines:
-            if tileslist:
-                # Only consider certain lines ("objectXYZ =", "name = x", "sprite = y", "colour = {a,b}", "active = {a,b}")
-                if line.startswith("\tobject"):
-                    ID = line[1:10]
-                elif line.startswith("\t\tname = "):
-                    # Grabs only the name of the object
-                    name = line[10:-3] # Magic numbers used to grab the perfect substring
-                # This line has the format "\t\tsprite = \"name\",\n".
-                elif line.startswith("\t\tsprite = "):
-                    # Grabs only the name of the sprite
-                    sprite = line[12:-3]
-                # "\t\ttiling = [mode],\n"
-                elif line.startswith("\t\ttiling = "):
-                    tiling = line[11:-2]
-                # These lines have the format "\t\t[active or colour] = {a,b}\n" where a,b are int.
-                # "active = {a,b}" lines always come after "colour = {a,b}" so this check overwrites the color to "active".
-                # The "active" line only exists for text tiles.
-                # We prefer the active color of the text.
-                # If you want the inactive colors, just remove the second condition check.
-                elif line.startswith("\t\tcolour = "):
-                    color_raw = line[12:-3]
-                    # Converts the string to a list 
-                    # "{a,b}" --> [a,b]
-                    seg = color_raw.split(",")
-                    color = [seg[i].strip() for i in range(2)]
-                elif line.startswith("\t\tactive = "):
-                    active_raw = line[12:-3]
-                    seg = active_raw.split(",")
-                    active = [seg[i].strip() for i in range(2)]
-                elif line.startswith("\t\ttype = "):
-                    type_ = line[9:-2]
-                # Signifies that the data for the current tile is over
-                elif line == "\t},\n":
-                    # Makes sure no fields are empty
-                    # bool("") == False, but True for any other string
-                    if all((name, sprite, color_raw, active_raw, tiling)):
-                        # Alternate tile data (initialized with the original)
-                        self.tile_data[name] = {"sprite":sprite, "color":color, "active":active, "tiling":tiling, "source":"vanilla", "type":type_}
-                        # Looks for object replacements in the alternateTiles dict
-                        if alt_tiles.get(ID) is not None:
-                            # Each replacement for the object ID:
-                            for value in alt_tiles[ID]:
-                                # Sets fields to the alternate fields, if specified
-                                alt_name = name
-                                alt_sprite = sprite
-                                alt_tiling = tiling
-                                alt_color = color
-                                alt_active = active
-                                alt_type = type_
-                                if value.get("name") != "":
-                                    alt_name = value.get("name")
-                                if value.get("sprite") != "":
-                                    alt_sprite = value.get("sprite")
-                                if value.get("color") != []: # This shouldn't ever be false
-                                    alt_color = value.get("color")
-                                if value.get("active") != []: # This shouldn't ever be false
-                                    alt_active = value.get("active")
-                                if value.get("tiling") != "":
-                                    alt_tiling = value.get("tiling")
-                                if value.get("type") != "":
-                                    alt_type = value.get("type")
-                                # Adds the change to the alts, but only if it's the first with that name
-                                if name != alt_name:
-                                    # If the name matches the name of an object already in the alt list
-                                    if self.tile_data.get(alt_name) is None:
-                                        self.tile_data[alt_name] = {
-                                            "sprite":alt_sprite, 
-                                            "tiling":alt_tiling, 
-                                            "color":alt_color, 
-                                            "active":alt_active,
-                                            "type":alt_type,
-                                            "source":"vanilla"
-                                        } 
-                    # Resets the fields
-                    name = sprite = tiling = color_raw = active_raw = ""
-                    color = active = []
-            # Only begins checking for these lines once a certain point in the file has been passed
-            elif line == "tileslist =\n":
-                tileslist = True
-
-        self.bot.loading = False
-
-    def loadcustom(self):
-        '''Loads custom tile data from `data/custom/*.json` into self.tile_data'''
+        with open("data/values.lua", errors="replace") as fp:
+            data = fp.read()
         
-        # Load custom tile data from a json files
-        custom_data = [x for x in os.listdir("data/custom") if x.endswith(".json")]
-        # In alphabetical order, to make sure Patashu's redux mod overwrites the old mod
-        custom_data.sort() 
-        for f in custom_data:
-            dat = None
-            with open(f"data/custom/{f}") as fp:
-                dat = json.load(fp)
-            for tile in dat:
-                name = tile["name"]
-                # Rewrites the objects slightly
-                rewritten = {}
-                for key,value in tile.items():
-                    if key != "name":
-                        rewritten[key] = value
-                # The sprite source (which folder to draw from)
-                rewritten["source"] = f[:-5] # Trim ".json"
-                if name is not None:
-                    self.tile_data[name] = rewritten
+        start = data.find("tileslist =\n")
+        end = data.find("\n}\n", start)
 
-    def loadeditor(self):
-        '''Loads tile data from `data/editor_objectlist.lua` into `self.tile_data`.'''
+        assert start > 0 and end > 0
+        spanned = data[start:end]
 
-        lines = ""
-        with open("data/editor_objectlist.lua", errors="replace") as objlist:
-            lines = objlist.readlines()
+        def prepare(d: dict[str, Any]) -> dict[str, Any]:
+            '''From game format into DB format'''
+            d["text_type"] = d.pop("type")
+            inactive = d.pop("colour")
+            d["inactive_color_x"] = inactive[0]
+            d["inactive_color_y"] = inactive[1]
+            active = d.pop("activecolour")
+            d["active_color_x"] = active[0]
+            d["active_color_y"] = active[1]
+            return d
+
+        object_pattern = re.compile(
+            r"(object\d+) =\n\t\{"
+            r"\n\s*name = \"([^\"]*)\","
+            r"\n\s*sprite = \"([^\"]*)\","
+            r"\n.*\n.*\n\s*tiling = (-1|\d),"
+            r"\n\s*type = (\d),"
+            r"\n\s*(?:argextra = .*,\n\s*)?(?:argtype = .*,\n\s*)?"
+            r"colour = \{(\d), (\d)\},"
+            r"\n\s*(?:active = \{(\d), (\d)\},\n\s*)?"
+            r".*\n.*\n.*\n\s*\}",
+        )
+        initial_objects: dict[str, dict[str, Any]] = {}
+        for match in re.finditer(object_pattern, spanned):
+            obj, name, sprite, tiling, type, c_x, c_y, a_x, a_y = match.groups()
+            if a_x is None or a_y is None:
+                inactive_x = active_x = int(c_x)
+                inactive_y = active_y = int(c_y)
+            else:
+                inactive_x = int(c_x)
+                inactive_y = int(c_y)
+                active_x = int(a_x)
+                active_y = int(a_y)
+            tiling = int(tiling)
+            type = int(type)
+            initial_objects[obj] = dict(
+                name=name,
+                sprite=sprite,
+                tiling=tiling,
+                type=type,
+                colour=(inactive_x, inactive_y),
+                activecolour=(active_x, active_y),
+            )
+
+        changed_objects: list[dict[str, Any]] = []
+        for path in pathlib.Path("data/levels/vanilla").glob("*.ld"):
+
+            parser = configparser.ConfigParser()
+            parser.read(path)
+            changed_ids = parser.get("tiles", "changed", fallback=",").split(",")[:-1]
+
+            fields = ("name", "image", "tiling", "colour", "activecolour", "type")
+            for id in changed_ids:
+                changes: dict[str, Any] = {}
+                for field in fields:
+                    change = parser.get("tiles", f"{id}_{field}", fallback=None)
+                    if change is not None:
+                        changes[field] = change
+                # Ignore blank changes (identical to values.lua objects)
+                # Ignore changes without a name (the same name but a different color, etc)
+                if changes and changes.get("name") is not None:
+                    changed_objects.append({**initial_objects[id], **changes})
+
+        by_name = itertools.groupby(
+            sorted(changed_objects, key=lambda x: x["name"]), 
+            key=lambda x: x["name"]
+        )
+        ready: list[dict[str, Any]] = []
+        for name, duplicates in by_name:
+            def freeze_dict(d: dict[str, Any]) -> tuple[tuple[str, Any], ...]:
+                '''Hashable (frozen) dict'''
+                return tuple(d.items())
+            counts = collections.Counter(map(freeze_dict, duplicates))
+            most_common, _ = counts.most_common(1)[0]
+            ready.append(prepare(dict(most_common)))
         
-        objects = {}
-        parsing_objects = False
-        name = tiling = tile_type = sprite = ""
-        color = active = None
-        tags = None
-        for line in lines:
-            if line.startswith("editor_objlist = {"):
-                parsing_objects = True
-            if not parsing_objects:
-                continue
-            if line.startswith("\t},"):
-                if sprite == "": sprite = name
-                objects[name] = {"tiling":tiling,"type":tile_type,"sprite":sprite,"color":color,"active":active,"tags":tags,"source":"vanilla"}
-                name = tiling = tile_type = sprite = ""
-                color = active = None
-                tags = None
-            elif line.startswith("\t\tname = \""):
-                name = line[10:-3]
-            elif line.startswith("\t\ttiling = "):
-                tiling = line[11:-2]
-            elif line.startswith("\t\tsprite = \""):
-                sprite = line[12:-3]
-            elif line.startswith("\t\ttype = "):
-                tile_type = line[9:-2]
-            elif line.startswith("\t\tcolour = {"):
-                color = [x.strip() for x in line[12:-3].split(",")]
-            elif line.startswith("\t\tcolour_active = {"):
-                active = [x.strip() for x in line[19:-3].split(",")]
-            elif line.startswith("\t\ttags = {"):
-                ...
+        await self.bot.db.conn.executemany(
+            '''
+            INSERT INTO tiles(
+                name,
+                sprite,
+                source,
+                version,
+                inactive_color_x,
+                inactive_color_y,
+                active_color_x,
+                active_color_y,
+                tiling,
+                text_type
+            )
+            VALUES (
+                :name,
+                :sprite,
+                "vanilla",
+                0,
+                :inactive_color_x,
+                :inactive_color_y,
+                :active_color_x,
+                :active_color_y,
+                :tiling,
+                :text_type
+            )
+            ON CONFLICT(name, version)
+            DO UPDATE SET
+                sprite=excluded.sprite,
+                source="vanilla",
+                inactive_color_x=excluded.inactive_color_x,
+                inactive_color_y=excluded.inactive_color_y,
+                active_color_x=excluded.active_color_x,
+                active_color_y=excluded.active_color_y,
+                tiling=excluded.tiling,
+                text_type=excluded.text_type;
+            ''',
+            map(prepare, initial_objects.values())
+        )
 
-        self.tile_data.update(objects)
+        await self.bot.db.conn.executemany(
+            '''
+            INSERT INTO tiles
+            VALUES (
+                :name,
+                :sprite,
+                "vanilla",
+                0,
+                :inactive_color_x,
+                :inactive_color_y,
+                :active_color_x,
+                :active_color_y,
+                :tiling,
+                :text_type,
+                NULL,
+                ""
+            ) 
+            ON CONFLICT(name, version)
+            DO UPDATE SET 
+                sprite=excluded.sprite,
+                source="vanilla",
+                inactive_color_x=excluded.inactive_color_x,
+                inactive_color_y=excluded.inactive_color_y,
+                active_color_x=excluded.active_color_x,
+                active_color_y=excluded.active_color_y,
+                tiling=excluded.tiling,
+                text_type=excluded.text_type;
+            ''',
+            ready
+        )
 
-    def dumpdata(self):
-        '''Dumps cached tile data from `self.tile_data` into `cache/tiledata.json` and `target/tilelist.txt`.'''
+    async def load_editor_tiles(self):
+        '''Loads tile data from `data/editor_objectlist.lua`.'''
 
-        max_length = len(max(self.tile_data, key=lambda x: len(x))) + 1
-
-        with open("target/tilelist.txt", "wt") as all_tiles:
-            all_tiles.write(f"{'*TILE* '.ljust(max_length, '-')} *SOURCE*\n")
-            all_tiles.write("\n".join(sorted([(f"{(tile + ' ').ljust(max_length, '-')} {data['source']}") for tile, data in self.tile_data.items()])))
-
-        # Dumps the gathered data to tiledata.json
-        with open("cache/tiledata.json", "wt") as tile_data:
-            json.dump(self.tile_data, tile_data, indent=3)
+        with open("data/editor_objectlist.lua", errors="replace") as fp:
+            data = fp.read()
         
-        # TODO don't do this
-        self.bot.get._tile_data = self.tile_data
+        start = data.find("editor_objlist = {")
+        end = data.find("\n}", start)
+        assert start > 0 and end > 0
+        spanned = data[start:end]
+
+        object_pattern = re.compile(
+            r"\[\d+\] = \{"
+            r"\n\s*name = \"([^\"]*)\","
+            r"(?:\n\s*sprite = \"([^\"]*)\",)?"
+            r"\n.*"
+            r"\n\s*tags = \{((?:\"[^\"]*?\"(?:,\"[^\"]*?\")*)?)\},"
+            r"\n\s*tiling = (-1|\d),"
+            r"\n\s*type = (\d),"
+            r"\n.*"
+            r"\n\s*colour = \{(\d), (\d)\},"
+            r"(?:\n\s*colour_active = \{(\d), (\d)\})?"
+        )
+        tag_pattern = re.compile(r"\"([^\"]*?)\"")
+        objects = []
+        for match in re.finditer(object_pattern, spanned):
+            name, sprite, raw_tags, tiling, text_type, c_x, c_y, a_x, a_y = match.groups()
+            sprite = name if sprite is None else sprite
+            a_x = c_x if a_x is None else a_x
+            a_y = c_y if a_y is None else a_y
+            active_x = int(a_x)
+            active_y = int(a_y)
+            inactive_x = int(c_x)
+            inactive_y = int(c_y)
+            tiling = int(tiling)
+            text_type = int(text_type)
+            tag_list = []
+            for tag in re.finditer(tag_pattern, raw_tags):
+                tag_list.append(tag.group(0))
+            tags = "\t".join(tag_list)
+
+            objects.append(dict(
+                name=name,
+                sprite=sprite,
+                tiling=tiling,
+                text_type=text_type,
+                inactive_color_x=inactive_x,
+                inactive_color_y=inactive_y,
+                active_color_x=active_x,
+                active_color_y=active_y,
+                tags=tags
+            ))
+        
+        await self.bot.db.conn.executemany(
+            '''
+            INSERT INTO tiles
+            VALUES (
+                :name,
+                :sprite,
+                "vanilla",
+                1,
+                :inactive_color_x,
+                :inactive_color_y,
+                :active_color_x,
+                :active_color_y,
+                :tiling,
+                :text_type,
+                NULL,
+                :tags
+            ) 
+            ON CONFLICT(name, version)
+            DO UPDATE SET 
+                sprite=excluded.sprite,
+                source="vanilla",
+                inactive_color_x=excluded.inactive_color_x,
+                inactive_color_y=excluded.inactive_color_y,
+                active_color_x=excluded.active_color_x,
+                active_color_y=excluded.active_color_y,
+                tiling=excluded.tiling,
+                text_type=excluded.text_type,
+                tags=:tags;
+            ''',
+            objects
+        )
+
+    async def load_custom_tiles(self):
+        '''Loads custom tile data from `data/custom/*.json`'''
+        def prepare(source: str, d: dict[str, Any]) -> dict[str, Any]:
+            '''From config format to db format'''
+            inactive = d.pop("color")
+            if d.get("inactive") is not None:
+                d["inactive_color_x"] = inactive[0]
+                d["inactive_color_y"] = inactive[1]
+                d["active_color_x"] = d["active"][0]
+                d["active_color_y"] = d["active"][1]
+            else:
+                d["inactive_color_x"] = d["active_color_x"] = inactive[0]
+                d["inactive_color_y"] = d["active_color_y"] = inactive[1]
+            d["source"] = d.get("source", source)
+            d["tiling"] = d.get("tiling", -1)
+            d["text_type"] = d.get("text_type", 0)
+            d["text_direction"] = d.get("text_direction")
+            d["tags"] = d.get("tags", "")
+            return d
+
+        async with self.bot.db.conn.cursor() as cur:
+            for path in pathlib.Path("data/custom").glob("*.json"):
+                source = path.parts[-1].split(".")[0]
+                with open(path) as fp:
+                    objects = (prepare(source, obj) for obj in json.load(fp))
+                await cur.executemany(
+                    '''
+                    INSERT INTO tiles
+                    VALUES (
+                        :name,
+                        :sprite,
+                        :source,
+                        2,
+                        :inactive_color_x,
+                        :inactive_color_y,
+                        :active_color_x,
+                        :active_color_y,
+                        :tiling,
+                        :text_type,
+                        :text_direction,
+                        :tags
+                    ) 
+                    ON CONFLICT(name, version)
+                    DO UPDATE SET 
+                        sprite=excluded.sprite,
+                        source=excluded.source,
+                        inactive_color_x=excluded.inactive_color_x,
+                        inactive_color_y=excluded.inactive_color_y,
+                        active_color_x=excluded.active_color_x,
+                        active_color_y=excluded.active_color_y,
+                        tiling=excluded.tiling,
+                        text_type=excluded.text_type,
+                        text_direction=excluded.text_direction,
+                        tags=excluded.tags;
+                    ''',
+                    objects
+                )
 
     @commands.command()
     @commands.is_owner()
@@ -382,38 +430,25 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     async def loadletters(self, ctx: Context):
         '''Scrapes individual letters from vanilla sprites.'''
         ignored = json.load(open("config/letterignore.json"))
+        for row in await self.bot.db.conn.fetchmany(
+            '''
+            SELECT * FROM tiles
+            WHERE sprite LIKE "text\\___%" ESCAPE "\\"
+                AND source == "vanilla"
+                AND text_type IS NOT NULL
+                AND text_direction IS NULL;
+            '''
+        ):
+            data = TileData.from_row(row)
+            if data.sprite not in ignored:
+                await self.loadletter(
+                    data.sprite, 
+                    data.text_type # type: ignore
+                )
 
-        def check(data):
-            name, value = data
-            return all([
-                value["sprite"].startswith("text_"),
-                value["source"] == "vanilla",
-                value["sprite"] not in ignored,
-                value.get("text_direction") is None,
-                len(value["sprite"]) >= 7
-            ])
+        await ctx.send("Letters loaded.")
 
-        for _, data in filter(check, self.bot.get.tile_datas()):
-            sprite = data["sprite"]
-            try:
-                tile_type = data["type"]
-            except:
-                print("", data)
-            else:
-                self.loadletter(sprite, tile_type)
-
-        for path in pathlib.Path("data/letters").glob("*/*/*/*.png"):
-            *_, mode, char, width, name = path.parts
-            img = Image.open(path)
-            p = pathlib.Path("target/letters").joinpath(mode, char, width)
-            p.mkdir(parents=True, exist_ok=True)
-            img.save(p.joinpath(name))
-
-        self.bot.get.load_letters()
-
-        await ctx.send("pog")
-
-    def loadletter(self, word: str, tile_type: str):
+    async def loadletter(self, word: str, tile_type: int):
         '''Scrapes letters from a sprite.'''
         chars = word[5:] # Strip "text_" prefix
 
@@ -422,7 +457,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
         # Background plates for type-2 text,
         # in 1 bit per pixel depth
-        plates = [self.bot.get.plate(None, i)[0].getchannel("A").convert("1") for i in range(3)]
+        plates = [self.bot.db.plate(None, i)[0].getchannel("A").convert("1") for i in range(3)]
         
         # Maps each character to three bounding boxes + images
         # (One box + image for each frame of animation)
@@ -438,7 +473,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 .convert("1")
             
             # Type-2 text has inverted text on a background plate
-            if tile_type == "2":
+            if tile_type == 2:
                 alpha = ImageChops.invert(alpha)
                 alpha = ImageChops.logical_and(alpha, plate)
 
@@ -474,7 +509,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                     clone = clone.convert("1")
                     
                     # Get bounds of character blob 
-                    x1, y1, x2, y2 = clone.getbbox()
+                    x1, y1, x2, y2 = clone.getbbox() # type: ignore
                     # Run some checks
                     # # Too wide => Skip 2 characters (probably merged two chars)
                     # if x2 - x1 > (1.5 * alpha.width * (1 + two_rows) / len(chars)):
@@ -499,26 +534,34 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                     continue
                 return
 
-        saved = []
-        # Save scraped characters
+        results = []
         for char, entries in char_sizes.items():
             # All three frames clearly found the character in the sprite
             if len(entries) == 3:
-                saved.append(char)
-                
                 x1_min = min(entries, key=lambda x: x[0][0])[0][0]
                 y1_min = min(entries, key=lambda x: x[0][1])[0][1]
                 x2_max = max(entries, key=lambda x: x[0][2])[0][2]
                 y2_max = max(entries, key=lambda x: x[0][3])[0][3]
 
-                now = int(datetime.utcnow().timestamp() * 1000)
+                blobs = []
+                mode = "small" if two_rows else "big"
+                width = 0
                 for i, ((x1, y1, _, _), img) in enumerate(entries):
                     frame = Image.new("1", (x2_max - x1_min, y2_max - y1_min))
                     frame.paste(img, (x1 - x1_min, y1 - y1_min))
-                    height = "small" if two_rows else "big"
                     width = frame.size[0]
-                    Path(f"target/letters/{height}/{char}/{width}").mkdir(parents=True, exist_ok=True)
-                    frame.save(f"target/letters/{height}/{char}/{width}/{now}_{i}.png")
+                    buf = io.BytesIO()
+                    frame.save(buf, format="PNG")
+                    blobs.append(buf.getvalue())
+                results.append((mode, char, width, *blobs))
+
+        await self.bot.db.conn.executemany(
+            '''
+            INSERT INTO letters
+            VALUES (?, ?, ?, ?, ?, ?);
+            ''',
+            results
+        )   
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
