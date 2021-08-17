@@ -1,4 +1,5 @@
 from __future__ import annotations
+import collections
 
 import re
 from datetime import datetime
@@ -7,7 +8,7 @@ from json import load
 from os import listdir
 from string import ascii_lowercase
 from time import time
-from typing import Literal, TYPE_CHECKING
+from typing import Literal, OrderedDict, TYPE_CHECKING
 
 import aiohttp
 import discord
@@ -339,31 +340,11 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         '''
         await self.render_tiles(ctx, objects=objects, rule=False)
 
-    @commands.cooldown(5, 8, commands.BucketType.channel)
-    @commands.command(name="level")
-    async def _level(self, ctx: Context, *, query: str):
-        '''Renders the Baba Is You level from a search term.
-
-        Levels are searched for in the following order:
-        * World & level ID (e.g. "baba/20level")
-        * Level ID (e.g. "16level")
-        * Custom level code (e.g. "1234-ABCD")
-        * Level number (e.g. "space-3" or "lake-extra 1")
-        * Level name (e.g. "further fields")
-        * The map ID of a world (e.g. "cavern", or "lake")
-        '''
-        # User feedback
-        await ctx.trigger_typing()
-
-        levels: dict[tuple[str, str], LevelData] = {}
-        custom_levels: dict[str, CustomLevelData] = {}
-        selected: dict[Literal[0], LevelData | CustomLevelData] = {}
-        
-        spoiler = query.count("||") >= 2
-        fine_query = query.lower().strip().replace("|", "")
-        
+    async def search_levels(self, query: str) -> OrderedDict[tuple[str, str], LevelData]:
+        '''Finds levels by query.'''
+        levels: OrderedDict[tuple[str, str], LevelData] = collections.OrderedDict()
         # [world]/[levelid]
-        parts = fine_query.split("/", 1)
+        parts = query.split("/", 1)
         if len(parts) == 2:
             row = await self.bot.db.conn.fetchone(
                 '''
@@ -374,7 +355,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             if row is not None:
                 data = LevelData.from_row(row)
                 levels[data.world, data.id] = data
-                selected.setdefault(0, data)
 
         # someworld/[levelid]
         for row in await self.bot.db.conn.fetchall(
@@ -387,42 +367,13 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 ELSE world 
             END ASC;
             ''',
-            fine_query
+            query
         ):
             data = LevelData.from_row(row)
             levels[data.world, data.id] = data
-            selected.setdefault(0, data)
-        
-        # [abcd-0123]
-        if re.match(r"^[a-z0-9]{4}\-[a-z0-9]{4}$", fine_query):
-            row = await self.bot.db.conn.fetchone(
-                '''
-                SELECT * FROM custom_levels WHERE code == ?;
-                ''',
-                fine_query
-            )
-            if row is not None:
-                data = CustomLevelData.from_row(row)
-                custom_levels[data.code] = data
-                selected.setdefault(0, data)
-            else:
-                # Expensive operation -- only do this if there's no other results
-                await ctx.reply("Searching for custom level... this might take a while", mention_author=False)
-                await ctx.trigger_typing()
-                async with aiohttp.request("GET", f"https://baba-is-bookmark.herokuapp.com/api/level/exists?code={fine_query.upper()}") as resp:
-                    if resp.status in (200, 304):
-                        data = await resp.json()
-                        if data["data"]["exists"]:
-                            try:
-                                custom_levels[fine_query] = await self.bot.get_cog("Reader").render_custom_level(fine_query)
-                            except ValueError as e:
-                                size = e.args[0]
-                                return await ctx.error(f"The level code is valid, but the leve's width, height or area is way too big ({size})!")
-                            except aiohttp.ClientResponseError as e:
-                                return await ctx.error(f"The Baba Is Bookmark site returned a bad response. Try again later.")
         
         # [parent]-[map_id]
-        segments = fine_query.split("-")
+        segments = query.split("-")
         if len(segments) == 2:
             for row in await self.bot.db.conn.fetchall(
                 '''
@@ -450,7 +401,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             ):
                 data = LevelData.from_row(row)
                 levels[data.world, data.id] = data
-                selected.setdefault(0, data)
 
         # [name]
         for row in await self.bot.db.conn.fetchall(
@@ -463,22 +413,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 ELSE world
             END ASC;
             ''',
-            fine_query
+            query
         ):
             data = LevelData.from_row(row)
             levels[data.world, data.id] = data
-            selected.setdefault(0, data)
-
-        # [name but custom]
-        for row in await self.bot.db.conn.fetchall(
-            '''
-            SELECT * FROM custom_levels WHERE name == ?;
-            ''',
-            fine_query
-        ):
-            data = CustomLevelData.from_row(row)
-            custom_levels[data.code] = data
-            selected.setdefault(0, data)
 
         # [map_id]
         for row in await self.bot.db.conn.fetchall(
@@ -491,15 +429,65 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 ELSE world
             END ASC;
             ''',
-            fine_query
+            query
         ):
             data = LevelData.from_row(row)
             levels[data.world, data.id] = data
-            selected.setdefault(0, data)
+        
+        return levels
 
-        level = selected.get(0)
-        if level is None:
-            return await ctx.error(f'Could not find a level matching the query `{fine_query}`.')
+    @commands.cooldown(5, 8, commands.BucketType.channel)
+    @commands.command(name="level")
+    async def _level(self, ctx: Context, *, query: str):
+        '''Renders the Baba Is You level from a search term.
+
+        Levels are searched for in the following order:
+        * Custom level code (e.g. "1234-ABCD")
+        * World & level ID (e.g. "baba/20level")
+        * Level ID (e.g. "16level")
+        * Level number (e.g. "space-3" or "lake-extra 1")
+        * Level name (e.g. "further fields")
+        * The map ID of a world (e.g. "cavern", or "lake")
+        '''
+        # User feedback
+        await ctx.trigger_typing()
+
+        custom_level: CustomLevelData | None = None
+        
+        spoiler = query.count("||") >= 2
+        fine_query = query.lower().strip().replace("|", "")
+        
+        # [abcd-0123]
+        if re.match(r"^[a-z0-9]{4}\-[a-z0-9]{4}$", fine_query):
+            row = await self.bot.db.conn.fetchone(
+                '''
+                SELECT * FROM custom_levels WHERE code == ?;
+                ''',
+                fine_query
+            )
+            if row is not None:
+                custom_level = CustomLevelData.from_row(row)
+            else:
+                # Expensive operation 
+                await ctx.reply("Searching for custom level... this might take a while", mention_author=False)
+                await ctx.trigger_typing()
+                async with aiohttp.request("GET", f"https://baba-is-bookmark.herokuapp.com/api/level/exists?code={fine_query.upper()}") as resp:
+                    if resp.status in (200, 304):
+                        data = await resp.json()
+                        if data["data"]["exists"]:
+                            try:
+                                custom_level = await self.bot.get_cog("Reader").render_custom_level(fine_query)
+                            except ValueError as e:
+                                size = e.args[0]
+                                return await ctx.error(f"The level code is valid, but the leve's width, height or area is way too big ({size})!")
+                            except aiohttp.ClientResponseError as e:
+                                return await ctx.error(f"The Baba Is Bookmark site returned a bad response. Try again later.")
+        if custom_level is None:
+            levels = await self.search_levels(fine_query)
+            _, level = levels.popitem(last=False)
+        else:
+            levels = {}
+            level = custom_level
 
         if isinstance(level, LevelData):
             gif = discord.File(f"target/renders/{level.world}/{level.id}.gif", spoiler=True)
@@ -527,9 +515,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     f"Subtitle: `{level.subtitle}`"
                 )
 
-        if len(levels) + len(custom_levels) > 1:
+        if len(levels) > 0:
             extras = [level.unique() for level in levels.values()]
-            extras.extend(level.unique() for level in custom_levels.values())
             paths = ", ".join(f"`{extra}`" for extra in extras)
             plural = "result" if len(extras) == 1 else "results"
             rows.append(

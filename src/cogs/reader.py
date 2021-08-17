@@ -51,14 +51,16 @@ class Grid:
         '''Returns an unflattened version of the grid.'''
         height = self.height
         width = self.width
-        dirs = "ruld"
         return [
             [
                 [
-                    RawTile(name=o.name or "error", variants=[
-                        dirs[(o.direction or 0) // 8]
-                    ] + 
-                        ["/".join(tuple(map(str, o.color)))] if o.color is not None else []
+                    RawTile(
+                        name=o.name or "error",
+                        variants=[
+                            "ruld"[o.direction or 0]
+                        ] + ([
+                            "/".join(tuple(map(str, o.color)))
+                        ] if o.color is not None else [])
                     )
                     # "".join([
                     #     o.name or "error",
