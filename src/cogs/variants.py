@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from src.db import TileData
 from ..types import Bot
 from typing import Any, Callable, TYPE_CHECKING
 
@@ -15,21 +16,18 @@ DefaultFn = Callable[['DefaultContext'], TileFields]
 
 class ContextBase:
     '''The context that the (something) was invoked in.'''
-    def __init__(self, *, bot: Bot, tile: RawTile, grid: RawGrid, index: GridIndex, **flags: Any) -> None:
+    def __init__(self, *, bot: Bot, tile: RawTile, grid: RawGrid, index: GridIndex, tile_data_cache: dict[str, TileData], flags: dict[str, Any]) -> None:
         self.bot = bot
         self.tile = tile
         self.grid = grid
         self.index = index
         self.flags = flags
+        self.tile_data_cache = tile_data_cache
 
     @property
-    def tile_data(self) -> dict | None:
+    def tile_data(self) -> TileData | None:
         '''Associated tile data'''
-        if self.flags.get("ignore_editor_overrides"):
-            override = self.bot.get.level_tile_data(self.tile.name)
-            if override is not None:
-                return override
-        return self.bot.get.tile_data(self.tile.name)
+        return self.tile_data_cache.get(self.tile.name)
     
     def is_adjacent(self, coordinate: tuple[int, int],) -> bool:
         '''Tile is next to a joining tile'''
@@ -62,6 +60,7 @@ class VariantHandlers:
         self.handlers: list[Handler] = []
         self.bot = bot
         self.default_fields: DefaultFn = lambda ctx: {}
+        self.tile_data_cache: dict[str, TileData] = {}
 
     def handler(self, *, pattern: str, order: int | None = None) -> Callable[[HandlerFn], Handler]:
         '''Registers a variant handler.
@@ -100,14 +99,15 @@ class VariantHandlers:
         '''
         self.finalizer = fn
 
-    def handle_tile(self, tile: RawTile, grid: RawGrid, index: GridIndex, **flags: Any) -> FullTile:
+    def handle_tile(self, tile: RawTile, grid: RawGrid, index: GridIndex, tile_data_cache: dict[str, TileData], **flags: Any) -> FullTile:
         '''Take a RawTile and apply its variants to it'''
         default_ctx = DefaultContext(
             bot=self.bot,
             tile=tile,
             grid=grid,
             index=index,
-            **flags
+            tile_data_cache=tile_data_cache,
+            flags=flags
         )
         fields: TileFields = self.default_fields(default_ctx)
         extras = {}
@@ -126,7 +126,8 @@ class VariantHandlers:
                         grid=grid,
                         index=index,
                         extras=extras,
-                        **flags
+                        tile_data_cache=tile_data_cache,
+                        flags=flags
                     )
                     fields.update(handler.handle(ctx))
             if failed:
@@ -135,13 +136,20 @@ class VariantHandlers:
         self.finalizer(full, **flags)
         return full
 
-    
-    def handle_grid(self, grid: RawGrid, **flags: Any) -> FullGrid:
+    async def handle_grid(self, grid: RawGrid, **flags: Any) -> FullGrid:
         '''Apply variants to a full grid of raw tiles'''
+        tile_data_cache = {
+            data.name: data async for data in self.bot.db.tiles(
+                {
+                    tile.name for row in grid for stack in row for tile in stack
+                },
+                maximum_version = flags.get("ignore_editor_overrides", 1000)
+            )
+        }
         return [
             [
                 [
-                    self.handle_tile(tile, grid, (x, y, z), **flags)
+                    self.handle_tile(tile, grid, (x, y, z), tile_data_cache, **flags)
                     for z, tile in enumerate(stack)
                 ]
                 for x, stack in enumerate(row)
@@ -198,11 +206,8 @@ def setup(bot: Bot):
         color = (0, 3)
         variant = 0
         if tile_data is not None:
-            if tile_data.get("active") is not None:
-                color = (int(tile_data["active"][0]), int(tile_data["active"][1]))
-            elif tile_data.get("color") is not None:
-                color = (int(tile_data["color"][0]), int(tile_data["color"][1]))
-            if tile_data["tiling"] in constants.AUTO_TILINGS:
+            color = tile_data.active_color
+            if tile_data.tiling in constants.AUTO_TILINGS:
                 x, y, _ = ctx.index
                 variant = (
                     + 1 * ctx.is_adjacent((x + 1, y))
@@ -213,17 +218,15 @@ def setup(bot: Bot):
             if ctx.flags.get("raw_output"):
                 color = (0, 3)
             return {
-                "custom_style": constants.TEXT_STYLES[tile_data.get("type", "0")], # type:ignore
                 "variant_number": variant,
                 "color_index": color,
                 "meta_level": 0,
-                "sprite": (tile_data["source"], tile_data["sprite"]),
+                "sprite": (tile_data.source, tile_data.sprite),
             }
         if not ctx.tile.is_text:
             raise errors.TileNotFound(ctx.tile)
         return {
             "custom": True,
-            "custom_style": "noun",
             "variant_number": variant,
             "color_index": color,
             "meta_level": 0,
@@ -241,14 +244,18 @@ def setup(bot: Bot):
                 flags["extra_names"].append(
                     meta_level * "meta_" + f"{name}_{variant}"
                 )
-        pass
+        if tile.custom and tile.custom_style is None:
+            if len(tile.name[5:]) == 2:
+                tile.custom_style = "letter"
+            else:
+                tile.custom_style = "noun"
 
     @handlers.handler(pattern=r"|".join(constants.DIRECTION_VARIANTS))
     def directions(ctx: HandlerContext) -> TileFields:
         dir = constants.DIRECTION_VARIANTS[ctx.variant]
         _, anim = split_variant(ctx.fields.get("variant_number"))
         tile_data = ctx.tile_data
-        if tile_data is not None and tile_data["tiling"] in constants.DIRECTION_TILINGS:
+        if tile_data is not None and tile_data.tiling in constants.DIRECTION_TILINGS:
             return {
                 "variant_number": join_variant(dir, anim),
                 "custom_direction": dir
@@ -267,7 +274,7 @@ def setup(bot: Bot):
         tile_data = ctx.tile_data
         tiling = None
         if tile_data is not None:
-            tiling = tile_data["tiling"]
+            tiling = tile_data.tiling
             if tiling in constants.ANIMATION_TILINGS:
                 return {
                     "variant_number": join_variant(dir, anim)
@@ -279,21 +286,20 @@ def setup(bot: Bot):
         anim = constants.SLEEP_VARIANTS[ctx.variant]
         dir, _ = split_variant(ctx.fields.get("variant_number"))
         tile_data = ctx.tile_data
-        tiling = None
-        if tile_data is not None and tile_data["tiling"] in constants.SLEEP_TILINGS:
-            tiling = tile_data["tiling"]
-            if tiling in constants.SLEEP_TILINGS:
+        if tile_data is not None:
+            if tile_data.tiling in constants.SLEEP_TILINGS:
                 return {
                     "variant_number": join_variant(dir, anim)
                 }
-        raise errors.BadTilingVariant(ctx.tile.name, tiling, ctx.variant)
+            raise errors.BadTilingVariant(ctx.tile.name, ctx.variant, tile_data.tiling)
+        raise errors.BadTilingVariant(ctx.tile.name, ctx.variant, "<missing>")
 
     @handlers.handler(pattern=r"|".join(constants.AUTO_VARIANTS))
     def auto(ctx: HandlerContext) -> TileFields:
         tile_data = ctx.tile_data
         tiling = None
         if tile_data is not None:
-            tiling = tile_data["tiling"]
+            tiling = tile_data.tiling
             if tiling in constants.AUTO_TILINGS:
                 if ctx.extras.get("auto_override", False):
                     num = ctx.fields.get("variant_number") or 0
@@ -313,7 +319,7 @@ def setup(bot: Bot):
         tile_data = ctx.tile_data
         if tile_data is None:
             raise ValueError("what tile is that even")
-        tiling = tile_data["tiling"]
+        tiling = tile_data.tiling
 
         if tiling in constants.AUTO_TILINGS:
             if variant >= 16:
@@ -363,11 +369,11 @@ def setup(bot: Bot):
     def inactive(ctx: HandlerContext) -> TileFields:
         color = ctx.fields.get("color_index", (0, 3))
         tile_data = ctx.tile_data
-        if tile_data is not None and tile_data.get("active") is not None:
+        if tile_data is not None and ctx.tile.is_text:
             # only the first `:inactive` should pick the provided color
-            if color == tile_data["active"]:
+            if color == tile_data.active_color:
                 return {
-                    "color_index": tile_data["color"]
+                    "color_index": tile_data.inactive_color
                 }
         return {
             "color_index": constants.INACTIVE_COLORS[color]
@@ -403,7 +409,7 @@ def setup(bot: Bot):
             raise errors.TileNotText(ctx.tile.name, "noun")
         tile_data = ctx.tile_data
         if tile_data is not None:
-            if constants.TEXT_STYLES[tile_data["type"]] == "property":
+            if constants.TEXT_TYPES[tile_data.text_type] == "property":
                 return {
                     "style_flip": True,
                     "custom_style": "noun"
@@ -437,7 +443,7 @@ def setup(bot: Bot):
             else:
                 raise ValueError("yet again (but this time on a technicality)")
         if tile_data is not None:
-            if constants.TEXT_STYLES[tile_data["type"]] == "noun":
+            if constants.TEXT_TYPES[tile_data.text_type] == "noun":
                 return {
                     "style_flip": True,
                     "custom_style": "property"

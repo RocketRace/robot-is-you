@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 import configparser
-import io
 import json
-import os
 import pathlib
 import re
 import itertools
@@ -123,13 +121,18 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
         def prepare(d: dict[str, Any]) -> dict[str, Any]:
             '''From game format into DB format'''
-            d["text_type"] = d.pop("type")
-            inactive = d.pop("colour")
-            d["inactive_color_x"] = inactive[0]
-            d["inactive_color_y"] = inactive[1]
-            active = d.pop("activecolour")
-            d["active_color_x"] = active[0]
-            d["active_color_y"] = active[1]
+            if d.get("type") is not None:
+                d["text_type"] = d.pop("type")
+            if d.get("image") is not None:
+                d["sprite"] = d.pop("image")
+            if d.get("colour") is not None:    
+                inactive = d.pop("colour").split(",")
+                d["inactive_color_x"] = int(inactive[0])
+                d["inactive_color_y"] = int(inactive[1])
+            if d.get("activecolour") is not None:
+                active = d.pop("activecolour").split(",")
+                d["active_color_x"] = int(active[0])
+                d["active_color_y"] = int(active[1])
             return d
 
         object_pattern = re.compile(
@@ -160,13 +163,15 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 name=name,
                 sprite=sprite,
                 tiling=tiling,
-                type=type,
-                colour=(inactive_x, inactive_y),
-                activecolour=(active_x, active_y),
+                text_type=type,
+                inactive_color_x=inactive_x,
+                inactive_color_y=inactive_y,
+                active_color_x=active_x,
+                active_color_y=active_y,
             )
 
         changed_objects: list[dict[str, Any]] = []
-        for path in pathlib.Path("data/levels/vanilla").glob("*.ld"):
+        for path in pathlib.Path("data/levels/baba").glob("*.ld"):
 
             parser = configparser.ConfigParser()
             parser.read(path)
@@ -182,7 +187,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 # Ignore blank changes (identical to values.lua objects)
                 # Ignore changes without a name (the same name but a different color, etc)
                 if changes and changes.get("name") is not None:
-                    changed_objects.append({**initial_objects[id], **changes})
+                    changed_objects.append({**initial_objects[id], **prepare(changes)})
 
         by_name = itertools.groupby(
             sorted(changed_objects, key=lambda x: x["name"]), 
@@ -195,8 +200,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 return tuple(d.items())
             counts = collections.Counter(map(freeze_dict, duplicates))
             most_common, _ = counts.most_common(1)[0]
-            ready.append(prepare(dict(most_common)))
-        
+            ready.append(dict(most_common))
+    
         await self.bot.db.conn.executemany(
             '''
             INSERT INTO tiles(
@@ -214,7 +219,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             VALUES (
                 :name,
                 :sprite,
-                "vanilla",
+                "baba",
                 0,
                 :inactive_color_x,
                 :inactive_color_y,
@@ -226,7 +231,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             ON CONFLICT(name, version)
             DO UPDATE SET
                 sprite=excluded.sprite,
-                source="vanilla",
+                source="baba",
                 inactive_color_x=excluded.inactive_color_x,
                 inactive_color_y=excluded.inactive_color_y,
                 active_color_x=excluded.active_color_x,
@@ -234,7 +239,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 tiling=excluded.tiling,
                 text_type=excluded.text_type;
             ''',
-            map(prepare, initial_objects.values())
+            initial_objects.values()
         )
 
         await self.bot.db.conn.executemany(
@@ -243,7 +248,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             VALUES (
                 :name,
                 :sprite,
-                "vanilla",
+                "baba",
                 0,
                 :inactive_color_x,
                 :inactive_color_y,
@@ -254,16 +259,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 NULL,
                 ""
             ) 
-            ON CONFLICT(name, version)
-            DO UPDATE SET 
-                sprite=excluded.sprite,
-                source="vanilla",
-                inactive_color_x=excluded.inactive_color_x,
-                inactive_color_y=excluded.inactive_color_y,
-                active_color_x=excluded.active_color_x,
-                active_color_y=excluded.active_color_y,
-                tiling=excluded.tiling,
-                text_type=excluded.text_type;
+            ON CONFLICT(name, version) DO NOTHING;
             ''',
             ready
         )
@@ -327,7 +323,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             VALUES (
                 :name,
                 :sprite,
-                "vanilla",
+                "baba",
                 1,
                 :inactive_color_x,
                 :inactive_color_y,
@@ -341,7 +337,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             ON CONFLICT(name, version)
             DO UPDATE SET 
                 sprite=excluded.sprite,
-                source="vanilla",
+                source="baba",
                 inactive_color_x=excluded.inactive_color_x,
                 inactive_color_y=excluded.inactive_color_y,
                 active_color_x=excluded.active_color_x,
@@ -377,7 +373,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             for path in pathlib.Path("data/custom").glob("*.json"):
                 source = path.parts[-1].split(".")[0]
                 with open(path) as fp:
-                    objects = (prepare(source, obj) for obj in json.load(fp))
+                    objects = [prepare(source, obj) for obj in json.load(fp)]
+                
                 await cur.executemany(
                     '''
                     INSERT INTO tiles
@@ -410,6 +407,40 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                     ''',
                     objects
                 )
+                # this is a mega HACK, but I'm keeping it because the alternative is a headache
+                hacks = [x for x in objects if "baba_special" in x["tags"].split("\t")]
+                await cur.executemany(
+                    '''
+                    INSERT INTO tiles
+                    VALUES (
+                        :name,
+                        :sprite,
+                        :source,
+                        0,
+                        :inactive_color_x,
+                        :inactive_color_y,
+                        :active_color_x,
+                        :active_color_y,
+                        :tiling,
+                        :text_type,
+                        :text_direction,
+                        :tags
+                    ) 
+                    ON CONFLICT(name, version)
+                    DO UPDATE SET 
+                        sprite=excluded.sprite,
+                        source=excluded.source,
+                        inactive_color_x=excluded.inactive_color_x,
+                        inactive_color_y=excluded.inactive_color_y,
+                        active_color_x=excluded.active_color_x,
+                        active_color_y=excluded.active_color_y,
+                        tiling=excluded.tiling,
+                        text_type=excluded.text_type,
+                        text_direction=excluded.text_direction,
+                        tags=excluded.tags;
+                    ''',
+                    hacks
+                )
 
     @commands.command()
     @commands.is_owner()
@@ -430,25 +461,26 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     async def loadletters(self, ctx: Context):
         '''Scrapes individual letters from vanilla sprites.'''
         ignored = json.load(open("config/letterignore.json"))
-        for row in await self.bot.db.conn.fetchmany(
+        for row in await self.bot.db.conn.fetchall(
             '''
             SELECT * FROM tiles
             WHERE sprite LIKE "text\\___%" ESCAPE "\\"
-                AND source == "vanilla"
-                AND text_type IS NOT NULL
+                AND source == "baba"
                 AND text_direction IS NULL;
             '''
         ):
             data = TileData.from_row(row)
             if data.sprite not in ignored:
-                await self.loadletter(
+                await self.load_letter(
                     data.sprite, 
                     data.text_type # type: ignore
                 )
 
+        await self.load_ready_letters()
+
         await ctx.send("Letters loaded.")
 
-    async def loadletter(self, word: str, tile_type: int):
+    async def load_letter(self, word: str, tile_type: int):
         '''Scrapes letters from a sprite.'''
         chars = word[5:] # Strip "text_" prefix
 
@@ -546,22 +578,44 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 blobs = []
                 mode = "small" if two_rows else "big"
                 width = 0
+                height = 0
                 for i, ((x1, y1, _, _), img) in enumerate(entries):
                     frame = Image.new("1", (x2_max - x1_min, y2_max - y1_min))
                     frame.paste(img, (x1 - x1_min, y1 - y1_min))
-                    width = frame.size[0]
-                    buf = io.BytesIO()
-                    frame.save(buf, format="PNG")
-                    blobs.append(buf.getvalue())
-                results.append((mode, char, width, *blobs))
+                    width, height = frame.size
+                    blobs.append(frame.tobytes())
+                results.append((mode, char, width, height, *blobs))
 
         await self.bot.db.conn.executemany(
             '''
             INSERT INTO letters
-            VALUES (?, ?, ?, ?, ?, ?);
+            VALUES (?, ?, ?, ?, ?, ?, ?);
             ''',
             results
         )   
+
+    async def load_ready_letters(self):
+        def channel_shenanigans(im: Image.Image) -> Image.Image:
+            return im.convert("LA").getchannel("A").convert("1")
+        data = []
+        for path in pathlib.Path("data/letters").glob("*/*/*/*_0.png"):
+            _, _, mode, char, w, name = path.parts
+            width = int(w)
+            prefix = name[:-6]
+            # mo ch w h
+            first_sprite = channel_shenanigans(Image.open(path))
+            blob_0 = first_sprite.tobytes()
+            blob_1 = channel_shenanigans(Image.open(path.parent / f"{prefix}_1.png")).tobytes()
+            blob_2 = channel_shenanigans(Image.open(path.parent / f"{prefix}_2.png")).tobytes()
+            data.append((mode, char, width, first_sprite.height, blob_0, blob_1, blob_2))
+
+        await self.bot.db.conn.executemany(
+            '''
+            INSERT INTO letters
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''',
+            data
+        )
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):

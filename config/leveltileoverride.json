@@ -7,7 +7,7 @@
            "0",
            "3"
         ],
-        "source": "vanilla"
+        "source": "baba"
     },
     "text_hand": {
         "tiling": "-1",
@@ -17,7 +17,7 @@
            "0",
            "3"
         ],
-        "source": "vanilla"
+        "source": "baba"
      },
    "belt": {
       "tiling": "3",
@@ -27,10 +27,10 @@
          "1",
          "1"
       ],
-      "source": "vanilla"
+      "source": "baba"
   },
   "text_belt": {
-     "source": "vanilla",
+     "source": "baba",
       "tiling": "-1",
       "type": "0",
       "sprite": "text_belt",

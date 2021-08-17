@@ -11,7 +11,7 @@ class Tile:
         name: Optional[str] = None,
         variant: Optional[int] = None,
         color: Optional[Tuple[int, int]] = None,
-        source: str = "vanilla",
+        source: str = "baba",
         meta_level: int = 0,
         style: Optional[str] = None,
         custom: bool = False,

@@ -8,7 +8,7 @@ MAX_TEXT_LENGTH = 48
 
 # variants
 DIRECTION_TILINGS = {
-    "0", "2", "3"
+    0, 2, 3
 }
 
 DIRECTION_VARIANTS = {
@@ -23,7 +23,7 @@ DIRECTION_VARIANTS = {
 }
 
 ANIMATION_TILINGS = {
-    "2", "3", "4"
+    2, 3, 4
 }
 
 ANIMATION_VARIANTS = {
@@ -34,7 +34,7 @@ ANIMATION_VARIANTS = {
 }
 
 SLEEP_TILINGS = {
-    "2"
+    2
 }
 
 SLEEP_VARIANTS = {
@@ -43,7 +43,7 @@ SLEEP_VARIANTS = {
 }
 
 AUTO_TILINGS = {
-    "1"
+    1
 }
 
 AUTO_VARIANTS = {
@@ -124,14 +124,14 @@ DIRECTIONS = {
     24: "down"
 }
 # While not all of these are nouns, their appearance is very noun-like
-TEXT_STYLES = {
-    "0": "noun",
-    "1": "noun",
-    "2": "property",
-    "3": "noun",
-    "4": "noun",
-    "5": "letter",
-    "6": "noun",
-    "7": "noun",
+TEXT_TYPES = {
+    0: "noun",
+    1: "noun",
+    2: "property",
+    3: "noun",
+    4: "noun",
+    5: "letter",
+    6: "noun",
+    7: "noun",
 }  
 DEFAULT_SPRITE_SIZE = 24

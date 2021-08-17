@@ -6,7 +6,8 @@
       "2",
       "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "tags":"baba_special"
   },
   {
     "sprite":"anni",
@@ -31,7 +32,7 @@
        "2"
     ],
     "type": "0",
-    "source": "vanilla"
+    "source": "baba"
  },
   {
       "name":"violet",
@@ -55,7 +56,7 @@
        "3"
     ],
     "type": "0",
-    "source": "vanilla"
+    "source": "baba"
  },
   {
     "sprite":"error",
@@ -65,7 +66,8 @@
         "0",
         "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "tags":"baba_special"
   },
   {
     "sprite":"what",
@@ -74,16 +76,6 @@
       [
         "0",
         "3"
-      ],
-      "tiling":"-1"
-  },
-  {
-    "sprite":"door_map",
-    "name":"door_map",
-    "color":
-      [
-        "2",
-        "2"
       ],
       "tiling":"-1"
   },
@@ -118,43 +110,14 @@
       "tiling":"-1"
   },
   {
-    "sprite":"wall_map",
-    "name":"wall_map",
-    "tiling":"1",
-    "color":
-      [
-        "1",
-        "1"
-      ]
-  },
-  {
-    "sprite":"tree_map",
-    "name":"tree_map",
-    "tiling":"-1",
-    "color":
-      [
-        "5",
-        "2"
-      ]
-  },
-  {
-    "sprite":"husk_map",
-    "name":"husk_map",
-    "tiling":"-1",
-    "color":
-      [
-        "6",
-        "1"
-      ]
-  },
-  {
     "name":"icon",
     "sprite":"icon",
     "color":[
       "0",
       "3"
     ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "tags":"baba_special"
   },
   {
     "name":"icon_abc",
@@ -163,7 +126,8 @@
       "0",
       "3"
     ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "tags":"baba_special"
   },
   {
     "name":"icon_abstract",
@@ -172,7 +136,8 @@
       "0",
       "3"
     ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "tags":"baba_special"
   },
   {
     "name":"icon_cave",
@@ -181,7 +146,8 @@
       "0",
       "3"
     ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "tags":"baba_special"
   },
   {
     "name":"icon_dust",
@@ -190,7 +156,8 @@
       "0",
       "3"
     ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "tags":"baba_special"
   },
   {
     "name":"icon_fall",
@@ -199,7 +166,8 @@
       "0",
       "3"
     ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "tags":"baba_special"
   },
   {
     "name":"icon_forest",
@@ -208,7 +176,8 @@
       "0",
       "3"
     ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "tags":"baba_special"
   },
   {
     "name":"icon_garden",
@@ -217,7 +186,8 @@
       "0",
       "3"
     ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "tags":"baba_special"
   },
   {
     "name":"icon_island",
@@ -226,7 +196,8 @@
       "0",
       "3"
     ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "tags":"baba_special"
   },
   {
     "name":"icon_lake",
@@ -235,7 +206,8 @@
       "0",
       "3"
     ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "tags":"baba_special"
   },
   {
     "name":"icon_level",
@@ -244,7 +216,8 @@
       "0",
       "3"
     ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "tags":"baba_special"
   },
   {
     "name":"icon_meta",
@@ -253,7 +226,8 @@
       "0",
       "3"
     ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "tags":"baba_special"
   },
   {
     "name":"icon_mountain",
@@ -262,7 +236,8 @@
       "0",
       "3"
     ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "tags":"baba_special"
   },
   {
     "name":"icon_ruins",
@@ -271,7 +246,8 @@
       "0",
       "3"
     ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "tags":"baba_special"
   },
   {
     "name":"icon_space",
@@ -280,7 +256,8 @@
       "0",
       "3"
     ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "tags":"baba_special"
   },
   {
       "name":"text_ab",
@@ -301,16 +278,6 @@
       ],
       "tiling":"-1",
       "type":"5"
-  },
-  {
-      "name":"text_what",
-      "sprite":"text_what",
-      "color":[
-      "0",
-      "3"
-      ],
-      "tiling":"-1",
-      "type":"0"
   },
   {
       "name":"text_ok",
@@ -367,7 +334,8 @@
       "0",
       "3"
       ],
-      "tiling":"-1"
+      "tiling":"-1",
+      "tags":"baba_special"
   },
   {
       "name":"rain",
@@ -560,7 +528,7 @@
        "4",
        "2"
     ],
-    "source": "vanilla"
+    "source": "baba"
  },
  {
    "name": "text_lockedright",
@@ -576,7 +544,7 @@
        "4",
        "2"
     ],
-    "source": "vanilla"
+    "source": "baba"
  },
  {
    "name": "text_lockedup",
@@ -622,7 +590,7 @@
      "5",
      "3"
   ],
-  "source": "vanilla"
+  "source": "baba"
 },
 {
   "name":"text_nudgeup",
@@ -638,7 +606,7 @@
      "5",
      "3"
   ],
-  "source": "vanilla"
+  "source": "baba"
 },
 {
   "name": "text_nudgeleft",
@@ -654,7 +622,7 @@
      "5",
      "3"
   ],
-  "source": "vanilla"
+  "source": "baba"
 },
 {
   "name":"text_nudgedown",
@@ -670,6 +638,6 @@
     "5",
     "3"
   ],
-  "source": "vanilla"
+  "source": "baba"
 }
 ]

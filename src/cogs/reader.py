@@ -4,13 +4,13 @@ import asyncio
 import base64
 import configparser
 import io
-import json
+from src.db import CustomLevelData, LevelData
 import zlib
 from os import listdir, stat
-from typing import Any, BinaryIO, TextIO
+from typing import BinaryIO, TextIO
 
 import aiohttp
-from discord.ext import commands, tasks
+from discord.ext import commands
 
 from ..tile import RawTile
 from ..types import Bot, Context
@@ -20,42 +20,32 @@ def flatten(x: int, y: int, width: int) -> int:
     '''Return the flattened position of a coordinate in a grid of specified width'''
     return int(y) * width + int(x)
 
-def try_index(string: str, value: str) -> int:
-    '''Returns the index of a substring within a string.
-    Returns -1 if not found.
-    '''
-    index = -1
-    try:
-        index = string.index(value)
-    except:
-        pass
-    return index
-
 class Grid:
     '''This stores the information of a single Baba level, in a format readable by the renderer.'''
-    def __init__(self, filename: str, source: str):
+    def __init__(self, filename: str, world: str):
         '''Initializes a blank grid, given a path to the level file. 
         This should not be used; you should use Reader.read_map() instead to generate a filled grid.
         '''
         # The location of the level
-        self.fp = f"data/levels/{source}/{filename}.l"
-        self.filename = filename
-        self.source = source
+        self.fp: str = f"data/levels/{world}/{filename}.l"
+        self.filename: str = filename
+        self.world: str = world
         # Basic level information
-        self.name = ""
-        self.subtitle = ""
-        self.palette = ""
+        self.name: str = ""
+        self.subtitle: str | None = None
+        self.palette: str = "default"
         self.images: list[str] = []
         # Object information
-        self.width = 0
-        self.height = 0
+        self.width: int = 0
+        self.height: int = 0
         self.cells: list[list[Item]] = []
         # Parent level and map identification
-        self.parent = None
-        self.map_id = None
-        self.style = None
-        self.number = None
-        self.extra = None
+        self.parent: str | None = None
+        self.map_id: str | None = None
+        self.style: int | None = None
+        self.number: int | None = None
+        # Custom levels
+        self.author: str | None = None
     
     def raw_grid(self) -> list[list[list[RawTile]]]:
         '''Returns an unflattened version of the grid.'''
@@ -88,14 +78,14 @@ class Item:
     '''
     def __init__(self, *, ID: int | None = None, obj: str | None = None, name: str | None = None, color: tuple[int, int] | None = None, position: int = None, direction: int = None, extra = None, layer: int = 0):
         '''Returns an Item with the given parameters.'''
-        self.ID = ID
-        self.obj = obj
-        self.name = name
-        self.color = color
-        self.position = position
-        self.direction = direction
+        self.ID: int | None = ID
+        self.obj: str | None = obj
+        self.name: str | None = name
+        self.color: tuple[int, int] | None = color
+        self.position: int | None = position
+        self.direction: int | None = direction
         self.extra = extra
-        self.layer = layer
+        self.layer: int = layer
 
     def copy(self) -> Item:
         '''Returns a copy of the item.'''
@@ -126,16 +116,13 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         self.defaults_by_id = {}
         self.defaults_by_object = {}
         self.defaults_by_name = {}
-        self.level_data = {} # id: level metadata
-        self.custom_levels = {} # code: level metadata
-        # Intermediary, please don't access
-        self.parent_levels = {}
+        self.parent_levels: dict[str, tuple[str, dict[str, tuple[int, int]]]] = {}
 
         with open("data/values.lua") as reader:
             line = None
             while line != "":
                 line = reader.readline()
-                index = try_index(line, "tileslist =")
+                index = line.find("tileslist =")
                 if index == -1:
                     continue
                 elif index == 0:
@@ -143,31 +130,22 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                     self.read_objects(reader)
                     break
         
-        # Level data cache
-        levelcache = "cache/leveldata.json"
-        if stat(levelcache).st_size != 0:
-            self.level_data = json.load(open(levelcache))
-        custom = "cache/customlevels.json"
-        if stat(custom).st_size != 0:
-            self.custom_levels = json.load(open(custom))
-        self.update_custom_levels.start()
-
-    async def render_custom(self, code: str) -> dict[str, Any]:
+    async def render_custom_level(self, code: str) -> CustomLevelData:
         '''Renders a custom level. code should be valid (but is checked regardless)'''
-        async with aiohttp.request("GET", f"https://baba-is-bookmark.herokuapp.com/api/level/raw/l?code={code}") as resp:
+        async with aiohttp.request("GET", f"https://baba-is-bookmark.herokuapp.com/api/level/raw/l?code={code.upper()}") as resp:
             resp.raise_for_status()
             data = await resp.json()
             b64 = data["data"]
             decoded = base64.b64decode(b64)
             raw_l = io.BytesIO(decoded)
-        async with aiohttp.request("GET", f"https://baba-is-bookmark.herokuapp.com/api/level/raw/ld?code={code}") as resp:
+        async with aiohttp.request("GET", f"https://baba-is-bookmark.herokuapp.com/api/level/raw/ld?code={code.upper()}") as resp:
             resp.raise_for_status()
             data = await resp.json()
             raw_s = data["data"]
             raw_ld = io.StringIO(raw_s)
 
-        grid = self.read_map(code, source="custom", data=raw_l)
-        grid = self.read_metadata(grid, data=raw_ld, custom=True)
+        grid = self.read_map(code, source="levels", data=raw_l)
+        grid = await self.read_metadata(grid, data=raw_ld, custom=True)
 
         objects = grid.raw_grid()
         # Strips the borders from the render
@@ -177,25 +155,25 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         for row in objects:
             row.pop(grid.width - 1)
             row.pop(0)
-        out = f"target/renders/custom/{code}.gif"
-        tiles = self.bot.handlers.handle_grid(objects, tile_borders=True, ignore_bad_directions=True)
-        self.bot.renderer.render(tiles, palette=grid.palette, background=(0, 4), out=out)
+        out = f"target/renders/levels/{code}.gif"
+        tiles = await self.bot.handlers.handle_grid(objects, tile_borders=True, ignore_bad_directions=True)
+        await self.bot.renderer.render(tiles, palette=grid.palette, background=(0, 4), out=out)
         
-        self.custom_levels[code] = metadata = {
-            "name": grid.name,
-            "subtitle": grid.subtitle,
-            "style": grid.style,
-            "number": grid.number,
-            "images": grid.images,
-            "palette": grid.palette,
-            "width": grid.width,
-            "height": grid.height,
-            "source": "custom",
-            "author": grid.extra
-        }
-        return metadata
+        data = CustomLevelData(code.lower(), grid.name, grid.subtitle, grid.author)
 
-    def render_map(
+        await self.bot.db.conn.execute(
+            '''
+            INSERT INTO custom_levels
+            VALUES (?, ?, ?, ?)
+            ON CONFLICT(code) 
+            DO NOTHING;
+            ''',
+            code.lower(), grid.name, grid.subtitle, grid.author
+        )
+
+        return data
+
+    async def render_level(
         self, 
         filename: str, 
         source: str, 
@@ -203,13 +181,13 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         remove_borders: bool = False, 
         keep_background: bool = False, 
         tile_borders: bool = False
-    ) -> dict[str, Any]:
+    ) -> LevelData:
         '''Loads and renders a level, given its file path and source. 
         Shaves off the borders if specified.
         '''
         # Data
         grid = self.read_map(filename, source=source)
-        grid = self.read_metadata(grid, initialize=initialize)
+        grid = await self.read_metadata(grid, initialize_level_tree=initialize)
         objects = grid.raw_grid()
 
         # Shave off the borders:
@@ -221,82 +199,73 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                 row.pop(0)
 
         # Handle sprite variants
-        tiles = self.bot.handlers.handle_grid(objects, ignore_bad_directions=True, tile_borders=tile_borders, ignore_editor_overrides=True)
+        tiles = await self.bot.handlers.handle_grid(objects, ignore_bad_directions=True, tile_borders=tile_borders, ignore_editor_overrides=True)
 
         # (0,4) is the color index for level backgrounds
         background = (0,4) if keep_background else None
 
         # Render the level
-        self.bot.renderer.render(
+        await self.bot.renderer.render(
             tiles,
             palette=grid.palette,
             images=grid.images,
-            image_source=grid.source,
+            image_source=grid.world,
             background=background,
-            out=f"target/renders/{grid.source}/{grid.filename}.gif",
+            out=f"target/renders/{grid.world}/{grid.filename}.gif",
         )
         # Return level metadata
-        return {
-            "name": grid.name,
-            "subtitle": grid.subtitle,
-            "images": grid.images,
-            "palette": grid.palette,
-            "filename": grid.filename,
-            "map_id": grid.map_id,
-            "parent": grid.parent,
-            "width": grid.width,
-            "height": grid.height,
-            "source": grid.source,
-            "number": grid.number,
-            "style": grid.style,
-        }
+        return LevelData(filename, source, grid.name, grid.subtitle, grid.number, grid.style, grid.parent, grid.map_id)
 
     @commands.command()
     @commands.is_owner()
-    async def loadmap(self, ctx: Context, source: str, filename: str, initialize: bool = False):
-        '''Loads a given level. Initializes the level tree if so specified.'''
+    async def loadmap(self, ctx: Context, source: str, filename: str):
+        '''Loads a given level's image.'''
         # Parse and render
-        metadata = self.render_map(
+        await self.render_level(
             filename, 
             source=source, 
-            initialize=initialize, 
+            initialize=False, 
             remove_borders=True,
             keep_background=True,
             tile_borders=True
         )
         # This should mostly just be false
-        if initialize:
-            self.clean_metadata({filename: metadata})
         await ctx.send(f"Rendered level at `{source}/{filename}`.")
 
-    def clean_metadata(self, metadata: dict[str, Any]):
-        '''Cleans up level metadata from `self.parent_levels` as well as the given dict, and populates the cleaned data into `self.level_data`.'''
-        # Clean up basic level data
-        self.level_data.update(metadata)
+    async def clean_metadata(self, metadata: dict[str, LevelData]):
+        '''Cleans up level metadata from `self.parent_levels` as well as the given dict, and updates the DB.'''
 
-        for parent_id, parent in self.parent_levels.items():
+        for map_id, child_levels in self.parent_levels.values():
             remove = []
-            for child_id in parent["levels"]:
-                # remove levels which point to maps themselves (i.e. don't mark map as "lake-exit: map")
+            for child_id in child_levels:
+                # remove levels which point to maps themselves (i.e. don't mark map as "lake-blah: map")
                 # as a result of this, every map will have no parent in its name - so it'll just be 
                 # something like "chasm" or "center"
                 if self.parent_levels.get(child_id) is not None:
                     remove.append(child_id)
             # avoid mutating a dict while iterating over it
             for child_id in remove:
-                parent["levels"].pop(child_id)
-        for parent_id, parent in self.parent_levels.items():
-            for child_id, child in parent["levels"].items():
-                self.level_data[child_id]["parent"] = parent["map_id"]
-                self.level_data[child_id]["number"] = child["number"]
-                self.level_data[child_id]["style"] = child["style"]
+                child_levels.pop(child_id)
+        for map_id, child_levels in self.parent_levels.values():
+            for child_id, (number, style) in child_levels.items():
+                metadata[child_id].parent = map_id
+                metadata[child_id].number = number
+                metadata[child_id].style = style
 
-        # Clear
-        self.parent_levels = {}
-
-        # Saves the level data to leveldata.json
-        with open("cache/leveldata.json", "wt") as metadata_file:
-            json.dump(self.level_data, metadata_file, indent=3)
+        self.parent_levels.clear()
+        await self.bot.db.conn.executemany(
+            '''
+            INSERT INTO levels VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(id, world) DO UPDATE SET
+                name=excluded.name,
+                subtitle=excluded.subtitle,
+                number=excluded.number,
+                style=excluded.style,
+                parent=excluded.parent,
+                map_id=excluded.map_id;
+            ''',
+            [(l.id, l.world, l.name, l.subtitle, l.number, l.style, l.parent, l.map_id) for l in metadata.values()]
+        )
 
     @commands.command()
     @commands.is_owner()
@@ -305,16 +274,16 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         Initializes the level tree unless otherwise specified.
         Cuts off borders from rendered levels unless otherwise specified.
         '''
-        levels = [l[:-2] for l in listdir("data/levels/vanilla") if l.endswith(".l")]
+        levels = [l[:-2] for l in listdir("data/levels/baba") if l.endswith(".l")]
 
         # Parse and render the level map
         await ctx.send("Loading maps...")
         metadatas = {}
         total = len(levels)
         for i,level in enumerate(levels):
-            metadata = self.render_map(
+            metadata = await self.render_level(
                 level,
-                source="vanilla", 
+                source="baba", 
                 initialize=True, 
                 remove_borders=True,
                 keep_background=True,
@@ -325,9 +294,9 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             if i % 50 == 0:
                 await ctx.send(f"{i + 1} / {total}")
         await ctx.send(f"{total} / {total} maps loaded.")
-        await ctx.send(f"{ctx.author.mention} Done.")
+        await self.clean_metadata(metadatas)
+        await ctx.send(f"{ctx.author.mention} Database updated. Done.")
 
-        self.clean_metadata(metadatas)
 
     def read_objects(self, reader: TextIO) -> int:
         '''Inner function that parses the contents of the data/values.lua file.
@@ -342,7 +311,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             if data == "}":
                 break
             
-            index = try_index(data, "=")
+            index = data.find("=")
             # Looking for "key=value" pairs
 
             # If those are not found, move on
@@ -353,7 +322,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             item = Item()
             # Determine the object ID of what we're parsing
             data = data[:index].strip()
-            o = try_index(data, "object")
+            o = data.find("object")
             if o == 0:
                 temp = 0
                 try:
@@ -375,7 +344,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                     break
                 
                 # "value=obj" pairs, please
-                index = try_index(obj, "=")
+                index = obj.find("=")
                 if index == -1: continue
                 
                 # Isolate the two sides of the equals sign
@@ -452,7 +421,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         '''
         start_index = 0
         end_index = len(value)
-        if try_index(value, "{") == 0:
+        if value.find("{") == 0:
             start_index += 1
             end_index -= 1
         try:
@@ -481,7 +450,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         return grid
 
 
-    def read_metadata(self, grid: Grid, initialize: bool = False, data: TextIO | None = None, custom: bool = False) -> Grid:
+    async def read_metadata(self, grid: Grid, initialize_level_tree: bool = False, data: TextIO | None = None, custom: bool = False) -> Grid:
         '''Add everything that's not just basic tile positions & IDs'''
         # We've added the basic objects & their directions. 
         # Now we add everything else:
@@ -500,12 +469,10 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         grid.map_id = config.get("general", "mapid", fallback=None)
 
         if custom:
-            author = config.get("general", "author", fallback="Missing Author")
-            # difficulty_string = config.get("general", "difficulty", fallback="")
-            # print(difficulty_string)
-            grid.extra = author
+            # difficulty_string = config.get("general", "difficulty", fallback=None)
+            grid.author = config.get("general", "author", fallback=None)
 
-        # Only applicable to old style levels
+        # Only applicable to old style cursors
         # "cursor not visible" is denoted with X and Y set to -1
         cursor_x = config.getint("general", "selectorX", fallback=-1)
         cursor_y = config.getint("general", "selectorY", fallback=-1)
@@ -530,14 +497,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             path.name      = self.defaults_by_object[path.obj].name
             grid.cells[pos].append(path)
 
-        if initialize and grid.map_id is not None:
-            # The parent node
-            node = {
-                "map_id"  : grid.map_id,
-                "levels" : {}
-            }
-            # Key
-            parent = grid.filename
+        child_levels = {}
 
         # Add level objects & initialize level tree
         level_count = config.getint("general", "levels", fallback=0)
@@ -565,7 +525,6 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             # but the bot treats them as normal objects
             style = config.getint("levels", f"{i}style", fallback=0)
             number = config.getint("levels", f"{i}number", fallback=0)
-            name = config.get("levels", f"{i}name", fallback="")
             # "custom" style
             if style == -1:
                 icon = Item()
@@ -589,19 +548,14 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                 # If the bot could be able to draw numbers, letters and
                 # dots in the game font (for icons), it would do so here
 
-            if initialize and grid.map_id is not None:
+            if initialize_level_tree and grid.map_id is not None:
                 level_file = config.get("levels", f"{i}file")
                 # Each level within
-                child = {
-                    "number" : number,
-                    "name"   : name,
-                    "style"  : style
-                }
-                # print("adding norm to node", parent, grid.map_id, level_file, child)
-                node["levels"][level_file] = child
+                child_levels[level_file] = (number, style)
         
         # Initialize the level tree
-        if initialize and grid.map_id is not None:
+        # If map_id is None, then the levels are actually pointing back to this level's parent
+        if initialize_level_tree and grid.map_id is not None:
             # specials are only used for special levels at the moment
             special_count = config.getint("general", "specials", fallback=0)
             for i in range(special_count):
@@ -610,17 +564,13 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                 if special_kind == "level":
                     # note: because of the comma separation these are still strings
                     level_file, style, number, *_ = special_rest
-                    child = {
-                        "number" : int(number),
-                        "name"   : None,
-                        "style"  : int(style)
-                    }
+                    child = (int(number), int(style))
                     # print("adding spec to node", parent, grid.map_id, level_file, child)
-                    node["levels"][level_file] = child
+                    child_levels[level_file] = child
                 
             # merges both normal level & special level data together
-            if node["levels"]:
-                self.parent_levels[parent] = node
+            if child_levels:
+                self.parent_levels[grid.filename] = (grid.map_id, child_levels)
 
         # Add background images
         image_count = config.getint("images", "total", fallback=0)
@@ -659,15 +609,15 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         for cell in grid.cells:
             for item in cell:
                 if item.obj in changes:
-                    change = changes[item.obj]
+                    change = changes[item.obj] # type: ignore
                     if "name" in change:
-                        if self.bot.get.tile_data(change["name"]) is not None:
+                        if await self.bot.db.tile(change["name"], maximum_version=1000 if custom else 0) is not None:
                             item.name = change["name"]
                         else:
                             item.name = "default"
                     # The sprite overrides the name in this case
                     if "image" in change:
-                        if self.bot.get.tile_data(change["image"]) is not None:
+                        if await self.bot.db.tile(change["image"], maximum_version=1000 if custom else 0) is not None:
                             item.name = change["image"]
                         else:
                             item.name = "default"
@@ -683,9 +633,11 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                     # This unfortunately means that custom levels that use drastically
                     # different active & inactive colors will look different in renders
                     if "colour" in change:
-                        item.color = tuple(int(x) for x in change["colour"].split(","))
-                    if "activecolour" in change and item.name.startswith("text_"):
-                        item.color = tuple(int(x) for x in change["activecolour"].split(","))
+                        x, y = change["colour"].split(",")
+                        item.color = (int(x), int(y))
+                    if "activecolour" in change and item.name is not None and item.name.startswith("text_"):
+                        x, y = change["activecolour"].split(",")
+                        item.color = (int(x), int(y))
 
         # Makes sure objects within a single cell are rendered in the right order
         # Items are sorted according to their layer attribute, in ascending order.
@@ -754,11 +706,6 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             for j in range(len(dirs_buffer) - 1):
                 item = items[j]
                 item.direction = dirs_buffer[j]
-        
-    @tasks.loop(minutes=15)
-    async def update_custom_levels(self):
-        with open("cache/customlevels.json", "w") as f:
-            json.dump(self.custom_levels, f)
 
 def setup(bot: Bot):
     bot.add_cog(Reader(bot))

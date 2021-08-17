@@ -55,29 +55,16 @@ In addition, authentication information should be placed in `auth.py`:
 
 * `token`: `str` - The bot token.
 
-If the bot complains about missing files or directories in `cache/` or `target/`, create them. Specifically, you should have the following paths created:
-* `cache/tiledata.json` A JSON file defaulting to the empty object `{}`. Contains tile data for rendering objects.
-* `cache/blacklist.json` A JSON file defaulting to the empty object `{}`. Contains the IDs of blocked users.
-* `cache/leveldata.json` A JSON file defaulting to the empty object `{}`. Contains level metadata.
-* `cache/debug.json` A JSON file defaulting to the empty object `{}`. Contains debug data about bot restarts. 
-* `target/renders/vanilla/` An empy directory. Contains levels rendered into animated GIFs.
-* `target/letters/big/` An empty directory. Contains sprites for "tall" letters (like `IS`) scraped from vanilla sprites.
-* `target/letters/small/` An empty directory. Contains sprites for "short" letters (like `BABA`) scraped from vanilla sprites.
-* `target/letters/thick/` An empty directory. Contains sprites for "individual" letters (like `BA`) scraped from vanilla sprites.
+If the bot complains about missing files or directories in `cache/` or `target/`, create them.
 
 ## Setup commands (bot owner only)
 
 `<>` denotes a required argument, and `[]` denotes an optional argument.
 
-* `loaddata` Collects tile metadata from `values.lua`, `editor_objectlist.lua`, `data/worlds/vanilla/*.ld` files and `data/custom/*.json` files, and saves it to disk. The following commands are also available, but it is **strongly recommended** to use `loaddata`.
-* * `loadchanges` Collects tile metadata only from `.ld` files.
-* * `loadcolors` Collects tile metadata only from `values.lua`.
-* * `loadcustom` Collects tile metadata only from custom `.json` files.
-* * `loadeditor` Collects tile metadata only from `editor_objectlist.lua`.
-* * `dumpdata` Dumps collected tile metadata into `cache/tiledata.json`.
+* `loaddata` Collects tile metadata from `values.lua`, `editor_objectlist.lua`, `data/worlds/baba/*.ld` files and `data/custom/*.json` files, and saves it to disk. The following commands are also available, but it is **strongly recommended** to use `loaddata`.
 * `loadletters` Scrapes individual letter sprites from image sprites in `data/sprites/*`, as well as pre-made letters from `data/letters/**/*` and places the results in `target/letters/`.
-* `loadmap <world_name> <level_id> [include_metadata?]` Reads and renders an animated GIF of the provided level. `world_name` should be `vanilla` in most cases. If `include_metadata` is `True`, the level metadata is stored as well. Useful for re-rendering levels changed in an update without re-doing everything.
-* `loadmaps` Reads and renders every single level in `data/levels/vanilla/`. Also collects metadata.
+* `loadmap <world_name> <level_id>` Reads and renders an animated GIF of the provided level. `world_name` should be `baba` in most cases. The level metadata is untouched. Useful for re-rendering levels changed in an update without re-doing everything.
+* `loadmaps` Reads and renders every single level in `data/levels/baba/`. Also collects metadata.
 
 * To load tile data, run the `loaddata` command. To load letter data (for custom text), run the `loadletters` command. To load and pre-render levels, run the `loadmaps` command.
 

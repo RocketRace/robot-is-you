@@ -1,9 +1,9 @@
 from __future__ import annotations
-from io import BytesIO
 
 import random
-from typing import TYPE_CHECKING, BinaryIO, Literal, overload
 import zipfile
+from io import BytesIO
+from typing import TYPE_CHECKING, BinaryIO
 
 import numpy as np
 from PIL import Image, ImageChops, ImageFilter
@@ -29,7 +29,7 @@ class Renderer:
         *,
         palette: str = "default",
         images: list[str] | None = None,
-        image_source: str = "vanilla",
+        image_source: str = "baba",
         out: str | BinaryIO = "target/renders/render.gif",
         background: tuple[int, int] | None = None,
         random_animations: bool = False,
@@ -79,7 +79,7 @@ class Renderer:
                             continue
                         wobble = (11 * x + 13 * y + frame) % 3 if random_animations else frame
                         if tile.custom:
-                            sprite = self.generate_sprite(
+                            sprite = await self.generate_sprite(
                                 tile.name,
                                 style=tile.custom_style or "noun",
                                 direction=tile.custom_direction,
@@ -88,11 +88,11 @@ class Renderer:
                             )
                         else:
                             if tile.name in ("icon",):
-                                path = f"data/sprites/vanilla/{tile.name}.png"
+                                path = f"data/sprites/baba/{tile.name}.png"
                             elif tile.name in ("smiley", "hi") or tile.name.startswith("icon"):
-                                path = f"data/sprites/vanilla/{tile.name}_1.png"
+                                path = f"data/sprites/baba/{tile.name}_1.png"
                             elif tile.name == "default":
-                                path = f"data/sprites/vanilla/default_{wobble + 1}.png"
+                                path = f"data/sprites/baba/default_{wobble + 1}.png"
                             else:
                                 source, sprite_name = tile.sprite
                                 path = f"data/sprites/{source}/{sprite_name}_{tile.variant_number}_{wobble + 1}.png"
@@ -137,7 +137,7 @@ class Renderer:
             extra_name=extra_name
         )
 
-    def generate_sprite(
+    async def generate_sprite(
         self,
         text: str,
         *,
@@ -159,10 +159,11 @@ class Renderer:
         # The default is low enough to prevent abuse, but high enough to 
         # ensure that no actual text can be excluded.
         if len(raw) > constants.MAX_TEXT_LENGTH:
-            raise errors.CustomTextTooLong(text)
+            raise errors.CustomTextTooLong(text, style, len(raw))
 
         if seed is None:
             seed = random.randint(0, 8 ** len(raw))
+        seed_digits = [(seed >> 8 * i ) | 0b11111111 for i in range(len(raw))]
         
         # Get mode and split status
         if newline_count > 1:
@@ -187,10 +188,30 @@ class Renderer:
         
         if index == 0 or index == len(raw):
             raise errors.LeadingTrailingLineBreaks(text)
+        
+        width_cache: dict[str, list[int]] = {}
+        for c in raw:
+            rows = await self.bot.db.conn.fetchall(
+                '''
+                SELECT char, width FROM letters
+                WHERE char == ? AND mode == ?;
+                ''',
+                c, mode
+            )
+
+            for row in rows:
+                char, width = row
+                width_cache.setdefault(char, []).append(width)
+
+        def width_greater_than(c: str, w: int = 0) -> int:
+            try:
+                return min(width for width in width_cache[c] if width > w)
+            except ValueError:
+                raise KeyError
 
         # fetch the minimum possible widths first
         try:
-            widths: list[int] = [self.bot.db.letter_width(c, mode, greater_than=0) for c in raw]
+            widths: list[int] = [width_greater_than(c) for c in raw]
         except KeyError as e:
             raise errors.BadCharacter(text, mode, e.args[0])
 
@@ -239,7 +260,7 @@ class Renderer:
         while not all(stable):
             old_width, i = min((w, i) for i, w in enumerate(widths) if not stable[i])
             try:
-                new_width = self.bot.db.letter_width(raw[i], mode, greater_than=old_width)
+                new_width = width_greater_than(raw[i], old_width)
             except KeyError:
                 stable[i] = True
                 continue
@@ -281,10 +302,19 @@ class Renderer:
                 gaps.extend([0] * (chars - space))
 
         letters: list[Image.Image] = []
-        for c, w in zip(raw, widths):
-            letters.append(self.bot.db.letter_sprite(c, mode, w, wobble, seed=seed | 0b11111111))
-            seed >>= 8
-        
+        for c, seed_digit, width in zip(raw, seed_digits, widths):
+            l_rows = await self.bot.db.conn.fetchall(
+                # fstring use safe
+                f'''
+                SELECT char, width, height, sprite_{int(wobble)} FROM letters
+                WHERE char == ? AND mode == ? AND width == ?
+                ''',
+                c, mode, width
+            )
+            options = list(l_rows)
+            char, width, height, letter_sprite = options[seed_digit % len(options)]
+            letters.append(Image.frombytes("1", (width, height), letter_sprite))
+
         sprite = Image.new("L", (constants.DEFAULT_SPRITE_SIZE, constants.DEFAULT_SPRITE_SIZE))
         if mode == "small":
             x = gaps[0]
@@ -340,8 +370,8 @@ class Renderer:
         '''Takes an image, taking tile data from its name, and applies the given options to it.'''
         tile_data = await self.bot.db.tile(name)
         assert tile_data is not None
-        original_style = constants.TEXT_STYLES[tile_data.get("type", "0")]
-        original_direction = tile_data.get("text_direction")
+        original_style = constants.TEXT_TYPES[tile_data.text_type]
+        original_direction = tile_data.text_direction
         try:
             return self.apply_options(
                 sprite,
@@ -371,7 +401,7 @@ class Renderer:
         if meta_level != 0 or style != "noun" and (original_style != style or original_direction != direction):
             if original_style == "property":
                 # box: position of upper-left coordinate of "inner text" in the larger text tile
-                plate, box = self.bot.get.plate(original_direction, wobble)
+                plate, box = self.bot.db.plate(original_direction, wobble)
                 plate_alpha = ImageChops.invert(plate.getchannel("A"))
                 sprite_alpha = ImageChops.invert(sprite.getchannel("A"))
                 alpha = ImageChops.subtract(sprite_alpha, plate_alpha)
@@ -380,7 +410,7 @@ class Renderer:
             if style == "property":
                 if sprite.height != constants.DEFAULT_SPRITE_SIZE or sprite.width != constants.DEFAULT_SPRITE_SIZE:
                     raise ValueError(sprite.size)
-                plate, box = self.bot.get.plate(direction, wobble)
+                plate, box = self.bot.db.plate(direction, wobble)
                 plate = self.make_meta(plate, meta_level)
                 plate_alpha = plate.getchannel("A")
                 sprite_alpha = sprite.getchannel("A").crop(

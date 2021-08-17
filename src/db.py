@@ -1,10 +1,18 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import random
 from sqlite3.dbapi2 import Row
+import string
+from typing import Any, AsyncGenerator, Iterable
+from asqlite import Cursor
+
 import asqlite
 from PIL import Image
+
 from .constants import DIRECTIONS
+
+
 class Database:
     '''Everything relating to persistent readable & writable data'''
     conn: asqlite.Connection
@@ -53,7 +61,7 @@ class Database:
                     active_color_x INTEGER NOT NULL DEFAULT 0,
                     active_color_y INTEGER NOT NULL DEFAULT 3,
                     tiling INTEGER NOT NULL DEFAULT -1,
-                    text_type INTEGER,
+                    text_type INTEGER NOT NULL DEFAULT 0,
                     text_direction INTEGER,
                     tags TEXT NOT NULL DEFAULT "",
                     UNIQUE(name, version)
@@ -70,7 +78,7 @@ class Database:
             await cur.execute(
                 '''
                 CREATE TABLE IF NOT EXISTS levels (
-                    level_id TEXT NOT NULL,
+                    id TEXT NOT NULL,
                     world TEXT NOT NULL,
                     name TEXT NOT NULL,
                     subtitle TEXT,
@@ -78,7 +86,7 @@ class Database:
                     style INTEGER,
                     parent TEXT,
                     map_id TEXT,
-                    UNIQUE(level_id, world)
+                    UNIQUE(id, world)
                 );
                 '''
             )
@@ -90,17 +98,17 @@ class Database:
                     code TEXT UNIQUE NOT NULL,
                     name TEXT NOT NULL,
                     subtitle TEXT,
-                    difficulty INTEGER,
-                    author TEXT
+                    author TEXT NOT NULL
                 );
                 '''
             )
             await cur.execute(
                 '''
                 CREATE TABLE IF NOT EXISTS letters (
-                    mode TEXT,
-                    char TEXT,
-                    width INTEGER,
+                    mode TEXT NOT NULL,
+                    char TEXT NOT NULL,
+                    width INTEGER NOT NULL,
+                    height INTEGER NOT NULL,
                     sprite_0 BLOB,
                     sprite_1 BLOB,
                     sprite_2 BLOB
@@ -118,20 +126,35 @@ class Database:
                 '''
             )
 
-    async def tile(self, name: str, *, editor: bool = True) -> TileData | None:
+    async def tile(self, name: str, *, maximum_version: int = 1000) -> TileData | None:
         '''Convenience method to fetch a single thing of tile data. Returns None on failure.'''
-        version = 1 if editor else 0
+        row = await self.conn.fetchone(
+            '''
+            SELECT * FROM tiles 
+            WHERE name == ? AND version <= ?
+            ORDER BY version DESC;
+            ''',
+            name, maximum_version
+        )
+        if row is None:
+            return None
+        return TileData.from_row(row)
+
+    async def tiles(self, names: Iterable[str], *, maximum_version: int = 1000) -> AsyncGenerator[TileData, None]:
+        '''Convenience method to fetch a single thing of tile data. Returns None on failure.'''
         async with self.conn.cursor() as cur:
-            await cur.execute(
-                '''
-                SELECT * FROM tiles WHERE name == ? AND version == ?;
-                ''',
-                name, version
-            )
-            row = await cur.fetchone()
-            if row is None:
-                return None
-            return TileData.from_row(row)
+            for name in names:
+                await cur.execute(
+                    '''
+                    SELECT * FROM tiles 
+                    WHERE name == ? AND version < ?
+                    ORDER BY version DESC;
+                    ''',
+                    name, maximum_version
+                )
+                row = await cur.fetchone()
+                if row is not None:
+                    yield TileData.from_row(row)
     
     def plate(self, direction: int | None, wobble: int) -> tuple[Image.Image, tuple[int, int]]:
         '''Plate sprites. Raises FileNotFoundError on failure.'''
@@ -153,7 +176,7 @@ class TileData:
     inactive_color: tuple[int, int]
     active_color: tuple[int, int]
     tiling: int
-    text_type: int | None
+    text_type: int
     text_direction: int | None
     tags: list[str]
 
@@ -172,55 +195,57 @@ class TileData:
             row["tags"].split("\t")
         )
 
-class DataAccess:
-    '''Means through which most bot data is accessed.
+@dataclass
+class LevelData:
+    id: str
+    world: str
+    name: str
+    subtitle: str | None
+    number: int | None
+    style: int | None
+    parent: str | None
+    map_id: str | None
     
-    This will be hooked up to a database driver eventually.
-    '''
-    _tile_data: dict
-    _level_tile_data: dict
-    _letter_data: dict
-    def __init__(self, bot: Bot) -> None:
-        self.bot = bot
-        # this is all temporary until I migrate to a DB
+    @classmethod
+    def from_row(cls, row: Row) -> LevelData:
+        '''Level from db row'''
+        return LevelData(*row)
 
-    def tile_datas(self) -> Iterable[tuple[str, dict]]:
-        '''All them'''
-        yield from self._tile_data.items()
+    def display(self) -> str:
+        '''The level display string'''
+        if self.parent is None or self.parent == "<empty>":
+            return self.name
+        if self.map_id is not None and self.map_id != "<empty>":
+            return f"{self.parent}-{self.map_id}: {self.name}"
+        if self.style is not None and self.number is not None:
+            if self.style == 0:
+                # numbers
+                return f"{self.parent}-{self.number}: {self.name}"
+            if self.style == 1:
+                # letters
+                letter = string.ascii_lowercase[self.number]
+                return f"{self.parent}-{letter}: {self.name}"
+            if self.style == 2:
+                # extra dots
+                return f"{self.parent}-extra {self.number + 1}: {self.name}"
+        raise RuntimeError("Level is in a bad state")
 
-    def tile_data(self, tile: str) -> dict | None:
-        '''Tile data. Returns None on failure.'''
-        return self._tile_data.get(tile)
-    
-    def level_tile_data(self, tile: str) -> dict | None:
-        '''Level tile overrides. Returns None on failure.'''
-        return self._level_tile_data.get(tile)
-    
-    def letter_width(self, char: str, mode: str, *, greater_than: int) -> int:
-        '''The minimum letter width for the given char of the give mode,
-        such that the width is more than the given width.
+    def unique(self) -> str:
+        '''Uniquely identifying string'''
+        return f"{self.world}/{self.id}"
 
-        Raises KeyError(char) on failure.
-        '''
-        extras = {
-            "*": "asterisk"
-        }
-        char = extras.get(char, char)
-        try:
-            return min(width for width in self._letter_data[mode][char] if width > greater_than)
-        # given width too large
-        except ValueError:
-            raise KeyError(char)
+@dataclass
+class CustomLevelData:
+    code: str
+    name: str
+    subtitle: str | None
+    author: str
 
-    def letter_sprite(self, char: str, mode: str, width: int, wobble: int, *, seed: int | None) -> Image.Image:
-        '''Letter sprites. Raises FileNotFoundError on failure.'''
-        choices = self._letter_data[mode][char][width]
-        if seed is None:
-            choice = random.choice(choices)
-        else:
-            # This isn't uniformly random since `seed` ranges from 0 to 255,
-            # but it's "good enough" for me and "random enough" for an observer.
-            choice = choices[seed % len(choices)]
-        return Image.open(
-            f"target/letters/{mode}/{char}/{width}/{choice}_{wobble}.png"
-        )
+    @classmethod
+    def from_row(cls, row: Row) -> CustomLevelData:
+        '''Level from db row'''
+        return CustomLevelData(*row)
+
+    def unique(self) -> str:
+        '''Uniquely identifying string'''
+        return self.code
