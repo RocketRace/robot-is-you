@@ -60,21 +60,21 @@
       ]
    },
    {
-     "name": "text_'",
-     "sprite": "text_'",
-     "color": [
-        "0",
-        "3"
-     ]
-  },
-  {
-     "name": "text_asterisk",
-     "sprite": "text_asterisk",
-     "color": [
-        "0",
-        "3"
-     ]
-  },
+      "name": "text_'",
+      "sprite": "text_'",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_asterisk",
+      "sprite": "text_asterisk",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
    {
       "name": "slash",
       "sprite": "slash",
