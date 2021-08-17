@@ -1954,7 +1954,7 @@ editor_objlist = {
 		tags = {"forest","plant","obstacle"},
 		tiling = -1,
 		type = 0,
-		layer = 15,
+		layer = 16,
 		colour = {5, 2},
 	},
 	[197] = {
@@ -2473,7 +2473,7 @@ editor_objlist = {
 		tags = {"common","item","town"},
 		tiling = -1,
 		type = 0,
-		layer = 12,
+		layer = 16,
 		colour = {6, 1},
 	},
 	[246] = {
@@ -2560,7 +2560,7 @@ editor_objlist = {
 		tags = {"cave","obstacle","item"},
 		tiling = 0,
 		type = 0,
-		layer = 12,
+		layer = 16,
 		colour = {4, 2},
 	},
 	[255] = {
@@ -2668,7 +2668,7 @@ editor_objlist = {
 		tags = {"item","cave","decorative"},
 		tiling = -1,
 		type = 0,
-		layer = 15,
+		layer = 16,
 		colour = {4, 2},
 	},
 	[266] = {
@@ -2728,7 +2728,7 @@ editor_objlist = {
 		tags = {"machine","floor","town"},
 		tiling = 1,
 		type = 0,
-		layer = 10,
+		layer = 9,
 		colour = {6, 0},
 	},
 	[272] = {
@@ -2796,7 +2796,7 @@ editor_objlist = {
 		tags = {"item","decorative","town"},
 		tiling = -1,
 		type = 0,
-		layer = 18,
+		layer = 17,
 		colour = {2, 4},
 	},
 	[279] = {
@@ -2815,7 +2815,7 @@ editor_objlist = {
 		tags = {"abstract","movement"},
 		tiling = 0,
 		type = 0,
-		layer = 14,
+		layer = 9,
 		colour = {5, 2},
 	},
 	[281] = {
@@ -2853,7 +2853,7 @@ editor_objlist = {
 		tags = {"item","ruins","decorative","town"},
 		tiling = -1,
 		type = 0,
-		layer = 15,
+		layer = 16,
 		colour = {2, 3},
 	},
 	[285] = {
@@ -2874,7 +2874,6 @@ editor_objlist = {
 		type = 0,
 		layer = 17,
 		colour = {0, 1},
-
 	},
 	[287] = {
 		name = "text_tower",
@@ -2892,9 +2891,8 @@ editor_objlist = {
 		tags = {"forest","plant","item"},
 		tiling = -1,
 		type = 0,
-		layer = 12,
+		layer = 16,
 		colour = {6, 2},
-
 	},
 	[289] = {
 		name = "text_seed",
@@ -2914,7 +2912,6 @@ editor_objlist = {
 		type = 0,
 		layer = 17,
 		colour = {5, 3},
-
 	},
 	[291] = {
 		name = "text_sprout",
@@ -2934,7 +2931,6 @@ editor_objlist = {
 		type = 0,
 		layer = 18,
 		colour = {2, 3},
-
 	},
 	[293] = {
 		name = "text_jiji",
@@ -2954,7 +2950,6 @@ editor_objlist = {
 		type = 0,
 		layer = 18,
 		colour = {5, 2},
-
 	},
 	[295] = {
 		name = "text_fofo",
@@ -2972,9 +2967,8 @@ editor_objlist = {
 		tags = {"obstacle","decorative","forest","plant"},
 		tiling = 1,
 		type = 0,
-		layer = 20,
+		layer = 15,
 		colour = {5, 2},
-
 	},
 	[297] = {
 		name = "text_vine",
@@ -2992,9 +2986,8 @@ editor_objlist = {
 		tags = {"abstract","movement","mountain","sky"},
 		tiling = 0,
 		type = 0,
-		layer = 14,
+		layer = 8,
 		colour = {1, 4},
-
 	},
 	[299] = {
 		name = "text_wind",
@@ -3014,7 +3007,6 @@ editor_objlist = {
 		type = 0,
 		layer = 16,
 		colour = {1, 1},
-
 	},
 	[301] = {
 		name = "text_fort",
@@ -3042,9 +3034,8 @@ editor_objlist = {
 		tags = {"animal","forest"},
 		tiling = 0,
 		type = 0,
-		layer = 16,
+		layer = 17,
 		colour = {2, 4},
-
 	},
 	[304] = {
 		name = "text_bee",
@@ -3062,7 +3053,7 @@ editor_objlist = {
 		tags = {"item","town"},
 		tiling = -1,
 		type = 0,
-		layer = 15,
+		layer = 16,
 		colour = {3, 2},
 	},
 	[306] = {
@@ -3243,7 +3234,7 @@ editor_objlist = {
 		tags = {"animal","water","item"},
 		tiling = -1,
 		type = 0,
-		layer = 13,
+		layer = 16,
 		colour = {4, 2},
 	},
 	[323] = {
@@ -3262,7 +3253,7 @@ editor_objlist = {
 		tags = {"animal","water","movement"},
 		tiling = 0,
 		type = 0,
-		layer = 14,
+		layer = 17,
 		colour = {1, 3},
 	},
 	[325] = {
@@ -3300,7 +3291,7 @@ editor_objlist = {
 		tags = {"obstacle","decorative","ruins"},
 		tiling = -1,
 		type = 0,
-		layer = 18,
+		layer = 15,
 		colour = {2, 2},
 	},
 	[329] = {
@@ -3319,7 +3310,7 @@ editor_objlist = {
 		tags = {"water","movement","machine","decorative"},
 		tiling = 0,
 		type = 0,
-		layer = 14,
+		layer = 16,
 		colour = {6, 1},
 	},
 	[331] = {
@@ -3433,7 +3424,7 @@ editor_objlist = {
 		tags = {"machine","item","decorative","town"},
 		tiling = -1,
 		type = 0,
-		layer = 14,
+		layer = 16,
 		colour = {0, 1},
 	},
 	[343] = {
@@ -3452,7 +3443,7 @@ editor_objlist = {
 		tags = {"item","decorative","forest"},
 		tiling = -1,
 		type = 0,
-		layer = 12,
+		layer = 16,
 		colour = {6, 1},
 	},
 	[345] = {
@@ -3471,7 +3462,7 @@ editor_objlist = {
 		tags = {"item","decorative","cave"},
 		tiling = -1,
 		type = 0,
-		layer = 14,
+		layer = 16,
 		colour = {2, 2},
 	},
 	[347] = {
@@ -3490,7 +3481,7 @@ editor_objlist = {
 		tags = {"item","decorative","cave"},
 		tiling = 0,
 		type = 0,
-		layer = 15,
+		layer = 16,
 		colour = {3, 1},
 	},
 	[349] = {
@@ -3602,7 +3593,7 @@ editor_objlist = {
 		tags = {"sky","decorative"},
 		tiling = -1,
 		type = 0,
-		layer = 12,
+		layer = 16,
 		colour = {2, 3},
 	},
 	[360] = {
@@ -3716,7 +3707,7 @@ editor_objlist = {
 		tags = {"obstacle","abstract"},
 		tiling = -1,
 		type = 0,
-		layer = 18,
+		layer = 9,
 		colour = {0, 3},
 	},
 	[372] = {
@@ -3792,7 +3783,7 @@ editor_objlist = {
 		tags = {"obstacle","danger"},
 		tiling = 1,
 		type = 0,
-		layer = 16,
+		layer = 14,
 		colour = {5, 2},
 	},
 	[380] = {
@@ -3811,7 +3802,7 @@ editor_objlist = {
 		tags = {"item","decorative","music"},
 		tiling = -1,
 		type = 0,
-		layer = 17,
+		layer = 16,
 		colour = {2, 3},
 	},
 	[382] = {
@@ -3830,7 +3821,7 @@ editor_objlist = {
 		tags = {"item","decorative","music"},
 		tiling = -1,
 		type = 0,
-		layer = 17,
+		layer = 16,
 		colour = {2, 4},
 	},
 	[384] = {
@@ -3961,7 +3952,7 @@ editor_objlist = {
 		tags = {"water","animal"},
 		tiling = 2,
 		type = 0,
-		layer = 19,
+		layer = 18,
 		colour = {5, 3},
 	},
 	[397] = {
@@ -3980,7 +3971,7 @@ editor_objlist = {
 		tags = {"item","decorative","music"},
 		tiling = 0,
 		type = 0,
-		layer = 19,
+		layer = 16,
 		colour = {3, 4},
 	},
 	[399] = {
@@ -3999,7 +3990,7 @@ editor_objlist = {
 		tags = {"item","decorative"},
 		tiling = -1,
 		type = 0,
-		layer = 16,
+		layer = 17,
 		colour = {2, 2},
 	},
 	[401] = {
@@ -4018,7 +4009,7 @@ editor_objlist = {
 		tags = {"item","decorative"},
 		tiling = -1,
 		type = 0,
-		layer = 16,
+		layer = 17,
 		colour = {2, 2},
 	},
 	[403] = {
@@ -4037,7 +4028,7 @@ editor_objlist = {
 		tags = {"water","animal","forest"},
 		tiling = 2,
 		type = 0,
-		layer = 19,
+		layer = 18,
 		colour = {5, 4},
 	},
 	[405] = {
@@ -4056,7 +4047,7 @@ editor_objlist = {
 		tags = {"animal","forest","town"},
 		tiling = 2,
 		type = 0,
-		layer = 19,
+		layer = 18,
 		colour = {6, 2},
 	},
 	[407] = {
@@ -4075,7 +4066,7 @@ editor_objlist = {
 		tags = {"item","decorative","danger"},
 		tiling = 0,
 		type = 0,
-		layer = 17,
+		layer = 16,
 		colour = {1, 4},
 	},
 	[409] = {
@@ -4113,7 +4104,7 @@ editor_objlist = {
 		tags = {"item","decorative","town"},
 		tiling = -1,
 		type = 0,
-		layer = 14,
+		layer = 16,
 		colour = {0, 3},
 	},
 	[413] = {
@@ -4208,7 +4199,7 @@ editor_objlist = {
 		tags = {"item","decorative","animal","forest"},
 		tiling = 0,
 		type = 0,
-		layer = 17,
+		layer = 16,
 		colour = {0, 3},
 	},
 	[423] = {
@@ -4246,7 +4237,7 @@ editor_objlist = {
 		tags = {"animal","forest","town"},
 		tiling = 2,
 		type = 0,
-		layer = 19,
+		layer = 18,
 		colour = {0, 2},
 	},
 	[427] = {
@@ -4265,7 +4256,7 @@ editor_objlist = {
 		tags = {"item","decorative","town","ruins"},
 		tiling = -1,
 		type = 0,
-		layer = 17,
+		layer = 16,
 		colour = {1, 4},
 	},
 	[429] = {
@@ -4314,7 +4305,7 @@ editor_objlist = {
 		tags = {"common","obstacle","item"},
 		tiling = -1,
 		type = 0,
-		layer = 16,
+		layer = 14,
 		colour = {0, 2},
 	},
 	[434] = {
@@ -4373,7 +4364,7 @@ editor_objlist = {
 		tags = {"decorative","abstract"},
 		tiling = -1,
 		type = 0,
-		layer = 17,
+		layer = 10,
 		colour = {0, 3},
 	},
 	[440] = {
