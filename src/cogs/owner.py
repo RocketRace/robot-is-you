@@ -462,9 +462,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         '''Scrapes individual letters from vanilla sprites.'''
         ignored = json.load(open("config/letterignore.json"))
         for row in await self.bot.db.conn.fetchall(
-            '''
+            r'''
             SELECT * FROM tiles
-            WHERE sprite LIKE "text\\___%" ESCAPE "\\"
+            WHERE sprite LIKE "text\___%" ESCAPE "\"
                 AND source == "baba"
                 AND text_direction IS NULL;
             '''
@@ -494,12 +494,12 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         # Maps each character to three bounding boxes + images
         # (One box + image for each frame of animation)
         # char_pos : [((x1, y1, x2, y2), Image), ...]
-        char_sizes = {}
+        char_sizes: dict[tuple[int, str], Any] = {}
         
         # Scrape the sprites for the sprite characters in each of the three frames
         for i, plate in enumerate(plates):
             # Get the alpha channel in 1-bit depth
-            alpha = Image.open(f"data/sprites/vanilla/{word}_0_{i + 1}.png") \
+            alpha = Image.open(f"data/sprites/baba/{word}_0_{i + 1}.png") \
                 .convert("RGBA") \
                 .getchannel("A") \
                 .convert("1")
@@ -519,7 +519,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             
             # More than 1 bit per pixel is required for the flood fill
             alpha = alpha.convert("L")
-            for char in chars:
+            for i, char in enumerate(chars):
                 if skip:
                     skip = False
                     continue
@@ -562,12 +562,12 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                     alpha = ImageChops.difference(alpha, clone)
                     clone = clone.crop((x1, y1, x2, y2))
                     entry = ((x1, y1, x2, y2), clone)
-                    char_sizes.setdefault(char, []).append(entry)
+                    char_sizes.setdefault((i, char), []).append(entry)
                     continue
                 return
 
         results = []
-        for char, entries in char_sizes.items():
+        for (_, char), entries in char_sizes.items():
             # All three frames clearly found the character in the sprite
             if len(entries) == 3:
                 x1_min = min(entries, key=lambda x: x[0][0])[0][0]
@@ -596,10 +596,13 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
     async def load_ready_letters(self):
         def channel_shenanigans(im: Image.Image) -> Image.Image:
-            return im.convert("LA").getchannel("A").convert("1")
+            if im.mode == "1":
+                return im
+            return im.convert("RGBA").getchannel("A").convert("1")
         data = []
         for path in pathlib.Path("data/letters").glob("*/*/*/*_0.png"):
             _, _, mode, char, w, name = path.parts
+            char = char.replace("asterisk", "*")
             width = int(w)
             prefix = name[:-6]
             # mo ch w h
