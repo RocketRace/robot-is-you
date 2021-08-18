@@ -177,6 +177,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         palette = "default"
         to_delete = []
         raw_output = False
+        default_to_letters = False
         for flag, x, y in potential_flags:
             bg_match = re.fullmatch(r"(--background|-b)(=(\d)/(\d))?", flag)
             if bg_match:
@@ -198,6 +199,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             raw_match = re.fullmatch(r"--raw|-r", flag)
             if raw_match:
                 raw_output = True
+                to_delete.append((x, y))
+            letter_match = re.fullmatch(r"--letter|-l", flag)
+            if letter_match:
+                default_to_letters = True
                 to_delete.append((x, y))
         for x, y in reversed(to_delete):
             del word_grid[y][x]
@@ -245,7 +250,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             buffer = BytesIO()
             extra_buffer = BytesIO() if raw_output else None
             extra_names = [] if raw_output else None
-            full_grid = await self.bot.handlers.handle_grid(grid, raw_output=raw_output, extra_names=extra_names)
+            full_grid = await self.bot.handlers.handle_grid(grid, raw_output=raw_output, extra_names=extra_names, default_to_letters=default_to_letters)
             await self.bot.renderer.render(
                 full_grid,
                 palette=palette,

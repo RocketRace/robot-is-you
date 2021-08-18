@@ -298,7 +298,7 @@ def setup(bot: Bot):
                     meta_level * "meta_" + f"{name}_{variant}"
                 )
         if tile.custom and tile.custom_style is None:
-            if len(tile.name[5:]) == 2:
+            if len(tile.name[5:]) == 2 and flags.get("default_to_letters"):
                 tile.custom_style = "letter"
             else:
                 tile.custom_style = "noun"
