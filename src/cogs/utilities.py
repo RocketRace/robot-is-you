@@ -1,4 +1,5 @@
 from __future__ import annotations
+from io import BytesIO
 
 import re
 from datetime import datetime
@@ -6,6 +7,7 @@ from os import listdir
 
 import discord
 from discord.ext import commands
+from PIL import Image
 
 from .. import constants
 from ..types import Bot, Context
@@ -164,18 +166,6 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         await ctx.send(content)
 
     @commands.cooldown(5, 8, type=commands.BucketType.channel)
-    @commands.command(name="list")
-    async def list_tiles(self, ctx: Context):
-        '''Lists valid tiles for rendering.
-
-        Returns all valid tiles in a text file.
-        Tiles may be used in the `tile` (and subsequently `rule`) commands.
-        '''
-        now = datetime.now().strftime("%Y-%m-%d")
-        fp = discord.File("target/tilelist.txt", filename=f"tilelist_{now}.txt")
-        await ctx.send( "List of all valid tiles:", file=fp)
-
-    @commands.cooldown(5, 8, type=commands.BucketType.channel)
     @commands.command(name="palettes")
     async def list_palettes(self, ctx: Context):
         '''Lists palettes usable for rendering.
@@ -189,6 +179,26 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         msg.sort()
         msg.insert(0, "Valid palettes:")
         await ctx.send("\n".join(msg))
+    
+    @commands.cooldown(5, 8, type=commands.BucketType.channel)
+    @commands.command(name="palette")
+    async def show_palette(self, ctx: Context, palette: str):
+        '''Displays palette image.
+
+        This is useful for picking colors from the palette.'''
+        try:
+            img = Image.open(f"data/palettes/{palette}.png")
+        except FileNotFoundError:
+            return await ctx.error(f"The palette `{palette}` could not be found.")
+        scaled = img.resize(
+            (img.width * constants.PALETTE_PIXEL_SIZE, img.height * constants.PALETTE_PIXEL_SIZE), 
+            resample=Image.NEAREST
+        )
+        buf = BytesIO()
+        scaled.save(buf, format="PNG")
+        buf.seek(0)
+        file = discord.File(buf, filename=f"palette_{palette}.png")
+        await ctx.reply(f"Palette `{palette}`:", file=file)
 
     @commands.cooldown(5, 8, type=commands.BucketType.channel)
     @commands.command(name="variants")
