@@ -5,6 +5,10 @@ import re
 from datetime import datetime
 from os import listdir
 
+from discord.embeds import Embed
+from src.tile import RawTile
+from src.db import TileData
+
 import discord
 from discord.ext import commands
 from PIL import Image
@@ -207,75 +211,29 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         # Clean the input
         clean_tile = tile.strip().lower()
 
-        # Does the tile exist?
-        data = self.bot.get.tile_data(clean_tile)
-        suffix = "It also supports the following colors:\n" + \
-            ", ".join(f"`:{name}`" for name in constants.COLOR_NAMES) + \
-            ",\nas well as the following filters:\n`:meta` / `:m`, `:m2`, `:m3`, `:hide`."
-        if data is None:
-            output = [
-                f"This tile doesn't exist, but you might be able to auto-generate the text tile `text_{clean_tile}`.",
-                "Auto-generated text supports the `:noun`, `:letter`, and `:property` variants.",
-                suffix
-            ]
-            return await ctx.send(f"Valid sprite variants for '{clean_tile}'\n" + "\n".join(output) + "\n")
         
-        # Determines the tiling type of the tile
-        tiling = data.get("tiling")
+        output = discord.Embed(
+            title=f"Valid sprite variants for `{clean_tile}`",
+            color=self.bot.embed_color
+        )
 
-        # Possible tiling types and the corresponding available variants
-        output = {
-            None: [
-                "This tile does not exist, or has no tiling data."
-            ],
-            "-1": [
-                "This tile has no sprite variants.",
-            ],
-            "0": [
-                "This tile supports directions:",
-                "Facing right: `:right` / `:r`",
-                "Facing up: `:up` / `:u`",
-                "Facing left: `:left` / `:l`",
-                "Facing down: `:down` / `:d`",
-                "You can also provide raw variants from `:0` to `:31` to alter its sprite. (Not all are valid.)"
-            ],
-            "1": [
-                "This is a tiling tile. It automatically applies sprite variants to itself.",
-                "You can provide raw variants from `:0` to `:15` to alter its sprite."
-            ],
-            "2": [
-                "This tile supports direction, animations, and sleeping sprites:",
-                "Sleeping (ANY DIRECTION): `:sleep` / `:s`",
-                "Animation frame (ANY DIRECTION): `:a0`, `:a1`, `:a2`, `:a3`",
-                "Facing right: `:right` / `:r`",
-                "Facing up: `:up` / `:u`",
-                "Facing left: `:left` / `:l`",
-                "Facing down: `:down` / `:d`",
-                "You can also provide raw variants from `:0` to `:31` to alter its sprite. (Not all are valid.)"
-            ],
-            "3": [
-                "This tile supports directions and animations:",
-                "Animation frame (ANY DIRECTION): `:a0`, `:a1`, `:a2`, `:a3`",
-                "Facing right: `:right` / `:r`",
-                "Facing up: `:up` / `:u`",
-                "Facing left: `:left` / `:l`",
-                "Facing down: `:down` / `:d`",
-                "You can also provide raw variants from `:0` to `:31` to alter its sprite. (Not all are valid.)"
-            ],
-            "4": [
-                "This tile supports animations:",
-                "Animation frame (ANY DIRECTION): `:a0`, `:a1`, `:a2`, `:a3`",
-                "You can also provide raw variants from `:0` to `:31` to alter its sprite. (Not all are valid.)"
-            ]
-        }
-        choice = output[tiling]
-        if clean_tile.startswith("text_"):
-            choice.append("It can also be auto-generated, supporting the `:noun`, `:letter`, and `:property` variants.",)
-        choice.append(suffix)
-
-        # Output
-        await ctx.send(f"Valid sprite variants for '{clean_tile}'\n" + "\n".join(choice) + "\n")
-
+        tile_data_cache: dict[str, TileData] = {}
+        data = await self.bot.db.tile(clean_tile)
+        if data is not None:
+            tile_data_cache[clean_tile] = data
+        else:
+            output.set_footer(text="Note: This tile doesn't exist in the database, so it's not necessarily valid.")
+        
+        raw_tile = RawTile(clean_tile, [])
+        variant_groups = self.bot.handlers.valid_variants(raw_tile, tile_data_cache)
+        for group, variants in variant_groups.items():
+            output.add_field(
+                name=group,
+                value="\n".join(f"- {string}" for string in variants),
+                inline=True
+            )
+        
+        await ctx.reply(embed=output)
 
 def setup(bot: Bot):
     bot.add_cog(UtilityCommandsCog(bot))

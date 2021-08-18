@@ -11,6 +11,13 @@ DIRECTION_TILINGS = {
     0, 2, 3
 }
 
+DIRECTION_REPRESENTATION_VARIANTS = {
+    "r": "`right` / `r` (Facing right)",
+    "u": "`up` / `u` (Facing up)",
+    "l": "`left` / `l` (Facing left)",
+    "d": "`down` / `d` (Facing down)",
+}
+
 DIRECTION_VARIANTS = {
     "right": 0,
     "r": 0,
@@ -26,6 +33,13 @@ ANIMATION_TILINGS = {
     2, 3, 4
 }
 
+ANIMATION_REPRESENTATION_VARIANTS = {
+    "a0": "`a0` (Animation frame 0)",
+    "a1": "`a1` (Animation frame 1)",
+    "a2": "`a2` (Animation frame 2)",
+    "a3": "`a3` (Animation frame 3)",
+}
+
 ANIMATION_VARIANTS = {
     "a0": 0,
     "a1": 1,
@@ -37,6 +51,10 @@ SLEEP_TILINGS = {
     2
 }
 
+SLEEP_REPRESENTATION_VARIANTS = {
+    "s": "`sleep` / `s`"
+}
+
 SLEEP_VARIANTS = {
     "sleep": -1,
     "s": -1,
@@ -46,10 +64,17 @@ AUTO_TILINGS = {
     1
 }
 
+AUTO_REPRESENTATION_VARIANTS = {
+    "tr": "`tileright` / `tr` (Connects right)",
+    "tu": "`tileup` / `tu` (Connects up)",
+    "tl": "`tileleft` / `tl` (Connects left)",
+    "td": "`tiledown` / `td` (Connects down)",
+}
+
 AUTO_VARIANTS = {
     "tr": 1,
     "tileright": 1,
-    "eu": 2,
+    "tu": 2,
     "tileup": 2,
     "tl": 4,
     "tileleft": 4,
@@ -76,6 +101,10 @@ COLOR_NAMES = {
     "silver": (0, 2),
     "white":  (0, 3),
     "brown":  (6, 1),
+}
+
+COLOR_REPRESENTATION_VARIANTS = {
+    "red": ", ".join(f"`{color}`" for color in COLOR_NAMES) + " (Color names)"
 }
 
 INACTIVE_COLORS: dict[tuple[int, int], tuple[int, int]] = {
