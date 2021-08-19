@@ -221,12 +221,22 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
                         results["level", f"{world}/{id}"] = data
         
         if flags.get("type") is None and plain_query or flags.get("type") == "palette":
-            for path in Path("data/palettes").glob(f"*{plain_query}*.png"):
-                results["palette", path.parts[-1][:-5]] = path.parts[-1][:-5]
+            q = f"*{plain_query}*.png" if plain_query else "*.png"
+            out = []
+            for path in Path("data/palettes").glob(q):
+                out.append((("palette", path.parts[-1][:-4]), path.parts[-1][:-4]))
+            out.sort()
+            for a, b in out:
+                results[a] = b
         
         if flags.get("type") is None and plain_query or flags.get("type") == "mod":
-            for path in Path("data/custom").glob(f"*{plain_query}*.json"):
-                results["mod", path.parts[-1][:-5]] = path.parts[-1][:-5]
+            q = f"*{plain_query}*.json" if plain_query else "*.json"
+            out = []
+            for path in Path("data/custom").glob(q):
+                out.append((("mod", path.parts[-1][:-5]), path.parts[-1][:-5]))
+            out.sort()
+            for a, b in out:
+                results[a] = b
 
         if flags.get("type") is None and plain_query or flags.get("type") == "variant":
             for variant in self.bot.handlers.all_variants():
