@@ -19,12 +19,13 @@ from ..types import Bot, Context
 class SearchPageSource(menus.ListPageSource):
     def __init__(self, data: Sequence[Any], query: str):
         self.query = query
-        super().__init__(data, per_page=constants.SEARCH_RESULTS_PER_PAGE)
+        super().__init__(data, per_page=constants.SEARCH_RESULT_UNITS_PER_PAGE)
     
     async def format_page(self, menu: menus.Menu, entries: Sequence[Any]) -> discord.Embed:
+        target = f" for `{self.query}`" if self.query else ""
         out = discord.Embed(
             color=menu.bot.embed_color,
-            title=f"Search results for `{self.query or ' '}` (Page {menu.current_page + 1} / {self.get_max_pages()})"
+            title=f"Search results{target} (Page {menu.current_page + 1} / {self.get_max_pages()})"
         )
         out.set_footer(text="Note: Some custom levels may not show up here.")
         lines = ["```"]
@@ -37,12 +38,17 @@ class SearchPageSource(menus.ListPageSource):
                 lines.append(f"({type}) {short} {long.display()}")
             elif isinstance(long, CustomLevelData):
                 lines.append(f"({type}) {short} {long.name} (by {long.author})")
+            elif long is None:
+                continue
             else:
                 lines.append(f"({type}) {short}")
             lines.append("\n\n")
-            
-        lines[-1] = "```"
-        out.description="".join(lines)
+        
+        if len(lines) > 1:
+            lines[-1] = "```"
+            out.description="".join(lines)
+        else:
+            out.title = f"No results found{target}"
         return out
 
 class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
@@ -162,12 +168,13 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
                 )
                 for row in rows:
                     results["tile", row["name"]] = TileData.from_row(row)
+                    results["blank_space", row["name"]] = None
 
         if flags.get("type") is None or flags.get("type") == "level":
-            if plain_query.strip() or any(x in flags for x in ("map", "world", "author", "custom")):
-                if flags.get("custom") is None or flags.get("custom"):
-                    f_author=flags.get("author")
-                    async with self.bot.db.conn.cursor() as cur:
+            if flags.get("custom") is None or flags.get("custom") == "true":
+                f_author=flags.get("author")
+                async with self.bot.db.conn.cursor() as cur:
+                    if plain_query.strip():
                         await cur.execute(
                             '''
                             SELECT * FROM custom_levels 
@@ -180,11 +187,11 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
                         row = await cur.fetchone()
                         if row is not None:
                             custom_data = CustomLevelData.from_row(row)
-                            results["level", plain_query] = custom_data
+                            results["level", custom_data.code] = custom_data
                         await cur.execute(
                             '''
                             SELECT * FROM custom_levels
-                            WHERE name == :name AND (
+                            WHERE INSTR(LOWER(name), :name) AND (
                                 :f_author IS NULL OR author == :f_author
                             )
                             ''',
@@ -192,24 +199,36 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
                         )
                         for row in await cur.fetchall():
                             custom_data = CustomLevelData.from_row(row)
-                            results["level", plain_query] = custom_data
-                
-                if flags.get("custom") is None or not flags.get("custom"):
+                            results["level", custom_data.code] = custom_data
+                    if any(x in flags for x in ("author", "custom")):
+                        await cur.execute(
+                            '''
+                            SELECT * FROM custom_levels
+                            WHERE (
+                                :f_author IS NULL OR author == :f_author
+                            )
+                            ''',
+                            dict(name=plain_query, f_author=f_author)
+                        )
+                        for row in await cur.fetchall():
+                            custom_data = CustomLevelData.from_row(row)
+                            results["level", custom_data.code] = custom_data
+                    
+            if flags.get("custom") is None or not flags.get("custom") == "false":
+                if plain_query.strip() or any(x in flags for x in ("map", "world")):
                     levels = await self.bot.get_cog("Baba Is You").search_levels(plain_query, **flags)
                     for (world, id), data in levels.items():
                         results["level", f"{world}/{id}"] = data
         
-        if flags.get("type") is None or flags.get("type") == "palette":
-            if plain_query:
-                for path in Path("data/palettes").glob(f"*{plain_query}*.png"):
-                    results["palette", path.parts[-1][:-5]] = path.parts[-1][:-5]
+        if flags.get("type") is None and plain_query or flags.get("type") == "palette":
+            for path in Path("data/palettes").glob(f"*{plain_query}*.png"):
+                results["palette", path.parts[-1][:-5]] = path.parts[-1][:-5]
         
-        if flags.get("type") is None or flags.get("type") == "mod":
-            if plain_query:
-                for path in Path("data/custom").glob(f"*{plain_query}*.json"):
-                    results["mod", path.parts[-1][:-5]] = path.parts[-1][:-5]
+        if flags.get("type") is None and plain_query or flags.get("type") == "mod":
+            for path in Path("data/custom").glob(f"*{plain_query}*.json"):
+                results["mod", path.parts[-1][:-5]] = path.parts[-1][:-5]
 
-        if flags.get("type") is None or flags.get("type") == "variant":
+        if flags.get("type") is None and plain_query or flags.get("type") == "variant":
             for variant in self.bot.handlers.all_variants():
                 if plain_query in variant:
                     results["variant", variant] = variant
