@@ -83,7 +83,7 @@ AUTO_VARIANTS = {
 }
 
 # colors
-COLOR_NAMES = {
+COLOR_NAMES: dict[str, tuple[int, int]] = {
     "maroon": (2, 1), # Not actually a word in the game
     "red":    (2, 2),
     "orange": (2, 3),
@@ -165,3 +165,5 @@ TEXT_TYPES = {
 }  
 DEFAULT_SPRITE_SIZE = 24
 PALETTE_PIXEL_SIZE = 32
+SEARCH_RESULTS_PER_PAGE = 10
+OTHER_LEVELS_CUTOFF = 5

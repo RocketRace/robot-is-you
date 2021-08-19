@@ -113,6 +113,17 @@ class VariantHandlers:
         '''
         self.finalizer = fn
 
+    def all_variants(self) -> list[str]:
+        '''All the possible variants
+        
+        tuples: (real string, representation string)
+        '''
+        return [
+            repr
+            for handler in self.handlers
+            for repr in handler.hints.values()
+        ]
+
     def valid_variants(self, tile: RawTile, tile_data_cache: dict[str, TileData]) -> dict[str, list[str]]:
         '''Returns the variants that are valid for a given tile.
         This data is pulled from the handler's `hints` attribute.

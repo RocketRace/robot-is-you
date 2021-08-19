@@ -1,42 +1,78 @@
 from __future__ import annotations
 from io import BytesIO
+from pathlib import Path
 
 import re
-from datetime import datetime
 from os import listdir
+from typing import Any, Sequence
 
-from discord.embeds import Embed
 from src.tile import RawTile
-from src.db import TileData
+from src.db import CustomLevelData, LevelData, TileData
 
 import discord
-from discord.ext import commands
+from discord.ext import commands, menus
 from PIL import Image
 
 from .. import constants
 from ..types import Bot, Context
 
+class SearchPageSource(menus.ListPageSource):
+    def __init__(self, data: Sequence[Any], query: str):
+        self.query = query
+        super().__init__(data, per_page=constants.SEARCH_RESULTS_PER_PAGE)
+    
+    async def format_page(self, menu: menus.Menu, entries: Sequence[Any]) -> discord.Embed:
+        out = discord.Embed(
+            color=menu.bot.embed_color,
+            title=f"Search results for `{self.query or ' '}` (Page {menu.current_page + 1} / {self.get_max_pages()})"
+        )
+        out.set_footer(text="Note: Some custom levels may not show up here.")
+        lines = ["```"]
+        for (type, short), long in entries:
+            if isinstance(long, TileData):
+                lines.append(f"({type}) {short} sprite: {long.sprite} source: {long.source}\n")
+                lines.append(f"    color: {long.inactive_color}, active color: {long.active_color} tiling: {long.tiling}\n")
+                lines.append(f"    tags: {','.join(long.tags)}")
+            elif isinstance(long, LevelData):
+                lines.append(f"({type}) {short} {long.display()}")
+            elif isinstance(long, CustomLevelData):
+                lines.append(f"({type}) {short} {long.name} (by {long.author})")
+            else:
+                lines.append(f"({type}) {short}")
+            lines.append("\n\n")
+            
+        lines[-1] = "```"
+        out.description="".join(lines)
+        return out
 
 class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
     def __init__(self, bot: Bot):
         self.bot = bot
 
-    # @commands.command()
-    # @commands.cooldown(5, 8, type=commands.BucketType.channel)
+    @commands.command()
+    @commands.cooldown(4, 8, type=commands.BucketType.channel)
     async def search(self, ctx: Context, *, query: str):
-        '''Searches for tiles based on a query.
+        '''Searches through bot data based on a query.
 
-        **You may use these flags to navigate the output:**
-        * `page`: Which page of output you wish to view. (Example usage: `search text page:2`)
-        * `sort`: Which value to sort by. Defaults to `name`.
-        * `reverse`: Whether or not the output should be in descending order or not. This may be `true` or `false`.
+        This can return tiles, levels, palettes, variants, and sprite mods.
 
-        **Queries may contain the following flags to filter results.**
-        * `sprite`: The name of the sprite. Will return only tiles that use that sprite.
-        * `text`: May be `true` or `false`. With `true`, this will only return text tiles.
-        * `source`: The source of the sprite. Valid values for this are `vanilla`, `vanilla-extensions`, `cg5-mods`, `lily-and-patashu-mods`, `patasuhu-redux`, `misc`, and `modded`. Using `modded` will return any non-vanilla tiles.
-        * `color`: The color index of the sprite. Must be two positive integers. Example: `1,2`
-        * `tiling`: The tiling type of the object. This must be either `-1` (non-tiling objects), `0` (directional objects), `1` (tiling objects), `2` (character objects), `3` (directional & animated objects) or `4` (animated objects). 
+        **Tiles** can be filtered with the flags:
+        * `sprite`: Will return only tiles that use that sprite.
+        * `text`: Whether to only return text tiles (either `true` or `false`).
+        * `source`: The source of the sprite. This should be a sprite mod.
+        * `modded`: Whether to only return modded tiles (either `true` or `false`).
+        * `color`: The color of the sprite. This can be a color name (`red`) or a palette (`0/3`).
+        * `tiling`: The tiling type of the object. This must be one of `-1`, `0`, `1`, `2`, `3` or `4`.
+        * `tag`: A tile tag, e.g. `animal` or `common`.
+
+        **Levels** can be filtered with the flags:
+        * `custom`: Whether to only return custom levels (either `true` or `false`).
+        * `map`: Which map screen the level is from.
+        * `world`: Which levelpack / world the level is from.
+        * `author`: For custom levels, filters by the author.
+
+        You can also filter by the result type:
+        * `type`: What results to return. This can be `tile`, `level`, `palette`, `variant`, or `mod`.
 
         **Example commands:**
         `search baba`
@@ -44,11 +80,10 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         `search source:modded sort:color page:4`
         `search text:true color:0,3 reverse:true`
         '''
-        sanitized_query = discord.utils.escape_mentions(query)
         # Pattern to match flags in the format (flag):(value)
-        flag_pattern = r"([\d\w_]+):([\d\w,-_]+)"
+        flag_pattern = r"([\d\w_/]+):([\d\w\-_/]+)"
         match = re.search(flag_pattern, query)
-        plain_query = ""
+        plain_query = query.lower()
 
         # Whether or not to use simple string matching
         has_flags = bool(match)
@@ -59,116 +94,134 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
             if match:
                 flags = dict(re.findall(flag_pattern, query)) # Returns "flag":"value" pairs
             # Nasty regex to match words that are not flags
-            non_flag_pattern = r"(?<![:\w\d,-])([\w\d,_]+)(?![:\d\w,-])"
+            non_flag_pattern = r"(?<![:\w\d,\-/])([\w\d,_/]+)(?![:\d\w,\-/])"
             plain_match = re.findall(non_flag_pattern, query)
             plain_query = " ".join(plain_match)
         
-        # Which value to sort output by
-        sort_by = "name"
-        secondary_sort_by = "name" # This is constant
-        if flags.get("sort") is not None:
-            sort_by = flags["sort"]
-            flags.pop("sort")
-        
-        reverse = False
-        reverse_flag = flags.get("reverse")
-        if reverse_flag is not None and reverse_flag.lower() == "true":
-            reverse = True
-            flags.pop("reverse")
+        results: dict[tuple[str, str], Any] = {}
 
-        page = 0
-        page_flag = flags.get("page")
-        if page_flag is not None and page_flag.isnumeric():
-            page = int(flags["page"]) - 1
-            flags.pop("page")
+        if flags.get("type") is None or flags.get("type") == "tile":
+            if plain_query.strip() or any(x in flags for x in ("sprite", "text", "source", "modded", "color", "tiling", "tag")):
+                color = flags.get("color")
+                f_color_x = f_color_y = None
+                if color is not None:
+                    match = re.match(r"(\d)/(\d)", color)
+                    if match is None:
+                        z = constants.COLOR_NAMES.get("color")
+                        if z is not None:
+                            f_color_x, f_color_y = z
+                    else:
+                        f_color_x = int(match.group(1))
+                        f_color_y = int(match.group(2))
+                rows = await self.bot.db.conn.fetchall(
+                    '''
+                    SELECT * FROM tiles 
+                    WHERE name LIKE "%" || :name || "%" AND (
+                        CASE :f_text
+                            WHEN NULL THEN 1
+                            WHEN "false" THEN (name NOT LIKE "text_%")
+                            WHEN "true" THEN (name LIKE "text_%")
+                            ELSE 1
+                        END
+                    ) AND (
+                        :f_source IS NULL OR source == :f_source
+                    ) AND (
+                        CASE :f_modded 
+                            WHEN NULL THEN 1
+                            WHEN "false" THEN (source == "baba")
+                            WHEN "true" THEN (source != "baba")
+                            ELSE 1
+                        END
+                    ) AND (
+                        :f_color_x IS NULL AND :f_color_y IS NULL OR (
+                            (
+                                inactive_color_x == :f_color_x AND
+                                inactive_color_y == :f_color_y
+                            ) OR (
+                                active_color_x == :f_color_x AND
+                                active_color_y == :f_color_y
+                            )
+                        )
+                    ) AND (
+                        :f_tiling IS NULL OR CAST(tiling AS TEXT) == :f_tiling
+                    ) AND (
+                        :f_tag IS NULL OR INSTR(tags, :f_tag)
+                    )
+                    ORDER BY name, version ASC;
+                    ''',
+                    dict(
+                        name=plain_query,
+                        f_text=flags.get("text"),
+                        f_source=flags.get("source"),
+                        f_modded=flags.get("modded"),
+                        f_color_x=f_color_x,
+                        f_color_y=f_color_y,
+                        f_tiling=flags.get("tiling"),
+                        f_tag=flags.get("tag")
+                    )
+                )
+                for row in rows:
+                    results["tile", row["name"]] = TileData.from_row(row)
 
-        # How many results will be shown
-        limit = 20
-        results = 0
-        matches = []
-
-        # Searches through a list of the names of each tile
-        # BIG BIG TODO HERE
-        data = self.bot.get._tile_data
-        for name,tile in data.items():
-            if has_flags:
-                # Checks if the object matches all the flag parameters
-                passed = {f:False for f,v in flags.items()}
-                # Process flags for one object
-                for flag,value in flags.items():
-                    # Object name starts with "text_"
-                    if flag.lower() == "text":
-                        
-                        if value.lower() == "true":
-                            if name.startswith("text_"): passed[flag] = True
-
-                        elif value.lower() == "false":
-                            if not name.startswith("text_"): passed[flag] = True
-                    
-                    # Object source is vanilla, modded or (specific mod)
-                    elif flag == "source":
-                        if value.lower() == "modded":
-                            if tile["source"] not in ["vanilla", "vanilla-extensions"]:
-                                passed[flag] = True
-                        else:
-                            if tile["source"] == value.lower():
-                                passed[flag] = True
-
-                    # Object uses a specific color index ("x,y" is parsed to ["x", "y"])
-                    elif flag == "color":
-                        index = value.lower().split(",")
-                        if tile["color"] == index:
-                            passed[flag] = True
-
-                    # For all other flags: Check that the specified object attribute has a certain value
-                    else:  
-                        if tile.get(flag) == value.lower():
-                            passed[flag] = True
+        if flags.get("type") is None or flags.get("type") == "level":
+            if plain_query.strip() or any(x in flags for x in ("map", "world", "author", "custom")):
+                if flags.get("custom") is None or flags.get("custom"):
+                    f_author=flags.get("author")
+                    async with self.bot.db.conn.cursor() as cur:
+                        await cur.execute(
+                            '''
+                            SELECT * FROM custom_levels 
+                            WHERE code == :code AND (
+                                :f_author IS NULL OR author == :f_author 
+                            );
+                            ''',
+                            dict(code=plain_query, f_author=f_author)
+                        )
+                        row = await cur.fetchone()
+                        if row is not None:
+                            custom_data = CustomLevelData.from_row(row)
+                            results["level", plain_query] = custom_data
+                        await cur.execute(
+                            '''
+                            SELECT * FROM custom_levels
+                            WHERE name == :name AND (
+                                :f_author IS NULL OR author == :f_author
+                            )
+                            ''',
+                            dict(name=plain_query, f_author=f_author)
+                        )
+                        for row in await cur.fetchall():
+                            custom_data = CustomLevelData.from_row(row)
+                            results["level", plain_query] = custom_data
                 
-                # If we pass all flags (and there are more than 0 passed flags)
-                if has_flags and all(passed.values()):
-                    if plain_query in name:
-                        results += 1
-                        # Add our object to our results, and append its name (originally a key)
-                        obj = tile
-                        obj["name"] = name
-                        matches.append(obj)
-
-            # If we have no flags, simply use a substring search
-            else:
-                if query in name:
-                    results += 1
-                    obj = tile
-                    obj["name"] = name
-                    matches.append(obj)
-
-        # Determine our output pagination
-        first_result = page * limit
-        last_result = (page + 1) * limit
-        # Some sanitization to avoid negative indices
-        if first_result < 0: 
-            first_result = 0
-        if last_result < 0:
-            last_result = limit
-        # If we try to go over the limit, just show the last page
-        last_page = results // limit
-        if first_result > results:
-            first_result = last_page
-        if last_result > results:
-            last_result = results - 1
+                if flags.get("custom") is None or not flags.get("custom"):
+                    levels = await self.bot.get_cog("Baba Is You").search_levels(plain_query, **flags)
+                    for (world, id), data in levels.items():
+                        results["level", f"{world}/{id}"] = data
         
-        # What message to prefix our output with
-        if results == 0:
-            matches.insert(0, f"Found no results for \"{sanitized_query}\".")
-        elif results > limit:
-            matches.insert(0, f"Found {results} results using query \"{sanitized_query}\". Showing page {page + 1} of {last_page + 1}:")
-        else:
-            matches.insert(0, f"Found {results} results using query \"{sanitized_query}\":")
+        if flags.get("type") is None or flags.get("type") == "palette":
+            if plain_query:
+                for path in Path("data/palettes").glob(f"*{plain_query}*.png"):
+                    results["palette", path.parts[-1][:-5]] = path.parts[-1][:-5]
         
-        # Tidy up our output with this mess
-        content = "\n".join([f"**{x.get('name')}** : {', '.join([f'{k}: `{v[0]},{v[1]}`' if isinstance(v, list) else f'{k}: `{v}`' for k, v in sorted(x.items(), key=lambda λ: λ[0]) if k not in ['name', 'tags']])}" if not isinstance(x, str) else x for x in [matches[0]] + sorted(matches[1:], key=lambda λ: (λ[sort_by], λ[secondary_sort_by]), reverse=reverse)[first_result:last_result + 1]])
-        await ctx.send(content)
+        if flags.get("type") is None or flags.get("type") == "mod":
+            if plain_query:
+                for path in Path("data/custom").glob(f"*{plain_query}*.json"):
+                    results["mod", path.parts[-1][:-5]] = path.parts[-1][:-5]
 
+        if flags.get("type") is None or flags.get("type") == "variant":
+            for variant in self.bot.handlers.all_variants():
+                if plain_query in variant:
+                    results["variant", variant] = variant
+
+        await menus.MenuPages(
+            source=SearchPageSource(
+                list(results.items()),
+                plain_query
+            ),
+            clear_reactions_after=True
+        ).start(ctx)
+        
     @commands.cooldown(5, 8, type=commands.BucketType.channel)
     @commands.command(name="palettes")
     async def list_palettes(self, ctx: Context):
