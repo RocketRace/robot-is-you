@@ -105,8 +105,28 @@
     "tags": "baba_special"
   },
   {
+    "sprite": "gate",
+    "name": "gate",
+    "tiling": "-1",
+    "color": [
+      "2",
+      "2"
+    ],
+    "tags": "baba_special"
+  },
+  {
     "sprite": "fort",
     "name": "wall_map",
+    "tiling": "1",
+    "color": [
+      "1",
+      "1"
+    ],
+    "tags": "baba_special"
+  },
+  {
+    "sprite": "fort",
+    "name": "fort",
     "tiling": "1",
     "color": [
       "1",
@@ -125,8 +145,28 @@
     "tags": "baba_special"
   },
   {
+    "sprite": "trees",
+    "name": "trees",
+    "tiling": "-1",
+    "color": [
+      "5",
+      "2"
+    ],
+    "tags": "baba_special"
+  },
+  {
     "sprite": "husks",
     "name": "husk_map",
+    "tiling": "-1",
+    "color": [
+      "6",
+      "6"
+    ],
+    "tags": "baba_special"
+  },
+  {
+    "sprite": "husks",
+    "name": "husks",
     "tiling": "-1",
     "color": [
       "6",

@@ -271,12 +271,12 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
 
     @commands.command()
     @commands.is_owner()
-    async def loadmaps(self, ctx: Context):
-        '''Loads and renders all levels.
+    async def loadmaps(self, ctx: Context, world: str = "baba", also_mobile: bool = True):
+        '''Loads and renders levels in a world and its mobile variant.
         Initializes the level tree unless otherwise specified.
         Cuts off borders from rendered levels unless otherwise specified.
         '''
-        levels = [l[:-2] for l in listdir("data/levels/baba") if l.endswith(".l")]
+        levels = [l[:-2] for l in listdir(f"data/levels/{world}") if l.endswith(".l")]
 
         # Parse and render the level map
         await ctx.send("Loading maps...")
@@ -285,17 +285,29 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         for i,level in enumerate(levels):
             metadata = await self.render_level(
                 level,
-                source="baba", 
+                source=world, 
                 initialize=True, 
                 remove_borders=True,
                 keep_background=True,
                 tile_borders=True
             )
+            if also_mobile:
+                try:
+                    await self.render_level(
+                        level,
+                        source=f"{world}_m", 
+                        initialize=False, 
+                        remove_borders=True,
+                        keep_background=True,
+                        tile_borders=True
+                    )
+                except FileNotFoundError:
+                    pass
             metadatas[level] = metadata
             await asyncio.sleep(0)
-            if i % 50 == 0:
-                await ctx.send(f"{i + 1} / {total}")
-        await ctx.send(f"{total} / {total} maps loaded.")
+            if i and i % 50 == 0:
+                await ctx.send(f"{i}/{total}")
+        await ctx.send(f"{total}/{total} maps loaded.")
         await self.clean_metadata(metadatas)
         await ctx.send(f"{ctx.author.mention} Database updated. Done.")
 
@@ -706,8 +718,12 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             dirs_buffer = zobj.decompress(stream.read(compressed_size))
 
             for j in range(len(dirs_buffer) - 1):
-                item = items[j]
-                item.direction = dirs_buffer[j]
+                try:
+                    item = items[j]
+                    item.direction = dirs_buffer[j]
+                except IndexError:
+                    print("huh?")
+                    break
 
 def setup(bot: Bot):
     bot.add_cog(Reader(bot))

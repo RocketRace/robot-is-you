@@ -1,5 +1,6 @@
 from __future__ import annotations
 import collections
+import os
 
 import re
 from datetime import datetime
@@ -477,8 +478,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         return levels
 
     @commands.cooldown(5, 8, commands.BucketType.channel)
-    @commands.command(name="level")
-    async def _level(self, ctx: Context, *, query: str):
+    @commands.group(name="level", invoke_without_command=True)
+    async def level_command(self, ctx: Context, *, query: str):
         '''Renders the Baba Is You level from a search term.
 
         Levels are searched for in the following order:
@@ -489,6 +490,23 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         * Level name (e.g. "further fields")
         * The map ID of a world (e.g. "cavern", or "lake")
         '''
+        await self.perform_level_command(ctx, query, False)
+
+    @commands.cooldown(5, 8, commands.BucketType.channel)
+    @level_command.command()
+    async def mobile(self, ctx: Context, *, query: str):
+        '''Renders the mobile Baba Is You level from a search term.
+
+        Levels are searched for in the following order:
+        * World & level ID (e.g. "baba/20level")
+        * Level ID (e.g. "16level")
+        * Level number (e.g. "space-3" or "lake-extra 1")
+        * Level name (e.g. "further fields")
+        * The map ID of a world (e.g. "cavern", or "lake")
+        '''
+        await self.perform_level_command(ctx, query, True)
+    
+    async def perform_level_command(self, ctx: Context, query: str, mobile: bool):
         # User feedback
         await ctx.trigger_typing()
 
@@ -498,7 +516,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         fine_query = query.lower().strip().replace("|", "")
         
         # [abcd-0123]
-        if re.match(r"^[a-z0-9]{4}\-[a-z0-9]{4}$", fine_query):
+        if re.match(r"^[a-z0-9]{4}\-[a-z0-9]{4}$", fine_query) and not mobile:
             row = await self.bot.db.conn.fetchone(
                 '''
                 SELECT * FROM custom_levels WHERE code == ?;
@@ -533,7 +551,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             level = custom_level
 
         if isinstance(level, LevelData):
-            gif = discord.File(f"target/renders/{level.world}/{level.id}.gif", spoiler=True)
             path = level.unique()
             display = level.display()
             rows = [
@@ -544,6 +561,24 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 rows.append(
                     f"Subtitle: `{level.subtitle}`"
                 )
+            mobile_exists = os.path.exists(f"target/renders/{level.world}_m/{level.id}.gif")
+            
+            if not mobile and mobile_exists:
+                rows.append(
+                    f"*This level is also on mobile, see `+level mobile {level.unique()}`*"
+                )
+            elif mobile:
+                rows.append(
+                    f"*This is the mobile version. For others, see `+level {level.unique()}`*"
+                )
+
+            if mobile and mobile_exists:
+                gif = discord.File(f"target/renders/{level.world}_m/{level.id}.gif", spoiler=True)
+            elif mobile and not mobile_exists:
+                rows.append("*This level doesn't have a mobile version. Using the normal gif instead...*")
+                gif = discord.File(f"target/renders/{level.world}/{level.id}.gif", spoiler=True)
+            else:
+                gif = discord.File(f"target/renders/{level.world}/{level.id}.gif", spoiler=True)
         else:
             gif = discord.File(f"target/renders/levels/{level.code}.gif", spoiler=True)
             path = level.unique()
