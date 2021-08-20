@@ -25,7 +25,7 @@ class SearchPageSource(menus.ListPageSource):
         target = f" for `{self.query}`" if self.query else ""
         out = discord.Embed(
             color=menu.bot.embed_color,
-            title=f"Search results{target} (Page {menu.current_page + 1} / {self.get_max_pages()})"
+            title=f"Search results{target} (Page {menu.current_page + 1}/{self.get_max_pages()})"
         )
         out.set_footer(text="Note: Some custom levels may not show up here.")
         lines = ["```"]
@@ -50,6 +50,28 @@ class SearchPageSource(menus.ListPageSource):
         else:
             out.title = f"No results found{target}"
         return out
+
+class HintPageSource(menus.ListPageSource):
+    def __init__(self, data: Sequence[tuple[str, dict[str, str]]], level: LevelData, others: int):
+        self.level = level
+        self.others = others
+        super().__init__(data, per_page=1)
+    
+    async def format_page(self, menu: menus.Menu, entries: tuple[str, dict[str, str]]) -> discord.Embed:
+        group, hints = entries
+        embed = discord.Embed(
+            color=menu.bot.embed_color,
+            title=f"Hints for `{self.level.display()}` -- `{group}` ({menu.current_page + 1}/{self.get_max_pages()} endings)",
+        )
+        if self.others > 0:
+            embed.set_footer(text=f"Found {self.others} other levels. Please change your search term if you meant any of those.")
+        
+        rows = ["*Click on the spoilers to view each hint*"]
+        for kind, hint in hints.items():
+            rows.append(f"__{kind}__: ||{hint}||")
+        
+        embed.description = "\n\n".join(rows)
+        return embed
 
 class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
     def __init__(self, bot: Bot):
@@ -252,21 +274,6 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         ).start(ctx)
         
     @commands.cooldown(5, 8, type=commands.BucketType.channel)
-    @commands.command(name="palettes")
-    async def list_palettes(self, ctx: Context):
-        '''Lists palettes usable for rendering.
-
-        Palettes can be used as arguments for the `tile` (and subsequently `rule`) commands.
-        '''
-        msg = []
-        for palette in listdir("data/palettes"):
-            if not palette in [".DS_Store"]:
-                msg.append(palette[:-4])
-        msg.sort()
-        msg.insert(0, "Valid palettes:")
-        await ctx.send("\n".join(msg))
-    
-    @commands.cooldown(5, 8, type=commands.BucketType.channel)
     @commands.command(name="palette")
     async def show_palette(self, ctx: Context, palette: str):
         '''Displays palette image.
@@ -285,6 +292,33 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         buf.seek(0)
         file = discord.File(buf, filename=f"palette_{palette}.png")
         await ctx.reply(f"Palette `{palette}`:", file=file)
+
+    @commands.cooldown(5, 8, type=commands.BucketType.channel)
+    @commands.command(name="hint", aliases=["hints"])
+    async def show_hint(self, ctx: Context, *, level_query: str):
+        levels = await self.bot.get_cog("Baba Is You").search_levels(level_query)
+        if len(levels) == 0:
+            return await ctx.error(f"No levels found with the query `{level_query}`.")
+        _, choice = levels.popitem(last=False)
+        choice: LevelData
+        
+        hints = self.bot.db.hints(choice.id)
+        if hints is None:
+            if len(levels) > 0:
+                return await ctx.error(
+                    f"No hints found for `{choice.display()}`. "
+                    "Please narrow your search if you meant a different level."
+                )
+            return await ctx.error(f"No hints found for `{choice.display()}`.")
+        
+        await menus.MenuPages(
+            source=HintPageSource(
+                list(hints.items()),
+                choice,
+                len(levels)
+            ),
+            clear_reactions_after=True
+        ).start(ctx)
 
     @commands.cooldown(5, 8, type=commands.BucketType.channel)
     @commands.command(name="variants")

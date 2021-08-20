@@ -115,7 +115,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
     async def cog_check(self, ctx: Context):
         return not self.bot.loading
 
-    @commands.command(aliases=["info", "you"])
+    @commands.command(aliases=["info"])
     @commands.cooldown(5, 8, commands.BucketType.channel)
     async def about(self, ctx: Context):
         """
@@ -142,6 +142,10 @@ class MetaCog(commands.Cog, name="Other Commands"):
         about_embed.add_field(name="Statistics", value=stats)
         about_embed.add_field(name="Valid Prefixes", value="\n".join([
             "`" + p + "`" for p in self.bot.prefixes
+        ]))
+        about_embed.add_field(name="Credits", value="\n".join([
+            "[Baba Is Bookmark](https://baba-is-bookmark.herokuapp.com/) (custom level database) by SpiccyMayonnaise",
+            "[Baba Is Hint](https://www.keyofw.com/baba-is-hint/) (hints for levels) by keyofw",
         ]))
         await ctx.send(embed=about_embed)
     

@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+import json
 import random
-from sqlite3.dbapi2 import Row
 import string
-from typing import Any, AsyncGenerator, Iterable
-from asqlite import Cursor
+from dataclasses import dataclass
+from sqlite3.dbapi2 import Row
+from typing import AsyncGenerator, Iterable
 
 import asqlite
 from PIL import Image
@@ -16,8 +16,11 @@ from .constants import DIRECTIONS
 class Database:
     '''Everything relating to persistent readable & writable data'''
     conn: asqlite.Connection
+    level_hints: dict[str, dict[str, dict[str, str]]]
     async def connect(self, db: str) -> None:
         '''Startup'''
+        with open("data/hints/baba.json") as fp:
+            self.level_hints = json.load(fp)
         self.conn = await asqlite.connect(db) # type: ignore
         print("Initialized database connection.")
         await self.create_tables()
@@ -167,6 +170,10 @@ class Database:
             Image.open(f"data/plates/plate_property{DIRECTIONS[direction]}_0_{wobble+1}.png").convert("RGBA"),
             (3, 3)
         )
+    
+    def hints(self, level_id: str) -> dict[str, dict[str, str]] | None:
+        '''The hints for a baba level'''
+        return self.level_hints.get(level_id.lower())
 
 @dataclass
 class TileData:
