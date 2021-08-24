@@ -1,15 +1,14 @@
 from __future__ import annotations
+from os import PathLike
 
 import random
+from src.tile import FullTile, ReadyTile
 import zipfile
 from io import BytesIO
-from typing import TYPE_CHECKING, BinaryIO
+from typing import BinaryIO
 
 import numpy as np
 from PIL import Image, ImageChops, ImageFilter
-
-if TYPE_CHECKING:
-    from ..tile import FullGrid
 
 from .. import constants, errors
 from ..types import Bot
@@ -23,16 +22,24 @@ class Renderer:
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
+    def recolor(self, sprite: Image.Image, rgb: tuple[int, int, int]) -> Image.Image:
+        '''Apply rgb color multiplication (0-255)'''
+        r,g,b = rgb
+        arr = np.asarray(sprite, dtype='float64')
+        arr[..., 0] *= r / 256
+        arr[..., 1] *= g / 256
+        arr[..., 2] *= b / 256
+        return Image.fromarray(arr.astype('uint8'))
+
     async def render(
         self,
-        grid: FullGrid,
+        grid: list[list[list[ReadyTile]]],
         *,
         palette: str = "default",
         images: list[str] | None = None,
         image_source: str = "baba",
         out: str | BinaryIO = "target/renders/render.gif",
         background: tuple[int, int] | None = None,
-        random_animations: bool = False,
         upscale: bool = True,
         extra_out: str | BinaryIO | None = None,
         extra_name: str | None = None,
@@ -48,7 +55,7 @@ class Renderer:
         `background` is a palette index. If given, the image background color is set to that color, otherwise transparent. Background images overwrite this. 
         '''
         palette_img = Image.open(f"data/palettes/{palette}.png").convert("RGB")
-        sprite_cache = {}
+        sprite_cache: dict[str, Image.Image] = {}
         imgs = []
         # This is appropriate padding, no sprites can go beyond it
         padding = constants.DEFAULT_SPRITE_SIZE
@@ -57,8 +64,7 @@ class Renderer:
             height = len(grid)
             img_width = width * constants.DEFAULT_SPRITE_SIZE + 2 * padding
             img_height =  height * constants.DEFAULT_SPRITE_SIZE + 2 * padding
-            # keeping track of the amount of padding we can slice off
-            pad_r=pad_u=pad_l=pad_d=0
+
             if images and image_source is not None:
                 img = Image.new("RGBA", (img_width, img_height))
                 # for loop in case multiple background images are used (i.e. baba's world map)
@@ -72,47 +78,19 @@ class Renderer:
             # neither
             else: 
                 img = Image.new("RGBA", (img_width, img_height))
-            for y, row in enumerate(grid):
-                for x, stack in enumerate(row):
-                    for tile in stack:
-                        if tile.empty:
-                            continue
-                        wobble = (11 * x + 13 * y + frame) % 3 if random_animations else frame
-                        if tile.custom:
-                            sprite = await self.generate_sprite(
-                                tile.name,
-                                style=tile.custom_style or "noun",
-                                direction=tile.custom_direction,
-                                meta_level=tile.meta_level,
-                                wobble=wobble,
-                            )
-                        else:
-                            if tile.name in ("icon",):
-                                path = f"data/sprites/baba/{tile.name}.png"
-                            elif tile.name in ("smiley", "hi") or tile.name.startswith("icon"):
-                                path = f"data/sprites/baba/{tile.name}_1.png"
-                            elif tile.name == "default":
-                                path = f"data/sprites/baba/default_{wobble + 1}.png"
-                            else:
-                                source, sprite_name = tile.sprite
-                                path = f"data/sprites/{source}/{sprite_name}_{tile.variant_number}_{wobble + 1}.png"
-                            sprite = cached_open(path, cache=sprite_cache, fn=Image.open).convert("RGBA")
-                            
-                            sprite = await self.apply_options_name(
-                                tile.name,
-                                sprite,
-                                style=tile.custom_style or "noun",
-                                direction=tile.custom_direction,
-                                meta_level=tile.meta_level,
-                                wobble=wobble,
-                            )
-                        # Color conversion
-                        r, g, b = tile.color_rgb if tile.color_rgb is not None else palette_img.getpixel(tile.color_index)
-                        arr = np.asarray(sprite, dtype='float64')
-                        arr[..., 0] *= r / 256
-                        arr[..., 1] *= g / 256
-                        arr[..., 2] *= b / 256
-                        sprite = Image.fromarray(arr.astype('uint8'))
+            imgs.append(img)
+        
+        # keeping track of the amount of padding we can slice off
+        pad_r=pad_u=pad_l=pad_d=0
+        width = len(grid[0])
+        height = len(grid)
+        for y, row in enumerate(grid):
+            for x, stack in enumerate(row):
+                for tile in stack:
+                    if tile.frames is None:
+                        continue
+                    
+                    for frame, sprite in enumerate(tile.frames):
                         x_offset = (sprite.width - constants.DEFAULT_SPRITE_SIZE) // 2
                         y_offset = (sprite.height - constants.DEFAULT_SPRITE_SIZE) // 2
                         if x == 0:
@@ -123,19 +101,99 @@ class Renderer:
                             pad_u = max(pad_u, y_offset)
                         if y == height - 1:
                             pad_d = max(pad_d, y_offset)
-                        img.paste(sprite, (x * constants.DEFAULT_SPRITE_SIZE + padding - x_offset, y * constants.DEFAULT_SPRITE_SIZE + padding - y_offset), mask=sprite)
-            
+                        imgs[frame].paste(sprite, (x * constants.DEFAULT_SPRITE_SIZE + padding - x_offset, y * constants.DEFAULT_SPRITE_SIZE + padding - y_offset), mask=sprite)
+        
+        outs = []
+        for img in imgs:
             img = img.crop((padding - pad_l, padding - pad_u, img.width - padding + pad_r, img.height - padding + pad_d))
             if upscale:
                 img = img.resize((2 * img.width, 2 * img.height), resample=Image.NEAREST)
-            imgs.append(img)
+            outs.append(img)
 
         self.save_frames(
-            imgs,
+            outs,
             out,
             extra_out=extra_out,
             extra_name=extra_name
         )
+
+    async def render_full_tile(self,
+        tile: FullTile,
+        *,
+        position: tuple[int, int],
+        palette_img: Image.Image,
+        random_animations: bool = False,
+        sprite_cache: dict[str, Image.Image]
+    ) -> ReadyTile:
+        '''woohoo'''
+        if tile.empty:
+            return ReadyTile(None)
+        out = []
+        x, y = position
+        for frame in range(3):
+            wobble = (11 * x + 13 * y + frame) % 3 if random_animations else frame
+            if tile.custom:
+                sprite = await self.generate_sprite(
+                    tile.name,
+                    style=tile.custom_style or "noun",
+                    direction=tile.custom_direction,
+                    meta_level=tile.meta_level,
+                    wobble=wobble,
+                )
+            else:
+                if tile.name in ("icon",):
+                    path = f"data/sprites/baba/{tile.name}.png"
+                elif tile.name in ("smiley", "hi") or tile.name.startswith("icon"):
+                    path = f"data/sprites/baba/{tile.name}_1.png"
+                elif tile.name == "default":
+                    path = f"data/sprites/baba/default_{wobble + 1}.png"
+                else:
+                    source, sprite_name = tile.sprite
+                    path = f"data/sprites/{source}/{sprite_name}_{tile.variant_number}_{wobble + 1}.png"
+                sprite = cached_open(path, cache=sprite_cache, fn=Image.open).convert("RGBA")
+                
+                sprite = await self.apply_options_name(
+                    tile.name,
+                    sprite,
+                    style=tile.custom_style or "noun",
+                    direction=tile.custom_direction,
+                    meta_level=tile.meta_level,
+                    wobble=wobble,
+                )
+            # Color conversion
+            rgb = tile.color_rgb if tile.color_rgb is not None else palette_img.getpixel(tile.color_index)
+            sprite = self.recolor(sprite, rgb)
+            out.append(sprite)
+        f0, f1, f2 = out
+        return ReadyTile((f0, f1, f2))
+
+    async def render_full_tiles(
+        self,
+        grid: list[list[list[FullTile]]],
+        *,
+        palette: str = "default",
+        random_animations: bool = False
+    ) -> list[list[list[ReadyTile]]]:
+        '''Final individual tile processing step'''
+        sprite_cache = {}
+        palette_img = Image.open(f"data/palettes/{palette}.png").convert("RGB")
+
+        a = []
+        for y, row in enumerate(grid):
+            b = []
+            for x, stack in enumerate(row):
+                b.append([
+                    await self.render_full_tile(
+                        tile,
+                        position=(x, y),
+                        palette_img=palette_img,
+                        random_animations=random_animations,
+                        sprite_cache=sprite_cache
+                    )
+                    for tile in stack
+                ])
+            a.append(b)
+        return a
 
     async def generate_sprite(
         self,

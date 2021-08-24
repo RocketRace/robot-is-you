@@ -252,11 +252,14 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             extra_names = [] if raw_output else None
             full_grid = await self.bot.handlers.handle_grid(grid, raw_output=raw_output, extra_names=extra_names, default_to_letters=default_to_letters)
             await self.bot.renderer.render(
-                full_grid,
+                await self.bot.renderer.render_full_tiles(
+                    full_grid,
+                    palette=palette,
+                    random_animations=True
+                ),
                 palette=palette,
                 background=background, 
                 out=buffer,
-                random_animations=True,
                 upscale=not raw_output,
                 extra_out=extra_buffer,
                 extra_name=extra_names[0] if raw_output else None, # type: ignore

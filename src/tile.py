@@ -1,5 +1,10 @@
 from __future__ import annotations
-from typing import Literal, TYPE_CHECKING, TypedDict
+
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Literal, TypedDict
+
+from PIL import Image
+
 from . import errors
 
 if TYPE_CHECKING:
@@ -7,11 +12,11 @@ if TYPE_CHECKING:
     FullGrid = list[list[list['FullTile']]]
     GridIndex = tuple[int, int, int]
 
+@dataclass
 class RawTile:
     '''Raw tile given from initial pass of +rule and +tile command parsing'''
-    def __init__(self, name: str, variants: list[str]) -> None:
-        self.name = name
-        self.variants = variants
+    name: str
+    variants: list[str]
     
     def __repr__(self) -> str:
         return self.name
@@ -43,33 +48,21 @@ class TileFields(TypedDict, total=False):
     custom: bool
     style_flip: bool
 
+@dataclass
 class FullTile:
     '''A tile ready to be rendered'''
-    def __init__(self, *,
-        name: str,
-        sprite: tuple[str, str] = ("vanilla", "error"),
-        variant_number: int = 0,
-        color_index: tuple[int, int] = (0, 3),
-        color_rgb: tuple[int, int, int] | None = None,
-        custom: bool = False,
-        style_flip: bool = False,
-        empty: bool = False,
-        meta_level: int = 0,
-        custom_direction: int | None = None,
-        custom_style: Literal["noun", "property", "letter"] | None = None,
-    ) -> None:
-        self.name = name
-        self.sprite = sprite
-        self.variant_number = variant_number
-        self.color_index = color_index
-        self.color_rgb = color_rgb
-        self.empty = empty
-        self.meta_level = meta_level
-        self.style_flip = style_flip
-        self.custom = custom
-        self.custom_direction = custom_direction
-        self.custom_style = custom_style
-
+    name: str
+    sprite: tuple[str, str] = "baba", "error"
+    variant_number: int = 0
+    color_index: tuple[int, int] = (0, 3)
+    color_rgb: tuple[int, int, int] | None = None
+    custom: bool = False
+    style_flip: bool = False
+    empty: bool = False
+    meta_level: int = 0
+    custom_direction: int | None = None
+    custom_style: Literal["noun", "property", "letter"] | None = None
+    
     @classmethod
     def from_tile_fields(cls, tile: RawTile, fields: TileFields) -> FullTile:
         '''Create a FullTile from a RawTile and TileFields'''
@@ -77,3 +70,8 @@ class FullTile:
             name=tile.name,
             **fields
         )
+
+@dataclass
+class ReadyTile:
+    '''Tile that's about to be rendered, and already has a prerendered sprite.'''
+    frames: tuple[Image.Image, Image.Image, Image.Image] | None

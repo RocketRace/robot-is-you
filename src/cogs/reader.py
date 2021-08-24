@@ -4,15 +4,21 @@ import asyncio
 import base64
 import configparser
 import io
-from src.db import CustomLevelData, LevelData
+import re
 import zlib
-from os import listdir, stat
-from typing import BinaryIO, TextIO
+from dataclasses import dataclass
+from os import listdir
+from typing import Any, BinaryIO, TextIO
 
 import aiohttp
+import numpy as np
 from discord.ext import commands
+from PIL import Image
+from src import constants
+from src.db import CustomLevelData, LevelData
+from src.utils import cached_open
 
-from ..tile import RawTile
+from ..tile import RawTile, ReadyTile
 from ..types import Bot, Context
 
 
@@ -47,66 +53,117 @@ class Grid:
         # Custom levels
         self.author: str | None = None
     
-    def raw_grid(self) -> list[list[list[RawTile]]]:
-        '''Returns an unflattened version of the grid.'''
-        height = self.height
-        width = self.width
-        return [
-            [
-                [
-                    RawTile(
-                        name=o.name or "error",
-                        variants=[
-                            "ruld"[o.direction or 0]
-                        ] + ([
-                            "/".join(tuple(map(str, o.color)))
-                        ] if o.color is not None else [])
+    def ready_grid(self) -> list[list[list[ReadyTile]]]:
+        '''Returns a ready-to-paste version of the grid.'''
+        def is_adjacent(sprite: str, x: int, y: int) -> bool:
+            valid = (sprite, "edge", "level")
+            if x == 0 or x == self.width - 1:
+                return True
+            if y == 0 or y == self.height - 1:
+                return True
+            return any(item.sprite in valid for item in self.cells[y * self.width + x])
+        
+        def open_sprite(world: str, sprite: str, variant: int, wobble: int, *, cache: dict[str, Image.Image]) -> Image.Image:
+            '''This first checks the given world, then the `baba` world, then `baba-extensions`, and if both fail it returns `default`'''
+            if sprite == "icon":
+                path = f"data/sprites/{{}}/icon.png"
+            elif sprite in ("smiley", "hi") or sprite.startswith("icon"):
+                path = f"data/sprites/{{}}/{sprite}_1.png"
+            elif sprite == "default":
+                path = f"data/sprites/{{}}/default_{wobble}.png"
+            else:
+                path = f"data/sprites/{{}}/{sprite}_{variant}_{wobble}.png"
+            
+            for maybe_world in (world, "baba", "baba-extensions"):
+                try:
+                    return cached_open(path.format(maybe_world), cache=cache, fn=Image.open).convert("RGBA")
+                except FileNotFoundError:
+                    continue
+            else:
+                return cached_open(f"data/sprites/baba/default_{wobble}.png", cache=cache, fn=Image.open).convert("RGBA")
+            
+        def recolor(sprite: Image.Image, rgb: tuple[int, int, int]) -> Image.Image:
+            '''Apply rgb color multiplication (0-255)'''
+            r,g,b = rgb
+            arr = np.asarray(sprite, dtype='float64')
+            arr[..., 0] *= r / 256
+            arr[..., 1] *= g / 256
+            arr[..., 2] *= b / 256
+            return Image.fromarray(arr.astype('uint8'))
+        
+        sprite_cache = {}
+        grid = []
+        palette_img = Image.open(f"data/palettes/{self.palette}.png").convert("RGB")
+        for y in range(self.height):
+            row = []
+            for x in range(self.width):
+                stack = []
+                for item in self.cells[y * self.width + x]:
+                    item: Item
+                    if item.tiling in constants.DIRECTION_TILINGS:
+                        variant = item.direction * 8
+                    elif item.tiling in constants.AUTO_TILINGS:
+                        variant = (
+                            is_adjacent(item.sprite, x + 1, y) * 1 +
+                            is_adjacent(item.sprite, x, y - 1) * 2 +
+                            is_adjacent(item.sprite, x - 1, y) * 4 +
+                            is_adjacent(item.sprite, x, y + 1) * 8
+                        )
+                    else:
+                        variant = 0
+                    color = palette_img.getpixel(item.color)
+                    frames = (
+                        recolor(open_sprite(self.world, item.sprite, variant, 1, cache=sprite_cache), color),
+                        recolor(open_sprite(self.world, item.sprite, variant, 2, cache=sprite_cache), color),
+                        recolor(open_sprite(self.world, item.sprite, variant, 3, cache=sprite_cache), color),
                     )
-                    # "".join([
-                    #     o.name or "error",
-                    #     f":{o.direction * 8}" if o.direction is not None else "",
-                    #     ":" + "/".join(tuple(map(str, o.color))) if o.color is not None else ""
-                    # ])
-                    for o in self.cells[y * width + x]
-                ]
-                for x in range(width)
-            ]
-            for y in range(height)
-        ]
+                    stack.append(ReadyTile(frames))
+                row.append(stack)
+            grid.append(row)
 
+        return grid
+
+@dataclass
 class Item:
-    '''Represents an object within a level.
+    '''Represents an object within a level with metadata.
     This may be a regular object, a path object, a level object, a special object or empty.
     '''
-    def __init__(self, *, ID: int | None = None, obj: str | None = None, name: str | None = None, color: tuple[int, int] | None = None, position: int = None, direction: int = None, extra = None, layer: int = 0):
-        '''Returns an Item with the given parameters.'''
-        self.ID: int | None = ID
-        self.obj: str | None = obj
-        self.name: str | None = name
-        self.color: tuple[int, int] | None = color
-        self.position: int | None = position
-        self.direction: int | None = direction
-        self.extra = extra
-        self.layer: int = layer
+    id: int
+    layer: int
+    obj: str
+    sprite: str = "error"
+    color: tuple[int, int] = (0, 3)
+    direction: int = 0
+    tiling: int = -1
 
-    def copy(self) -> Item:
-        '''Returns a copy of the item.'''
-        return Item(ID=self.ID, obj=self.obj, name=self.name, color=self.color, position=self.position, direction=self.direction, extra=self.extra, layer=self.layer)
+    def copy(self):
+        return Item(id=self.id, obj=self.obj, sprite=self.sprite, color=self.color, direction=self.direction, layer=self.layer, tiling=self.tiling)
 
     @classmethod
     def edge(cls) -> Item:
         '''Returns an Item representing an edge tile.'''
-        return Item(ID=0, obj="edge", name="edge", layer=20)
+        return cls(id=0, obj="edge", sprite="edge", layer=20)
     
     @classmethod
     def empty(cls) -> Item:
         '''Returns an Item representing an empty tile.'''
-        return Item(ID=-1, obj="empty", name="empty", layer=0)
+        return cls(id=-1, obj="empty", sprite="empty", layer=0)
     
     @classmethod
     def level(cls, color: tuple[int, int] = (0, 3)) -> Item:
         '''Returns an Item representing a level object.'''
-        return Item(ID=-2, obj="level", name="level", color=color, layer=20)
+        return cls(id=-2, obj="level", sprite="level", color=color, layer=20)
+
+    @classmethod
+    def icon(cls, sprite: str) -> Item:
+        '''Level icon'''
+        if sprite == "icon":
+            sprite = sprite
+        elif sprite.startswith("icon"):
+            sprite = sprite[:-2] # strip _1 for icon sprites
+        else:
+            sprite = sprite[:-4] # strip _0_2 for normal sprites
+        return cls(id=-3, obj="icon", sprite=sprite, layer=30)
 
 class Reader(commands.Cog, command_attrs=dict(hidden=True)):
     '''A class for parsing the contents of level files.'''
@@ -115,22 +172,12 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         Populates the default objects cache from a data/values.lua file.
         '''
         self.bot = bot
-        self.defaults_by_id = {}
-        self.defaults_by_object = {}
-        self.defaults_by_name = {}
+        self.defaults_by_id: dict[int, Item] = {}
+        self.defaults_by_object: dict[str, Item] = {}
+        self.defaults_by_name: dict[str, Item] = {}
         self.parent_levels: dict[str, tuple[str, dict[str, tuple[int, int]]]] = {}
 
-        with open("data/values.lua") as reader:
-            line = None
-            while line != "":
-                line = reader.readline()
-                index = line.find("tileslist =")
-                if index == -1:
-                    continue
-                elif index == 0:
-                    # Parsing begins
-                    self.read_objects(reader)
-                    break
+        self.read_objects()
         
     async def render_custom_level(self, code: str) -> CustomLevelData:
         '''Renders a custom level. code should be valid (but is checked regardless)'''
@@ -149,7 +196,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         grid = self.read_map(code, source="levels", data=raw_l)
         grid = await self.read_metadata(grid, data=raw_ld, custom=True)
 
-        objects = grid.raw_grid()
+        objects = grid.ready_grid()
         # Strips the borders from the render
         # (last must be popped before first to preserve order)
         objects.pop(grid.height - 1)
@@ -158,8 +205,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             row.pop(grid.width - 1)
             row.pop(0)
         out = f"target/renders/levels/{code}.gif"
-        tiles = await self.bot.handlers.handle_grid(objects, tile_borders=True, ignore_bad_directions=True)
-        await self.bot.renderer.render(tiles, palette=grid.palette, background=(0, 4), out=out)
+        await self.bot.renderer.render(objects, palette=grid.palette, background=(0, 4), out=out)
         
         data = CustomLevelData(code.lower(), grid.name, grid.subtitle, grid.author)
 
@@ -182,7 +228,6 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         initialize: bool = False, 
         remove_borders: bool = False, 
         keep_background: bool = False, 
-        tile_borders: bool = False
     ) -> LevelData:
         '''Loads and renders a level, given its file path and source. 
         Shaves off the borders if specified.
@@ -190,7 +235,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         # Data
         grid = self.read_map(filename, source=source)
         grid = await self.read_metadata(grid, initialize_level_tree=initialize)
-        objects = grid.raw_grid()
+        objects = grid.ready_grid()
 
         # Shave off the borders:
         if remove_borders:
@@ -200,15 +245,12 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                 row.pop(grid.width - 1)
                 row.pop(0)
 
-        # Handle sprite variants
-        tiles = await self.bot.handlers.handle_grid(objects, ignore_bad_directions=True, tile_borders=tile_borders, ignore_editor_overrides=True)
-
         # (0,4) is the color index for level backgrounds
         background = (0,4) if keep_background else None
 
         # Render the level
         await self.bot.renderer.render(
-            tiles,
+            objects,
             palette=grid.palette,
             images=grid.images,
             image_source=grid.world,
@@ -229,7 +271,6 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             initialize=False, 
             remove_borders=True,
             keep_background=True,
-            tile_borders=True
         )
         # This should mostly just be false
         await ctx.send(f"Rendered level at `{source}/{filename}`.")
@@ -289,7 +330,6 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                 initialize=True, 
                 remove_borders=True,
                 keep_background=True,
-                tile_borders=True
             )
             if also_mobile:
                 try:
@@ -299,7 +339,6 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                         initialize=False, 
                         remove_borders=True,
                         keep_background=True,
-                        tile_borders=True
                     )
                 except FileNotFoundError:
                     pass
@@ -311,140 +350,61 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         await self.clean_metadata(metadatas)
         await ctx.send(f"{ctx.author.mention} Database updated. Done.")
 
-
-    def read_objects(self, reader: TextIO) -> int:
+    def read_objects(self) -> None:
         '''Inner function that parses the contents of the data/values.lua file.
-        Returns the largest valid object ID for in-level objects.
         '''
-        max_id = 0
-        rawline = None
-        while rawline != "":
-            rawline = reader.readline()
-            data = rawline.strip()
-            # Done parsing, end of the relevant section
-            if data == "}":
-                break
-            
-            index = data.find("=")
-            # Looking for "key=value" pairs
+        with open("data/values.lua", errors="replace") as fp:
+            data = fp.read()
+        
+        start = data.find("tileslist =\n")
+        end = data.find("\n}\n", start)
 
-            # If those are not found, move on
-            if len(data) < 2 or index < 0:
-                continue
-            
-            # Since they were found, this means we are now parsing a default object
-            item = Item()
-            # Determine the object ID of what we're parsing
-            data = data[:index].strip()
-            o = data.find("object")
-            if o == 0:
-                temp = 0
-                try:
-                    temp = int(data[6:])
-                    # This will eventually leave us with the largest valid ID
-                    if temp and temp > max_id:
-                        max_id = temp
-                except:
-                    pass
-            item.obj = data
-            
-            # Now start parsing the actual data of the object
-            raw = None
-            while raw != "":
-                raw = reader.readline()
-                obj = raw.strip()
-                # We're done parsing, move on
-                if obj == "},":
-                    break
-                
-                # "value=obj" pairs, please
-                index = obj.find("=")
-                if index == -1: continue
-                
-                # Isolate the two sides of the equals sign
-                value = obj[index + 1: len(obj) - 1].strip()
-                obj = obj[: index].strip().lower()
-                # Update the previously created Item instance with the data we parsed
-                self.set_item_value(item, obj, value)
-                
-                # ID 0 is special: edge
-                if item.ID == 0:
-                    item.name = "edge"
-                    item.obj = "edge"
+        assert start > 0 and end > 0
+        spanned = data[start:end]
 
-            # We're done parsing an object and have escaped the loop above.
-            # Now we add the item to out cache.
-            self.defaults_by_id[item.ID] = item
-            self.defaults_by_object[data] = item
-            self.defaults_by_name[item.name] = item
-
+        object_pattern = re.compile(
+            r"(object\d+) =\n\t\{"
+            r"\n.*"
+            r"\n\s*sprite = \"([^\"]*)\","
+            r"\n.*\n.*\n\s*tiling = (-1|\d),"
+            r"\n.*"
+            r"\n\s*(?:argextra = .*,\n\s*)?(?:argtype = .*,\n\s*)?"
+            r"colour = \{(\d), (\d)\},"
+            r"(?:\n\s*active = \{(\d), (\d)\},)?"
+            r"\n\s*tile = \{(\d+), (\d+)\},"
+            r"\n.*"
+            r"\n\s*layer = (\d+),"
+            r"\n\s*\}",
+        )
+        for match in re.finditer(object_pattern, spanned):
+            obj, sprite, tiling, c_x, c_y, a_x, a_y, t_x, t_y, layer = match.groups()
+            if a_x is None or a_y is None:
+                color = int(c_x), int(c_y)
+            else:
+                color = int(a_x), int(a_y)
+            item = Item(
+                obj=obj,
+                layer=int(layer),
+                id=(int(t_y) << 8) | int(t_x),
+                sprite=sprite,
+                tiling=int(tiling),
+                color=color
+            )
+            self.defaults_by_id[item.id] = item
+            self.defaults_by_object[obj] = item
+            self.defaults_by_name[item.sprite] = item
         # We've parsed and stored all objects from data/values.lua in cache.
         # Now we only need to add the special cases:
         # Empty tiles
         empty = Item.empty()
         self.defaults_by_object[empty.obj] = empty
-        self.defaults_by_id[empty.ID] = empty
-        self.defaults_by_name[empty.name] = empty
+        self.defaults_by_id[empty.id] = empty
+        self.defaults_by_name[empty.sprite] = empty
         # Level tiles
         level = Item.level()
         self.defaults_by_object[level.obj] = level
-        self.defaults_by_id[level.ID] = level
-        self.defaults_by_name[level.name] = level
-        # The largest valid ID we found
-        return max_id
-
-    def set_item_value(self, item: Item, obj: str, value):
-        '''Sets an Item's attribute to a value.'''
-        # Most of these attributes are commented out.
-        # They may be implemented later, if necessary.
-        if obj == "name":
-            item.name = value[1:len(value) - 1]
-        # elif obj == "sprite":
-            # item.sprite = value[1:len(value) - 2]
-        # elif obj == "sprite_in_root":
-            # item.sprite_in_root = int(value)
-        # elif obj == "unittype":
-            # item.is_object = value == "\"object\""
-        # elif obj == "type":
-            # item.type = int(value)
-        elif obj == "layer":
-            item.layer = int(value)
-        # elif obj == "colour":
-        #     item.color = self.CTS(value, shift=False)
-        # # Active should override colour!
-        # elif obj == "active":
-        #     item.color = self.CTS(value, shift=False)
-        # elif obj == "tiling":
-            # item.tiling = int(value)
-        elif obj == "tile":
-            item.ID = self.parse_literal(value)
-        # elif obj == "argextra":
-            # item.arg_extra = value[1:len(value) - 2].replace("\"", "")
-        # elif obj == "argtype":
-            # item.arg_type = value[1:len(value) - 2].replace("\"", "")
-        # elif obj == "grid":
-            # item.grid = self.CTS(value)
-
-    def parse_literal(self, value: str) -> int:
-        '''Converts a string from the output of data/values.lua to a number.
-        Examples:
-        "{1}" -> 1
-        "{1, 5}" -> 1<<8 | 5 -> 261
-        "1" -> 1
-        "1, 5" -> 1<<8 | 5 -> 261
-        '''
-        start_index = 0
-        end_index = len(value)
-        if value.find("{") == 0:
-            start_index += 1
-            end_index -= 1
-        try:
-            index = value.index(",")
-        except ValueError:
-            return int(value)
-        x = int(value[start_index: index - start_index + 1])
-        y = int(value[index + 1: end_index].strip())
-        return (y << 8) | x
+        self.defaults_by_id[level.id] = level
+        self.defaults_by_name[level.sprite] = level
 
     def read_map(self, filename: str, source: str, data: BinaryIO | None = None) -> Grid:
         '''Parses a .l file's content, given its file path.
@@ -462,7 +422,6 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         for _ in range(layer_count):
             self.read_layer(stream, grid)
         return grid
-
 
     async def read_metadata(self, grid: Grid, initialize_level_tree: bool = False, data: TextIO | None = None, custom: bool = False) -> Grid:
         '''Add everything that's not just basic tile positions & IDs'''
@@ -492,23 +451,20 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         cursor_y = config.getint("general", "selectorY", fallback=-1)
         if cursor_y != -1 and cursor_x != -1:
             cursor = self.defaults_by_name["cursor"]
-            pos = cursor.position = flatten(cursor_x, cursor_y, grid.width)
+            pos = flatten(cursor_x, cursor_y, grid.width)
             grid.cells[pos].append(cursor)
 
         # Add path objects to the grid (they're not in the normal objects)
         path_count = config.getint("general", "paths", fallback=0)
         for i in range(path_count):
-            path = Item()
             pos = flatten(
                 config.getint("paths", f"{i}X"),
                 config.getint("paths", f"{i}Y"),
                 grid.width
             )
-            path.position  = pos
+            obj = config.get("paths", f"{i}object")
+            path = self.defaults_by_object[obj].copy()
             path.direction = config.getint("paths", f"{i}dir")
-            path.obj       = config.get("paths", f"{i}object")
-            path.ID        = self.defaults_by_object[path.obj].ID
-            path.name      = self.defaults_by_object[path.obj].name
             grid.cells[pos].append(path)
 
         child_levels = {}
@@ -527,7 +483,6 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             x = config.getint("levels", f"{i}X") # no fallback
             y = config.getint("levels", f"{i}Y") # if you can't locate it, it's fricked
             pos = flatten(x, y, grid.width)
-            level.position = pos
             
             # # z mixed up with layer?
             # z = config.getint("levels", f"{i}Z", fallback=0)
@@ -541,26 +496,17 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             number = config.getint("levels", f"{i}number", fallback=0)
             # "custom" style
             if style == -1:
-                icon = Item()
-                icon_sprite = config.get("icons", f"{number}file")
-                if icon_sprite.startswith("icon"):
-                    icon.name = icon_sprite[:-2] # strip _1 for icon sprites
-                else:
-                    icon.name = icon_sprite[:-4] # strip _0_2 for normal sprites
-                # 30 should be above anything else, just a hack
-                icon.layer = 30
+                icon = Item.icon(config.get("icons", f"{number}file"))
                 grid.cells[pos].append(icon)
             # "dot" style
             elif style == 2 and number >= 10:
-                icon = Item()
-                icon.name = "icon"
-                icon.position = pos
-                icon.layer = 30
+                icon = Item.icon("icon")
                 grid.cells[pos].append(icon)
             else:
                 pass
                 # If the bot could be able to draw numbers, letters and
                 # dots in the game font (for icons), it would do so here
+                # TODO draw text using the built-in font
 
             if initialize_level_tree and grid.map_id is not None:
                 level_file = config.get("levels", f"{i}file")
@@ -611,8 +557,8 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             changed_tiles = [f"object{x}" for x in changed_record.rstrip(",").split(",") if x != ""]
         
         # include only changes that will affect the visuals
-        changes = {tile: {} for tile in changed_tiles}
-        attrs = ("name", "image", "colour", "activecolour", "layer")
+        changes: dict[str, dict[str, Any]] = {tile: {} for tile in changed_tiles}
+        attrs = ("image", "colour", "activecolour", "layer", "tiling")
         for tile in changed_tiles:
             for attr in attrs:
                 # `tile` is of the form "objectXYZ", and 
@@ -624,19 +570,12 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             for item in cell:
                 if item.obj in changes:
                     change = changes[item.obj] # type: ignore
-                    if "name" in change:
-                        if await self.bot.db.tile(change["name"], maximum_version=1000 if custom else 0) is not None:
-                            item.name = change["name"]
-                        else:
-                            item.name = "default"
-                    # The sprite overrides the name in this case
                     if "image" in change:
-                        if await self.bot.db.tile(change["image"], maximum_version=1000 if custom else 0) is not None:
-                            item.name = change["image"]
-                        else:
-                            item.name = "default"
+                        item.sprite = change["image"]
                     if "layer" in change:
                         item.layer = int(change["layer"])
+                    if "tiling" in change:
+                        item.tiling = int(change["tiling"])
                     # Text tiles always use their active color in renders,
                     # so `activecolour` is preferred over `colour`
                     #
@@ -649,7 +588,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                     if "colour" in change:
                         x, y = change["colour"].split(",")
                         item.color = (int(x), int(y))
-                    if "activecolour" in change and item.name is not None and item.name.startswith("text_"):
+                    if "activecolour" in change and item.sprite is not None and item.sprite.startswith("text_"):
                         x, y = change["activecolour"].split(",")
                         item.color = (int(x), int(y))
 
@@ -694,18 +633,17 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         items = []
         for j,k in enumerate(range(0, len(map_buffer), 2)):
             cell = grid.cells[j]
-            ID = int.from_bytes(map_buffer[k : k + 2], byteorder="little")
+            id = int.from_bytes(map_buffer[k : k + 2], byteorder="little")
 
-            item = self.defaults_by_id.get(ID)
+            item = self.defaults_by_id.get(id)
             if item is not None:
                 item = item.copy()
             else:
                 item = Item.empty()
-                ID = -1
-            item.position = j
+                id = -1
             items.append(item)
             
-            if ID != -1:
+            if id != -1:
                 cell.append(item)
 
         if data_blocks == 2:
@@ -722,7 +660,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                     item = items[j]
                     item.direction = dirs_buffer[j]
                 except IndexError:
-                    print("huh?")
+                    # huh?
                     break
 
 def setup(bot: Bot):

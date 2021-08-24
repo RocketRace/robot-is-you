@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from src.cogs.reader import Item
 from src.db import TileData
 from ..types import Bot
 from typing import Any, Callable, TYPE_CHECKING
@@ -8,7 +9,7 @@ from typing import Any, Callable, TYPE_CHECKING
 if TYPE_CHECKING:
     from ..tile import FullGrid, GridIndex, RawGrid
 
-from ..tile import FullTile, RawTile, TileFields
+from ..tile import FullTile, RawTile, ReadyTile, TileFields
 from .. import constants, errors
 
 HandlerFn = Callable[['HandlerContext'], TileFields]
