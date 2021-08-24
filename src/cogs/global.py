@@ -402,12 +402,12 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                         :f_world IS NULL OR world == :f_world
                     )
                     ORDER BY CASE world 
-                        WHEN "baba" 
+                        WHEN :default
                         THEN NULL 
                         ELSE world 
                     END ASC;
                     ''',
-                    dict(id=query, f_map=f_map, f_world=f_world)
+                    dict(id=query, f_map=f_map, f_world=f_world, default=constants.BABA_WORLD)
                 )
                 for row in await cur.fetchall():
                     data = LevelData.from_row(row)
@@ -437,12 +437,12 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                         ) AND (
                             :f_world IS NULL OR world == :f_world
                         ) ORDER BY CASE world 
-                            WHEN "baba" 
+                            WHEN :default
                             THEN NULL 
                             ELSE world 
                         END ASC;
                         ''',
-                        dict(parent=segments[0], map_id=segments[1], f_map=f_map, f_world=f_world)
+                        dict(parent=segments[0], map_id=segments[1], f_map=f_map, f_world=f_world, default=constants.BABA_WORLD)
                     )
                     for row in await cur.fetchall():
                         data = LevelData.from_row(row)
@@ -458,12 +458,12 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                         :f_world IS NULL OR world == :f_world
                     )
                     ORDER BY CASE world 
-                        WHEN "baba"
+                        WHEN :default
                         THEN NULL
                         ELSE world
                     END ASC;
                     ''',
-                    dict(name=query, f_map=f_map, f_world=f_world)
+                    dict(name=query, f_map=f_map, f_world=f_world, default=constants.BABA_WORLD)
                 )
                 for row in await cur.fetchall():
                     data = LevelData.from_row(row)
@@ -479,12 +479,12 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                         :f_world IS NULL OR world == :f_world
                     )
                     ORDER BY CASE world 
-                        WHEN "baba"
+                        WHEN :default
                         THEN NULL
                         ELSE world
                     END ASC;
                     ''',
-                    dict(map=query, f_map=f_map, f_world=f_world)
+                    dict(map=query, f_map=f_map, f_world=f_world, default=constants.BABA_WORLD)
                 )
                 for row in await cur.fetchall():
                     data = LevelData.from_row(row)

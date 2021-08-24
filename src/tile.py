@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from src.constants import BABA_WORLD
 from typing import TYPE_CHECKING, Literal, TypedDict
 
 from PIL import Image
@@ -52,7 +53,7 @@ class TileFields(TypedDict, total=False):
 class FullTile:
     '''A tile ready to be rendered'''
     name: str
-    sprite: tuple[str, str] = "baba", "error"
+    sprite: tuple[str, str] = BABA_WORLD, "error"
     variant_number: int = 0
     color_index: tuple[int, int] = (0, 3)
     color_rgb: tuple[int, int, int] | None = None

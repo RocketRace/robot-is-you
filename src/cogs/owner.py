@@ -6,6 +6,7 @@ import pathlib
 import re
 import itertools
 import collections
+from src import constants
 from typing import Any, Optional
 
 import discord
@@ -171,7 +172,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             )
 
         changed_objects: list[dict[str, Any]] = []
-        for path in pathlib.Path("data/levels/baba").glob("*.ld"):
+        for path in pathlib.Path(f"data/levels/{constants.BABA_WORLD}").glob("*.ld"):
 
             parser = configparser.ConfigParser()
             parser.read(path)
@@ -203,7 +204,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             ready.append(dict(most_common))
     
         await self.bot.db.conn.executemany(
-            '''
+            f'''
             INSERT INTO tiles(
                 name,
                 sprite,
@@ -219,7 +220,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             VALUES (
                 :name,
                 :sprite,
-                "baba",
+                {repr(constants.BABA_WORLD)},
                 0,
                 :inactive_color_x,
                 :inactive_color_y,
@@ -231,7 +232,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             ON CONFLICT(name, version)
             DO UPDATE SET
                 sprite=excluded.sprite,
-                source="baba",
+                source={repr(constants.BABA_WORLD)},
                 inactive_color_x=excluded.inactive_color_x,
                 inactive_color_y=excluded.inactive_color_y,
                 active_color_x=excluded.active_color_x,
@@ -243,12 +244,12 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         )
 
         await self.bot.db.conn.executemany(
-            '''
+            f'''
             INSERT INTO tiles
             VALUES (
                 :name,
                 :sprite,
-                "baba",
+                {repr(constants.BABA_WORLD)},
                 0,
                 :inactive_color_x,
                 :inactive_color_y,
@@ -318,12 +319,12 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             ))
         
         await self.bot.db.conn.executemany(
-            '''
+            f'''
             INSERT INTO tiles
             VALUES (
                 :name,
                 :sprite,
-                "baba",
+                {repr(constants.BABA_WORLD)},
                 1,
                 :inactive_color_x,
                 :inactive_color_y,
@@ -337,7 +338,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             ON CONFLICT(name, version)
             DO UPDATE SET 
                 sprite=excluded.sprite,
-                source="baba",
+                source={repr(constants.BABA_WORLD)},
                 inactive_color_x=excluded.inactive_color_x,
                 inactive_color_y=excluded.inactive_color_y,
                 active_color_x=excluded.active_color_x,
@@ -462,10 +463,10 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         '''Scrapes individual letters from vanilla sprites.'''
         ignored = json.load(open("config/letterignore.json"))
         for row in await self.bot.db.conn.fetchall(
-            r'''
+            f'''
             SELECT * FROM tiles
-            WHERE sprite LIKE "text\___%" ESCAPE "\"
-                AND source == "baba"
+            WHERE sprite LIKE "text\\___%" ESCAPE "\\"
+                AND source == {repr(constants.BABA_WORLD)}
                 AND text_direction IS NULL;
             '''
         ):
@@ -499,7 +500,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         # Scrape the sprites for the sprite characters in each of the three frames
         for i, plate in enumerate(plates):
             # Get the alpha channel in 1-bit depth
-            alpha = Image.open(f"data/sprites/baba/{word}_0_{i + 1}.png") \
+            alpha = Image.open(f"data/sprites/{constants.BABA_WORLD}/{word}_0_{i + 1}.png") \
                 .convert("RGBA") \
                 .getchannel("A") \
                 .convert("1")

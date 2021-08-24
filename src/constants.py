@@ -167,3 +167,6 @@ DEFAULT_SPRITE_SIZE = 24
 PALETTE_PIXEL_SIZE = 32
 SEARCH_RESULT_UNITS_PER_PAGE = 10 # roughtly half the number of lines
 OTHER_LEVELS_CUTOFF = 5
+
+BABA_WORLD = "baba"
+EXTENSIONS_WORLD = "baba-extensions"

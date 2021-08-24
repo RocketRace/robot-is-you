@@ -142,7 +142,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
                         f_color_x = int(match.group(1))
                         f_color_y = int(match.group(2))
                 rows = await self.bot.db.conn.fetchall(
-                    '''
+                    f'''
                     SELECT * FROM tiles 
                     WHERE name LIKE "%" || :name || "%" AND (
                         CASE :f_text
@@ -156,8 +156,8 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
                     ) AND (
                         CASE :f_modded 
                             WHEN NULL THEN 1
-                            WHEN "false" THEN (source == "baba")
-                            WHEN "true" THEN (source != "baba")
+                            WHEN "false" THEN (source == {repr(constants.BABA_WORLD)})
+                            WHEN "true" THEN (source != {repr(constants.BABA_WORLD)})
                             ELSE 1
                         END
                     ) AND (

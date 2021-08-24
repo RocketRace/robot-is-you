@@ -10,7 +10,7 @@ from typing import AsyncGenerator, Iterable
 import asqlite
 from PIL import Image
 
-from .constants import DIRECTIONS
+from .constants import BABA_WORLD, DIRECTIONS
 
 
 class Database:
@@ -19,7 +19,7 @@ class Database:
     level_hints: dict[str, dict[str, dict[str, str]]]
     async def connect(self, db: str) -> None:
         '''Startup'''
-        with open("data/hints/baba.json") as fp:
+        with open(f"data/hints/{BABA_WORLD}.json") as fp:
             self.level_hints = json.load(fp)
         self.conn = await asqlite.connect(db) # type: ignore
         print("Initialized database connection.")

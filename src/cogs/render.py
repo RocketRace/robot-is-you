@@ -37,7 +37,7 @@ class Renderer:
         *,
         palette: str = "default",
         images: list[str] | None = None,
-        image_source: str = "baba",
+        image_source: str = constants.BABA_WORLD,
         out: str | BinaryIO = "target/renders/render.gif",
         background: tuple[int, int] | None = None,
         upscale: bool = True,
@@ -142,11 +142,11 @@ class Renderer:
                 )
             else:
                 if tile.name in ("icon",):
-                    path = f"data/sprites/baba/{tile.name}.png"
+                    path = f"data/sprites/{constants.BABA_WORLD}/{tile.name}.png"
                 elif tile.name in ("smiley", "hi") or tile.name.startswith("icon"):
-                    path = f"data/sprites/baba/{tile.name}_1.png"
+                    path = f"data/sprites/{constants.BABA_WORLD}/{tile.name}_1.png"
                 elif tile.name == "default":
-                    path = f"data/sprites/baba/default_{wobble + 1}.png"
+                    path = f"data/sprites/{constants.BABA_WORLD}/default_{wobble + 1}.png"
                 else:
                     source, sprite_name = tile.sprite
                     path = f"data/sprites/{source}/{sprite_name}_{tile.variant_number}_{wobble + 1}.png"

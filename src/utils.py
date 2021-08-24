@@ -1,4 +1,5 @@
 from __future__ import annotations
+from src.constants import BABA_WORLD
 
 from typing import Callable, Dict, List, Literal, Optional, TextIO, Tuple, TypeVar, overload
 from PIL import Image
@@ -11,7 +12,7 @@ class Tile:
         name: Optional[str] = None,
         variant: Optional[int] = None,
         color: Optional[Tuple[int, int]] = None,
-        source: str = "baba",
+        source: str = BABA_WORLD,
         meta_level: int = 0,
         style: Optional[str] = None,
         custom: bool = False,

@@ -74,13 +74,13 @@ class Grid:
             else:
                 path = f"data/sprites/{{}}/{sprite}_{variant}_{wobble}.png"
             
-            for maybe_world in (world, "baba", "baba-extensions"):
+            for maybe_world in (world, constants.BABA_WORLD, constants.EXTENSIONS_WORLD):
                 try:
                     return cached_open(path.format(maybe_world), cache=cache, fn=Image.open).convert("RGBA")
                 except FileNotFoundError:
                     continue
             else:
-                return cached_open(f"data/sprites/baba/default_{wobble}.png", cache=cache, fn=Image.open).convert("RGBA")
+                return cached_open(f"data/sprites/{constants.BABA_WORLD}/default_{wobble}.png", cache=cache, fn=Image.open).convert("RGBA")
             
         def recolor(sprite: Image.Image, rgb: tuple[int, int, int]) -> Image.Image:
             '''Apply rgb color multiplication (0-255)'''
@@ -312,7 +312,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
 
     @commands.command(name="loadworld")
     @commands.is_owner()
-    async def load_world(self, ctx: Context, world: str = "baba", also_mobile: bool = True):
+    async def load_world(self, ctx: Context, world: str = constants.BABA_WORLD, also_mobile: bool = True):
         '''Loads and renders levels in a world and its mobile variant.
         Initializes the level tree unless otherwise specified.
         Cuts off borders from rendered levels unless otherwise specified.
