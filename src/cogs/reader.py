@@ -260,9 +260,9 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         # Return level metadata
         return LevelData(filename, source, grid.name, grid.subtitle, grid.number, grid.style, grid.parent, grid.map_id)
 
-    @commands.command()
+    @commands.command(name="loadmap")
     @commands.is_owner()
-    async def loadmap(self, ctx: Context, source: str, filename: str):
+    async def load_map(self, ctx: Context, source: str, filename: str):
         '''Loads a given level's image.'''
         # Parse and render
         await self.render_level(
@@ -310,9 +310,9 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             [(l.id, l.world, l.name, l.subtitle, l.number, l.style, l.parent, l.map_id) for l in metadata.values()]
         )
 
-    @commands.command()
+    @commands.command(name="loadworld")
     @commands.is_owner()
-    async def loadmaps(self, ctx: Context, world: str = "baba", also_mobile: bool = True):
+    async def load_world(self, ctx: Context, world: str = "baba", also_mobile: bool = True):
         '''Loads and renders levels in a world and its mobile variant.
         Initializes the level tree unless otherwise specified.
         Cuts off borders from rendered levels unless otherwise specified.

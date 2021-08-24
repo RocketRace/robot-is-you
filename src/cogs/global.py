@@ -356,11 +356,11 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         * `world`: Which levelpack / world the level is from.
         '''
         levels: OrderedDict[tuple[str, str], LevelData] = collections.OrderedDict()
-        # [world]/[levelid]
-        parts = query.split("/", 1)
         f_map = flags.get("map")
         f_world = flags.get("world")
         async with self.bot.db.conn.cursor() as cur:
+            # [world]/[levelid]
+            parts = query.split("/", 1)
             if len(parts) == 2:
                 await cur.execute(
                     '''
@@ -380,103 +380,115 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     data = LevelData.from_row(row)
                     levels[data.world, data.id] = data
 
-            # someworld/[levelid]
-            await cur.execute(
-                '''
-                SELECT * FROM levels
-                WHERE id == :id AND (
-                    :f_map IS NULL OR map_id == :f_map
-                ) AND (
-                    :f_world IS NULL OR world == :f_world
-                )
-                ORDER BY CASE world 
-                    WHEN "baba" 
-                    THEN NULL 
-                    ELSE world 
-                END ASC;
-                ''',
-                dict(id=query, f_map=f_map, f_world=f_world)
-            )
-            for row in await cur.fetchall():
-                data = LevelData.from_row(row)
-                levels[data.world, data.id] = data
-            
-            # [parent]-[map_id]
-            segments = query.split("-")
-            if len(segments) == 2:
+            maybe_parts = query.split(" ", 1)
+            if len(maybe_parts) == 2:
+                maps_queries = [
+                    (maybe_parts[0], maybe_parts[1]),
+                    (f_world, query)
+                ]
+            else:
+                maps_queries = [
+                    (f_world, query)
+                ]
+
+            for f_world, query in maps_queries:
+                # someworld/[levelid]
                 await cur.execute(
                     '''
-                    SELECT * FROM levels 
-                    WHERE parent == :parent AND (
-                        UNLIKELY(map_id == :map_id) OR (
-                            style == 0 AND 
-                            CAST(number AS TEXT) == :map_id
-                        ) OR (
-                            style == 1 AND
-                            LENGTH(:map_id) == 1 AND
-                            number == UNICODE(:map_id) - UNICODE("a")
-                        ) OR (
-                            style == 2 AND 
-                            SUBSTR(:map_id, 1, 5) == "extra" AND
-                            number == CAST(TRIM(SUBSTR(:map_id, 6)) AS INTEGER) - 1
-                        )
-                    ) AND (
+                    SELECT * FROM levels
+                    WHERE id == :id AND (
                         :f_map IS NULL OR map_id == :f_map
                     ) AND (
                         :f_world IS NULL OR world == :f_world
-                    ) ORDER BY CASE world 
+                    )
+                    ORDER BY CASE world 
                         WHEN "baba" 
                         THEN NULL 
                         ELSE world 
                     END ASC;
                     ''',
-                    dict(parent=segments[0], map_id=segments[1], f_map=f_map, f_world=f_world)
+                    dict(id=query, f_map=f_map, f_world=f_world)
+                )
+                for row in await cur.fetchall():
+                    data = LevelData.from_row(row)
+                    levels[data.world, data.id] = data
+                
+                # [parent]-[map_id]
+                segments = query.split("-")
+                if len(segments) == 2:
+                    await cur.execute(
+                        '''
+                        SELECT * FROM levels 
+                        WHERE parent == :parent AND (
+                            UNLIKELY(map_id == :map_id) OR (
+                                style == 0 AND 
+                                CAST(number AS TEXT) == :map_id
+                            ) OR (
+                                style == 1 AND
+                                LENGTH(:map_id) == 1 AND
+                                number == UNICODE(:map_id) - UNICODE("a")
+                            ) OR (
+                                style == 2 AND 
+                                SUBSTR(:map_id, 1, 5) == "extra" AND
+                                number == CAST(TRIM(SUBSTR(:map_id, 6)) AS INTEGER) - 1
+                            )
+                        ) AND (
+                            :f_map IS NULL OR map_id == :f_map
+                        ) AND (
+                            :f_world IS NULL OR world == :f_world
+                        ) ORDER BY CASE world 
+                            WHEN "baba" 
+                            THEN NULL 
+                            ELSE world 
+                        END ASC;
+                        ''',
+                        dict(parent=segments[0], map_id=segments[1], f_map=f_map, f_world=f_world)
+                    )
+                    for row in await cur.fetchall():
+                        data = LevelData.from_row(row)
+                        levels[data.world, data.id] = data
+
+                # [name]
+                await cur.execute(
+                    '''
+                    SELECT * FROM levels
+                    WHERE INSTR(name, :name) AND (
+                        :f_map IS NULL OR map_id == :f_map
+                    ) AND (
+                        :f_world IS NULL OR world == :f_world
+                    )
+                    ORDER BY CASE world 
+                        WHEN "baba"
+                        THEN NULL
+                        ELSE world
+                    END ASC;
+                    ''',
+                    dict(name=query, f_map=f_map, f_world=f_world)
                 )
                 for row in await cur.fetchall():
                     data = LevelData.from_row(row)
                     levels[data.world, data.id] = data
 
-            # [name]
-            await cur.execute(
-                '''
-                SELECT * FROM levels
-                WHERE INSTR(name, :name) AND (
-                    :f_map IS NULL OR map_id == :f_map
-                ) AND (
-                    :f_world IS NULL OR world == :f_world
+                # [map_id]
+                await cur.execute(
+                    '''
+                    SELECT * FROM levels 
+                    WHERE map_id == :map AND parent IS NULL AND (
+                        :f_map IS NULL OR map_id == :f_map
+                    ) AND (
+                        :f_world IS NULL OR world == :f_world
+                    )
+                    ORDER BY CASE world 
+                        WHEN "baba"
+                        THEN NULL
+                        ELSE world
+                    END ASC;
+                    ''',
+                    dict(map=query, f_map=f_map, f_world=f_world)
                 )
-                ORDER BY CASE world 
-                    WHEN "baba"
-                    THEN NULL
-                    ELSE world
-                END ASC;
-                ''',
-                dict(name=query, f_map=f_map, f_world=f_world)
-            )
-            for row in await cur.fetchall():
-                data = LevelData.from_row(row)
-                levels[data.world, data.id] = data
-
-            # [map_id]
-            await cur.execute(
-                '''
-                SELECT * FROM levels 
-                WHERE map_id == :map AND parent IS NULL AND (
-                    :f_map IS NULL OR map_id == :f_map
-                ) AND (
-                    :f_world IS NULL OR world == :f_world
-                )
-                ORDER BY CASE world 
-                    WHEN "baba"
-                    THEN NULL
-                    ELSE world
-                END ASC;
-                ''',
-                dict(map=query, f_map=f_map, f_world=f_world)
-            )
-            for row in await cur.fetchall():
-                data = LevelData.from_row(row)
-                levels[data.world, data.id] = data
+                for row in await cur.fetchall():
+                    data = LevelData.from_row(row)
+                    levels[data.world, data.id] = data
         
         return levels
 
@@ -493,7 +505,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         * Level name (e.g. "further fields")
         * The map ID of a world (e.g. "cavern", or "lake")
         '''
-        await self.perform_level_command(ctx, query, False)
+        await self.perform_level_command(ctx, query, mobile=False)
 
     @commands.cooldown(5, 8, commands.BucketType.channel)
     @level_command.command()
@@ -507,9 +519,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         * Level name (e.g. "further fields")
         * The map ID of a world (e.g. "cavern", or "lake")
         '''
-        await self.perform_level_command(ctx, query, True)
+        await self.perform_level_command(ctx, query, mobile=True)
     
-    async def perform_level_command(self, ctx: Context, query: str, mobile: bool):
+    async def perform_level_command(self, ctx: Context, query: str, *, mobile: bool):
         # User feedback
         await ctx.trigger_typing()
 
