@@ -247,7 +247,7 @@ def split_variant(variant: int | None) -> tuple[int, int]:
         return 0, 0
     dir, anim = divmod(variant, 8)
     if anim == 7:
-        dir = (dir + 1) % 8
+        dir = (dir + 1) % 4
         anim = -1
     return dir * 8, anim
 
