@@ -93,6 +93,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             return await ctx.error(
                 f"The variant `{variant}` is not valid."
             )
+        elif isinstance(err, errors.EmptyVariant):
+            return await ctx.error(
+                f"You provided an empty variant for `{word}`."
+            )
         else:
             return await ctx.error(f"{msg}.")
 

@@ -610,6 +610,8 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         def channel_shenanigans(im: Image.Image) -> Image.Image:
             if im.mode == "1":
                 return im
+            elif im.mode == "RGB" or im.mode == "L":
+                return im.convert("1")
             return im.convert("RGBA").getchannel("A").convert("1")
         data = []
         for path in pathlib.Path("data/letters").glob("*/*/*/*_0.png"):
