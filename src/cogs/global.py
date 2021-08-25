@@ -467,7 +467,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                         WHEN :default
                         THEN NULL
                         ELSE world
-                    END ASC;
+                    END ASC, number DESC;
                     ''',
                     dict(name=query, f_map=f_map, f_world=f_world, default=constants.BABA_WORLD)
                 )
@@ -488,7 +488,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                         WHEN :default
                         THEN NULL
                         ELSE world
-                    END ASC;
+                    END ASC, number DESC;
                     ''',
                     dict(name=query, f_map=f_map, f_world=f_world, default=constants.BABA_WORLD)
                 )
