@@ -575,7 +575,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 custom_level = await self.bot.get_cog("Reader").render_custom_level(fine_query)
                             except ValueError as e:
                                 size = e.args[0]
-                                return await ctx.error(f"The level code is valid, but the leve's width, height or area is way too big ({size})!")
+                                return await ctx.error(f"The level code is valid, but the level's width, height or area is way too big ({size})!")
                             except aiohttp.ClientResponseError as e:
                                 return await ctx.error(f"The Baba Is Bookmark site returned a bad response. Try again later.")
         if custom_level is None:
