@@ -457,7 +457,7 @@ class Renderer:
         wobble: int
     ):
         '''Takes an image, with or without a plate, and applies the given options to it.'''
-        if meta_level != 0 or (original_style != style or original_direction != direction):
+        if meta_level != 0 or original_style != style or (style == "property" and original_direction != direction):
             if original_style == "property":
                 # box: position of upper-left coordinate of "inner text" in the larger text tile
                 plate, box = self.bot.db.plate(original_direction, wobble)
