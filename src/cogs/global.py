@@ -452,6 +452,27 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 await cur.execute(
                     '''
                     SELECT * FROM levels
+                    WHERE name == :name AND (
+                        :f_map IS NULL OR map_id == :f_map
+                    ) AND (
+                        :f_world IS NULL OR world == :f_world
+                    )
+                    ORDER BY CASE world 
+                        WHEN :default
+                        THEN NULL
+                        ELSE world
+                    END ASC;
+                    ''',
+                    dict(name=query, f_map=f_map, f_world=f_world, default=constants.BABA_WORLD)
+                )
+                for row in await cur.fetchall():
+                    data = LevelData.from_row(row)
+                    levels[data.world, data.id] = data
+
+                # [name-ish]
+                await cur.execute(
+                    '''
+                    SELECT * FROM levels
                     WHERE INSTR(name, :name) AND (
                         :f_map IS NULL OR map_id == :f_map
                     ) AND (
