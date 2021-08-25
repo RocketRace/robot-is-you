@@ -296,6 +296,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
     @commands.cooldown(5, 8, type=commands.BucketType.channel)
     @commands.command(name="hint", aliases=["hints"])
     async def show_hint(self, ctx: Context, *, level_query: str):
+        '''Shows hints for a level.'''
         levels = await self.bot.get_cog("Baba Is You").search_levels(level_query)
         if len(levels) == 0:
             return await ctx.error(f"No levels found with the query `{level_query}`.")
