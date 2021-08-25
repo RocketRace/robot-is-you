@@ -93,10 +93,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             return await ctx.error(
                 f"The variant `{variant}` is not valid."
             )
-        elif isinstance(err, errors.EmptyVariant):
-            return await ctx.error(
-                f"You provided an empty variant for `{word}`."
-            )
         else:
             return await ctx.error(f"{msg}.")
 
@@ -247,9 +243,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         # Pad the word rows from the end to fit the dimensions
         for row in stacked_grid:
             row.extend([["-"]] * (width - len(row)))
-
-        grid = self.parse_raw(stacked_grid, rule=rule)
         try:
+            grid = self.parse_raw(stacked_grid, rule=rule)
             # Handles variants based on `:` affixes
             buffer = BytesIO()
             extra_buffer = BytesIO() if raw_output else None
@@ -278,6 +273,11 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         except errors.BadTileProperty as e:
             word, (w, h) = e.args
             return await ctx.error(f"The tile `{word}` could not be made into a property, because it's too big (`{w} by {h}`).")
+        except errors.EmptyVariant as e:
+            word = e.args[0]
+            return await ctx.error(
+                f"You provided an empty variant for `{word}`."
+            )
         except errors.VariantError as e:
             return await self.handle_variant_errors(ctx, e)
         except errors.TextGenerationError as e:
