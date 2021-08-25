@@ -98,7 +98,7 @@ class Grid:
             row = []
             for x in range(self.width):
                 stack = []
-                for item in self.cells[y * self.width + x]:
+                for item in sorted(self.cells[y * self.width + x], key=lambda item: item.layer):
                     item: Item
                     if item.tiling in constants.DIRECTION_TILINGS:
                         variant = item.direction * 8

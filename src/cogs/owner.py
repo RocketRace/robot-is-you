@@ -459,6 +459,17 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
 
     @commands.command()
     @commands.is_owner()
+    async def sql(self, ctx: Context, *, query: str):
+        '''Run some sql'''
+        async with self.bot.db.conn.cursor() as cur:
+            await cur.execute(query)
+            rows = await cur.fetchall()
+        formatted = '\n'.join('|'.join(str(value) for value in row) for row in rows)
+        out = f"Output:\n```\n{formatted}\n```"
+        await ctx.send(out)
+
+    @commands.command()
+    @commands.is_owner()
     async def loadletters(self, ctx: Context):
         '''Scrapes individual letters from vanilla sprites.'''
         ignored = json.load(open("config/letterignore.json"))
