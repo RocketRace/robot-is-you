@@ -111,7 +111,6 @@ class Database:
                     mode TEXT NOT NULL,
                     char TEXT NOT NULL,
                     width INTEGER NOT NULL,
-                    height INTEGER NOT NULL,
                     sprite_0 BLOB,
                     sprite_1 BLOB,
                     sprite_2 BLOB

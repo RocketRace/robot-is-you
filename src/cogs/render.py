@@ -364,14 +364,15 @@ class Renderer:
             l_rows = await self.bot.db.conn.fetchall(
                 # fstring use safe
                 f'''
-                SELECT char, width, height, sprite_{int(wobble)} FROM letters
+                SELECT char, width, sprite_{int(wobble)} FROM letters
                 WHERE char == ? AND mode == ? AND width == ?
                 ''',
                 c, mode, width
             )
             options = list(l_rows)
-            char, width, height, letter_sprite = options[seed_digit % len(options)]
-            letters.append(Image.frombytes("1", (width, height), letter_sprite))
+            char, width, letter_sprite = options[seed_digit % len(options)]
+            buf = BytesIO(letter_sprite)
+            letters.append(Image.open(buf))
 
         sprite = Image.new("L", (constants.DEFAULT_SPRITE_SIZE, constants.DEFAULT_SPRITE_SIZE))
         if mode == "small":

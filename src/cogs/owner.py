@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import configparser
+from io import BytesIO
 import json
 import pathlib
 import re
@@ -595,7 +596,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                     frame = Image.new("1", (x2_max - x1_min, y2_max - y1_min))
                     frame.paste(img, (x1 - x1_min, y1 - y1_min))
                     width, height = frame.size
-                    blobs.append(frame.tobytes())
+                    buf = BytesIO()
+                    frame.save(buf, format="PNG")
+                    blobs.append(buf.getvalue())
                 results.append((mode, char, width, height, *blobs))
 
         await self.bot.db.conn.executemany(
@@ -620,11 +623,16 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             width = int(w)
             prefix = name[:-6]
             # mo ch w h
-            first_sprite = channel_shenanigans(Image.open(path))
-            blob_0 = first_sprite.tobytes()
-            blob_1 = channel_shenanigans(Image.open(path.parent / f"{prefix}_1.png")).tobytes()
-            blob_2 = channel_shenanigans(Image.open(path.parent / f"{prefix}_2.png")).tobytes()
-            data.append((mode, char, width, first_sprite.height, blob_0, blob_1, blob_2))
+            buf_0 = BytesIO()
+            channel_shenanigans(Image.open(path)).save(buf_0, format="PNG")
+            blob_0 = buf_0.getvalue()
+            buf_1 = BytesIO()
+            channel_shenanigans(Image.open(path.parent / f"{prefix}_1.png")).save(buf_1, format="PNG")
+            blob_1 = buf_1.getvalue()
+            buf_2 = BytesIO()
+            channel_shenanigans(Image.open(path.parent / f"{prefix}_1.png")).save(buf_2, format="PNG")
+            blob_2 = buf_2.getvalue()
+            data.append((mode, char, width, blob_0, blob_1, blob_2))
 
         await self.bot.db.conn.executemany(
             '''
