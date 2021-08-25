@@ -357,5 +357,41 @@
          "3",
          "0"
       ]
+   },
+   {
+      "name": "text_unoplusfour",
+      "sprite": "text_unocard",
+      "tiling": "-1",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "unoplusfour",
+      "sprite": "unocard",
+      "tiling": "2",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_unoreverse",
+      "sprite": "text_unocardrev",
+      "tiling": "-1",
+      "color": [
+         "2",
+         "2"
+      ]
+   },
+   {
+      "name": "unoreverse",
+      "sprite": "unocardrev",
+      "tiling": "2",
+      "color": [
+         "2",
+         "2"
+      ]
    }
 ]
