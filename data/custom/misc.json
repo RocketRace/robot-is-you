@@ -348,6 +348,14 @@
          "0",
          "3"
       ]
+   },
+   {
+      "name": "hexagon",
+      "sprite": "hexagon",
+      "tiling": "-1",
+      "color": [
+         "3",
+         "0"
+      ]
    }
-
 ]
