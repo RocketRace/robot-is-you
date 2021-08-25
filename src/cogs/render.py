@@ -155,7 +155,7 @@ class Renderer:
                 sprite = await self.apply_options_name(
                     tile.name,
                     sprite,
-                    style=tile.custom_style or "noun",
+                    style=tile.custom_style,
                     direction=tile.custom_direction,
                     meta_level=tile.meta_level,
                     wobble=wobble,
@@ -421,7 +421,7 @@ class Renderer:
         name: str,
         sprite: Image.Image,
         *,
-        style: str,
+        style: str | None,
         direction: int | None,
         meta_level: int,
         wobble: int
@@ -431,6 +431,8 @@ class Renderer:
         assert tile_data is not None
         original_style = constants.TEXT_TYPES[tile_data.text_type]
         original_direction = tile_data.text_direction
+        if style is None:
+            style = original_style
         try:
             return self.apply_options(
                 sprite,
