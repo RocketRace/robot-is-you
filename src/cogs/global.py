@@ -296,9 +296,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         If not found, the bot tries to auto-generate them! (See the `make` command for more.)
 
         **Flags**
-        * `--palette=<...>` (`-P=<...>`): Recolors the output gif. See the `palettes` command for more.
-        * `--background` (`-B`): Enables background color.
+        * `--palette=<...>` (`-P=<...>`): Recolors the output gif. See `search type:palettes` command for palettes.
+        * `--background=[...]` (`-B=[...]`): Enables background color. If no argument is given, defaults to black. The argument must be a palette index ("x/y").
         * `--raw` (`-R`): Enables raw mode. The sprites are sent in a ZIP file as well as normally. By default, sprites have no color.
+        * `--letter` (`-L`): Enables letter mode. Custom text that has 2 letters in it will be rendered in "letter" mode.
         
         **Variants**
         * `:variant`: Append `:variant` to a tile to change color or sprite of a tile. See the `variants` command for more.
@@ -325,9 +326,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         '''Renders the tiles provided.
 
        **Flags**
-        * `--palette=<...>` (`-P=<...>`): Recolors the output gif. See the `palettes` command for more.
+        * `--palette=<...>` (`-P=<...>`): Recolors the output gif. See `search type:palettes` command for palettes.
         * `--background=[...]` (`-B=[...]`): Enables background color. If no argument is given, defaults to black. The argument must be a palette index ("x/y").
         * `--raw` (`-R`): Enables raw mode. The sprites are sent in a ZIP file as well as normally. By default, sprites have no color.
+        * `--letter` (`-L`): Enables letter mode. Custom text that has 2 letters in it will be rendered in "letter" mode.
 
         **Variants**
         * `:variant`: Append `:variant` to a tile to change color or sprite of a tile. See the `variants` command for more.
