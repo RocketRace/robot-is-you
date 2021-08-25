@@ -637,7 +637,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         await self.bot.db.conn.executemany(
             '''
             INSERT INTO letters
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?)
             ''',
             data
         )
