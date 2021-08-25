@@ -370,7 +370,7 @@
    {
       "name": "unoplusfour",
       "sprite": "unocard",
-      "tiling": "2",
+      "tiling": "0",
       "color": [
          "0",
          "1"
@@ -388,7 +388,7 @@
    {
       "name": "unoreverse",
       "sprite": "unocardrev",
-      "tiling": "2",
+      "tiling": "0",
       "color": [
          "2",
          "2"
