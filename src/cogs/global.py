@@ -118,9 +118,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 f"{msg}, since the letter {char} doesn't exist in '{mode}' mode."
             )
         elif isinstance(err, errors.CustomTextTooLong):
-            mode, size = rest
             return await ctx.error(
-                f"{msg}, since it's too long ({size}) for '{mode}' mode."
+                f"{msg}, since it's too long ({len(text)})."
             )
         else:
             return await ctx.error(f"{msg}.")

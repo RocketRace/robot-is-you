@@ -217,7 +217,7 @@ class Renderer:
         # The default is low enough to prevent abuse, but high enough to 
         # ensure that no actual text can be excluded.
         if len(raw) > constants.MAX_TEXT_LENGTH:
-            raise errors.CustomTextTooLong(text, style, len(raw))
+            raise errors.CustomTextTooLong(text)
 
         if seed is None:
             seed = random.randint(0, 8 ** len(raw))
