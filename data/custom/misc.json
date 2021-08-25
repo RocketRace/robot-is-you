@@ -294,5 +294,60 @@
          "2",
          "2"
       ]
+   },
+   {
+      "name": "mobile",
+      "sprite": "mobile",
+      "tiling": "-1",
+      "color": [
+         "0",
+         "1"
+      ]
+   },
+   {
+      "name": "text_mobile",
+      "sprite": "text_mobile",
+      "tiling": "-1",
+      "color": [
+         "0",
+         "2"
+      ]
+   },
+   {
+      "name": "tuto",
+      "sprite": "tuto",
+      "tiling": "-1",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "text_tuto",
+      "sprite": "text_tuto",
+      "tiling": "-1",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "hbaba",
+      "sprite": "hbaba",
+      "tiling": "2",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "what_old",
+      "sprite": "what_old",
+      "tiling": "-1",
+      "color": [
+         "0",
+         "3"
+      ]
    }
+
 ]
