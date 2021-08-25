@@ -605,7 +605,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 rows.append(
                     f"*This level is also on mobile, see `+level mobile {level.unique()}`*"
                 )
-            elif mobile:
+            elif mobile and mobile_exists:
                 rows.append(
                     f"*This is the mobile version. For others, see `+level {level.unique()}`*"
                 )
