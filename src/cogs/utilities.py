@@ -262,7 +262,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
 
         if flags.get("type") is None and plain_query or flags.get("type") == "variant":
             for variant in self.bot.handlers.all_variants():
-                if plain_query in variant:
+                if plain_query.lower() in variant.lower():
                     results["variant", variant] = variant
 
         await menus.MenuPages(
