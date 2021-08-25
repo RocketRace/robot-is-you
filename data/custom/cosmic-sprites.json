@@ -22,6 +22,15 @@
         ]
     },
     {
+        "name": "beta",
+        "sprite": "beta",
+        "tiling": "-1",
+        "color": [
+            "0",
+            "3"
+        ]
+    },
+    {
         "name": "pacman",
         "sprite": "pacman",
         "tiling": "3",
