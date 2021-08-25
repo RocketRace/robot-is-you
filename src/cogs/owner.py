@@ -599,12 +599,12 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                     buf = BytesIO()
                     frame.save(buf, format="PNG")
                     blobs.append(buf.getvalue())
-                results.append((mode, char, width, height, *blobs))
+                results.append((mode, char, width, *blobs))
 
         await self.bot.db.conn.executemany(
             '''
             INSERT INTO letters
-            VALUES (?, ?, ?, ?, ?, ?, ?);
+            VALUES (?, ?, ?, ?, ?, ?);
             ''',
             results
         )   
