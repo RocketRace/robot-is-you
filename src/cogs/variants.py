@@ -333,7 +333,7 @@ def setup(bot: Bot):
             return {}
         else:
             if ctx.flags.get("disallow_custom_directions") and not ctx.tile.is_text:
-                raise errors.BadTilingVariant(ctx.tile)
+                raise errors.BadTilingVariant(ctx.tile, ctx.variant, "<missing>")
             return {
                 "custom_direction": dir
             }
@@ -354,7 +354,7 @@ def setup(bot: Bot):
                 return {
                     "variant_number": join_variant(dir, anim)
                 }
-        raise errors.BadTilingVariant(ctx.tile.name, tiling, ctx.variant)
+        raise errors.BadTilingVariant(ctx.tile.name, ctx.variant, tiling)
     
     @handlers.handler(
         pattern=r"|".join(constants.SLEEP_VARIANTS),
@@ -394,7 +394,7 @@ def setup(bot: Bot):
                     return {
                         "variant_number": constants.AUTO_VARIANTS[ctx.variant]
                     }
-        raise errors.BadTilingVariant(ctx.tile.name, tiling, ctx.variant)
+        raise errors.BadTilingVariant(ctx.tile.name, ctx.variant, tiling)
 
     @handlers.handler(
         pattern=r"\d{1,2}",
@@ -410,19 +410,19 @@ def setup(bot: Bot):
 
         if tiling in constants.AUTO_TILINGS:
             if variant >= 16:
-                raise errors.BadTilingVariant(ctx.tile.name, tiling, ctx.variant)
+                raise errors.BadTilingVariant(ctx.tile.name, ctx.variant, tiling)
         else:
             dir, anim = split_variant(variant)
             if dir != 0:
-                if tiling not in constants.DIRECTION_TILINGS:
-                    raise errors.BadTilingVariant(ctx.tile.name, tiling, ctx.variant)
+                if tiling not in constants.DIRECTION_TILINGS or dir not in constants.DIRECTIONS:
+                    raise errors.BadTilingVariant(ctx.tile.name, ctx.variant, tiling)
             if anim != 0:
                 if anim in constants.SLEEP_VARIANTS.values():
                     if tiling not in constants.SLEEP_TILINGS:
-                        raise errors.BadTilingVariant(ctx.tile.name, tiling, ctx.variant)
+                        raise errors.BadTilingVariant(ctx.tile.name, ctx.variant, tiling)
                 else:
-                    if tiling not in constants.ANIMATION_TILINGS:
-                        raise errors.BadTilingVariant(ctx.tile.name, tiling, ctx.variant)
+                    if tiling not in constants.ANIMATION_TILINGS or anim not in constants.ANIMATION_VARIANTS.values():
+                        raise errors.BadTilingVariant(ctx.tile.name, ctx.variant, tiling)
         return {
             "variant_number": variant
         }
