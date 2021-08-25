@@ -630,7 +630,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             channel_shenanigans(Image.open(path.parent / f"{prefix}_1.png")).save(buf_1, format="PNG")
             blob_1 = buf_1.getvalue()
             buf_2 = BytesIO()
-            channel_shenanigans(Image.open(path.parent / f"{prefix}_1.png")).save(buf_2, format="PNG")
+            channel_shenanigans(Image.open(path.parent / f"{prefix}_2.png")).save(buf_2, format="PNG")
             blob_2 = buf_2.getvalue()
             data.append((mode, char, width, blob_0, blob_1, blob_2))
 
