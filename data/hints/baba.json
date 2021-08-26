@@ -1474,5 +1474,12 @@
             "Bigger Nudge": "Why and when does the *Ice* turn into *Wall?*",
             "Specific Hint": "Ignore \"Box.\" Push Keke where you need her to go and then make **Keke is Move.**"
         }
+    },
+    "328level": {
+        "Win": {
+            "Gentle Nudge": "How many of the initial rules can be broken up? How many can be modified otherwise?",
+            "Bigger Nudge": "The Skulls can't harm you if there's no You in the tunnel.",
+            "Specific Hint": "Remember your solution to Cavern 02, or 01, or whatever it is now. It's \"Tour.\" That solution should tell you what to do here."
+        }
     }
 }
