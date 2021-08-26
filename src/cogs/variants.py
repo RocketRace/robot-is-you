@@ -580,4 +580,14 @@ def setup(bot: Bot):
             "custom": True,
         }
 
+    @handlers.handler(
+        pattern=r"mask",
+        variant_hints={"mask": "`mask` (Mask below tiles to sprite)"},
+        variant_group="Filters"
+    )
+    def mask(ctx: HandlerContext) -> TileFields:
+        return {
+            "mask": True
+        }
+
     return handlers
