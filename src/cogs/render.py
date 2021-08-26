@@ -1,6 +1,7 @@
 from __future__ import annotations
 from os import PathLike
 
+import copy
 import random
 from src.tile import FullTile, ReadyTile
 import zipfile
@@ -101,8 +102,12 @@ class Renderer:
                             pad_u = max(pad_u, y_offset)
                         if y == height - 1:
                             pad_d = max(pad_d, y_offset)
-                        imgs[frame].paste(sprite, (x * constants.DEFAULT_SPRITE_SIZE + padding - x_offset, y * constants.DEFAULT_SPRITE_SIZE + padding - y_offset), mask=sprite)
-        
+                        if tile.mask:
+                            spriteempty = copy.deepcopy(sprite)
+                            spriteempty.putalpha(0)
+                            imgs[frame].paste(spriteempty, (x * constants.DEFAULT_SPRITE_SIZE + padding - x_offset, y * constants.DEFAULT_SPRITE_SIZE + padding - y_offset), mask=sprite)
+                        else:
+                            imgs[frame].paste(sprite, (x * constants.DEFAULT_SPRITE_SIZE + padding - x_offset, y * constants.DEFAULT_SPRITE_SIZE + padding - y_offset), mask=sprite)        
         outs = []
         for img in imgs:
             img = img.crop((padding - pad_l, padding - pad_u, img.width - padding + pad_r, img.height - padding + pad_d))
@@ -165,7 +170,7 @@ class Renderer:
             sprite = self.recolor(sprite, rgb)
             out.append(sprite)
         f0, f1, f2 = out
-        return ReadyTile((f0, f1, f2))
+        return ReadyTile((f0, f1, f2),tile.mask)
 
     async def render_full_tiles(
         self,
