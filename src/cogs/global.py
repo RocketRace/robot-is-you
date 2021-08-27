@@ -277,6 +277,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         except errors.BadTileProperty as e:
             word, (w, h) = e.args
             return await ctx.error(f"The tile `{word}` could not be made into a property, because it's too big (`{w} by {h}`).")
+        except errors.EmptyTile as e:
+            return await ctx.error("Cannot use blank tiles in that context.")
         except errors.EmptyVariant as e:
             word = e.args[0]
             return await ctx.error(
