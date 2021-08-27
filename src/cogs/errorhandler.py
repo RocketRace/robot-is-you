@@ -2,32 +2,31 @@ from __future__ import annotations
 
 import sys
 import traceback
-from asyncio import create_task
+from typing import TYPE_CHECKING
 
 import discord
 from discord.ext import commands
 
-from ..types import Bot, Context
+from ..types import Context
+
+if TYPE_CHECKING:
+    from ...ROBOT import Bot
 
 
 class CommandErrorHandler(commands.Cog):
     def __init__(self, bot: Bot):
         self.bot = bot
-        self.webhook_id = bot.webhook_id
-        self.logger = None
+        self.webhook = None
 
-    async def setup_logger(self, webhook_id: int):
-        return await self.bot.fetch_webhook(webhook_id)
-    
     @commands.Cog.listener()
     async def on_command_error(self, ctx: Context, error: Exception):
         """The event triggered when an error is raised while invoking a command.
         ctx   : Context
         error : Exception"""
-
-        if self.logger is None:
-            self.logger = await self.setup_logger(self.webhook_id)
-
+        
+        if self.webhook is None:
+            self.webhook = discord.Webhook.from_url(self.bot.webhook_url, adapter=discord.AsyncWebhookAdapter(self.bot.session))
+        
         # This prevents any commands with local handlers being handled here in on_command_error.
         if hasattr(ctx.command, 'on_error'):
             return
@@ -76,7 +75,7 @@ class CommandErrorHandler(commands.Cog):
             ID = ctx.author.id
             name = ctx.author.name
             discriminator = ctx.author.discriminator
-            nick = f"({ctx.author.nick})" if ctx.guild else ""
+            nick = f"{ctx.author.nick}" if ctx.guild else ""
             DM = "Message Author" if ctx.guild else "Direct Message"
             formatted = f"ID: {ID}\nName: {name}#{discriminator} ({nick})"
             emb.add_field(name=DM, value=formatted)
@@ -99,18 +98,18 @@ class CommandErrorHandler(commands.Cog):
                 return await ctx.reinvoke()
             else:
                 await ctx.error(str(error))
-                return await self.logger.send(embed=emb)
+                return await self.webhook.send(embed=emb)
 
         elif isinstance(error, commands.DisabledCommand):
             await ctx.error(f'{ctx.command} has been disabled.')
-            return await self.logger.send(embed=emb)
+            return await self.webhook.send(embed=emb)
 
         elif isinstance(error, commands.NoPrivateMessage):
             try:
                 await ctx.author.send(f'{ctx.command} can not be used in Private Messages.')
             except:
                 emb.add_field(name="Notes", value="Could not send private messages to user.")
-            return await self.logger.send(embed=emb)
+            return await self.webhook.send(embed=emb)
 
         elif isinstance(error, commands.ExpectedClosingQuoteError):
             return await ctx.error(f"Expected closing quotation mark `{error.close_quote}`.")
@@ -122,15 +121,15 @@ class CommandErrorHandler(commands.Cog):
             return await ctx.error(f"Got unexpected quotation mark `{error.quote}` inside a string.")
 
         elif isinstance(error, commands.ConversionError):
-            await self.logger.send(embed=emb)
+            await self.webhook.send(embed=emb)
             return await ctx.error("Invalid function arguments provided. Check the help command for the proper format.")
         
         elif isinstance(error, commands.BadArgument):
-            await self.logger.send(embed=emb)
+            await self.webhook.send(embed=emb)
             return await ctx.error(f"Invalid argument provided. Check the help command for the proper format.\nOriginal error:\n{error.args[0]}")
 
         elif isinstance(error, commands.ArgumentParsingError):
-            await self.logger.send(embed=emb)
+            await self.webhook.send(embed=emb)
             return await ctx.error("Invalid function arguments provided.")
 
         elif isinstance(error, commands.MissingRequiredArgument):
@@ -147,7 +146,7 @@ class CommandErrorHandler(commands.Cog):
         
         # All other Errors not returned come here... And we can just print the default TraceBack + log
         await ctx.error(f"An exception occurred: {type(error)}\n{error}\n```{''.join(traceback.format_tb(error.__traceback__))}```")
-        await self.logger.send(embed=emb)
+        await self.webhook.send(embed=emb)
         print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 

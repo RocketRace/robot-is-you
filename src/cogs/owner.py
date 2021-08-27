@@ -1,23 +1,24 @@
 from __future__ import annotations
-import asyncio
 
+import collections
 import configparser
-from io import BytesIO
+import itertools
 import json
 import pathlib
 import re
-import itertools
-import collections
-from src import constants, synchronization
-from typing import Any, Optional
+from io import BytesIO
+from typing import TYPE_CHECKING, Any, Optional
 
 import discord
 from discord.ext import commands
 from PIL import Image, ImageChops, ImageDraw
+from src import constants, synchronization
 
 from ..db import TileData
-from ..types import Bot, Context
+from ..types import Context
 
+if TYPE_CHECKING:
+    from ...ROBOT import Bot
 
 class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     async def bot_check(self, ctx: Context):
@@ -674,7 +675,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             guild.id, self.bot.user.id
         )
 
-        webhook = await self.bot.fetch_webhook(self.bot.webhook_id)
+        webhook = discord.Webhook.from_url(self.bot.webhook_url, adapter=discord.AsyncWebhookAdapter(self.bot.session))
         embed = discord.Embed(
             color = self.bot.embed_color,
             title = "Joined Guild",

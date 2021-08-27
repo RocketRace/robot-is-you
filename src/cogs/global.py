@@ -1,26 +1,27 @@
 from __future__ import annotations
+
 import collections
 import os
-
 import re
 from datetime import datetime
 from io import BytesIO
 from json import load
 from os import listdir
 from time import time
-from typing import Any, OrderedDict, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, OrderedDict
 
 import aiohttp
 import discord
 from discord.ext import commands
 
-if TYPE_CHECKING:
-    from ..tile import RawGrid
-
 from .. import constants, errors
 from ..db import CustomLevelData, LevelData
 from ..tile import RawTile
-from ..types import Bot, Context
+from ..types import Context
+
+if TYPE_CHECKING:
+    from ...ROBOT import Bot
+    from ..tile import RawGrid
 
 
 def try_index(string: str, value: str) -> int:

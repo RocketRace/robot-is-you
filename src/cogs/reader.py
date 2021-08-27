@@ -8,7 +8,7 @@ import re
 import zlib
 from dataclasses import dataclass
 from os import listdir
-from typing import Any, BinaryIO, TextIO
+from typing import TYPE_CHECKING, Any, BinaryIO, TextIO
 
 import aiohttp
 import numpy as np
@@ -18,8 +18,11 @@ from src import constants
 from src.db import CustomLevelData, LevelData
 from src.utils import cached_open
 
-from ..tile import RawTile, ReadyTile
-from ..types import Bot, Context
+from ..tile import ReadyTile
+from ..types import Context
+
+if TYPE_CHECKING:
+    from ...ROBOT import Bot
 
 
 def flatten(x: int, y: int, width: int) -> int:

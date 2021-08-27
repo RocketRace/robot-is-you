@@ -5,12 +5,16 @@ import itertools
 from datetime import datetime
 from subprocess import PIPE, STDOUT, TimeoutExpired, run
 from time import time
+from typing import TYPE_CHECKING
 
 import discord
 from discord.ext import commands
 
 from .. import constants
-from ..types import Bot, Context
+from ..types import Context
+
+if TYPE_CHECKING:
+    from ...ROBOT import Bot
 
 
 # Custom help command implementation
@@ -297,8 +301,8 @@ class MetaCog(commands.Cog, name="Other Commands"):
                 description=f"{self.bot.user.mention} has reconnected. Downtime: {str(round(time() - start, 2))} seconds.", 
                 color=0xffff00
             )
-        logger = await self.bot.fetch_webhook(594692503014473729)
-        await logger.send(embed=err)
+        webhook = discord.Webhook.from_url(self.bot.webhook_url, adapter=discord.AsyncWebhookAdapter(self.bot.session))
+        await webhook.send(embed=err)
     
     def cog_unload(self):
         self.bot.help_command = self._original_help_command
