@@ -1,12 +1,13 @@
 from __future__ import annotations
+import asyncio
 
 import datetime
+from src import synchronization
 from typing import TYPE_CHECKING, Any, Coroutine, Optional
 from .db import Database
 
 import discord
 from discord.ext import commands
-from PIL import Image
 
 if TYPE_CHECKING:
     from .cogs.render import Renderer
@@ -27,5 +28,7 @@ class Bot(commands.Bot):
     started: datetime.datetime
     renderer: Renderer
     handlers: VariantHandlers
-    def __init__(self, *args, cogs: list[str], embed_color: discord.Color, webhook_id: int, prefixes: list[str], exit_code: int = 0, **kwargs):...
+    instance_id: int
+    event_queue: asyncio.Queue[synchronization.CallbackEvent]
     async def get_context(self, message: discord.Message) -> Coroutine[Any, Any, Context]:...
+    async def request(self, event: synchronization.CallbackEvent):...
