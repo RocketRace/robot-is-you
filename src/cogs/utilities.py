@@ -206,32 +206,31 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
             if flags.get("custom") is None or flags.get("custom") == "true":
                 f_author=flags.get("author")
                 async with self.bot.db.conn.cursor() as cur:
-                    if plain_query.strip():
-                        await cur.execute(
-                            '''
-                            SELECT * FROM custom_levels 
-                            WHERE code == :code AND (
-                                :f_author IS NULL OR author == :f_author 
-                            );
-                            ''',
-                            dict(code=plain_query, f_author=f_author)
+                    await cur.execute(
+                        '''
+                        SELECT * FROM custom_levels 
+                        WHERE code == :code AND (
+                            :f_author IS NULL OR author == :f_author 
+                        );
+                        ''',
+                        dict(code=plain_query, f_author=f_author)
+                    )
+                    row = await cur.fetchone()
+                    if row is not None:
+                        custom_data = CustomLevelData.from_row(row)
+                        results["level", custom_data.code] = custom_data
+                    await cur.execute(
+                        '''
+                        SELECT * FROM custom_levels
+                        WHERE INSTR(LOWER(name), :name) AND (
+                            :f_author IS NULL OR author == :f_author
                         )
-                        row = await cur.fetchone()
-                        if row is not None:
-                            custom_data = CustomLevelData.from_row(row)
-                            results["level", custom_data.code] = custom_data
-                        await cur.execute(
-                            '''
-                            SELECT * FROM custom_levels
-                            WHERE INSTR(LOWER(name), :name) AND (
-                                :f_author IS NULL OR author == :f_author
-                            )
-                            ''',
-                            dict(name=plain_query, f_author=f_author)
-                        )
-                        for row in await cur.fetchall():
-                            custom_data = CustomLevelData.from_row(row)
-                            results["level", custom_data.code] = custom_data
+                        ''',
+                        dict(name=plain_query, f_author=f_author)
+                    )
+                    for row in await cur.fetchall():
+                        custom_data = CustomLevelData.from_row(row)
+                        results["level", custom_data.code] = custom_data
                     if any(x in flags for x in ("author", "custom")):
                         await cur.execute(
                             '''
@@ -247,10 +246,9 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
                             results["level", custom_data.code] = custom_data
                     
             if flags.get("custom") is None or not flags.get("custom") == "false":
-                if plain_query.strip() or any(x in flags for x in ("map", "world")):
-                    levels = await self.bot.get_cog("Baba Is You").search_levels(plain_query, **flags)
-                    for (world, id), data in levels.items():
-                        results["level", f"{world}/{id}"] = data
+                levels = await self.bot.get_cog("Baba Is You").search_levels(plain_query, **flags)
+                for (world, id), data in levels.items():
+                    results["level", f"{world}/{id}"] = data
         
         if type is None and plain_query or type == "palette":
             q = f"*{plain_query}*.png" if plain_query else "*.png"
