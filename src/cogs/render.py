@@ -102,15 +102,18 @@ class Renderer:
                             pad_u = max(pad_u, y_offset)
                         if y == height - 1:
                             pad_d = max(pad_d, y_offset)
+                        alpha = sprite.getchannel("A")
                         if tile.mask_alpha:
-                            imgs[frame].paste(
-                                Image.new("RGBA", (sprite.width, sprite.height)), 
-                                (
-                                    x * constants.DEFAULT_SPRITE_SIZE + padding - x_offset,
-                                    y * constants.DEFAULT_SPRITE_SIZE + padding - y_offset
-                                ), 
-                                mask=ImageChops.invert(sprite.getchannel("A"))
-                            )
+                            alpha = ImageChops.invert(alpha)
+
+                        imgs[frame].paste(
+                            sprite, 
+                            (
+                                x * constants.DEFAULT_SPRITE_SIZE + padding - x_offset,
+                                y * constants.DEFAULT_SPRITE_SIZE + padding - y_offset
+                            ), 
+                            alpha
+                        )
                         else:
                             imgs[frame].paste(
                                 sprite, 
