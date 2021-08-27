@@ -1,12 +1,12 @@
 from __future__ import annotations
 from os import PathLike
 
-import copy
 import random
 from src.tile import FullTile, ReadyTile
 import zipfile
 from io import BytesIO
 from typing import BinaryIO
+import copy
 
 import numpy as np
 from PIL import Image, ImageChops, ImageFilter
@@ -102,15 +102,11 @@ class Renderer:
                             pad_u = max(pad_u, y_offset)
                         if y == height - 1:
                             pad_d = max(pad_d, y_offset)
-                        if tile.mask:
-                            spriteempty = copy.deepcopy(sprite)
-                            spriteempty.putalpha(0)
-                            r, g, b, a = sprite.split()
-                            a = a.point(lambda p: 255 - p)
-                            sprite = Image.merge('RGBA', (r, g, b, a))
-                            imgs[frame].paste(spriteempty, (x * constants.DEFAULT_SPRITE_SIZE + padding - x_offset, y * constants.DEFAULT_SPRITE_SIZE + padding - y_offset), mask=sprite)
+                        if tile.mask_alpha:
+                            imgs[frame].paste(Image.new("RGBA", (sprite.width, sprite.height)), (x * constants.DEFAULT_SPRITE_SIZE + padding - x_offset, y * constants.DEFAULT_SPRITE_SIZE + padding - y_offset), ImageChops.invert(sprite.getchannel("A")))
                         else:
-                            imgs[frame].paste(sprite, (x * constants.DEFAULT_SPRITE_SIZE + padding - x_offset, y * constants.DEFAULT_SPRITE_SIZE + padding - y_offset), mask=sprite)        
+                            imgs[frame].paste(sprite, (x * constants.DEFAULT_SPRITE_SIZE + padding - x_offset, y * constants.DEFAULT_SPRITE_SIZE + padding - y_offset), mask=sprite)
+        
         outs = []
         for img in imgs:
             img = img.crop((padding - pad_l, padding - pad_u, img.width - padding + pad_r, img.height - padding + pad_d))
@@ -173,7 +169,7 @@ class Renderer:
             sprite = self.recolor(sprite, rgb)
             out.append(sprite)
         f0, f1, f2 = out
-        return ReadyTile((f0, f1, f2),tile.mask)
+        return ReadyTile((f0, f1, f2),tile.mask_alpha)
 
     async def render_full_tiles(
         self,
@@ -484,9 +480,8 @@ class Renderer:
                 plate_alpha = plate.getchannel("A")
                 sprite_alpha = sprite.getchannel("A").crop(
                     (-meta_level, -meta_level, sprite.width + meta_level, sprite.height + meta_level)
-                )
-                sprite_alpha = sprite_alpha.crop(
-                    (-box[0], -box[0], sprite_alpha.width + box[0], sprite_alpha.height + box[1])
+                ).crop(
+                    (-box[0], -box[0], constants.DEFAULT_SPRITE_SIZE + box[0], constants.DEFAULT_SPRITE_SIZE + box[1])
                 )
                 if meta_level % 2 == 0:
                     alpha = ImageChops.subtract(plate_alpha, sprite_alpha)
