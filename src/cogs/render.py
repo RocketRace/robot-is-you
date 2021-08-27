@@ -106,14 +106,14 @@ class Renderer:
                         if tile.mask_alpha:
                             alpha = ImageChops.invert(alpha)
 
-                        imgs[frame].paste(
-                            sprite, 
-                            (
-                                x * constants.DEFAULT_SPRITE_SIZE + padding - x_offset,
-                                y * constants.DEFAULT_SPRITE_SIZE + padding - y_offset
-                            ), 
-                            alpha
-                        )
+                            imgs[frame].paste(
+                                sprite, 
+                                (
+                                    x * constants.DEFAULT_SPRITE_SIZE + padding - x_offset,
+                                    y * constants.DEFAULT_SPRITE_SIZE + padding - y_offset
+                                ), 
+                                alpha
+                            )
                         else:
                             imgs[frame].paste(
                                 sprite, 
