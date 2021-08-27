@@ -43,7 +43,7 @@ class TileFields(TypedDict, total=False):
     color_index: tuple[int, int]
     color_rgb: tuple[int, int, int]
     empty: bool
-    mask: bool
+    invert_alpha: bool
     meta_level: int
     custom_direction: int
     custom_style: Literal["noun", "property", "letter"]
@@ -59,7 +59,7 @@ class FullTile:
     color_index: tuple[int, int] = (0, 3)
     color_rgb: tuple[int, int, int] | None = None
     custom: bool = False
-    mask: bool = False
+    mask_alpha: bool = False
     style_flip: bool = False
     empty: bool = False
     meta_level: int = 0
@@ -78,4 +78,4 @@ class FullTile:
 class ReadyTile:
     '''Tile that's about to be rendered, and already has a prerendered sprite.'''
     frames: tuple[Image.Image, Image.Image, Image.Image] | None
-    mask: bool = False
+    mask_alpha: bool = False
