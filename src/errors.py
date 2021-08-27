@@ -57,6 +57,9 @@ class TileNotText(VariantError):
 class BadLetterVariant(VariantError):
     '''Text too long to letterify'''
 
+class TileDoesntExist(VariantError):
+    '''This tile doesn't have tile data and thus this variant is invalid'''
+
 class UnknownVariant(VariantError):
     '''Not a valid variant'''
 

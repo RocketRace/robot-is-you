@@ -405,7 +405,7 @@ def setup(bot: Bot):
         variant = int(ctx.variant)
         tile_data = ctx.tile_data
         if tile_data is None:
-            raise errors.VariantError("what tile is that even")
+            raise errors.TileDoesntExist(ctx.tile.name, ctx.variant)
         tiling = tile_data.tiling
 
         if tiling in constants.AUTO_TILINGS:
@@ -568,7 +568,7 @@ def setup(bot: Bot):
                     "custom_style": "property"
                 }
             else:
-                raise errors.VariantError("yet again (but this time on a technicality)")
+                raise errors.TileDoesntExist(ctx.tile.name, ctx.variant)
         if tile_data is not None:
             if constants.TEXT_TYPES[tile_data.text_type] == "noun":
                 return {

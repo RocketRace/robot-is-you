@@ -90,6 +90,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             return await ctx.error(
                 f"{msg}. `{depth}` is greater than the maximum meta depth, which is `{constants.MAX_META_DEPTH}`."
             )
+        elif isinstance(err, errors.TileDoesntExist):
+            return await ctx.error(
+                f"{msg}, since the tile doesn't exist in the database."
+            )
         elif isinstance(err, errors.UnknownVariant):
             return await ctx.error(
                 f"The variant `{variant}` is not valid."
