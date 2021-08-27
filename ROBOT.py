@@ -1,8 +1,9 @@
 from __future__ import annotations
-import itertools
 
 import logging
-from src import constants, synchronization
+
+import aiohttp
+from src import synchronization
 import traceback
 import asyncio
 from datetime import datetime
@@ -15,6 +16,8 @@ from discord.ext import commands
 import auth
 import config
 from src.db import Database
+from src.cogs.render import Renderer
+from src.cogs.variants import VariantHandlers
 
 class Context(commands.Context):
     async def error(self, msg: str) -> discord.Message:
@@ -33,17 +36,18 @@ class Context(commands.Context):
             return await super().send(content, embed=embed, **kwargs)
         return await super().send(**kwargs)
 
-
 class Bot(commands.Bot):
     '''Custom bot class :)'''
     db: Database
+    handlers: VariantHandlers
+    renderer: Renderer
     def __init__(
         self, 
         command_prefix,
         *,
         cogs: list[str], 
         embed_color: discord.Color, 
-        webhook_id: int, 
+        webhook_url: str,
         prefixes: list[str],
         db_path: str, 
         instance_id: int,
@@ -54,7 +58,7 @@ class Bot(commands.Bot):
         self.loading = True
         self.exit_code = 0
         self.embed_color = embed_color
-        self.webhook_id = webhook_id
+        self.webhook_url = webhook_url
         self.prefixes = prefixes
         self.db = Database()
         self.db_path = db_path
@@ -75,11 +79,12 @@ class Bot(commands.Bot):
 
     async def close(self) -> None:
         await self.db.close()
+        await self.session.close()
         await super().close()
 
     async def on_ready(self) -> None:
         print(f"{self.user}: Logged in!")
-        print(f"{self.user}: Invite @ {discord.utils.oauth_url(str(self.user.id))}")
+        print(f"{self.user}: Invite: {discord.utils.oauth_url(str(self.user.id))}")
         await self.db.connect(self.db_path)
         await self.db.conn.executemany(
             '''
@@ -89,6 +94,8 @@ class Bot(commands.Bot):
             ((guild.id, self.user.id) for guild in self.guilds)
         )
         print(f"{self.user}: Established database connection!")
+        self.session = aiohttp.ClientSession()
+        print(f"{self.user}: Client session ready!")
     
     async def start_with_exit_code(self, token: str) -> int:
         await self.start(token)
@@ -143,13 +150,14 @@ for i, token in enumerate(auth.tokens):
         # for hot reloading
         cogs=config.cogs,
         embed_color=config.embed_color,
-        webhook_id=config.webhook_id,
         # display only
         prefixes=config.prefixes,
         db_path=config.db_path,
         # synchronization
         instance_id=i,
-        event_queue=mpsc_queue
+        event_queue=mpsc_queue,
+        # logging
+        webhook_url=auth.webhook_url,
     )
     bots.append(bot)
     tasks.append(bot.start_with_exit_code(token))

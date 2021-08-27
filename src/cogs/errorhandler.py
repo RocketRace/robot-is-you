@@ -1,4 +1,5 @@
 from __future__ import annotations
+import asyncio
 
 import sys
 import traceback
@@ -7,6 +8,7 @@ from typing import TYPE_CHECKING
 import discord
 from discord.ext import commands
 
+from ..constants import MAXIMUM_GUILD_THRESHOLD
 from ..types import Context
 
 if TYPE_CHECKING:
@@ -17,6 +19,20 @@ class CommandErrorHandler(commands.Cog):
     def __init__(self, bot: Bot):
         self.bot = bot
         self.webhook = None
+    
+    def initialize(self):
+        if self.webhook is None:
+            self.webhook = discord.Webhook.from_url(self.bot.webhook_url, adapter=discord.AsyncWebhookAdapter(self.bot.session))
+
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        # race condition
+        await asyncio.sleep(1)
+        self.initialize()
+        
+        if len(self.bot.guilds) > MAXIMUM_GUILD_THRESHOLD:
+            pass
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx: Context, error: Exception):
@@ -24,8 +40,7 @@ class CommandErrorHandler(commands.Cog):
         ctx   : Context
         error : Exception"""
         
-        if self.webhook is None:
-            self.webhook = discord.Webhook.from_url(self.bot.webhook_url, adapter=discord.AsyncWebhookAdapter(self.bot.session))
+        self.initialize()
         
         # This prevents any commands with local handlers being handled here in on_command_error.
         if hasattr(ctx.command, 'on_error'):
