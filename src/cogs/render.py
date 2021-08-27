@@ -1,19 +1,19 @@
 from __future__ import annotations
-from os import PathLike
 
 import random
-from src.tile import FullTile, ReadyTile
 import zipfile
 from io import BytesIO
-from typing import BinaryIO
-import copy
+from typing import TYPE_CHECKING, BinaryIO
 
 import numpy as np
 from PIL import Image, ImageChops, ImageFilter
+from src.tile import FullTile, ReadyTile
 
 from .. import constants, errors
-from ..types import Bot
 from ..utils import cached_open
+
+if TYPE_CHECKING:
+    from ...ROBOT import Bot
 
 
 class Renderer:

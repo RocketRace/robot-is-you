@@ -22,9 +22,7 @@ class Database:
         with open(f"data/hints/{BABA_WORLD}.json") as fp:
             self.level_hints = json.load(fp)
         self.conn = await asqlite.connect(db) # type: ignore
-        print("Initialized database connection.")
         await self.create_tables()
-        print("Verified database tables.")
 
     async def close(self) -> None:
         '''Teardown'''
@@ -124,6 +122,14 @@ class Database:
                     blacklisted INTEGER,
                     silent_commands INTEGER,
                     render_background INTEGER
+                );
+                '''
+            )
+            await cur.execute(
+                '''
+                CREATE TABLE IF NOT EXISTS guilds (
+                    guild_id INTEGER PRIMARY KEY,
+                    bot_id INTEGER NOT NULL
                 );
                 '''
             )

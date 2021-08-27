@@ -170,3 +170,5 @@ OTHER_LEVELS_CUTOFF = 5
 
 BABA_WORLD = "baba"
 EXTENSIONS_WORLD = "baba-extensions"
+
+MAXIMUM_GUILD_THRESHOLD = 70 # if you reach 76 guilds, you're out of luck -- keep it safe

@@ -5,11 +5,16 @@ import itertools
 from datetime import datetime
 from subprocess import PIPE, STDOUT, TimeoutExpired, run
 from time import time
+from typing import TYPE_CHECKING
 
 import discord
 from discord.ext import commands
 
-from ..types import Bot, Context
+from .. import constants
+from ..types import Context
+
+if TYPE_CHECKING:
+    from ...ROBOT import Bot
 
 
 # Custom help command implementation
@@ -126,17 +131,22 @@ class MetaCog(commands.Cog, name="Other Commands"):
             type="rich", 
             colour=self.bot.embed_color, 
             description="\n".join([
-                f"{ctx.me.name} - Bot for Discord based on the indie game Baba Is You. "
-                "Written by RocketRace#0798 using the [discord.py](https://github.com/Rapptz/discord.py) library."
+                f"{ctx.me.name} - Bot for Discord based on the indie game Baba Is You. Written by RocketRace#0798."
             ])
         )
-        about_embed.add_field(name="Links", value="[GitHub repository](https://github.com/RocketRace/robot-is-you)\n" + \
-            "[Support guild](https://discord.gg/rMX3YPK)"
-        )
+        about_embed.add_field(name="Links", value=(
+            "[GitHub repository](https://github.com/RocketRace/robot-is-you)\n"
+            "[Support guild](https://discord.gg/rMX3YPK)\n"
+            "Invite: See the `+invite` command"
+        ))
         ut = datetime.utcnow() - self.bot.started
+        guild_count = await self.bot.db.conn.fetchone(
+            '''
+            SELECT COUNT(*) FROM guilds;    
+            '''
+        )
         stats = "".join([
-            f"\nGuilds: {len(self.bot.guilds)}",
-            f"\nChannels: {sum(len(g.channels) for g in self.bot.guilds)}",
+            f"\nGuilds: {guild_count[0]}",
             f"\nUptime: {ut.days}d {ut.seconds // 3600}h {ut.seconds % 3600 // 60}m {ut.seconds % 60}s"
         ])
         about_embed.add_field(name="Statistics", value=stats)
@@ -146,6 +156,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
         about_embed.add_field(name="Credits", value="\n".join([
             "[Baba Is Bookmark](https://baba-is-bookmark.herokuapp.com/) (custom level database) by SpiccyMayonnaise",
             "[Baba Is Hint](https://www.keyofw.com/baba-is-hint/) (hints for levels) by keyofw",
+            "Modders and spriters in the [unofficial Baba Is You discord server](https://discord.gg/GGbUUse) (custom sprites and levelpacks)",
         ]))
         await ctx.send(embed=about_embed)
     
@@ -159,15 +170,36 @@ class MetaCog(commands.Cog, name="Other Commands"):
     @commands.cooldown(5, 8, type=commands.BucketType.channel)
     async def invite(self, ctx: Context):
         '''Links for the bot support server'''
-        msg = discord.Embed(colour=self.bot.embed_color, title="Invite Links", description="Due to an API change, this bot is no longer able to join any new guilds.\n" + \
-            "This is a Discord mandated change and there is no way to bypass it.\n" + \
-            "See the [GitHub guides](https://github.com/RocketRace/robot-is-you#to-host-this-yourself) if you want to host this bot yourself.\n" + \
-            "If you dislike the direction Discord is going with bots, you can contact them via [support](https://dis.gd/contact)."
+        msg = discord.Embed(
+            colour=self.bot.embed_color,
+            title="Invite Links",
+            description=(
+                "This bot is separated into multiple accounts. "
+                "The invite link below will invite one of the bot accounts, if one is available.\n\n"
+                "**Be careful not to invite fake bots! *Always* get your invite link from the `+invite` command!**\n"
+                "ROBOT IS YOU will never ask for any extra permissions!"
+            )
         )
-
+        bots = await self.bot.db.conn.fetchall(
+            '''
+            SELECT counts.bot_id, (
+                SELECT COUNT(*) FROM guilds WHERE bot_id == counts.bot_id
+            ) as count
+            FROM guilds AS counts
+            WHERE count < ?
+            ORDER BY count ASC;
+            ''',
+            constants.MAXIMUM_GUILD_THRESHOLD
+        )
+        if len(bots) == 0:
+            msg.add_field(name="Bot invite", value="An invite link is currently unavailable. Please try again sometime later.")
+        else:
+            bot_id = bots[0][0]
+            msg.add_field(name="Bot invite", value=f"[Click here to invite the bot to your server]({discord.utils.oauth_url(str(bot_id))})")
         msg.add_field(name="Support Server", value="[Click here to join RocketRace's Bots](https://discord.gg/rMX3YPK)")
+
         await ctx.send(embed=msg)
-    
+
     @commands.command(aliases=["interpret"])
     @commands.cooldown(5, 8, type=commands.BucketType.channel)
     async def babalang(self, ctx: Context, program: str, *program_input: str):
@@ -269,8 +301,8 @@ class MetaCog(commands.Cog, name="Other Commands"):
                 description=f"{self.bot.user.mention} has reconnected. Downtime: {str(round(time() - start, 2))} seconds.", 
                 color=0xffff00
             )
-        logger = await self.bot.fetch_webhook(594692503014473729)
-        await logger.send(embed=err)
+        webhook = discord.Webhook.from_url(self.bot.webhook_url, adapter=discord.AsyncWebhookAdapter(self.bot.session))
+        await webhook.send(embed=err)
     
     def cog_unload(self):
         self.bot.help_command = self._original_help_command

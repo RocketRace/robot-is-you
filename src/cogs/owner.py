@@ -1,22 +1,24 @@
 from __future__ import annotations
 
+import collections
 import configparser
-from io import BytesIO
+import itertools
 import json
 import pathlib
 import re
-import itertools
-import collections
-from src import constants
-from typing import Any, Optional
+from io import BytesIO
+from typing import TYPE_CHECKING, Any, Optional
 
 import discord
 from discord.ext import commands
 from PIL import Image, ImageChops, ImageDraw
+from src import constants, synchronization
 
 from ..db import TileData
-from ..types import Bot, Context
+from ..types import Context
 
+if TYPE_CHECKING:
+    from ...ROBOT import Bot
 
 class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     async def bot_check(self, ctx: Context):
@@ -42,16 +44,14 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     @commands.is_owner()
     async def reloadcog(self, ctx: Context, cog: str = ""):
         '''Reloads extensions within the bot while the bot is running.'''
-        if not cog:
-            extensions = [a for a in self.bot.extensions.keys()]
-            for extension in extensions:
-                self.bot.reload_extension(extension)
-            await ctx.send("Reloaded all extensions.")
-        elif "src.cogs." + cog in self.bot.extensions.keys():
-            self.bot.reload_extension("src.cogs." + cog)
-            await ctx.send(f"Reloaded extension `{cog}` from `src/cogs/{cog}.py`.")
-        else:
-            await ctx.send("Unknown extension provided.")
+        if cog and f"src.cogs.{cog}" not in self.bot.extensions.keys():
+            return await ctx.send("Unknown extension provided.")
+        
+        @synchronization.CogRefreshEvent(f"src.cogs.{cog}" if cog else None)
+        async def callback():
+            await ctx.send("Reloaded cogs from all instances.")
+        
+        await self.bot.request(callback)
 
     @commands.command(aliases=["reboot"])
     @commands.is_owner()
@@ -643,8 +643,39 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         )
 
     @commands.Cog.listener()
+    async def on_guild_remove(self, guild: discord.Guild):
+        await self.bot.db.conn.execute(
+            '''
+            DELETE FROM guilds WHERE guild_id = ?;
+            ''',
+            guild.id
+        )
+
+    @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
-        webhook = await self.bot.fetch_webhook(self.bot.webhook_id)
+        if len(self.bot.guilds) > constants.MAXIMUM_GUILD_THRESHOLD:
+            # urgent
+            await guild.leave()
+            return
+        
+        bots = await self.bot.db.conn.fetchall(
+            '''
+            SELECT COUNT(*) FROM guilds WHERE guild_id = ?;
+            ''',
+            guild.id
+        )
+        if len(bots) != 0:
+            await guild.leave()
+            return
+
+        await self.bot.db.conn.execute(
+            '''
+            INSERT INTO guilds VALUES (?, ?);
+            ''',
+            guild.id, self.bot.user.id
+        )
+
+        webhook = discord.Webhook.from_url(self.bot.webhook_url, adapter=discord.AsyncWebhookAdapter(self.bot.session))
         embed = discord.Embed(
             color = self.bot.embed_color,
             title = "Joined Guild",

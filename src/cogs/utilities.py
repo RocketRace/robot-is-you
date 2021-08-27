@@ -1,20 +1,22 @@
 from __future__ import annotations
-from io import BytesIO
-from pathlib import Path
 
 import re
+from io import BytesIO
 from os import listdir
-from typing import Any, Sequence
-
-from src.tile import RawTile
-from src.db import CustomLevelData, LevelData, TileData
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Sequence
 
 import discord
 from discord.ext import commands, menus
 from PIL import Image
+from src.db import CustomLevelData, LevelData, TileData
+from src.tile import RawTile
 
 from .. import constants
-from ..types import Bot, Context
+from ..types import Context
+
+if TYPE_CHECKING:
+    from ...ROBOT import Bot
 
 class SearchPageSource(menus.ListPageSource):
     def __init__(self, data: Sequence[Any], query: str):
