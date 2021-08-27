@@ -18,7 +18,7 @@
         ]
     },
     {
-        "name": "knight",
+        "name": "knight_old",
         "sprite": "knight",
         "tiling": "-1",
         "color": [
@@ -27,7 +27,7 @@
         ]
     },
     {
-        "name": "pawn",
+        "name": "pawn_old",
         "sprite": "pawn",
         "tiling": "-1",
         "color": [
