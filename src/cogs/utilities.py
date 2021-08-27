@@ -245,7 +245,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
                             custom_data = CustomLevelData.from_row(row)
                             results["level", custom_data.code] = custom_data
                     
-            if flags.get("custom") is None or not flags.get("custom") == "false":
+            if flags.get("custom") is None or flags.get("custom") == "false":
                 levels = await self.bot.get_cog("Baba Is You").search_levels(plain_query, **flags)
                 for (world, id), data in levels.items():
                     results["level", f"{world}/{id}"] = data
