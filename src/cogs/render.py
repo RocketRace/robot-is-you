@@ -480,8 +480,9 @@ class Renderer:
                 plate_alpha = plate.getchannel("A")
                 sprite_alpha = sprite.getchannel("A").crop(
                     (-meta_level, -meta_level, sprite.width + meta_level, sprite.height + meta_level)
-                ).crop(
-                    (-box[0], -box[0], constants.DEFAULT_SPRITE_SIZE + box[0], constants.DEFAULT_SPRITE_SIZE + box[1])
+                )
+                sprite_alpha = sprite_alpha.crop(
+                    (-box[0], -box[0], sprite_alpha.width + box[0], sprite_alpha.height + box[1])
                 )
                 if meta_level % 2 == 0:
                     alpha = ImageChops.subtract(plate_alpha, sprite_alpha)
