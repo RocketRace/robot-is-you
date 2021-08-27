@@ -103,9 +103,23 @@ class Renderer:
                         if y == height - 1:
                             pad_d = max(pad_d, y_offset)
                         if tile.mask_alpha:
-                            imgs[frame].paste(Image.new("RGBA", (sprite.width, sprite.height)), (x * constants.DEFAULT_SPRITE_SIZE + padding - x_offset, y * constants.DEFAULT_SPRITE_SIZE + padding - y_offset), ImageChops.invert(sprite.getchannel("A")))
+                            imgs[frame].paste(
+                                Image.new("RGBA", (sprite.width, sprite.height)), 
+                                (
+                                    x * constants.DEFAULT_SPRITE_SIZE + padding - x_offset,
+                                    y * constants.DEFAULT_SPRITE_SIZE + padding - y_offset
+                                ), 
+                                mask=ImageChops.invert(sprite.getchannel("A"))
+                            )
                         else:
-                            imgs[frame].paste(sprite, (x * constants.DEFAULT_SPRITE_SIZE + padding - x_offset, y * constants.DEFAULT_SPRITE_SIZE + padding - y_offset), mask=sprite)
+                            imgs[frame].paste(
+                                sprite, 
+                                (
+                                    x * constants.DEFAULT_SPRITE_SIZE + padding - x_offset,
+                                    y * constants.DEFAULT_SPRITE_SIZE + padding - y_offset
+                                ), 
+                                mask=sprite
+                            )
         
         outs = []
         for img in imgs:
@@ -169,7 +183,7 @@ class Renderer:
             sprite = self.recolor(sprite, rgb)
             out.append(sprite)
         f0, f1, f2 = out
-        return ReadyTile((f0, f1, f2),tile.mask_alpha)
+        return ReadyTile((f0, f1, f2), tile.mask_alpha)
 
     async def render_full_tiles(
         self,
