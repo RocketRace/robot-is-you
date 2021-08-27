@@ -43,7 +43,7 @@ class TileFields(TypedDict, total=False):
     color_index: tuple[int, int]
     color_rgb: tuple[int, int, int]
     empty: bool
-    invert_alpha: bool
+    mask_alpha: bool
     meta_level: int
     custom_direction: int
     custom_style: Literal["noun", "property", "letter"]
