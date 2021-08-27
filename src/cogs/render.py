@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import random
+import string
 import zipfile
 from io import BytesIO
 from typing import TYPE_CHECKING, BinaryIO
@@ -248,6 +249,18 @@ class Renderer:
         if index == 0 or index == len(raw):
             raise errors.LeadingTrailingLineBreaks(text)
         
+        if len(raw) == 1 and raw in string.ascii_letters + string.digits:
+            sprite = Image.open(f"data/sprites/baba/text_{raw}_0_{wobble + 1}.png").convert("RGBA")
+            return self.apply_options(
+                sprite, 
+                original_style="noun",
+                style=style,
+                original_direction=None,
+                direction=direction,
+                meta_level=meta_level,
+                wobble=wobble
+            )
+
         width_cache: dict[str, list[int]] = {}
         for c in raw:
             rows = await self.bot.db.conn.fetchall(
