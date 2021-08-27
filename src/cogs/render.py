@@ -105,6 +105,9 @@ class Renderer:
                         if tile.mask:
                             spriteempty = copy.deepcopy(sprite)
                             spriteempty.putalpha(0)
+                            r, g, b, a = sprite.split()
+                            a = a.point(lambda p: 255 - p)
+                            sprite = Image.merge('RGBA', (r, g, b, a))
                             imgs[frame].paste(spriteempty, (x * constants.DEFAULT_SPRITE_SIZE + padding - x_offset, y * constants.DEFAULT_SPRITE_SIZE + padding - y_offset), mask=sprite)
                         else:
                             imgs[frame].paste(sprite, (x * constants.DEFAULT_SPRITE_SIZE + padding - x_offset, y * constants.DEFAULT_SPRITE_SIZE + padding - y_offset), mask=sprite)        
