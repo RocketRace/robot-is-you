@@ -294,9 +294,14 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                 child_levels.pop(child_id)
         for map_id, child_levels in self.parent_levels.values():
             for child_id, (number, style) in child_levels.items():
-                metadata[child_id].parent = map_id
-                metadata[child_id].number = number
-                metadata[child_id].style = style
+                try:
+                    metadata[child_id].parent = map_id
+                    metadata[child_id].number = number
+                    metadata[child_id].style = style
+                except KeyError:
+                    # something wrong with the levelpack, 
+                    # nonexistent things specified 
+                    pass
 
         self.parent_levels.clear()
         await self.bot.db.conn.executemany(
@@ -499,8 +504,12 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             number = config.getint("levels", f"{i}number", fallback=0)
             # "custom" style
             if style == -1:
-                icon = Item.icon(config.get("icons", f"{number}file"))
-                grid.cells[pos].append(icon)
+                try:
+                    icon = Item.icon(config.get("icons", f"{number}file"))
+                    grid.cells[pos].append(icon)
+                except configparser.NoSectionError:
+                    # No icon exists for the level, I guess
+                    pass
             # "dot" style
             elif style == 2 and number >= 10:
                 icon = Item.icon("icon")

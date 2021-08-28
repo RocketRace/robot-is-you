@@ -71,7 +71,11 @@ class Renderer:
                 img = Image.new("RGBA", (img_width, img_height))
                 # for loop in case multiple background images are used (i.e. baba's world map)
                 for image in images:
-                    overlap = Image.open(f"data/images/{image_source}/{image}_{frame + 1}.png").convert("RGBA") # bg images are 1-indexed
+                    try:
+                        overlap = Image.open(f"data/images/{image_source}/{image}_{frame + 1}.png").convert("RGBA") # bg images are 1-indexed
+                    except FileNotFoundError:
+                        # no animations, default to frame 1
+                        overlap = Image.open(f"data/images/{image_source}/{image}_1.png").convert("RGBA") # bg images are 1-indexed
                     img.paste(overlap, (padding, padding), mask=overlap)
             # bg color
             elif background is not None:
