@@ -3,3 +3,4 @@ Pillow>=7.0
 jishaku>=1.18
 git+https://github.com/Rapptz/asqlite
 git+https://github.com/Rapptz/discord-ext-menus
+numpy
