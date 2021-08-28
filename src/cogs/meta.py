@@ -180,16 +180,18 @@ class MetaCog(commands.Cog, name="Other Commands"):
                 "ROBOT IS YOU will never ask for any extra permissions!"
             )
         )
-        rows: list[tuple[int, int]] = [(row[0], row[1]) for row in await self.bot.db.conn.fetchall(
+        bots = await self.bot.db.conn.fetchall(
             '''
-            SELECT bot_id, guild_id
-            FROM guilds
-            ORDER BY bot_id ASC;
-            '''
-        )]
-        bots = [(x, len(list(y))) for x, y in itertools.groupby(rows, key=lambda row: row[0])]
-        bots = sorted(bots, key=lambda x: x[1])
-        bots = bots[:1]
+            SELECT counts.bot_id, (
+                SELECT COUNT(*) FROM guilds WHERE bot_id == counts.bot_id
+            ) as count
+            FROM guilds AS counts
+            WHERE count < ?
+            GROUP BY counts.bot_id
+            ORDER BY count ASC;
+            ''',
+            constants.MAXIMUM_GUILD_THRESHOLD
+        )
         if len(bots) == 0:
             msg.add_field(name="Bot invite", value="An invite link is currently unavailable. Please try again sometime later.")
         else:
