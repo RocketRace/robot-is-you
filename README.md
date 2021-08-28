@@ -46,7 +46,7 @@ Bot configuration is in `config.py`. It contains the following values:
 * `description`: `str` - A description to use in the help command.
 * `prefixes`: `list[str]` - A list of strings that can be used to trigger commands.
 * `trigger_on_mention`: `bool` - Whether or not bot @mentions will behave as a command prefix.
-* `db_parh`: `str` - The path to the sqlite3 database used by the bot.
+* `db_path`: `str` - The path to the sqlite3 database used by the bot.
 * `embed_color`: `discord.Color` - The color of embedded messages.
 * `log_file`: `str` - The file to report logs to.
 * `cogs`: `list[str]` - A list of strings -- cogs to load into the bot.
