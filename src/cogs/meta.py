@@ -5,7 +5,7 @@ import itertools
 from datetime import datetime
 from subprocess import PIPE, STDOUT, TimeoutExpired, run
 from time import time
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Sequence
 
 import discord
 from discord.ext import commands
@@ -180,17 +180,14 @@ class MetaCog(commands.Cog, name="Other Commands"):
                 "ROBOT IS YOU will never ask for any extra permissions!"
             )
         )
-        bots = await self.bot.db.conn.fetchall(
+        rows: list[tuple[int, int]] = [(row[0], row[1]) for row in await self.bot.db.conn.fetchall(
             '''
-            SELECT counts.bot_id, (
-                SELECT COUNT(*) FROM guilds WHERE bot_id == counts.bot_id
-            ) as count
-            FROM guilds AS counts
-            WHERE count < ?
-            ORDER BY count ASC;
-            ''',
-            constants.MAXIMUM_GUILD_THRESHOLD
-        )
+            SELECT bot_id, guild_id
+            FROM guilds
+            GROUP BY bot_id;
+            '''
+        )]
+        bots = sorted(itertools.groupby(rows, key=lambda row: row[0]), key=lambda x: len(list(x[1])))[:1]
         if len(bots) == 0:
             msg.add_field(name="Bot invite", value="An invite link is currently unavailable. Please try again sometime later.")
         else:
@@ -200,7 +197,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
 
         await ctx.send(embed=msg)
 
-    @commands.command(aliases=["interpret"])
+    # @commands.command(aliases=["interpret"])
     @commands.cooldown(5, 8, type=commands.BucketType.channel)
     async def babalang(self, ctx: Context, program: str, *program_input: str):
         '''Interpret a [Babalang v1.1.1](https://esolangs.org/wiki/Babalang) program.
