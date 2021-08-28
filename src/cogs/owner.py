@@ -664,7 +664,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             '''
             SELECT COUNT(*) FROM guilds WHERE guild_id = ?;
             ''',
-            guild.id, self.bot.original_id
+            guild.id
         )
         if bots[0][0] != 0:
             for channel in guild.text_channels:
