@@ -662,7 +662,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         
         bots = await self.bot.db.conn.fetchall(
             '''
-            SELECT COUNT(*) FROM guilds WHERE guild_id = ? and bot_id != ?;
+            SELECT COUNT(*) FROM guilds WHERE guild_id = ?;
             ''',
             guild.id, self.bot.original_id
         )
