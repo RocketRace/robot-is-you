@@ -190,11 +190,13 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
                 # Ignore changes without a name (the same name but a different color, etc)
                 if changes and changes.get("name") is not None:
                     changed_objects.append({**initial_objects[id], **prepare(changes)})
-
-        by_name = itertools.groupby(
+            
+        with open("config/editortileignore.json") as f:
+            ignored_names = json.load(f)
+        by_name = filter(lambda x: x[0] not in ignored_names, itertools.groupby(
             sorted(changed_objects, key=lambda x: x["name"]), 
             key=lambda x: x["name"]
-        )
+        ))
         ready: list[dict[str, Any]] = []
         for name, duplicates in by_name:
             def freeze_dict(d: dict[str, Any]) -> tuple[tuple[str, Any], ...]:
@@ -665,6 +667,13 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             guild.id, self.bot.original_id
         )
         if bots[0][0] != 0:
+            for channel in guild.text_channels:
+                try:
+                    await channel.send("Please kick the other @ROBOT IS YOU bots first.")
+                except:
+                    continue
+                else:
+                    break
             await guild.leave()
             return
 
