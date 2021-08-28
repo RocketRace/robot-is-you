@@ -131,13 +131,21 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         results: dict[tuple[str, str], Any] = {}
 
         type = None
+        custom = None
         for flag, value in flags.items():
             if flag == "type":
                 type = value
             elif flag in ("sprite", "text", "source", "modded", "color", "tiling", "tag"):
                 type = "tile"
-            elif flag in ("author", "custom", "map", "world"):
+            elif flag == "custom":
                 type = "level"
+                custom = value == "true"
+            elif flag == "author":
+                type = "level"
+                custom = True
+            elif flag in ("map", "world"):
+                type = "level"
+                custom = False
 
         if type is None or type == "tile":
             color = flags.get("color")
@@ -203,7 +211,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
                 results["blank_space", row["name"]] = None
 
         if type is None or type == "level":
-            if flags.get("custom") is None or flags.get("custom") == "true":
+            if custom is None or custom:
                 f_author=flags.get("author")
                 async with self.bot.db.conn.cursor() as cur:
                     await cur.execute(
@@ -245,7 +253,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
                             custom_data = CustomLevelData.from_row(row)
                             results["level", custom_data.code] = custom_data
                     
-            if flags.get("custom") is None or flags.get("custom") == "false":
+            if not custom:
                 levels = await self.bot.get_cog("Baba Is You").search_levels(plain_query, **flags)
                 for (world, id), data in levels.items():
                     results["level", f"{world}/{id}"] = data
