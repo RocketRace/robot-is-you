@@ -660,9 +660,9 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         
         bots = await self.bot.db.conn.fetchall(
             '''
-            SELECT COUNT(*) FROM guilds WHERE guild_id = ?;
+            SELECT COUNT(*) FROM guilds WHERE guild_id = ? and bot_id != ?;
             ''',
-            guild.id
+            guild.id, self.bot.original_id
         )
         if len(bots) != 0:
             await guild.leave()

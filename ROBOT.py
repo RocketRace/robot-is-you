@@ -15,6 +15,7 @@ from discord.ext import commands
 
 import auth
 import config
+from src.constants import MAXIMUM_GUILD_THRESHOLD, GAMEOVER_GUILD_THRESHOLD
 from src.db import Database
 from src.cogs.render import Renderer
 from src.cogs.variants import VariantHandlers
@@ -52,6 +53,7 @@ class Bot(commands.Bot):
         db_path: str, 
         instance_id: int,
         event_queue: asyncio.Queue[synchronization.CallbackEvent],
+        original_id: int,
         **kwargs
     ):
         self.started = datetime.utcnow()
@@ -64,6 +66,7 @@ class Bot(commands.Bot):
         self.db_path = db_path
         self.instance_id = instance_id
         self.event_queue = event_queue
+        self.original_id = original_id
         
         super().__init__(command_prefix, **kwargs)
         # has to be after __init__
@@ -86,6 +89,20 @@ class Bot(commands.Bot):
         print(f"{self.user}: Logged in!")
         print(f"{self.user}: Invite: {discord.utils.oauth_url(str(self.user.id))}")
         await self.db.connect(self.db_path)
+        if MAXIMUM_GUILD_THRESHOLD < len(self.guilds) < GAMEOVER_GUILD_THRESHOLD:
+            print(f"{self.user}: WARNING: Dangerously close to the guild limit, purging...")
+            guild_ids: set[int] = {row[0] for row in await self.db.conn.fetchall(
+                '''SELECT guild_id FROM guilds WHERE bot_id == ?;'''
+            )}
+            count = len(self.guilds) - MAXIMUM_GUILD_THRESHOLD
+            for guild in self.guilds:
+                if guild.id not in guild_ids:
+                    await guild.leave()
+                    count -= 1
+                if count == 0:
+                    break
+            print(f"{self.user}: Purged {count} guilds.")
+
         await self.db.conn.executemany(
             '''
             INSERT INTO guilds VALUES (?, ?)
@@ -158,6 +175,7 @@ for i, token in enumerate(auth.tokens):
         event_queue=mpsc_queue,
         # logging
         webhook_url=auth.webhook_url,
+        original_id=config.original_id
     )
     bots.append(bot)
     tasks.append(bot.start_with_exit_code(token))
