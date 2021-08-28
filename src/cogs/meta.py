@@ -187,7 +187,9 @@ class MetaCog(commands.Cog, name="Other Commands"):
             GROUP BY bot_id;
             '''
         )]
-        bots = sorted(itertools.groupby(rows, key=lambda row: row[0]), key=lambda x: len(list(x[1])))[:1]
+        bots = [(x, len(list(y))) for x, y in itertools.groupby(rows, key=lambda row: row[0])]
+        bots = sorted(bots, key=lambda x: x[1])
+        bots = bots[:1]
         if len(bots) == 0:
             msg.add_field(name="Bot invite", value="An invite link is currently unavailable. Please try again sometime later.")
         else:
