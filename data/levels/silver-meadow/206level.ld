@@ -1,0 +1,21 @@
+[general]
+customparent=
+levels=0
+leveltype=0
+mapid=vi
+music=noise
+name=boundary condition
+palette=test.png
+paletteroot=1
+paths=0
+selectorX=-1
+selectorY=-1
+specials=0
+unlockcount=0
+[tiles]
+changed=object051,
+object051_colour=1,0
+object051_image=edge
+object051_layer=21
+object051_root=0
+object051_tiling=-1

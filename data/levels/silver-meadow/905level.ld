@@ -1,0 +1,16 @@
+[general]
+customparent=
+levels=0
+leveltype=0
+music=ruin
+name=conditionals
+palette=ruins.png
+paletteroot=1
+particles=dust
+paths=0
+selectorX=-1
+selectorY=-1
+specials=0
+unlockcount=0
+[tiles]
+changed=
