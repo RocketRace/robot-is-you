@@ -1,0 +1,33 @@
+[general]
+customparent=
+levels=0
+leveltype=0
+music=baba
+name=safety netting
+palette=space.png
+paletteroot=1
+particles=soot
+paths=0
+selectorX=-1
+selectorY=-1
+specials=0
+unlockcount=0
+[tiles]
+changed=object119,object070,object072,object100,object063,object091,object051,
+object119_image=text_idle
+object119_name=text_idle
+object119_type=3
+object070_image=belt
+object070_name=red belt
+object070_tiling=3
+object072_image=text_belt
+object072_name=text_red belt
+object100_image=line
+object100_tiling=-1
+object063_image=text_bolt
+object063_name=text_bolt
+object063_root=0
+object091_image=text_orb
+object051_image=bolt
+object051_name=bolt
+object051_root=0

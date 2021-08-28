@@ -1,0 +1,26 @@
+[general]
+customparent=
+levels=0
+leveltype=0
+music=factory
+name=clone machine
+palette=factory.png
+paletteroot=1
+paths=0
+selectorX=-1
+selectorY=-1
+specials=0
+unlockcount=0
+[tiles]
+changed=object100,object098,object053,object041,
+object100_image=dust
+object098_image=bolt
+object098_root=0
+object098_tiling=0
+object053_image=text_wug
+object053_name=text_wug
+object053_root=0
+object041_image=wug
+object041_name=wug
+object041_root=0
+object041_tiling=0

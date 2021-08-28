@@ -1,0 +1,21 @@
+[general]
+customparent=
+levels=0
+leveltype=0
+name=don't wake the wug
+palette=garden.png
+paletteroot=1
+paths=0
+selectorX=-1
+selectorY=-1
+specials=0
+unlockcount=0
+[tiles]
+changed=object098,object107,
+object098_image=wug
+object098_name=wug
+object098_root=0
+object098_tiling=2
+object107_image=text_wug
+object107_name=text_wug
+object107_root=0

@@ -1,0 +1,9 @@
+[general]
+name=Unlicensed Hill
+themecount=2
+firstlevel=316level
+author=hillexed
+
+[levels]
+levelid=41
+
