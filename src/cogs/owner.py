@@ -664,7 +664,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             ''',
             guild.id, self.bot.original_id
         )
-        if len(bots) != 0:
+        if bots[0] != 0:
             await guild.leave()
             return
 
