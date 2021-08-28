@@ -184,7 +184,7 @@ class MetaCog(commands.Cog, name="Other Commands"):
             '''
             SELECT bot_id, guild_id
             FROM guilds
-            GROUP BY bot_id;
+            ORDER BY bot_id ASC;
             '''
         )]
         bots = [(x, len(list(y))) for x, y in itertools.groupby(rows, key=lambda row: row[0])]
