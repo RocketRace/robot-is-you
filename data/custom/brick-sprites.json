@@ -9,19 +9,6 @@
         ]
     },
     {
-        "name": "text_belbel",
-        "sprite": "text_belbel",
-        "tiling": "-1",
-        "color": [
-            "6",
-            "1"
-        ],
-        "active": [
-            "2",
-            "4"
-        ]
-    },
-    {
         "name": "flushed",
         "sprite": "flushed",
         "tiling": "-1",
