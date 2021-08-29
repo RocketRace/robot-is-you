@@ -289,8 +289,10 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
             author = flags.get("author")
             for pack, data in self.packs.items():
                 if (
-                    plain_query in pack or 
-                    plain_query in data["name"] 
+                    (
+                        plain_query in pack or 
+                        plain_query in data["name"]
+                    ) 
                     and (
                         author is None 
                         or data["author"].lower() == author
