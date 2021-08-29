@@ -687,12 +687,33 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         webhook = discord.Webhook.from_url(self.bot.webhook_url, adapter=discord.AsyncWebhookAdapter(self.bot.session))
         embed = discord.Embed(
             color = self.bot.embed_color,
-            title = "Joined Guild",
-            description = f"Joined {guild.name}."
+            title = f"Instance {self.bot.instance_id}: {self.bot.user} Joined Guild",
+            description = f"Joined {guild.name} (guild #{len(self.bot.guilds)})."
         )
         embed.add_field(name="ID", value=str(guild.id))
         embed.add_field(name="Member Count", value=str(guild.member_count))
         await webhook.send(embed=embed)
+
+    @commands.command()
+    @commands.is_owner()
+    async def debug(self, ctx: Context):
+        '''Return some debug stats for instances.'''
+        bots = await self.bot.db.conn.fetchall(
+            '''
+            SELECT counts.bot_id, (
+                SELECT COUNT(*) FROM guilds WHERE bot_id == counts.bot_id
+            ) as count
+            FROM guilds AS counts
+            GROUP BY counts.bot_id
+            ORDER BY count ASC;
+            '''
+        )
+        out = [
+            "Guild counts:"
+        ]
+        for row in bots:
+            out.append(f"[{row[0]}]: {row[1]}")
+        await ctx.send("\n".join(out))
 
 def setup(bot: Bot):
     bot.add_cog(OwnerCog(bot))
