@@ -1,0 +1,33 @@
+$4,1Somewhere Out There
+Created By: $1,4TetraxZ
+.
+.
+.
+With Help From:
+$4,1DevilSquirrel 
+$4,2for making the external editor
+.
+.
+.
+$4,1RY00001 
+$4,2for posting how credits work
+.
+.
+.
+$4,1JumboDS64 and iinfernodashii
+$4,2for a bunch of sprites (nest road bulb etc)
+.
+.
+.
+$4,1Playtesters
+$4,2danielisgamer
+$4,2mt
+$4,2randomiser
+$4,2adr
+$4,2omeghamatt
+$4,2slabdrill
+.
+.
+.
+$4,1Hempuli
+$4,2for making this game

@@ -440,7 +440,9 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         else:
             fp = data
         
-        config = configparser.ConfigParser()
+        # Strict mode must be disabled to match
+        # the game's lenient parsing
+        config = configparser.ConfigParser(strict=False)
         config.read_file(fp)
         
         # Name and palette should never be missing, but I can't guarantee this for custom levels

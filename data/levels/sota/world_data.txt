@@ -1,0 +1,16 @@
+[general]
+firstlevel=003level
+name=somewhere out there
+themecount=14
+rolling_levelid=0
+author=tetraxz
+start=003level
+mods=1
+prize_max=87
+clear_max=9
+bonus_max=12
+
+[levels]
+levelid=97
+rolling_levelid=2
+

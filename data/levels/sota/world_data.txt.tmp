@@ -1,0 +1,13 @@
+[general]
+firstlevel=003level
+name=somewhere out there
+themecount=14
+rolling_levelid=0
+author=tetraxz
+start=003level
+mods=1
+
+[levels]
+levelid=97
+rolling_levelid=2
+

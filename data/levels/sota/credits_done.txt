@@ -1,0 +1,72 @@
+$2,1Somewhere Out There
+$0,0.
+$0,0.
+$0,0.
+$0,0.
+$0,0.
+$2,1Created By: $2,0TetraxZ
+$0,0.
+$0,0.
+$0,0.
+$0,0.
+$0,0.
+$2,1With Help From:
+$2,0DevilSquirrel 
+$2,1for making babaeditor that i used
+$2,1to make pretty much all of this
+$0,0.
+$0,0.
+$0,0.
+$0,0.
+$0,0.
+$2,0RY00001 
+$2,1posted how credits work thanks
+$0,0.
+$0,0.
+$0,0.
+$0,0.
+$0,0.
+$0,0.
+$2,0Playtesters
+$2,1danielisgamer
+$2,1mt
+$2,1randomiser
+$2,1adr
+$2,1omeghamatt
+$2,1slabdrill
+$0,0.
+$0,0.
+$0,0.
+$0,0.
+$0,0.
+$0,0.
+$2,0JumboDS64 and iinfernodashii
+$2,1sprites that i took (with permission)
+$0,0.
+$0,0.
+$0,0.
+$0,0.
+$0,0.
+$2,0the baba is you discord 
+$2,1bug testing my levels
+$0,0.
+$0,0.
+$0,0.
+$0,0.
+$0,0.
+$2,0Hempuli
+$2,1the guy
+$0,0.
+$0,0.
+$0,0.
+$0,0.
+$0,0.
+$2,0You
+$2,1for doing ALL IS DONE
+$2,1and just destroying the world
+$2,1how could you do this
+$2,1there were so many innocent souls
+$2,1that are now just gone
+$0,0.
+$0,0.
+
