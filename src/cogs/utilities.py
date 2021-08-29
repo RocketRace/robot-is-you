@@ -285,19 +285,18 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
                 if plain_query in variant.lower():
                     results["variant", variant] = variant
 
-        if type is None or type == "pack" or type == "level/pack":
-            if plain_query or flags.get("author") is not None:
-                author = flags.get("author")
-                for pack, data in self.packs.items():
-                    if (
-                        plain_query in pack or 
-                        plain_query in data["name"] 
-                        and (
-                            author is None 
-                            or data["author"].lower() == author
-                        )
-                    ):
-                        results["pack", pack] = data
+        if type is None and plain_query or type == "pack" or type == "level/pack":
+            author = flags.get("author")
+            for pack, data in self.packs.items():
+                if (
+                    plain_query in pack or 
+                    plain_query in data["name"] 
+                    and (
+                        author is None 
+                        or data["author"].lower() == author
+                    )
+                ):
+                    results["pack", pack] = data
 
 
         await menus.MenuPages(
