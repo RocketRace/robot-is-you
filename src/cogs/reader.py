@@ -4,6 +4,7 @@ import asyncio
 import base64
 import configparser
 import io
+import os
 import re
 import zlib
 from dataclasses import dataclass
@@ -329,6 +330,10 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
 
         # Parse and render the level map
         await ctx.send("Loading maps...")
+        try:
+            os.mkdir(f"target/renders/{world}")
+        except FileExistsError:
+            pass
         metadatas = {}
         total = len(levels)
         for i,level in enumerate(levels):
