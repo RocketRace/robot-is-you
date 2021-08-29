@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+import json
 import re
 from io import BytesIO
-from os import listdir
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Sequence
 
@@ -40,6 +40,8 @@ class SearchPageSource(menus.ListPageSource):
                 lines.append(f"({type}) {short} {long.display()}")
             elif isinstance(long, CustomLevelData):
                 lines.append(f"({type}) {short} {long.name} (by {long.author})")
+            elif isinstance(long, dict):
+                lines.append(f"({type}) {long['name']} ({short}) version {long['version']} (by {long['author']})")
             elif long is None:
                 continue
             else:
@@ -78,6 +80,8 @@ class HintPageSource(menus.ListPageSource):
 class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
     def __init__(self, bot: Bot):
         self.bot = bot
+        with open("data/levelpacks.json") as f:
+            self.packs = json.load(f)
 
     @commands.command()
     @commands.cooldown(4, 8, type=commands.BucketType.channel)
@@ -102,7 +106,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         * `author`: For custom levels, filters by the author.
 
         You can also filter by the result type:
-        * `type`: What results to return. This can be `tile`, `level`, `palette`, `variant`, or `mod`.
+        * `type`: What results to return. This can be `tile`, `level`, `palette`, `variant`, `mod` or `pack`.
 
         **Example commands:**
         `search baba`
@@ -141,7 +145,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
                 type = "level"
                 custom = value == "true"
             elif flag == "author":
-                type = "level"
+                type = "level/pack"
                 custom = True
             elif flag in ("map", "world"):
                 type = "level"
@@ -210,7 +214,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
                 results["tile", row["name"]] = TileData.from_row(row)
                 results["blank_space", row["name"]] = None
 
-        if type is None or type == "level":
+        if type is None or type == "level" or type == "level/pack":
             if custom is None or custom:
                 f_author=flags.get("author")
                 async with self.bot.db.conn.cursor() as cur:
@@ -278,8 +282,23 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
 
         if type is None and plain_query or type == "variant":
             for variant in self.bot.handlers.all_variants():
-                if plain_query.lower() in variant.lower():
+                if plain_query in variant.lower():
                     results["variant", variant] = variant
+
+        if type is None or type == "pack" or type == "level/pack":
+            if plain_query or flags.get("author") is not None:
+                author = flags.get("author")
+                for pack, data in self.packs.items():
+                    if (
+                        plain_query in pack or 
+                        plain_query in data["name"] 
+                        and (
+                            author is None 
+                            or data["author"].lower() == author
+                        )
+                    ):
+                        results["pack", pack] = data
+
 
         await menus.MenuPages(
             source=SearchPageSource(
