@@ -259,7 +259,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
                     
             if not custom:
                 levels = await self.bot.get_cog("Baba Is You").search_levels(plain_query, **flags)
-                for (world, id), data in levels.items():
+                for (world, id), data in levels:
                     results["level", f"{world}/{id}"] = data
         
         if type is None and plain_query or type == "palette":
@@ -336,7 +336,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         levels = await self.bot.get_cog("Baba Is You").search_levels(level_query)
         if len(levels) == 0:
             return await ctx.error(f"No levels found with the query `{level_query}`.")
-        _, choice = levels.popitem(last=False)
+        _, choice = levels[0]
         choice: LevelData
         
         hints = self.bot.db.hints(choice.id)

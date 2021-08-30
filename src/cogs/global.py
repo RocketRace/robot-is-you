@@ -360,14 +360,15 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         '''
         await self.render_tiles(ctx, objects=objects, rule=False)
 
-    async def search_levels(self, query: str, **flags: Any) -> OrderedDict[tuple[str, str], LevelData]:
+    async def search_levels(self, query: str, **flags: Any) -> list[tuple[tuple[str, str], LevelData]]:
         '''Finds levels by query.
         
         Flags:
         * `map`: Which map screen the level is from.
         * `world`: Which levelpack / world the level is from.
         '''
-        levels: OrderedDict[tuple[str, str], LevelData] = collections.OrderedDict()
+        levels: list[tuple[tuple[str, str], LevelData]] = []
+        found: set[tuple[str, str]] = set()
         f_map = flags.get("map")
         f_world = flags.get("world")
         async with self.bot.db.conn.cursor() as cur:
@@ -390,20 +391,34 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 row = await cur.fetchone()
                 if row is not None:
                     data = LevelData.from_row(row)
-                    levels[data.world, data.id] = data
+                    if (data.world, data.id) not in found:
+                        found.add((data.world, data.id))
+                        levels.append(((data.world, data.id), data))
 
+
+            # This system ensures that baba worlds are 
+            # *always* prioritized over modded worlds,
+            # even if the modded query belongs to a higher tier.
+            # 
+            # A real example of the naive approach failing is 
+            # with the query "map", matching `baba/106level` by name
+            # and `alphababa/map` by level ID. Even though name 
+            # matches are lower priority than ID matches, we want
+            # ths to return `baba/106level` first.
             maybe_parts = query.split(" ", 1)
             if len(maybe_parts) == 2:
-                maps_queries = [
+                possible_queries = [
+                    ("baba", query),
                     (maybe_parts[0], maybe_parts[1]),
                     (f_world, query)
                 ]
             else:
-                maps_queries = [
+                possible_queries = [
+                    ("baba", query),
                     (f_world, query)
                 ]
 
-            for f_world, query in maps_queries:
+            for f_world, query in possible_queries:
                 # someworld/[levelid]
                 await cur.execute(
                     '''
@@ -423,7 +438,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 )
                 for row in await cur.fetchall():
                     data = LevelData.from_row(row)
-                    levels[data.world, data.id] = data
+                    if (data.world, data.id) not in found:
+                        found.add((data.world, data.id))
+                        levels.append(((data.world, data.id), data))
                 
                 # [parent]-[map_id]
                 segments = query.split("-")
@@ -458,7 +475,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     )
                     for row in await cur.fetchall():
                         data = LevelData.from_row(row)
-                        levels[data.world, data.id] = data
+                        if (data.world, data.id) not in found:
+                            found.add((data.world, data.id))
+                            levels.append(((data.world, data.id), data))
 
                 # [name]
                 await cur.execute(
@@ -479,7 +498,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 )
                 for row in await cur.fetchall():
                     data = LevelData.from_row(row)
-                    levels[data.world, data.id] = data
+                    if (data.world, data.id) not in found:
+                        found.add((data.world, data.id))
+                        levels.append(((data.world, data.id), data))
 
                 # [name-ish]
                 await cur.execute(
@@ -500,7 +521,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 )
                 for row in await cur.fetchall():
                     data = LevelData.from_row(row)
-                    levels[data.world, data.id] = data
+                    if (data.world, data.id) not in found:
+                        found.add((data.world, data.id))
+                        levels.append(((data.world, data.id), data))
 
                 # [map_id]
                 await cur.execute(
@@ -521,7 +544,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 )
                 for row in await cur.fetchall():
                     data = LevelData.from_row(row)
-                    levels[data.world, data.id] = data
+                    if (data.world, data.id) not in found:
+                        found.add((data.world, data.id))
+                        levels.append(((data.world, data.id), data))
         
         return levels
 
@@ -590,10 +615,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 return await ctx.error(f"The Baba Is Bookmark site returned a bad response. Try again later.")
         if custom_level is None:
             levels = await self.search_levels(fine_query)
-            try:
-                _, level = levels.popitem(last=False)
-            except KeyError:
+            if len(levels) == 0:
                 return await ctx.error("A level could not be found with that query.")
+            _, level = levels[0]
         else:
             levels = {}
             level = custom_level
@@ -642,7 +666,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 )
 
         if len(levels) > 0:
-            extras = [level.unique() for level in levels.values()]
+            extras = [level.unique() for _, level in levels]
             if len(levels) > constants.OTHER_LEVELS_CUTOFF:
                 extras = extras[:constants.OTHER_LEVELS_CUTOFF]
             paths = ", ".join(f"`{extra}`" for extra in extras)
