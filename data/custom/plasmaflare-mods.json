@@ -1,0 +1,86 @@
+[
+    {
+        "name": "text_cut",
+        "sprite": "text_cut",
+        "tiling": "-1",
+        "color": [
+            "5",
+            "2"
+        ],
+        "active": [
+            "5",
+            "4"
+        ],
+        "tags": "text\tabstract"
+    },
+    {
+        "name": "text_pack",
+        "sprite": "text_pack",
+        "tiling": "-1",
+        "color": [
+            "2",
+            "2"
+        ],
+        "active": [
+            "2",
+            "3"
+        ],
+        "tags": "text\tabstract"
+    },
+    {
+        "name": "text_pass",
+        "sprite": "text_pass",
+        "tiling": "-1",
+        "color": [
+            "4",
+            "3"
+        ],
+        "active": [
+            "4",
+            "4"
+        ],
+        "tags": "text\tabstract\ttext_quality"
+    },
+    {
+        "name": "text_block",
+        "sprite": "text_block",
+        "tiling": "-1",
+        "color": [
+            "2",
+            "1"
+        ],
+        "active": [
+            "2",
+            "2"
+        ],
+        "tags": "text\tabstract\ttext_quality"
+    },
+    {
+        "name": "text_ellipsis",
+        "sprite": "text_ellipsis",
+        "tiling": "-1",
+        "color": [
+            "0",
+            "1"
+        ],
+        "active": [
+            "0",
+            "3"
+        ],
+        "tags": "text\tabstract"
+    },
+    {
+        "name": "text_this",
+        "sprite": "text_this",
+        "tiling": "0",
+        "color": [
+            "0",
+            "1"
+        ],
+        "active": [
+            "0",
+            "3"
+        ],
+        "tags": "text\tabstract\ttext_noun"
+    }
+]
