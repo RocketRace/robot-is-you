@@ -278,28 +278,19 @@ class MetaCog(commands.Cog, name="Other Commands"):
     async def on_disconnect(self):
         start = time()
         try:
-            await self.bot.wait_for("ready", timeout=5.0)
+            await self.bot.wait_for("ready", timeout=60.0)
         except asyncio.TimeoutError:
-            try: 
-                await self.bot.wait_for("ready", timeout=55.0)
-            except asyncio.TimeoutError:
-                err = discord.Embed(
-                    title="Disconnect", 
-                    type="rich", 
-                    description=f"{self.bot.user.mention} has disconnected.", 
-                    color=0xff8800)
-            else:
-                err = discord.Embed(
-                    title="Reconnected",
-                    type="rich",
-                    description=f"{self.bot.user.mention} has reconnected. Downtime: {str(round(time() - start, 2))} seconds.",
-                    color=0xffaa00
-                )
+            err = discord.Embed(
+                title="Disconnect", 
+                type="rich", 
+                description=f"{self.bot.user.mention} (instance {self.bot.instance_id}) has disconnected.", 
+                color=0xff8800
+            )
         else: 
             err = discord.Embed(
-                title="Resumed", 
+                title="Reconnected", 
                 type="rich", 
-                description=f"{self.bot.user.mention} has reconnected. Downtime: {str(round(time() - start, 2))} seconds.", 
+                description=f"{self.bot.user.mention} (instance {self.bot.instance_id}) has reconnected. Downtime: {str(round(time() - start, 2))} seconds.", 
                 color=0xffff00
             )
         webhook = discord.Webhook.from_url(self.bot.webhook_url, adapter=discord.AsyncWebhookAdapter(self.bot.session))
