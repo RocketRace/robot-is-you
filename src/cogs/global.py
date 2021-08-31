@@ -172,7 +172,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         try:
             for y, row in enumerate(word_grid):
                 for x, word in enumerate(row):
-                    if potential_count == 2:
+                    if potential_count == 4:
                         raise Exception
                     potential_flags.append((word, x, y))
                     potential_count += 1

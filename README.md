@@ -1,28 +1,27 @@
 # About
 
-A fun Discord bot based on the indie game [Baba Is You](https://store.steampowered.com/app/736260/Baba_Is_You/) (by Arvi Teikari). This bot was written with the [discord.py](https://discordpy.readthedocs.io/en/latest/) library for Python 3.x.
+A fun Discord bot based on the indie game [Baba Is You](https://store.steampowered.com/app/736260/Baba_Is_You/) (by Arvi Teikari). This bot was written with the [discord.py](https://discordpy.readthedocs.io/en/latest/) library.
 
 # Functionality
 
-A list of all commands can be seen using the `help` command. (By default, the bot has a prefix of `+`.)
+This bot features an "editor"-like renderer, letting you render custom scenes using sprites from Baba Is You! The `tile` and `rule` commands can be used to render just about anything you want!
 
-This bot primarily features rendering and animation of
-tiles in *Baba Is You* (through the `tile` and `rule` commands), 
-as well as *Baba Is You* levels (using the `level` command).
+![Tile command output](./imgs/tile_command.png?raw=true)
+![Rule command output](./imgs/rule_command.png?raw=true)
 
-*Example command:*
+As hinted at by these demos, there's plenty of nuance in the output -- you can customize to a staggering degree!
 
-![Example command](https://cdn.discordapp.com/attachments/420095557231443988/596606587800387594/unknown.png)
+![Customized gif output](./imgs/fancy_render.gif?raw=true)
 
-*Example output:*
+In addition to custom renders, the bot also features a `level` command which searches levels by query and renders them. This also supports custom uploaded levels.
 
-![Example command output](https://cdn.discordapp.com/attachments/420095557231443988/596606636215500816/unknown.png)
+![Level command output](./imgs/level_command.png?raw=true)
 
-**NOTE: Output is in the form of an animated gif. Try the commands yourself for the best experience.**
+There are also a number of complementary utility commands, including the `hint` command to provide level hints and the `search` command to search through tiles, levels, color palettes, etc.
 
-# Invite
+A full list of commands can be seen using the `help` command.
 
-[Invite the bot to your server!](https://discordapp.com/api/oauth2/authorize?client_id=480227663047294987&scope=bot&permissions=388160)
+![Help command output](./imgs/help_command.png?raw=true)
 
 # Support server
 
