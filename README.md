@@ -9,7 +9,7 @@ This bot features an "editor"-like renderer, letting you render custom scenes us
 ![Tile command output](./imgs/tile_command.png?raw=true)
 ![Rule command output](./imgs/rule_command.png?raw=true)
 
-As hinted at by these demos, there's plenty of nuance in the output -- you can customize to a staggering degree!
+As hinted at by these demos, there's plenty of nuance in the output -- you can customize to a staggering degree! The following is an example of what you can make:
 
 ![Customized gif output](./imgs/fancy_render.gif?raw=true)
 
