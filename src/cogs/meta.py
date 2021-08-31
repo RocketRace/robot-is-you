@@ -132,9 +132,9 @@ class MetaCog(commands.Cog, name="Other Commands"):
             colour=self.bot.embed_color, 
             description=(
                 f"{ctx.me.name} - Bot for Discord based on the indie game Baba Is You. "
-                "Written by RocketRace#0798. "
+                "Written by RocketRace#0798.\n"
                 "[Support this bot!](https://liberapay.com/RocketRace/) "
-                "(Donations go towards server costs.)"
+                "(Donations go towards server costs and other essential needs.)"
             )
         )
         about_embed.add_field(name="Links", value=(
