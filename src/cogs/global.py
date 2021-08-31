@@ -666,7 +666,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 )
 
         if len(levels) > 1:
-            extras = [level.unique() for _, level in levels[1:]]
+            levels = levels[1:]
+            extras = [level.unique() for _, level in levels]
             if len(levels) > constants.OTHER_LEVELS_CUTOFF:
                 extras = extras[:constants.OTHER_LEVELS_CUTOFF]
             paths = ", ".join(f"`{extra}`" for extra in extras)
