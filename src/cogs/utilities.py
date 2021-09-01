@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any, Sequence
 
 import discord
 from discord.ext import commands, menus
-from PIL import Image
+from PIL import Image, ImageFont, ImageDraw
 from src.db import CustomLevelData, LevelData, TileData
 from src.tile import RawTile
 
@@ -319,12 +319,25 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
             img = Image.open(f"data/palettes/{palette}.png")
         except FileNotFoundError:
             return await ctx.error(f"The palette `{palette}` could not be found.")
-        scaled = img.resize(
+        w, h = img.size
+        img = img.resize(
             (img.width * constants.PALETTE_PIXEL_SIZE, img.height * constants.PALETTE_PIXEL_SIZE), 
             resample=Image.NEAREST
         )
+        font = ImageFont.truetype("data/04b03.ttf", 16)
+        draw = ImageDraw.Draw(img)
+        for y in range(h):
+            for x in range(w):
+                try:
+                    n = img.getpixel((x * constants.PALETTE_PIXEL_SIZE, (y * constants.PALETTE_PIXEL_SIZE)))
+                    if (n[0]+n[1]+n[2])/3 > 128:
+                        draw.text((x * constants.PALETTE_PIXEL_SIZE, (y * constants.PALETTE_PIXEL_SIZE)-2), str(x)+","+str(y), (1,1,1,255), font, layout_engine=ImageFont.LAYOUT_BASIC)
+                    else:
+                        draw.text((x * constants.PALETTE_PIXEL_SIZE, (y * constants.PALETTE_PIXEL_SIZE)-2), str(x)+","+str(y), (255,255,255,255), font, layout_engine=ImageFont.LAYOUT_BASIC)
+                except:
+                    pass
         buf = BytesIO()
-        scaled.save(buf, format="PNG")
+        img.save(buf, format="PNG")
         buf.seek(0)
         file = discord.File(buf, filename=f"palette_{palette}.png")
         await ctx.reply(f"Palette `{palette}`:", file=file)
