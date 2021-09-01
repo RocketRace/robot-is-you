@@ -393,5 +393,23 @@
          "2",
          "2"
       ]
+   },
+   {
+      "name": "blocker",
+      "sprite": "blocker",
+      "tiling": "1",
+      "color": [
+         "0",
+         "3"
+      ]
+   },
+   {
+      "name": "link",
+      "sprite": "link",
+      "tiling": "1",
+      "color": [
+         "0",
+         "3"
+      ]
    }
 ]
