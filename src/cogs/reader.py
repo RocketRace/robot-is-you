@@ -346,7 +346,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             packs = json.load(f)
         pack_names = ["baba"] + list(packs.keys())
         for world in pack_names:
-            await ctx.send(f"Loading maps for `{world}``...")
+            await ctx.send(f"Loading maps for `{world}`...")
             total = await self.load_single_world(ctx, world, also_mobile=True)
             await ctx.send(f"{total}/{total} maps loaded for `{world}`.")
         await ctx.reply("Loaded all worlds. Updated the database.")
