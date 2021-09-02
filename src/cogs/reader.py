@@ -4,6 +4,7 @@ import asyncio
 import base64
 import configparser
 import io
+import json
 import os
 import re
 import zlib
@@ -71,6 +72,8 @@ class Grid:
             '''This first checks the given world, then the `baba` world, then `baba-extensions`, and if both fail it returns `default`'''
             if sprite == "icon":
                 path = f"data/sprites/{{}}/icon.png"
+            elif sprite.startswith("icon_default"):
+                path = f"data/sprites/{{}}/{sprite}.png"
             elif sprite in ("smiley", "hi") or sprite.startswith("icon"):
                 path = f"data/sprites/{{}}/{sprite}_1.png"
             elif sprite == "default":
@@ -162,6 +165,8 @@ class Item:
     def icon(cls, sprite: str) -> Item:
         '''Level icon'''
         if sprite == "icon":
+            sprite = sprite
+        elif sprite.startswith("icon_default"):
             sprite = sprite
         elif sprite.startswith("icon"):
             sprite = sprite[:-2] # strip _1 for icon sprites
@@ -326,10 +331,29 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         Initializes the level tree unless otherwise specified.
         Cuts off borders from rendered levels unless otherwise specified.
         '''
-        levels = [l[:-2] for l in listdir(f"data/levels/{world}") if l.endswith(".l")]
-
-        # Parse and render the level map
         await ctx.send("Loading maps...")
+        total = await self.load_single_world(ctx, world, also_mobile=also_mobile)
+        await ctx.send(f"{total}/{total} maps loaded. Database updated.")
+    
+    @commands.command(name="loadallworlds")
+    @commands.is_owner()
+    async def load_all_worlds(self, ctx: Context):
+        '''NUCLEAR COMMAND!
+        PLEASE DON'T USE IT UNLESS YOU NEED TO RE-RENDER EVERY PACK.
+        '''
+        await ctx.send("Loading maps from every single world...")
+        with open("data/levelpacks.json") as f:
+            packs = json.load(f)
+        pack_names = ["baba"] + list(packs.keys())
+        for world in pack_names:
+            await ctx.send(f"Loading maps for `{world}``...")
+            total = await self.load_single_world(ctx, world, also_mobile=True)
+            await ctx.send(f"{total}/{total} maps loaded for `{world}`.")
+        await ctx.reply("Loaded all worlds. Updated the database.")
+
+    async def load_single_world(self, ctx: Context, world: str, *, also_mobile: bool) -> int:
+        # Parse and render the level map
+        levels = [l[:-2] for l in listdir(f"data/levels/{world}") if l.endswith(".l")]
         try:
             os.mkdir(f"target/renders/{world}")
         except FileExistsError:
@@ -359,9 +383,8 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
             await asyncio.sleep(0)
             if i and i % 50 == 0:
                 await ctx.send(f"{i}/{total}")
-        await ctx.send(f"{total}/{total} maps loaded.")
         await self.clean_metadata(metadatas)
-        await ctx.send(f"{ctx.author.mention} Database updated. Done.")
+        return total
 
     def read_objects(self) -> None:
         '''Inner function that parses the contents of the data/values.lua file.
@@ -517,15 +540,27 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                 except configparser.NoSectionError:
                     # No icon exists for the level, I guess
                     pass
+            # number style
+            elif style == 0:
+                if 0 <= number <= 99:
+                    tens, ones = divmod(number, 10)
+                    tens_icon = Item.icon(f"icon_default_tens_{tens}")
+                    ones_icon = Item.icon(f"icon_default_ones_{ones}")
+                    grid.cells[pos].append(tens_icon)
+                    grid.cells[pos].append(ones_icon)
+            # letter style
+            elif style == 1:
+                char = chr(number + ord('a'))
+                if 'a' <= char <= 'z':
+                    icon = Item.icon(f"icon_default_letter_{char}")
+                    grid.cells[pos].append(icon)
             # "dot" style
-            elif style == 2 and number >= 10:
-                icon = Item.icon("icon")
+            elif style == 2:
+                if number >= 10:
+                    icon = Item.icon("icon")
+                else:
+                    icon = Item.icon(f"icon_default_dot_{number + 1}")
                 grid.cells[pos].append(icon)
-            else:
-                pass
-                # If the bot could be able to draw numbers, letters and
-                # dots in the game font (for icons), it would do so here
-                # TODO draw text using the built-in font
 
             if initialize_level_tree and grid.map_id is not None:
                 level_file = config.get("levels", f"{i}file")
