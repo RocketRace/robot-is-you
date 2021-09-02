@@ -316,7 +316,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
 
         This is useful for picking colors from the palette.'''
         try:
-            img = Image.open(f"data/palettes/{palette}.png")
+            img = Image.open(f"data/palettes/{palette}.png").convert("RGB")
         except FileNotFoundError:
             return await ctx.error(f"The palette `{palette}` could not be found.")
         w, h = img.size
