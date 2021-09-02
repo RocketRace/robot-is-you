@@ -556,7 +556,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                     grid.cells[pos].append(icon)
             # "dot" style
             elif style == 2:
-                if number >= 10:
+                if number >= 9:
                     icon = Item.icon("icon")
                 else:
                     icon = Item.icon(f"icon_default_dot_{number + 1}")
