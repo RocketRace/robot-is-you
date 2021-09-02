@@ -417,6 +417,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     ("baba", query),
                     (f_world, query)
                 ]
+            if f_world is not None:
+                possible_queries = possible_queries[1:]
 
             for f_world, query in possible_queries:
                 # someworld/[levelid]
