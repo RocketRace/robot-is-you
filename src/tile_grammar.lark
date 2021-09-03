@@ -1,0 +1,23 @@
+IDENTIFIER_START: "a".."z" | "0".."9" | "_" | "#" | "'" | "*"
+IDENTIFIER_CONTINUE: "a".."z" | "0".."9" | "_" | "#" | "'" | "*" | "-" | "/" | "~"
+IDENTIFIER: IDENTIFIER_START IDENTIFIER_CONTINUE*
+EMPTY_IDENTIFIER: "-"
+TRANSFORM_SEQUENCE: ">"+
+
+variants: (":" IDENTIFIER)*
+unit: (IDENTIFIER | EMPTY_IDENTIFIER) variants
+
+transform: TRANSFORM_SEQUENCE unit
+operation: "!" IDENTIFIER
+process: unit (transform | operation)*
+
+stack: process ("&" process)*          -> plain_stack
+
+line: "text_" stack ("," stack)*             -> text_chain
+    | "tile_" stack ("," stack)*             -> tile_chain
+    | "(" stack (" "+ stack)* ")" variants   -> any_block
+    | "\"" stack (" "+ stack)* "\"" variants -> text_block
+    | "[" stack (" "+ stack)* "]" variants   -> tile_block
+    | stack (" "+ stack)*                    -> plain_line
+
+row: line (" "+ line)*

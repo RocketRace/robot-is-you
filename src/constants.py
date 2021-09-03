@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 # limits
-MAX_STACK = 4
-MAX_META_DEPTH = 3
-MAX_TILES = 256
+MAX_WIDTH = 128
+MAX_HEIGHT = 128
+MAX_DURATION = 32
+MAX_META_DEPTH = 4
+MAX_TILES = 512
 MAX_TEXT_LENGTH = 48
 
 # variants
@@ -29,6 +31,25 @@ DIRECTION_VARIANTS = {
     "d": 24,
 }
 
+SOFT_DIRECTION_VARIANTS = {
+    "rightsoft": 0,
+    "rs": 0,
+    "upsoft": 8,
+    "us": 8,
+    "leftsoft": 16,
+    "ls": 16,
+    "downsoft": 24,
+    "ds": 24,
+}
+
+SOFT_DIRECTION_REPRESENTATION_VARIANTS = {
+    "rs": "`rightsoft` / `rs` (Facing right, doesn't error if invalid)",
+    "us": "`upsoft` / `us` (Facing up, doesn't error if invalid)",
+    "ls": "`leftsoft` / `ls` (Facing left, doesn't error if invalid)",
+    "ds": "`downsoft` / `ds` (Facing down, doesn't error if invalid)",
+}
+
+
 ANIMATION_TILINGS = {
     2, 3, 4
 }
@@ -47,6 +68,24 @@ ANIMATION_VARIANTS = {
     "a3": 3,
 }
 
+SOFT_ANIMATION_VARIANTS = {
+    "a0s": 0,
+    "a0soft": 0,
+    "a1s": 1,
+    "a1soft": 1,
+    "a2s": 2,
+    "a2soft": 2,
+    "a3s": 3,
+    "a3soft": 3,
+}
+
+SOFT_ANIMATION_REPRESENTATION_VARIANTS = {
+    "a0s": "`a0s` (Animation frame 0, doesn't error if invalid)",
+    "a1s": "`a1s` (Animation frame 1, doesn't error if invalid)",
+    "a2s": "`a2s` (Animation frame 2, doesn't error if invalid)",
+    "a3s": "`a3s` (Animation frame 3, doesn't error if invalid)",
+}
+
 SLEEP_TILINGS = {
     2
 }
@@ -58,6 +97,15 @@ SLEEP_REPRESENTATION_VARIANTS = {
 SLEEP_VARIANTS = {
     "sleep": -1,
     "s": -1,
+}
+
+SOFT_SLEEP_REPRESENTATION_VARIANTS = {
+    "ss": "`sleepsoft` / `ss` (Doesn't error if invalid)"
+}
+
+SOFT_SLEEP_VARIANTS = {
+    "sleepsoft": -1,
+    "ss": -1,
 }
 
 AUTO_TILINGS = {
@@ -80,6 +128,24 @@ AUTO_VARIANTS = {
     "tileleft": 4,
     "td": 8,
     "tiledown": 8,
+}
+
+SOFT_AUTO_REPRESENTATION_VARIANTS = {
+    "trs": "`tilerightsoft` / `trs` (Connects right, doesn't error if invalid)",
+    "tus": "`tileup` / `tus` (Connects up, doesn't error if invalid)",
+    "tls": "`tileleftsoft` / `tls` (Connects left, doesn't error if invalid)",
+    "tds": "`tiledownsoft` / `tds` (Connects down, doesn't error if invalid)",
+}
+
+SOFT_AUTO_VARIANTS = {
+    "trs": 1,
+    "tilerightsoft": 1,
+    "tus": 2,
+    "tileupsoft": 2,
+    "tls": 4,
+    "tileleftsoft": 4,
+    "tds": 8,
+    "tiledownsoft": 8,
 }
 
 # colors
@@ -164,7 +230,7 @@ TEXT_TYPES = {
     7: "noun",
 }  
 DEFAULT_SPRITE_SIZE = 24
-PALETTE_PIXEL_SIZE = 32
+PALETTE_PIXEL_SIZE = 48
 SEARCH_RESULT_UNITS_PER_PAGE = 10 # roughtly half the number of lines
 OTHER_LEVELS_CUTOFF = 5
 

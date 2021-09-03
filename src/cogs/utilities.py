@@ -281,7 +281,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
                 results[a] = b
 
         if type is None and plain_query or type == "variant":
-            for variant in self.bot.handlers.all_variants():
+            for variant in self.bot.variant_handlers.all_variants():
                 if plain_query in variant.lower():
                     results["variant", variant] = variant
 
@@ -391,7 +391,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
             output.set_footer(text="Note: This tile doesn't exist in the database, so it's not necessarily valid.")
         
         raw_tile = RawTile(clean_tile, [])
-        variant_groups = self.bot.handlers.valid_variants(raw_tile, tile_data_cache)
+        variant_groups = self.bot.variant_handlers.valid_variants(raw_tile, tile_data_cache)
         for group, variants in variant_groups.items():
             output.add_field(
                 name=group,

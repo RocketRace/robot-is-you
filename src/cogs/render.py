@@ -35,8 +35,10 @@ class Renderer:
 
     async def render(
         self,
-        grid: list[list[list[ReadyTile]]],
+        tiles: list[ReadyTile],
         *,
+        grid_size: tuple[int, int],
+        duration: int,
         palette: str = "default",
         images: list[str] | None = None,
         image_source: str = constants.BABA_WORLD,
@@ -57,58 +59,57 @@ class Renderer:
         `background` is a palette index. If given, the image background color is set to that color, otherwise transparent. Background images overwrite this. 
         '''
         palette_img = Image.open(f"data/palettes/{palette}.png").convert("RGB")
-        sprite_cache: dict[str, Image.Image] = {}
-        imgs = []
+        imgs: list[Image.Image] = []
         # This is appropriate padding, no sprites can go beyond it
         padding = constants.DEFAULT_SPRITE_SIZE
-        for frame in range(3):
-            width = len(grid[0])
-            height = len(grid)
-            img_width = width * constants.DEFAULT_SPRITE_SIZE + 2 * padding
-            img_height =  height * constants.DEFAULT_SPRITE_SIZE + 2 * padding
+        width, height = grid_size
+        for _ in range(duration):
+            for frame in range(3):
+                img_width = width * constants.DEFAULT_SPRITE_SIZE + 2 * padding
+                img_height =  height * constants.DEFAULT_SPRITE_SIZE + 2 * padding
 
-            if images and image_source is not None:
-                img = Image.new("RGBA", (img_width, img_height))
-                # for loop in case multiple background images are used (i.e. baba's world map)
-                for image in images:
-                    try:
-                        overlap = Image.open(f"data/images/{image_source}/{image}_{frame + 1}.png").convert("RGBA") # bg images are 1-indexed
-                    except FileNotFoundError:
-                        # no animations, default to frame 1
-                        overlap = Image.open(f"data/images/{image_source}/{image}_1.png").convert("RGBA") # bg images are 1-indexed
-                    img.paste(overlap, (padding, padding), mask=overlap)
-            # bg color
-            elif background is not None:
-                palette_color = palette_img.getpixel(background)
-                img = Image.new("RGBA", (img_width, img_height), color=palette_color)
-            # neither
-            else: 
-                img = Image.new("RGBA", (img_width, img_height))
-            imgs.append(img)
+                if images and image_source is not None:
+                    img = Image.new("RGBA", (img_width, img_height))
+                    # for loop in case multiple background images are used (i.e. baba's world map)
+                    for image in images:
+                        try:
+                            overlap = Image.open(f"data/images/{image_source}/{image}_{frame + 1}.png").convert("RGBA") # bg images are 1-indexed
+                        except FileNotFoundError:
+                            # no animations, default to frame 1
+                            overlap = Image.open(f"data/images/{image_source}/{image}_1.png").convert("RGBA") # bg images are 1-indexed
+                        img.paste(overlap, (padding, padding), mask=overlap)
+                # bg color
+                elif background is not None:
+                    palette_color = palette_img.getpixel(background)
+                    img = Image.new("RGBA", (img_width, img_height), color=palette_color)
+                # neither
+                else: 
+                    img = Image.new("RGBA", (img_width, img_height))
+                imgs.append(img)
         
         # keeping track of the amount of padding we can slice off
         pad_r=pad_u=pad_l=pad_d=0
-        width = len(grid[0])
-        height = len(grid)
-        for y, row in enumerate(grid):
-            for x, stack in enumerate(row):
-                for tile in stack:
-                    if tile.frames is None:
-                        continue
-                    
-                    for frame, sprite in enumerate(tile.frames):
-                        x_offset = (sprite.width - constants.DEFAULT_SPRITE_SIZE) // 2
-                        y_offset = (sprite.height - constants.DEFAULT_SPRITE_SIZE) // 2
-                        if x == 0:
-                            pad_l = max(pad_l, x_offset)
-                        if x == width - 1:
-                            pad_r = max(pad_r, x_offset)
-                        if y == 0:
-                            pad_u = max(pad_u, y_offset)
-                        if y == height - 1:
-                            pad_d = max(pad_d, y_offset)
-                        imgs[frame].paste(sprite, (x * constants.DEFAULT_SPRITE_SIZE + padding - x_offset, y * constants.DEFAULT_SPRITE_SIZE + padding - y_offset), mask=sprite)
-        
+        for tile in sorted(tiles, key=lambda x: x.position[3]):
+            if tile.frames is None:
+                continue
+            x, y, _, t = tile.position
+            for frame, sprite in enumerate(tile.frames):
+                x_offset = (sprite.width - constants.DEFAULT_SPRITE_SIZE) // 2
+                y_offset = (sprite.height - constants.DEFAULT_SPRITE_SIZE) // 2
+                if x == 0:
+                    pad_l = max(pad_l, x_offset)
+                if x == width - 1:
+                    pad_r = max(pad_r, x_offset)
+                if y == 0:
+                    pad_u = max(pad_u, y_offset)
+                if y == height - 1:
+                    pad_d = max(pad_d, y_offset)
+                imgs[t*3+frame].paste(
+                    sprite,
+                    (x * constants.DEFAULT_SPRITE_SIZE + padding - x_offset, y * constants.DEFAULT_SPRITE_SIZE + padding - y_offset),
+                    mask=sprite
+                )
+
         outs = []
         for img in imgs:
             img = img.crop((padding - pad_l, padding - pad_u, img.width - padding + pad_r, img.height - padding + pad_d))
@@ -126,16 +127,16 @@ class Renderer:
     async def render_full_tile(self,
         tile: FullTile,
         *,
-        position: tuple[int, int],
+        position: tuple[int, int, int, int],
         palette_img: Image.Image,
         random_animations: bool = False,
         sprite_cache: dict[str, Image.Image]
     ) -> ReadyTile:
         '''woohoo'''
         if tile.empty:
-            return ReadyTile(None)
+            return ReadyTile(position, None)
         out = []
-        x, y = position
+        x, y, _, _ = position
         for frame in range(3):
             wobble = (11 * x + 13 * y + frame) % 3 if random_animations else frame
             if tile.custom:
@@ -171,35 +172,29 @@ class Renderer:
             sprite = self.recolor(sprite, rgb)
             out.append(sprite)
         f0, f1, f2 = out
-        return ReadyTile((f0, f1, f2))
+        return ReadyTile(position, (f0, f1, f2))
 
     async def render_full_tiles(
         self,
-        grid: list[list[list[FullTile]]],
+        tiles: list[FullTile],
         *,
         palette: str = "default",
         random_animations: bool = False
-    ) -> list[list[list[ReadyTile]]]:
+    ) -> list[ReadyTile]:
         '''Final individual tile processing step'''
         sprite_cache = {}
         palette_img = Image.open(f"data/palettes/{palette}.png").convert("RGB")
 
-        a = []
-        for y, row in enumerate(grid):
-            b = []
-            for x, stack in enumerate(row):
-                b.append([
-                    await self.render_full_tile(
-                        tile,
-                        position=(x, y),
-                        palette_img=palette_img,
-                        random_animations=random_animations,
-                        sprite_cache=sprite_cache
-                    )
-                    for tile in stack
-                ])
-            a.append(b)
-        return a
+        return [
+            await self.render_full_tile(
+                tile,
+                position=tile.position,
+                palette_img=palette_img,
+                random_animations=random_animations,
+                sprite_cache=sprite_cache
+            )
+            for tile in tiles
+        ]
 
     async def generate_sprite(
         self,

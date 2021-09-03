@@ -17,5 +17,6 @@ cogs = [
     "src.cogs.render",
     "src.cogs.variants",
     "src.cogs.utilities",
+    "src.cogs.operations",
     "jishaku"
 ]

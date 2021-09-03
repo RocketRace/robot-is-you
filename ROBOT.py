@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from src.cogs.operations import OperationMacros
 
 import aiohttp
 from src import synchronization
@@ -40,7 +41,8 @@ class Context(commands.Context):
 class Bot(commands.Bot):
     '''Custom bot class :)'''
     db: Database
-    handlers: VariantHandlers
+    variant_handlers: VariantHandlers
+    operation_macros: OperationMacros
     renderer: Renderer
     def __init__(
         self, 

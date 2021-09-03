@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import collections
 import os
 import re
 from datetime import datetime
@@ -8,49 +7,23 @@ from io import BytesIO
 from json import load
 from os import listdir
 from time import time
-from typing import TYPE_CHECKING, Any, OrderedDict
+from typing import TYPE_CHECKING, Any
 
 import aiohttp
 import discord
+import lark
 from discord.ext import commands
+from lark import Lark
+from lark.lexer import Token
+from lark.tree import Tree
 
 from .. import constants, errors
 from ..db import CustomLevelData, LevelData
-from ..tile import RawTile
+from ..tile import PositionedTile, RawTile
 from ..types import Context
 
 if TYPE_CHECKING:
     from ...ROBOT import Bot
-    from ..tile import RawGrid
-
-
-def try_index(string: str, value: str) -> int:
-    '''Returns the index of a substring within a string.
-    Returns -1 if not found.
-    '''
-    index = -1
-    try:
-        index = string.index(value)
-    except:
-        pass
-    return index
-
-# Splits the "text_x,y,z..." shortcuts into "text_x", "text_y", ...
-def split_commas(grid: list[list[str]], prefix: str):
-    for row in grid:
-        to_add = []
-        for i, word in enumerate(row):
-            if "," in word:
-                if word.startswith(prefix):
-                    each = word.split(",")
-                    expanded = [each[0]]
-                    expanded.extend([prefix + segment for segment in each[1:]])
-                    to_add.append((i, expanded))
-                else:
-                    raise errors.SplittingException(word)
-        for change in reversed(to_add):
-            row[change[0]:change[0] + 1] = change[1]
-    return grid
 
 class GlobalCog(commands.Cog, name="Baba Is You"):
     def __init__(self, bot: Bot):
@@ -58,6 +31,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         with open("config/leveltileoverride.json") as f:
             j = load(f)
             self.level_tile_override = j
+        with open("src/tile_grammar.lark") as f:
+            self.lark = Lark(f.read(), start="row")
 
     # Check if the bot is loading
     async def cog_check(self, ctx):
@@ -129,143 +104,327 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         else:
             return await ctx.error(f"{msg}.")
 
-    def parse_raw(self, grid: list[list[list[str]]], *, rule: bool) -> RawGrid:
-        '''Parses a string grid into a RawTile grid'''
-        return [
-            [
-                [
-                    RawTile.from_str(
-                        "-" if tile == "-" else tile[5:] if tile.startswith("tile_") else f"text_{tile}"
-                    ) if rule else RawTile.from_str(
-                        "-" if tile == "text_-" else tile
-                    )
-                    for tile in stack
-                ]
-                for stack in row
-            ]
-            for row in grid
-        ]
-
-    async def render_tiles(self, ctx: Context, *, objects: str, rule: bool):
+    async def render_tiles(self, ctx: Context, *, objects: str, is_rule: bool):
         '''Performs the bulk work for both `tile` and `rule` commands.'''
         await ctx.trigger_typing()
         start = time()
         tiles = objects.lower().strip().replace("\\", "")
+        tiles = tiles.replace("```\n", "")
+        tiles = tiles.replace("`", "")
 
         # Determines if this should be a spoiler
-        spoiler = "|" in tiles
+        spoiler = tiles.count("||") >= 2
         tiles = tiles.replace("|", "")
         
         # Check for empty input
         if not tiles:
             return await ctx.error("Input cannot be blank.")
 
-        # Split input into lines
-        word_rows = tiles.splitlines()
-        
-        # Split each row into words
-        word_grid = [row.split() for row in word_rows]
-
-        # Check flags
-        potential_flags = []
-        potential_count = 0
-        try:
-            for y, row in enumerate(word_grid):
-                for x, word in enumerate(row):
-                    if potential_count == 4:
-                        raise Exception
-                    potential_flags.append((word, x, y))
-                    potential_count += 1
-        except Exception: pass
+        # Handle flags *first*, before even splitting
+        flag_patterns = (
+            r"(?:^|\s)(?:(--background|-b)(=(\d)/(\d))?)(?:$|\s)",
+            r"(?:^|\s)(?:(--palette=|-p=|palette:)(\w+))(?:$|\s)",
+            r"(?:^|\s)(?:--raw|-r)(?:$|\s)",
+            r"(?:^|\s)(?:--letter|-l)(?:$|\s)",
+        )
         background = None
-        palette = "default"
-        to_delete = []
-        raw_output = False
-        default_to_letters = False
-        for flag, x, y in potential_flags:
-            bg_match = re.fullmatch(r"(--background|-b)(=(\d)/(\d))?", flag)
-            if bg_match:
-                if bg_match.group(3) is not None:
-                    tx, ty = int(bg_match.group(3)), int(bg_match.group(4))
-                    if not (0 <= tx <= 7 and 0 <= ty <= 5):
-                        return await ctx.error("The provided background color is invalid.")
-                    background = tx, ty
-                else:
-                    background = (0, 4)
-                to_delete.append((x, y))
-                continue
-            flag_match = re.fullmatch(r"(--palette=|-p=|palette:)(\w+)", flag)
-            if flag_match:
-                palette = flag_match.group(2)
-                if palette + ".png" not in listdir("data/palettes"):
-                    return await ctx.error(f"Could not find a palette with name \"{palette}\".")
-                to_delete.append((x, y))
-            raw_match = re.fullmatch(r"--raw|-r", flag)
-            if raw_match:
-                raw_output = True
-                to_delete.append((x, y))
-            letter_match = re.fullmatch(r"--letter|-l", flag)
-            if letter_match:
-                default_to_letters = True
-                to_delete.append((x, y))
-        for x, y in reversed(to_delete):
-            del word_grid[y][x]
-        
-        try:
-            if rule:
-                comma_grid = split_commas(word_grid, "tile_")
+        for match in re.finditer(flag_patterns[0], tiles):
+            if match.group(3) is not None:
+                tx, ty = int(match.group(3)), int(match.group(4))
+                if not (0 <= tx <= 7 and 0 <= ty <= 5):
+                    return await ctx.error("The provided background color is invalid.")
+                background = tx, ty
             else:
-                comma_grid = split_commas(word_grid, "text_")
-        except errors.SplittingException as e:
-            cause = e.args[0]
-            return await ctx.error(f"I couldn't split the following input into separate objects: \"{cause}\".")
+                background = (0, 4)
+        palette = "default"
+        for match in re.finditer(flag_patterns[1], tiles):
+            palette = match.group(2)
+            if palette + ".png" not in listdir("data/palettes"):
+                return await ctx.error(f"Could not find a palette with name \"{palette}\".")
+        raw_output = False
+        for match in re.finditer(flag_patterns[2], tiles):
+            raw_output = True
+        default_to_letters = False
+        for match in re.finditer(flag_patterns[3], tiles):
+            default_to_letters = True
+        
+        # Clean up
+        for pattern in flag_patterns:
+            tiles = re.sub(pattern, " ", tiles)
+        
+        # Split input into lines
+        rows = tiles.splitlines()
+        
+        tile_instructions: list[PositionedTile] = []
+        previous_tile: RawTile | None = None
+        # Do the bulk of the parsing here:
+        for y, row in enumerate(rows):
+            x = 0
+            try:
+                tree = self.lark.parse(row.strip())
+            except lark.UnexpectedCharacters as e:
+                return await ctx.error(f"Invalid character `{e.char}` in row {y}, around `... {row[e.column - 5: e.column + 5]} ...`")
+            except lark.UnexpectedToken as e:
+                mistake_kind = e.match_examples(
+                    self.lark.parse, 
+                    {
+                        "unclosed": [
+                            "(baba",
+                            "[this ",
+                            "\"rule",
+                        ],
+                        "missing": [
+                            ":red",
+                            "baba :red",
+                            "&baba",
+                            "baba& keke",
+                            ">baba",
+                            "baba> keke"
+                        ],
+                        "variant": [
+                            "baba: keke",
+                        ]
+                    }
+                )
+                around = f"`... {row[e.column - 5 : e.column + 5]} ...`"
+                if mistake_kind == "unclosed":
+                    return await ctx.error(f"Unclosed brackets or quotes! Expected them to close around {around}.")
+                elif mistake_kind == "missing":
+                    return await ctx.error(f"Missing a tile in row {y}! Make sure not to have spaces between `&`, `:`, or `>`!\nError occurred around {around}.")
+                elif mistake_kind == "variant":
+                    return await ctx.error(f"Empty variant in row {y}, around {around}.")
+                else:
+                    return await ctx.error(f"Invalid syntax in row {y}, around {around}.")
+            except lark.UnexpectedEOF as e:
+                return await ctx.error(f"Unexpected end of input in row {y}.")
+            for line in tree.children: 
+                line: Tree
+                line_text_mode: bool | None = None
+                line_variants: list[str] = []
 
-        # Splits "&"-joined words into stacks
-        stacked_grid: list[list[list[str]]] = []
-        for row in comma_grid:
-            stacked_row: list[list[str]] = []
-            for stack in row:
-                split = stack.split("&")
-                stacked_row.append(split)
-                if len(split) > constants.MAX_STACK and ctx.author.id != self.bot.owner_id:
-                    return await ctx.error(f"Stack too high ({len(split)}).\nYou may only stack up to {constants.MAX_STACK} tiles on one space.")
-            stacked_grid.append(stacked_row)
+                if line.data == "text_chain":
+                    line_text_mode = True
+                elif line.data == "tile_chain":
+                    line_text_mode = False
+                elif line.data == "text_block":
+                    line_text_mode = True
+                elif line.data == "tile_block":
+                    line_text_mode = False
+                
+                if line.data in ("text_block", "tile_block", "any_block"):
+                    *stacks, variants = line.children 
+                    variants: Tree
+                    for variant in variants.children: 
+                        variant: Token
+                        line_variants.append(variant.value)
+                else:
+                    stacks = line.children
+                
+                for stack in stacks: 
+                    stack: Tree
 
+                    blobs: list[tuple[bool | None, list[str], Tree]] = []
+
+                    if stack.data == "blob_stack":
+                        for variant_blob in stack.children:
+                            blob, variants = variant_blob.children 
+                            blob: Tree
+                            variants: Tree
+                            
+                            blob_text_mode: bool | None = None
+                            
+                            stack_variants = []
+                            for variant in variants.children:
+                                variant: Token
+                                stack_variants.append(variant.value)
+                            if blob.data == "text_blob":
+                                blob_text_mode = True
+                            elif blob.data == "tile_blob":
+                                blob_text_mode = False
+                            
+                            blobs.append((blob_text_mode, stack_variants, blob))
+                    else:
+                        blobs = [(None, [], stack)] 
+
+                    z = 0
+                    for blob_text_mode, stack_variants, blob in blobs:
+                        for process in blob.children: 
+                            process: Tree
+                            t = 0
+
+                            unit, *changes = process.children 
+                            unit: Tree
+                            changes: list[Tree]
+                            
+                            object, variants = unit.children 
+                            object: Token
+                            obj = object.value
+                            variants: Tree
+                            
+                            final_variants: list[str] = [
+                                var.value 
+                                for var in variants.children
+                            ]
+
+                            def handle_extra_variants(final_variants: list[str]):
+                                '''IN PLACE'''
+                                final_variants.extend(stack_variants)
+                                final_variants.extend(line_variants)
+
+                            def handle_text_mode(obj: str) -> str:
+                                '''RETURNS COPY'''
+                                text_delta = -1 if blob_text_mode is False else blob_text_mode or 0
+                                text_delta += -1 if line_text_mode is False else line_text_mode or 0
+                                text_delta += is_rule
+                                if text_delta == 0:
+                                    return obj
+                                elif text_delta > 0:
+                                    for _ in range(text_delta):
+                                        if obj.startswith("tile_"):
+                                            obj = obj[5:]
+                                        else:
+                                            obj = f"text_{obj}"
+                                    return obj
+                                else:
+                                    for _ in range(text_delta):
+                                        if obj.startswith("text_"):
+                                            obj = obj[5:]
+                                        else:
+                                            raise RuntimeError("this should never happen")
+                                            # TODO: handle this explicitly
+                                    return obj
+
+                            def update_previous(raw: RawTile, position: tuple[int, int, int, int]):
+                                '''IN PLACE'''
+                                nonlocal previous_tile
+                                if raw.is_previous:
+                                    if previous_tile is None:
+                                        raise RuntimeError("todo handle this bad case")
+                                        # TODO <- as well because syntax highlighting
+                                    else:
+                                        tile_instructions.append(PositionedTile.from_raw(previous_tile, position))
+                                else:
+                                    tile_instructions.append(PositionedTile.from_raw(raw, position))
+                                    previous_tile = raw
+
+                            obj = handle_text_mode(obj)
+                            handle_extra_variants(final_variants)
+
+                            update_previous(
+                                RawTile(
+                                    obj,
+                                    final_variants
+                                ),
+                                (x, y, z, t)
+                            )
+
+                            dx = dy = dz = 0
+                            for change in changes:
+                                if change.data == "transform":
+                                    seq, unit = change.children 
+                                    seq: str
+
+                                    count = len(seq)
+                                    for dt in range(count - 1):
+                                        tile_instructions.append(
+                                            PositionedTile.from_raw(
+                                                previous_tile, 
+                                                (x + dx, y + dy, z + dz, t + dt + 1)
+                                            )
+                                        )
+                                    
+                                    object, variants = unit.children 
+                                    object: Token
+                                    obj = object.value
+                                    final_variants = variants.children 
+                                    obj = handle_text_mode(obj)
+                                    handle_extra_variants(final_variants)
+                                    update_previous(
+                                        RawTile(
+                                            obj,
+                                            final_variants
+                                        ),
+                                        (x + dx, y + dy, z + dz, t + count)
+                                    )
+                                    t += count
+
+                                elif change.data == "operation":
+                                    oper = change.children[0] 
+                                    oper: Token
+                                    
+                                    expanded, deltas = self.bot.operation_macros.expand(
+                                        PositionedTile.from_raw(
+                                            previous_tile,
+                                            (x + dx, y + dy, z + dz, t)
+                                        ),
+                                        oper.value
+                                    )
+                                    tile_instructions.extend(expanded)
+                                    dxp, dyp, dzp, dtp = deltas
+                                    dx += dxp
+                                    dy += dyp
+                                    dz += dzp
+                                    t += dtp
+                            z += 1
+                    x += 1
 
         # Get the dimensions of the grid
-        width = max(len(row) for row in stacked_grid)
-        height = len(stacked_grid)
+        width = max(tile_instructions, key=lambda tile: tile.position[0]).position[0] + 1
+        height = max(tile_instructions, key=lambda tile: tile.position[1]).position[1] + 1
+        duration = max(tile_instructions, key=lambda tile: tile.position[3]).position[3] + 1
+
+        temporal_maxima: dict[tuple[int, int, int], tuple[int, PositionedTile]] = {}
+        for tile in tile_instructions:
+            x, y, z, t = tile.position
+            fixed = x, y, z
+            frame = temporal_maxima[fixed][0] if fixed in temporal_maxima else -1
+            temporal_maxima[fixed] = max(frame, t), tile
+        # Pad the grid across time
+        for (x, y, z), (t_star, last_tile) in temporal_maxima.items():
+            for t in range(t_star, duration - 1):
+                tile_instructions.append(last_tile.reposition((x, y, z, t + 1)))
+        
+        # filter out blanks before rendering
+        tile_instructions = [tile for tile in tile_instructions if not tile.is_empty]
 
         # Don't proceed if the request is too large.
         # (It shouldn't be that long to begin with because of Discord's 2000 character limit)
-        area = width * height
-        if area > constants.MAX_TILES and ctx.author.id != self.bot.owner_id:
-            return await ctx.error(f"Too many tiles ({area}). You may only render up to {constants.MAX_TILES} tiles at once, including empty tiles.")
-        elif area == 0:
-            return await ctx.error(f"Can't render nothing.")
+        if len(tile_instructions) > constants.MAX_TILES and ctx.author.id != self.bot.owner_id:
+            return await ctx.error(f"Too many tiles ({len(tile_instructions)}). You may only render up to {constants.MAX_TILES} tiles at once, excluding empty tiles.")
+        if width > constants.MAX_WIDTH:
+            return await ctx.error(f"Too wide ({width}). You may only render scenes up to {constants.MAX_WIDTH} tiles wide.")
+        if height > constants.MAX_HEIGHT:
+            return await ctx.error(f"Too high ({height}). You may only render scenes up to {constants.MAX_HEIGHT} tiles tall.")
+        if duration > constants.MAX_DURATION:
+            return await ctx.error(f"Too many frames ({duration}). You may only render scenes with up to {constants.MAX_DURATION} animation frames.")
 
-        # Pad the word rows from the end to fit the dimensions
-        for row in stacked_grid:
-            row.extend([["-"]] * (width - len(row)))
         try:
-            grid = self.parse_raw(stacked_grid, rule=rule)
             # Handles variants based on `:` affixes
             buffer = BytesIO()
             extra_buffer = BytesIO() if raw_output else None
             extra_names = [] if raw_output else None
-            full_grid = await self.bot.handlers.handle_grid(grid, raw_output=raw_output, extra_names=extra_names, default_to_letters=default_to_letters)
+            full_objects = await self.bot.variant_handlers.handle_list(
+                tile_instructions,
+                (width, height),
+                raw_output=raw_output,
+                extra_names=extra_names,
+                default_to_letters=default_to_letters
+            )
+            extra_name = extra_names[0] if extra_names is not None else None
             await self.bot.renderer.render(
                 await self.bot.renderer.render_full_tiles(
-                    full_grid,
+                    full_objects,
                     palette=palette,
                     random_animations=True
                 ),
+                grid_size=(width, height),
+                duration=duration,
                 palette=palette,
                 background=background, 
                 out=buffer,
                 upscale=not raw_output,
                 extra_out=extra_buffer,
-                extra_name=extra_names[0] if raw_output else None, # type: ignore
+                extra_name=extra_name,
             )
         except errors.TileNotFound as e:
             word = e.args[0]
@@ -327,7 +486,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         `rule -P=test tile_baba on baba is word`
         `rule baba eat baba - tile_baba tile_baba:l`
         '''
-        await self.render_tiles(ctx, objects=objects, rule=True)
+        await self.render_tiles(ctx, objects=objects, is_rule=True)
 
     # Generates an animated gif of the tiles provided, using the default palette
     @commands.command()
@@ -358,7 +517,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         `tile baba&flag ||cake||`
         `tile -P=mountain -B baba bird:l`
         '''
-        await self.render_tiles(ctx, objects=objects, rule=False)
+        await self.render_tiles(ctx, objects=objects, is_rule=False)
 
     async def search_levels(self, query: str, **flags: Any) -> list[tuple[tuple[str, str], LevelData]]:
         '''Finds levels by query.
