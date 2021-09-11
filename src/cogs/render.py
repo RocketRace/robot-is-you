@@ -44,6 +44,7 @@ class Renderer:
         image_source: str = constants.BABA_WORLD,
         out: str | BinaryIO = "target/renders/render.gif",
         delay: int = 200,
+        frame_count: int = 3,
         background: tuple[int, int] | None = None,
         upscale: bool = True,
         extra_out: str | BinaryIO | None = None,
@@ -65,7 +66,7 @@ class Renderer:
         padding = constants.DEFAULT_SPRITE_SIZE
         width, height = grid_size
         for _ in range(duration):
-            for frame in range(3):
+            for frame in range(frame_count):
                 img_width = width * constants.DEFAULT_SPRITE_SIZE + 2 * padding
                 img_height =  height * constants.DEFAULT_SPRITE_SIZE + 2 * padding
 
@@ -94,7 +95,7 @@ class Renderer:
             for tile in stack:
                 if tile.frames is None:
                     continue
-                for frame, sprite in enumerate(tile.frames):
+                for frame, sprite in enumerate(tile.frames[:frame_count]):
                     x_offset = (sprite.width - constants.DEFAULT_SPRITE_SIZE) // 2
                     y_offset = (sprite.height - constants.DEFAULT_SPRITE_SIZE) // 2
                     if x == 0:
@@ -105,7 +106,7 @@ class Renderer:
                         pad_u = max(pad_u, y_offset)
                     if y == height - 1:
                         pad_d = max(pad_d, y_offset)
-                    imgs[t*3+frame].paste(
+                    imgs[t * frame_count + frame].paste(
                         sprite,
                         (x * constants.DEFAULT_SPRITE_SIZE + padding - x_offset, y * constants.DEFAULT_SPRITE_SIZE + padding - y_offset),
                         mask=sprite

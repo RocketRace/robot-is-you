@@ -142,6 +142,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             r"(?:^|\s)(?:--raw|-r)(?:$|\s)",
             r"(?:^|\s)(?:--letter|-l)(?:$|\s)",
             r"(?:^|\s)(?:(--delay=|-d=)(\d+))(?:$|\s)",
+            r"(?:^|\s)(?:(--frames=|-f=)(\d))(?:$|\s)",
         )
         background = None
         for match in re.finditer(flag_patterns[0], tiles):
@@ -168,6 +169,11 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             delay = int(match.group(2))
             if delay < 1 or delay > 1000:
                 return await ctx.error(f"Delay must be between 1 and 1000 milliseconds.")
+        frame_count = 3
+        for match in re.finditer(flag_patterns[4], tiles):
+            frame_count = int(match.group(2))
+            if frame_count < 1 or frame_count > 3:
+                return await ctx.error(f"The frame count must be 1, 2 or 3.")
         
         # Clean up
         for pattern in flag_patterns:
@@ -438,6 +444,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 background=background, 
                 out=buffer,
                 delay=delay,
+                frame_count=frame_count,
                 upscale=not raw_output,
                 extra_out=extra_buffer,
                 extra_name=extra_name,
@@ -487,6 +494,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         * `--raw` (`-R`): Enables raw mode. The sprites are sent in a ZIP file as well as normally. By default, sprites have no color.
         * `--letter` (`-L`): Enables letter mode. Custom text that has 2 letters in it will be rendered in "letter" mode.
         * `--delay=<...>` (`-D=<...>`): Alter the delay (in milliseconds) between frames.
+        * `--frames=<...>` (`-F=<...>`): How many wobble frames will be shown? (1, 2 or 3)
         
         **Variants, Operations & Transformations**
         * `:variant`: Append `:variant` to a tile to change color or sprite of a tile. See the `variants` command for more.
@@ -499,6 +507,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         * `tile_` : `tile_object` renders regular objects.
         * `,` : `tile_x,y,...` is expanded into `tile_x tile_y ...`
         * `||` : Marks the output gif as a spoiler. 
+        * `(baba keke)` groups tiles together, for easier variants
+        * `"baba is you"` makes all the tiles inside text
+        * `[baba keke me]` makes all the tiles inside objects
         
         **Example commands:**
         `rule baba is you`
@@ -520,6 +531,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         * `--raw` (`-R`): Enables raw mode. The sprites are sent in a ZIP file as well as normally. By default, sprites have no color.
         * `--letter` (`-L`): Enables letter mode. Custom text that has 2 letters in it will be rendered in "letter" mode.
         * `--delay=<...>` (`-D=<...>`): Alter the delay (in milliseconds) between frames.
+        * `--frames=<...>` (`-F=<...>`): How many wobble frames will be shown? (1, 2 or 3)
 
         **Variants**
         * `:variant`: Append `:variant` to a tile to change color or sprite of a tile. See the `variants` command for more.
