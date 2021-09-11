@@ -72,6 +72,12 @@ class PrettyHelpCommand(commands.DefaultHelpCommand):
         if bot.description:
             # <description> portion
             self.paginator.add_line(bot.description, empty=True)
+            self.paginator.add_line(
+                "[Support this bot!](https://liberapay.com/RocketRace/) "
+                "Donations go towards server costs and other essential needs."
+                "Thank you so much! \U0001f496", 
+                empty=True
+            )
 
         def get_category(command, *, no_category: str = f'\u200b**{self.no_category}**') -> str:
             cog = command.cog
@@ -134,7 +140,8 @@ class MetaCog(commands.Cog, name="Other Commands"):
                 f"{ctx.me.name} - Bot for Discord based on the indie game Baba Is You. "
                 "Written by RocketRace#0798.\n"
                 "[Support this bot!](https://liberapay.com/RocketRace/) "
-                "(Donations go towards server costs and other essential needs.)"
+                "Donations go towards server costs and other essential needs."
+                "Thank you so much! \U0001f496"
             )
         )
         about_embed.add_field(name="Links", value=(
