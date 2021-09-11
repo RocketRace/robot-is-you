@@ -2,21 +2,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from src.constants import BABA_WORLD
-from typing import TYPE_CHECKING, Literal, TypedDict
+from typing import Literal, TypeVar, TypedDict
 
 from PIL import Image
 
 from . import errors
 
-if TYPE_CHECKING:
-    RawGrid = list[list[list['RawTile']]]
-    FullGrid = list[list[list['FullTile']]]
-    GridIndex = tuple[int, int, int]
-
-@dataclass
-class Positioned:
-    '''Has a position, that's it'''
-    position: tuple[int, int, int, int]
+_T = TypeVar("_T")
+Grid = dict[tuple[int, int, int], list[_T]]
 
 @dataclass
 class SkeletonTile:
@@ -45,40 +38,27 @@ class SkeletonTile:
 class RawTile(SkeletonTile):
     '''Raw tile given from initial pass of +rule and +tile command parsing'''
     variants: list[str]
+    ephemeral: bool
 
     @classmethod
-    def from_str(cls, string: str) -> RawTile:
+    def from_str(cls, string: str, ephemeral: bool) -> RawTile:
         '''Parse from user input'''
         parts = string.split(":")
         if len(parts[0]) == 0:
             raise errors.EmptyTile()
         if any(len(part) == 0 for part in parts):
             raise errors.EmptyVariant(parts[0])
-        return RawTile(parts[0], parts[1:])
+        return RawTile(parts[0], parts[1:], ephemeral)
 
-@dataclass
-class PositionedTile(Positioned, RawTile): # bases must be in this order
+    def copy(self) -> RawTile:
+        return RawTile(
+            self.name, self.variants.copy(), self.ephemeral
+        )
+
     @classmethod
-    def blank(cls, position: tuple[int, int, int, int]) -> PositionedTile:
+    def blank(cls) -> RawTile:
         '''z to undo, r to reset'''
-        return PositionedTile("-", [], position)
-
-    @classmethod
-    def from_raw(cls, raw: RawTile, position: tuple[int, int, int, int]) -> PositionedTile:
-        '''Upgrades the raw tile.'''
-        return cls(
-            raw.name,
-            raw.variants,
-            position,
-        )
-
-    def reposition(self, position: tuple[int, int, int, int]) -> PositionedTile:
-        '''Move across space / time'''
-        return type(self)(
-            self.name,
-            self.variants.copy(),
-            position,
-        )
+        return RawTile("-", [], False)
 
 class TileFields(TypedDict, total=False):
     sprite: tuple[str, str]
@@ -93,7 +73,7 @@ class TileFields(TypedDict, total=False):
     style_flip: bool
 
 @dataclass
-class FullTile(Positioned, SkeletonTile): # note order of bases
+class FullTile(SkeletonTile):
     '''A tile ready to be rendered'''
     sprite: tuple[str, str] = BABA_WORLD, "error"
     variant_number: int = 0
@@ -107,15 +87,14 @@ class FullTile(Positioned, SkeletonTile): # note order of bases
     custom_style: Literal["noun", "property", "letter"] | None = None
     
     @classmethod
-    def from_tile_fields(cls, tile: PositionedTile, fields: TileFields) -> FullTile:
+    def from_tile_fields(cls, tile: RawTile, fields: TileFields) -> FullTile:
         '''Create a FullTile from a RawTile and TileFields'''
         return FullTile(
             tile.name,
-            tile.position,
             **fields
         )
 
 @dataclass
-class ReadyTile(Positioned):
+class ReadyTile:
     '''Tile that's about to be rendered, and already has a prerendered sprite.'''
     frames: tuple[Image.Image, Image.Image, Image.Image] | None

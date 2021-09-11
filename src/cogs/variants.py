@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 
 import re
 from typing import TYPE_CHECKING, Any, Callable
@@ -6,7 +7,7 @@ from typing import TYPE_CHECKING, Any, Callable
 from src.db import TileData
 
 from .. import constants, errors
-from ..tile import FullTile, PositionedTile, RawTile, TileFields
+from ..tile import FullTile, Grid, RawTile, TileFields
 
 if TYPE_CHECKING:
     from ...ROBOT import Bot
@@ -14,15 +15,16 @@ if TYPE_CHECKING:
 HandlerFn = Callable[['HandlerContext'], TileFields]
 DefaultFn = Callable[['DefaultContext'], TileFields]
 
+@dataclass
 class ContextBase:
     '''The context that the (something) was invoked in.'''
-    def __init__(self, *, bot: Bot, tile: PositionedTile, grid_size: tuple[int, int], tile_existence_cache: dict[tuple[int, int, int], set[str]], tile_data_cache: dict[str, TileData], flags: dict[str, Any]) -> None:
-        self.bot = bot
-        self.tile = tile
-        self.width, self.height = grid_size
-        self.tile_existence_cache = tile_existence_cache
-        self.tile_data_cache = tile_data_cache
-        self.flags = flags
+    bot: Bot
+    tile: RawTile
+    grid: Grid[RawTile]
+    position: tuple[int, int, int]
+    grid_size: tuple[int, int]
+    tile_data_cache: dict[str, TileData]
+    flags: dict[str, Any]
 
     @property
     def tile_data(self) -> TileData | None:
@@ -35,28 +37,21 @@ class ContextBase:
         Coordinate format: (x, y, t)
         '''
         x, y, t = coordinate
+        height, width = self.grid_size
         joining_tiles = (self.tile.name, "level")
-        if x < 0 or y < 0 or y >= self.height or x >= self.width:
+        if x < 0 or y < 0 or y >= height or x >= width:
             return bool(self.flags.get("tile_borders"))
-        if self.tile_existence_cache.get((x, y, t)) is None:
+        if self.grid.get((x, y, t)) is None:
             return bool(self.flags.get("tile_borders"))
-        return any(tile in self.tile_existence_cache[x, y, t] for tile in joining_tiles)
+        return any(tile.name in joining_tiles for tile in self.grid[x, y, t])
 
+@dataclass
 class HandlerContext(ContextBase):
     '''The context that the handler was invoked in.'''
-    def __init__(self, *, 
-        fields: TileFields,
-        variant: str,
-        groups: tuple[str, ...],
-        extras: dict[str, Any],
-        **kwargs: Any,
-    ) -> None:
-        self.fields = fields
-        self.variant = variant
-        self.groups = groups
-        self.extras = extras
-        super().__init__(**kwargs)
-
+    fields: TileFields
+    variant: str
+    groups: tuple[str, ...]
+    extras: dict[str, Any]
 class DefaultContext(ContextBase):
     '''The context that a default factory was invoked in.'''
 
@@ -129,7 +124,7 @@ class VariantHandlers:
             for repr in handler.hints.values()
         ]
 
-    def valid_variants(self, tile: RawTile, tile_data_cache: dict[str, TileData]) -> dict[str, list[str]]:
+    def valid_variants(self, tile: RawTile, grid: Grid[RawTile], tile_data_cache: dict[str, TileData]) -> dict[str, list[str]]:
         '''Returns the variants that are valid for a given tile.
         This data is pulled from the handler's `hints` attribute.
         
@@ -147,8 +142,9 @@ class VariantHandlers:
                             groups=groups,
                             variant=variant,
                             tile=tile,
+                            grid=grid,
+                            position=(0, 0, 0),
                             extras={},
-                            tile_existence_cache={(0,0,0): tile.name},
                             grid_size=(1,1), 
                             tile_data_cache=tile_data_cache,
                             flags=dict(disallow_custom_directions=True)
@@ -162,9 +158,10 @@ class VariantHandlers:
 
     def handle_tile(
         self,
-        tile: PositionedTile,
+        tile: RawTile,
+        grid: Grid[RawTile],
+        position: tuple[int, int, int],
         grid_size: tuple[int, int],
-        tile_existence_cache: dict[tuple[int, int, int], set[str]],
         tile_data_cache: dict[str, TileData],
         **flags: Any
     ) -> FullTile:
@@ -172,8 +169,9 @@ class VariantHandlers:
         default_ctx = DefaultContext(
             bot=self.bot,
             tile=tile,
+            grid=grid,
+            position=position,
             grid_size=grid_size,
-            tile_existence_cache=tile_existence_cache,
             tile_data_cache=tile_data_cache,
             flags=flags
         )
@@ -191,9 +189,10 @@ class VariantHandlers:
                         groups=groups,
                         variant=variant,
                         tile=tile,
+                        grid=grid,
+                        position=position,
                         extras=extras,
                         grid_size=grid_size,
-                        tile_existence_cache=tile_existence_cache,
                         tile_data_cache=tile_data_cache,
                         flags=flags
                     )
@@ -204,19 +203,18 @@ class VariantHandlers:
         self.finalizer(full, **flags)
         return full
 
-    async def handle_list(self, flat: list[PositionedTile], grid_size: tuple[int, int], **flags: Any) -> list[FullTile]:
+    async def handle_grid(self, grid: Grid[RawTile], grid_size: tuple[int, int], **flags: Any) -> Grid[FullTile]:
         '''Apply variants to a full grid of raw tiles'''
-        tile_existence_cache: dict[tuple[int, int, int], set[str]] = {}
-        for tile in flat:
-            x, y, _, t = tile.position
-            tile_existence_cache.setdefault((x, y, t), set()).add(tile.name)
         tile_data_cache = {
             data.name: data async for data in self.bot.db.tiles(
-                set(tile.name for tile in flat),
+                set(tile.name for stack in grid.values() for tile in stack),
                 maximum_version = flags.get("ignore_editor_overrides", 1000)
             )
         }
-        return [self.handle_tile(tile, grid_size, tile_existence_cache, tile_data_cache, **flags) for tile in flat]
+        return {
+            index: [self.handle_tile(tile, grid, index, grid_size, tile_data_cache, **flags) for tile in stack]
+            for index, stack in grid.items()
+        }
 
 class Handler:
     '''Handles a single variant'''
@@ -277,7 +275,7 @@ def setup(bot: Bot):
         if tile_data is not None:
             color = tile_data.active_color
             if tile_data.tiling in constants.AUTO_TILINGS:
-                x, y, _, t = ctx.tile.position
+                x, y, t = ctx.position
                 variant = (
                     + 1 * ctx.is_adjacent((x + 1, y, t))
                     + 2 * ctx.is_adjacent((x, y - 1, t))

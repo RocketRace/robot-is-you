@@ -1,13 +1,23 @@
 from __future__ import annotations
 
 import re
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable
 
-from ..tile import PositionedTile
+from .. import errors
+from ..tile import Grid, RawTile
 
 if TYPE_CHECKING:
     from ...ROBOT import Bot
-    MacroFn = Callable[[list[PositionedTile], PositionedTile, tuple[str, ...]], tuple[int, int, int, int]]
+    MacroFn = Callable[['MacroCtx'], tuple[int, int, int]]
+
+@dataclass
+class MacroCtx:
+    grid: Grid[RawTile]
+    tile: list[RawTile] # exactly one
+    position: tuple[int, int, int]
+    groups: tuple[str, ...]
+    operation: str
 
 class OperationMacros:
     def __init__(self, bot: Bot) -> None:
@@ -49,20 +59,20 @@ class OperationMacros:
 
     def expand_into(
         self,
-        tiles: list[PositionedTile],
-        tile: PositionedTile,
+        grid: Grid[RawTile],
+        tile: list[RawTile], # exactly one
+        position: tuple[int, int, int],
         operation: str,
-    ) -> tuple[int, int, int, int]:
-        '''Expand the operation, returns the resulting tiles'''
-        tiles = []
-        deltas = tile.position
+    ) -> tuple[int, int, int]:
+        '''Expand the operation into the given tile dict'''
+        deltas = 0, 0, 0
         for macro in reversed(self.macros):
-            match = macro.match(operation)
-            if match is not None:
-                deltas = macro.expand_into(tiles, tile, match)
+            groups = macro.match(operation)
+            if groups is not None:
+                deltas = macro.expand_into(grid, tile, position, groups, operation)
                 break
         else:
-            raise fgdahsjkfgasjkdgfhjdsagfhjsakgfhjsakd
+            raise errors.OperationNotFound(operation, position, tile[-1])
         return deltas
 
 class Macro:
@@ -88,9 +98,9 @@ class Macro:
         if matches is not None:
             return matches.groups()
     
-    def expand_into(self, tiles: list[PositionedTile], tile: PositionedTile, groups: tuple[str, ...]) -> tuple[int, int, int, int]:
+    def expand_into(self, grid: Grid[RawTile], tile: list[RawTile], position: tuple[int, int, int], groups: tuple[str, ...], operation: str) -> tuple[int, int, int]:
         '''Handle the operation'''
-        return self.fn(tiles, tile, groups)
+        return self.fn(MacroCtx(grid, tile, position, groups, operation))
 
 
 def setup(bot: Bot):
@@ -99,60 +109,72 @@ def setup(bot: Bot):
     bot.operation_macros = macros
     
     @macros.macro(
-        pattern=r"anim(\d+)?",
-        operation_hints={"anim": "`anim<number>` (Animate the tile in place for <number> animation cycles)"},
+        pattern=r"idle(\d+)?",
+        operation_hints={"idle": "`idle<number>` (Animate the tile in place for <number> animation cycles)"},
         operation_group="Movement & Animation"
     )
-    def animate(tiles: list[PositionedTile], tile: PositionedTile, groups: tuple[str, ...]) -> tuple[int, int, int, int]:
-        if groups[0] is None:
+    def idle(ctx: MacroCtx) -> tuple[int, int, int]:
+        if ctx.groups[0] is None:
             count = 1
         else:
-            count = int(groups[0])
-        x, y, z, t = tile.position
-        out = []
+            count = int(ctx.groups[0])
+        x, y, t = ctx.position
+        ctx.tile[-1].variants.append("") # Temporary
         for dt in range(count):
             for i in range(4):
-                new = tile.reposition((x, y, z, t + dt * 4 + i))
-                new.variants.append(f"a{i}s")
-                out.append(new)
-        tiles.extend(out[1:])
-        return (0, 0, 0, count)
+                ctx.tile[-1].variants[-1] = f"a0s"
+                ctx.grid.setdefault((x, y, t + 4 * dt + i), []).append(ctx.tile[-1].copy())
+        return (0, 0, count)
     
     @macros.macro(
         pattern=r"m([udlr]+)",
         operation_hints={"mr": "`m<udlr>`: Move the tile across space in a single frame, e.g. `mrrd`."},
         operation_group="Movement & Animation"
     )
-    def move_once(tiles: list[PositionedTile], tile: PositionedTile, groups: tuple[str, ...]) -> tuple[int, int, int, int]:
+    def move_once(ctx: MacroCtx) -> tuple[int, int, int]:
+        groups = ctx.groups
         dx = groups[0].count("r") - groups[0].count("l")
         dy = groups[0].count("d") - groups[0].count("u")
-        x, y, z, t = tile.position
-        new = tile.reposition((x + dx, y + dy, z, t + 1))
+        
+        original = ctx.tile[-1].copy()
+        # note the order of lines
+        original.ephemeral = True
+        ctx.grid.setdefault(ctx.position, []).append(original)
+        
         if abs(dx) >= abs(dy):
             if dx >= 0:
-                new.variants.append("rs")
+                ctx.tile[-1].variants.append("rs")
             else:
-                new.variants.append("ls")
+                ctx.tile[-1].variants.append("ls")
         else:
             if dy >= 0:
-                new.variants.append("ds")
+                ctx.tile[-1].variants.append("ds")
             else:
-                new.variants.append("us")
-        tiles.append(new)
-        tiles.append(PositionedTile.blank((x , y, z, t + 1)))
-        return (dx, dy, 0, 1)
+                ctx.tile[-1].variants.append("us")
+        
+        x, y, t = ctx.position
+        if x + dx < 0 or y + dy < 0:
+            raise errors.MovementOutOfFrame(ctx.operation, ctx.position, ctx.tile[-1])
+        ctx.grid.setdefault((x + dx, y + dy, t + 1)).append(ctx.tile[-1].copy())
+        return (dx, dy, 1)
     
     @macros.macro(
         pattern=r"([udlr]+)",
         operation_hints={"r": "`<udlr>`: Move the object like YOU!"},
         operation_group="Movement & Animation"
     )
-    def move_you(tiles: list[PositionedTile], tile: PositionedTile, groups: tuple[str, ...]) -> tuple[int, int, int, int]:
+    def move_you(ctx: MacroCtx) -> tuple[int, int, int]:
+        original = ctx.tile[-1].copy()
+        original.ephemeral = True
+        ctx.grid.setdefault(ctx.position, []).append(original)
+        ctx.tile[-1].variants.append("") # temporary
+        ctx.tile[-1].variants.append("") # temporary
+        
         dx = dy = 0
-        x, y, z, t = tile.position
+        x, y, t = ctx.position
         animation = 0
-        for dt, dir in enumerate(groups[0]):
-            tiles.append(PositionedTile.blank((x + dx, y + dy, z, t + dt + 1)))
+        movements = ctx.groups[0]
+        for dt, dir in enumerate(movements):
             if dir == "r":
                 dx += 1
                 dir_variant = "rs"
@@ -165,12 +187,15 @@ def setup(bot: Bot):
             else:
                 dy += 1
                 dir_variant = "ds"
-            new = tile.reposition((x + dx, y + dy, z, t + dt + 1))
-            new.variants.append(dir_variant)
+            ctx.tile[-1].variants[-2] = dir_variant
             anim_frame = (animation + dt + 1) % 4
-            new.variants.append(f"a{anim_frame}s")
-            tiles.append(new)
-        
-        return (dx, dy, 0, 1)
+            ctx.tile[-1].variants[-1] = f"a{anim_frame}s"
+            new = ctx.tile[-1].copy()
+            new.ephemeral = True
+            if x + dx < 0 or y + dy < 0:
+                raise errors.MovementOutOfFrame(ctx.operation, ctx.position, ctx.tile[-1])
+            # the +1 is required as dt starts from 0
+            ctx.grid.setdefault((x + dx, y + dy, t + dt + 1), []).append(new)
+        return (dx, dy, len(movements))
 
     return macros

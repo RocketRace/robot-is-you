@@ -8,9 +8,9 @@ from typing import TYPE_CHECKING, BinaryIO
 
 import numpy as np
 from PIL import Image, ImageChops, ImageFilter
-from src.tile import FullTile, ReadyTile
 
 from .. import constants, errors
+from ..tile import FullTile, Grid, ReadyTile
 from ..utils import cached_open
 
 if TYPE_CHECKING:
@@ -35,7 +35,7 @@ class Renderer:
 
     async def render(
         self,
-        tiles: list[ReadyTile],
+        grid: Grid[ReadyTile],
         *,
         grid_size: tuple[int, int],
         duration: int,
@@ -89,26 +89,26 @@ class Renderer:
         
         # keeping track of the amount of padding we can slice off
         pad_r=pad_u=pad_l=pad_d=0
-        for tile in sorted(tiles, key=lambda x: x.position[3]):
-            if tile.frames is None:
-                continue
-            x, y, _, t = tile.position
-            for frame, sprite in enumerate(tile.frames):
-                x_offset = (sprite.width - constants.DEFAULT_SPRITE_SIZE) // 2
-                y_offset = (sprite.height - constants.DEFAULT_SPRITE_SIZE) // 2
-                if x == 0:
-                    pad_l = max(pad_l, x_offset)
-                if x == width - 1:
-                    pad_r = max(pad_r, x_offset)
-                if y == 0:
-                    pad_u = max(pad_u, y_offset)
-                if y == height - 1:
-                    pad_d = max(pad_d, y_offset)
-                imgs[t*3+frame].paste(
-                    sprite,
-                    (x * constants.DEFAULT_SPRITE_SIZE + padding - x_offset, y * constants.DEFAULT_SPRITE_SIZE + padding - y_offset),
-                    mask=sprite
-                )
+        for (x, y, t), stack in grid.items():
+            for tile in stack:
+                if tile.frames is None:
+                    continue
+                for frame, sprite in enumerate(tile.frames):
+                    x_offset = (sprite.width - constants.DEFAULT_SPRITE_SIZE) // 2
+                    y_offset = (sprite.height - constants.DEFAULT_SPRITE_SIZE) // 2
+                    if x == 0:
+                        pad_l = max(pad_l, x_offset)
+                    if x == width - 1:
+                        pad_r = max(pad_r, x_offset)
+                    if y == 0:
+                        pad_u = max(pad_u, y_offset)
+                    if y == height - 1:
+                        pad_d = max(pad_d, y_offset)
+                    imgs[t*3+frame].paste(
+                        sprite,
+                        (x * constants.DEFAULT_SPRITE_SIZE + padding - x_offset, y * constants.DEFAULT_SPRITE_SIZE + padding - y_offset),
+                        mask=sprite
+                    )
 
         outs = []
         for img in imgs:
@@ -127,16 +127,16 @@ class Renderer:
     async def render_full_tile(self,
         tile: FullTile,
         *,
-        position: tuple[int, int, int, int],
+        position: tuple[int, int, int],
         palette_img: Image.Image,
         random_animations: bool = False,
         sprite_cache: dict[str, Image.Image]
     ) -> ReadyTile:
         '''woohoo'''
         if tile.empty:
-            return ReadyTile(position, None)
+            return ReadyTile(None)
         out = []
-        x, y, _, _ = position
+        x, y, _ = position
         for frame in range(3):
             wobble = (11 * x + 13 * y + frame) % 3 if random_animations else frame
             if tile.custom:
@@ -172,29 +172,32 @@ class Renderer:
             sprite = self.recolor(sprite, rgb)
             out.append(sprite)
         f0, f1, f2 = out
-        return ReadyTile(position, (f0, f1, f2))
+        return ReadyTile((f0, f1, f2))
 
     async def render_full_tiles(
         self,
-        tiles: list[FullTile],
+        grid: Grid[FullTile],
         *,
         palette: str = "default",
         random_animations: bool = False
-    ) -> list[ReadyTile]:
+    ) -> Grid[ReadyTile]:
         '''Final individual tile processing step'''
         sprite_cache = {}
         palette_img = Image.open(f"data/palettes/{palette}.png").convert("RGB")
 
-        return [
-            await self.render_full_tile(
-                tile,
-                position=tile.position,
-                palette_img=palette_img,
-                random_animations=random_animations,
-                sprite_cache=sprite_cache
-            )
-            for tile in tiles
-        ]
+        out = {}
+        for index, stack in grid.items():
+            out[index] = [
+                await self.render_full_tile(
+                    tile,
+                    position=index,
+                    palette_img=palette_img,
+                    random_animations=random_animations,
+                    sprite_cache=sprite_cache
+                )
+                for tile in stack
+            ]
+        return out
 
     async def generate_sprite(
         self,
@@ -536,9 +539,11 @@ class Renderer:
 
         If extra_out is provided, the frames are also saved as a zip file there.
         '''
+        # Pillow has a longstanding bug with transparency indices in gifs
         imgs[0].save(
             out, 
             format="GIF",
+            interlace=True,
             save_all=True,
             append_images=imgs[1:],
             loop=0,
@@ -546,7 +551,7 @@ class Renderer:
             disposal=2, # Frames don't overlap
             transparency=255,
             background=255,
-            optimize=False # Important in order to keep the color palettes from being unpredictable
+            optimize=False
         )
         if not isinstance(out, str):
             out.seek(0)

@@ -87,3 +87,17 @@ class BadCharacter(TextGenerationError):
 
 class CustomTextTooLong(TextGenerationError):
     '''Can't fit'''
+
+# === Operations ===
+
+class OperationError(BabaError):
+    '''Bad operation
+    
+    args: operation, position, tile
+    '''
+
+class MovementOutOfFrame(OperationError):
+    '''Tried to move in a bad way'''
+
+class OperationNotFound(OperationError):
+    '''does not exist'''

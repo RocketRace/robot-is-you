@@ -19,7 +19,7 @@ from lark.tree import Tree
 
 from .. import constants, errors
 from ..db import CustomLevelData, LevelData
-from ..tile import PositionedTile, RawTile
+from ..tile import RawTile
 from ..types import Context
 
 if TYPE_CHECKING:
@@ -103,6 +103,21 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             )
         else:
             return await ctx.error(f"{msg}.")
+    
+    async def handle_operation_errors(self, ctx: Context, err: errors.OperationError):
+        '''Handle errors raised in a command context by operation macros'''
+        operation, pos, tile, *rest = err.args
+        msg = f"The operation {operation} is not valid"
+        if isinstance(err, errors.OperationNotFound):
+            return await ctx.error(
+                f"The operation `{operation}` for `{tile.name}` could not be found."
+            )
+        elif isinstance(err, errors.MovementOutOfFrame):
+            return await ctx.error(
+                f"Tried to move out of bounds with the `{operation}` operation for `{tile.name}`."
+            )
+        else:
+            return await ctx.error(f"The operation `{operation}` failed for `{tile.name}`.")
 
     async def render_tiles(self, ctx: Context, *, objects: str, is_rule: bool):
         '''Performs the bulk work for both `tile` and `rule` commands.'''
@@ -155,9 +170,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         # Split input into lines
         rows = tiles.splitlines()
         
-        tile_instructions: list[PositionedTile] = []
-        previous_tile: RawTile | None = None
+        expanded_tiles: dict[tuple[int, int, int], list[RawTile]] = {}
+        previous_tile: list[RawTile] = []
         # Do the bulk of the parsing here:
+        foooo = time()
         for y, row in enumerate(rows):
             x = 0
             try:
@@ -246,7 +262,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     else:
                         blobs = [(None, [], stack)] 
 
-                    z = 0
                     for blob_text_mode, stack_variants, blob in blobs:
                         for process in blob.children: 
                             process: Tree
@@ -266,7 +281,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 for var in variants.children
                             ]
 
-                            def handle_extra_variants(final_variants: list[str]):
+                            def append_extra_variants(final_variants: list[str]):
                                 '''IN PLACE'''
                                 final_variants.extend(stack_variants)
                                 final_variants.extend(line_variants)
@@ -294,103 +309,94 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                             # TODO: handle this explicitly
                                     return obj
 
-                            def update_previous(raw: RawTile, position: tuple[int, int, int, int]):
-                                '''IN PLACE'''
-                                nonlocal previous_tile
-                                if raw.is_previous:
-                                    if previous_tile is None:
-                                        raise RuntimeError("todo handle this bad case")
-                                        # TODO <- as well because syntax highlighting
-                                    else:
-                                        tile_instructions.append(PositionedTile.from_raw(previous_tile, position))
-                                else:
-                                    tile_instructions.append(PositionedTile.from_raw(raw, position))
-                                    previous_tile = raw
-
                             obj = handle_text_mode(obj)
-                            handle_extra_variants(final_variants)
+                            append_extra_variants(final_variants)
 
-                            update_previous(
-                                RawTile(
-                                    obj,
-                                    final_variants
-                                ),
-                                (x, y, z, t)
-                            )
-
-                            dx = dy = dz = 0
+                            dx = dy = 0
+                            temp_tile: list[RawTile] = [RawTile(obj, final_variants, ephemeral=False)]
                             for change in changes:
                                 if change.data == "transform":
                                     seq, unit = change.children 
                                     seq: str
 
                                     count = len(seq)
-                                    for dt in range(count - 1):
-                                        tile_instructions.append(
-                                            PositionedTile.from_raw(
-                                                previous_tile, 
-                                                (x + dx, y + dy, z + dz, t + dt + 1)
-                                            )
-                                        )
+                                    still = temp_tile.pop()
+                                    still.ephemeral = True
+                                    if still.is_previous:
+                                        still = previous_tile[-1]
+                                    else:
+                                        previous_tile[-1:] = [still]
                                     
+                                    for dt in range(count):
+                                        expanded_tiles.setdefault((x + dx, y + dy, t + dt), []).append(still)
+                                        
                                     object, variants = unit.children 
                                     object: Token
                                     obj = object.value
-                                    final_variants = variants.children 
                                     obj = handle_text_mode(obj)
-                                    handle_extra_variants(final_variants)
-                                    update_previous(
+                                    
+                                    final_variants = [var.value for var in variants.children]
+                                    append_extra_variants(final_variants)
+                                    
+                                    temp_tile.append(
                                         RawTile(
                                             obj,
-                                            final_variants
-                                        ),
-                                        (x + dx, y + dy, z + dz, t + count)
+                                            final_variants,
+                                            ephemeral=False
+                                        )
                                     )
                                     t += count
 
                                 elif change.data == "operation":
                                     oper = change.children[0] 
                                     oper: Token
-                                    
-                                    expanded, deltas = self.bot.operation_macros.expand(
-                                        PositionedTile.from_raw(
-                                            previous_tile,
-                                            (x + dx, y + dy, z + dz, t)
-                                        ),
-                                        oper.value
-                                    )
-                                    tile_instructions.extend(expanded)
-                                    dxp, dyp, dzp, dtp = deltas
-                                    dx += dxp
-                                    dy += dyp
-                                    dz += dzp
-                                    t += dtp
-                            z += 1
+                                    try:
+                                        ddx, ddy, dt = self.bot.operation_macros.expand_into(
+                                            expanded_tiles,
+                                            temp_tile,
+                                            (x + dx, y + dy, t),
+                                            oper.value
+                                        )
+                                    except errors.OperationError as err:
+                                        return await self.handle_operation_errors(ctx, err)
+                                    dx += ddx
+                                    dy += ddy
+                                    t += dt
+                            # somewhat monadic behavior
+                            expanded_tiles.setdefault((x + dx, y + dy, t), []).extend(temp_tile)
                     x += 1
 
         # Get the dimensions of the grid
-        width = max(tile_instructions, key=lambda tile: tile.position[0]).position[0] + 1
-        height = max(tile_instructions, key=lambda tile: tile.position[1]).position[1] + 1
-        duration = max(tile_instructions, key=lambda tile: tile.position[3]).position[3] + 1
+        width = max(expanded_tiles, key=lambda pos: pos[0])[0] + 1
+        height = max(expanded_tiles, key=lambda pos: pos[1])[1] + 1
+        duration = max(expanded_tiles, key=lambda pos: pos[2])[2] + 1
 
-        temporal_maxima: dict[tuple[int, int, int], tuple[int, PositionedTile]] = {}
-        for tile in tile_instructions:
-            x, y, z, t = tile.position
-            fixed = x, y, z
-            frame = temporal_maxima[fixed][0] if fixed in temporal_maxima else -1
-            temporal_maxima[fixed] = max(frame, t), tile
+        temporal_maxima: dict[tuple[int, int], tuple[int, list[RawTile]]] = {}
+        for (x, y, t), tile_stack in expanded_tiles.items():
+            if (x, y) in temporal_maxima and temporal_maxima[x, y][0] < t:
+                persistent = [tile for tile in tile_stack if not tile.ephemeral]
+                if len(persistent) != 0:
+                    temporal_maxima[x, y] = t, persistent
+            elif (x, y) not in temporal_maxima:
+                persistent = [tile for tile in tile_stack if not tile.ephemeral]
+                if len(persistent) != 0:
+                    temporal_maxima[x, y] = t, persistent
         # Pad the grid across time
-        for (x, y, z), (t_star, last_tile) in temporal_maxima.items():
+        for (x, y), (t_star, tile_stack) in temporal_maxima.items():
             for t in range(t_star, duration - 1):
-                tile_instructions.append(last_tile.reposition((x, y, z, t + 1)))
-        
+                if (x, y, t + 1) not in expanded_tiles:
+                    expanded_tiles[x, y, t + 1] = tile_stack
+                else:
+                    expanded_tiles[x, y, t + 1] = tile_stack + expanded_tiles[x, y, t + 1]
+                    
         # filter out blanks before rendering
-        tile_instructions = [tile for tile in tile_instructions if not tile.is_empty]
+        expanded_tiles = {index: [tile for tile in stack if not tile.is_empty] for index, stack in expanded_tiles.items()}
+        expanded_tiles = {index: stack for index, stack in expanded_tiles.items() if len(stack) != 0}
 
         # Don't proceed if the request is too large.
         # (It shouldn't be that long to begin with because of Discord's 2000 character limit)
-        if len(tile_instructions) > constants.MAX_TILES and ctx.author.id != self.bot.owner_id:
-            return await ctx.error(f"Too many tiles ({len(tile_instructions)}). You may only render up to {constants.MAX_TILES} tiles at once, excluding empty tiles.")
+        if len(expanded_tiles) > constants.MAX_TILES and ctx.author.id != self.bot.owner_id:
+            return await ctx.error(f"Too many tiles ({len(expanded_tiles)}). You may only render up to {constants.MAX_TILES} tiles at once, excluding empty tiles.")
         if width > constants.MAX_WIDTH:
             return await ctx.error(f"Too wide ({width}). You may only render scenes up to {constants.MAX_WIDTH} tiles wide.")
         if height > constants.MAX_HEIGHT:
@@ -403,8 +409,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             buffer = BytesIO()
             extra_buffer = BytesIO() if raw_output else None
             extra_names = [] if raw_output else None
-            full_objects = await self.bot.variant_handlers.handle_list(
-                tile_instructions,
+            full_objects = await self.bot.variant_handlers.handle_grid(
+                expanded_tiles,
                 (width, height),
                 raw_output=raw_output,
                 extra_names=extra_names,
@@ -447,7 +453,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             return await self.handle_variant_errors(ctx, e)
         except errors.TextGenerationError as e:
             return await self.handle_custom_text_errors(ctx, e)
-
+        
         filename = datetime.utcnow().strftime(r"render_%Y-%m-%d_%H.%M.%S.gif")
         delta = time() - start
         msg = f"*Rendered in {delta:.2f} s*"

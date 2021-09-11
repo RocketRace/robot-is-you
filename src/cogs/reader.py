@@ -20,6 +20,7 @@ from src import constants
 from src.db import CustomLevelData, LevelData
 from src.utils import cached_open
 
+from .. import tile
 from ..tile import ReadyTile
 from ..types import Context
 
@@ -58,7 +59,7 @@ class Grid:
         # Custom levels
         self.author: str | None = None
     
-    def ready_grid(self) -> list[list[list[ReadyTile]]]:
+    def ready_grid(self, *, remove_borders: bool) -> tile.Grid[ReadyTile]:
         '''Returns a ready-to-paste version of the grid.'''
         def is_adjacent(sprite: str, x: int, y: int) -> bool:
             valid = (sprite, "edge", "level")
@@ -205,16 +206,16 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         grid = self.read_map(code, source="levels", data=raw_l)
         grid = await self.read_metadata(grid, data=raw_ld, custom=True)
 
-        objects = grid.ready_grid()
-        # Strips the borders from the render
-        # (last must be popped before first to preserve order)
-        objects.pop(grid.height - 1)
-        objects.pop(0)
-        for row in objects:
-            row.pop(grid.width - 1)
-            row.pop(0)
+        objects = grid.ready_grid(remove_borders=True)
         out = f"target/renders/levels/{code}.gif"
-        await self.bot.renderer.render(objects, palette=grid.palette, background=(0, 4), out=out)
+        await self.bot.renderer.render(
+            objects,
+            grid_size=(grid.width, grid.height),
+            duration=1,
+            palette=grid.palette,
+            background=(0, 4),
+            out=out
+        )
         
         data = CustomLevelData(code.lower(), grid.name, grid.subtitle, grid.author)
 
@@ -244,15 +245,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         # Data
         grid = self.read_map(filename, source=source)
         grid = await self.read_metadata(grid, initialize_level_tree=initialize)
-        objects = grid.ready_grid()
-
-        # Shave off the borders:
-        if remove_borders:
-            objects.pop(grid.height - 1)
-            objects.pop(0)
-            for row in objects:
-                row.pop(grid.width - 1)
-                row.pop(0)
+        objects = grid.ready_grid(remove_borders=remove_borders)
 
         # (0,4) is the color index for level backgrounds
         background = (0,4) if keep_background else None
@@ -260,6 +253,8 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         # Render the level
         await self.bot.renderer.render(
             objects,
+            grid_size=(grid.width, grid.height),
+            duration=1,
             palette=grid.palette,
             images=grid.images,
             image_source=grid.world,
