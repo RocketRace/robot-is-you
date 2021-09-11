@@ -188,7 +188,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         for y, row in enumerate(rows):
             x = 0
             try:
-                tree = self.lark.parse(row.strip())
+                row_maybe = row.strip()
+                if not row_maybe:
+                    continue
+                tree = self.lark.parse(row_maybe)
             except lark.UnexpectedCharacters as e:
                 return await ctx.error(f"Invalid character `{e.char}` in row {y}, around `... {row[e.column - 5: e.column + 5]} ...`")
             except lark.UnexpectedToken as e:
