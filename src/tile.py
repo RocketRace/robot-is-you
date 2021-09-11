@@ -38,10 +38,11 @@ class SkeletonTile:
 class RawTile(SkeletonTile):
     '''Raw tile given from initial pass of +rule and +tile command parsing'''
     variants: list[str]
-    ephemeral: bool
+    ephemeral: bool = False
+    moved: bool = False
 
     @classmethod
-    def from_str(cls, string: str, ephemeral: bool) -> RawTile:
+    def from_str(cls, string: str, ephemeral: bool = False, moved: bool = False) -> RawTile:
         '''Parse from user input'''
         parts = string.split(":")
         if len(parts[0]) == 0:

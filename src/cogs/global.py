@@ -319,8 +319,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
                             dx = dy = 0
                             temp_tile: list[RawTile] = [RawTile(obj, final_variants, ephemeral=False)]
+                            last_hack = False
                             for change in changes:
                                 if change.data == "transform":
+                                    last_hack = False
                                     seq, unit = change.children 
                                     seq: str
 
@@ -353,6 +355,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     t += count
 
                                 elif change.data == "operation":
+                                    last_hack = True
                                     oper = change.children[0] 
                                     oper: Token
                                     try:
@@ -368,13 +371,14 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                     dy += ddy
                                     t += dt
                             # somewhat monadic behavior
-                            expanded_tiles.setdefault((x + dx, y + dy, t), []).extend(temp_tile)
+                            if not last_hack:
+                                expanded_tiles.setdefault((x + dx, y + dy, t), []).extend(temp_tile[:])
                     x += 1
 
         # Get the dimensions of the grid
         width = max(expanded_tiles, key=lambda pos: pos[0])[0] + 1
         height = max(expanded_tiles, key=lambda pos: pos[1])[1] + 1
-        duration = max(expanded_tiles, key=lambda pos: pos[2])[2] + 1
+        duration = 1 + max(t for _, _, t in expanded_tiles)
 
         temporal_maxima: dict[tuple[int, int], tuple[int, list[RawTile]]] = {}
         for (x, y, t), tile_stack in expanded_tiles.items():
