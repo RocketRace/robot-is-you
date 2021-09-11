@@ -1,4 +1,4 @@
-IDENTIFIER_START: "a".."z" | "0".."9" | "_" | "#" | "'" | "*"
+IDENTIFIER_START: "a".."z" | "0".."9" | "_" | "#" | "'" | "*" | "~"
 IDENTIFIER_CONTINUE: "a".."z" | "0".."9" | "_" | "#" | "'" | "*" | "-" | "/" | "~"
 IDENTIFIER: IDENTIFIER_START IDENTIFIER_CONTINUE*
 EMPTY_IDENTIFIER: "-"
