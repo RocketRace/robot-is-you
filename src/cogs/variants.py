@@ -662,5 +662,12 @@ def setup(bot: Bot):
             "custom_style": "property",
             "custom": True,
         }
+    @handlers.handler(
+        pattern=r"nothing",
+        variant_hints={"nothing": "`nothing` (Do nothing)"},
+        variant_group="Filters"
+    )
+    def nothing(ctx: HandlerContext) -> TileFields:
+        return {}
 
     return handlers

@@ -166,8 +166,8 @@ def setup(bot: Bot):
         return (dx, dy, 1)
     
     @macros.macro(
-        pattern=r"([udlr]+)",
-        operation_hints={"r": "`<udlr>`: Move the object like YOU!"},
+        pattern=r"([udlri]+)",
+        operation_hints={"r": "`<udlri>`: Move the object like YOU!"},
         operation_group="Movement & Animation"
     )
     def move_you(ctx: MacroCtx) -> tuple[int, int, int]:
@@ -181,6 +181,7 @@ def setup(bot: Bot):
         x, y, t = ctx.position
         animation = 0
         movements = ctx.groups[0]
+        ddt = 0
         for dt, dir in enumerate(movements):
             if dir == "r":
                 dx += 1
@@ -191,11 +192,14 @@ def setup(bot: Bot):
             elif dir == "l":
                 dx -= 1
                 dir_variant = "ls"
-            else:
+            elif dir == "d":
                 dy += 1
                 dir_variant = "ds"
+            else:
+                ddt += 1
+                dir_variant = "nothing"
             ctx.tile[-1].variants[-2] = dir_variant
-            anim_frame = (animation + dt + 1) % 4
+            anim_frame = (animation + dt - ddt + 1) % 4
             ctx.tile[-1].variants[-1] = f"a{anim_frame}s"
             new = ctx.tile[-1].copy()
             new.ephemeral = True
