@@ -117,7 +117,7 @@ def setup(bot: Bot):
     
     @macros.macro(
         pattern=r"idle(\d+)?",
-        operation_hints={"idle": "`idle<number>` (Animate the tile in place for <number> animation cycles)"},
+        operation_hints={"idle": "`idle<number>` Animate the tile in place for <number> animation cycles"},
         operation_group="Movement & Animation"
     )
     def idle(ctx: MacroCtx) -> tuple[int, int, int]:
@@ -129,7 +129,7 @@ def setup(bot: Bot):
         ctx.tile[-1].variants.append("") # Temporary
         for dt in range(count):
             for i in range(4):
-                ctx.tile[-1].variants[-1] = f"a0s"
+                ctx.tile[-1].variants[-1] = f"a{i}s"
                 ctx.grid.setdefault((x, y, t + 4 * dt + i), []).append(ctx.tile[-1].copy())
         return (0, 0, count)
     
