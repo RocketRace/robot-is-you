@@ -311,7 +311,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         
     @commands.cooldown(5, 8, type=commands.BucketType.channel)
     @commands.command(name="palette")
-    async def show_palette(self, ctx: Context, palette: str):
+    async def show_palette(self, ctx: Context, palette: str = "default"):
         '''Displays palette image.
 
         This is useful for picking colors from the palette.'''
