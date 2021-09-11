@@ -162,7 +162,7 @@ def setup(bot: Bot):
         x, y, t = ctx.position
         if x + dx < 0 or y + dy < 0:
             raise errors.MovementOutOfFrame(ctx.operation, ctx.position, ctx.tile[-1])
-        ctx.grid.setdefault((x + dx, y + dy, t + 1)).append(ctx.tile[-1].copy())
+        ctx.grid.setdefault((x + dx, y + dy, t + 1), []).append(ctx.tile[-1].copy())
         return (dx, dy, 1)
     
     @macros.macro(
