@@ -132,7 +132,7 @@ AUTO_VARIANTS = {
 
 SOFT_AUTO_REPRESENTATION_VARIANTS = {
     "trs": "`tilerightsoft` / `trs` (Connects right, doesn't error if invalid)",
-    "tus": "`tileup` / `tus` (Connects up, doesn't error if invalid)",
+    "tus": "`tileupsoft` / `tus` (Connects up, doesn't error if invalid)",
     "tls": "`tileleftsoft` / `tls` (Connects left, doesn't error if invalid)",
     "tds": "`tiledownsoft` / `tds` (Connects down, doesn't error if invalid)",
 }
