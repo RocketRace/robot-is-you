@@ -43,6 +43,7 @@ class Renderer:
         images: list[str] | None = None,
         image_source: str = constants.BABA_WORLD,
         out: str | BinaryIO = "target/renders/render.gif",
+        delay: int = 200,
         background: tuple[int, int] | None = None,
         upscale: bool = True,
         extra_out: str | BinaryIO | None = None,
@@ -120,6 +121,7 @@ class Renderer:
         self.save_frames(
             outs,
             out,
+            delay=delay,
             extra_out=extra_out,
             extra_name=extra_name
         )
@@ -530,6 +532,7 @@ class Renderer:
         self,
         imgs: list[Image.Image],
         out: str | BinaryIO,
+        delay: int = 200,
         extra_out: str | BinaryIO | None = None,
         extra_name: str | None = None
     ) -> None:
@@ -547,7 +550,7 @@ class Renderer:
             save_all=True,
             append_images=imgs[1:],
             loop=0,
-            duration=200,
+            duration=delay,
             disposal=2, # Frames don't overlap
             transparency=255,
             background=255,

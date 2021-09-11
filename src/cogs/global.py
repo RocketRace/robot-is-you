@@ -141,6 +141,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             r"(?:^|\s)(?:(--palette=|-p=|palette:)(\w+))(?:$|\s)",
             r"(?:^|\s)(?:--raw|-r)(?:$|\s)",
             r"(?:^|\s)(?:--letter|-l)(?:$|\s)",
+            r"(?:^|\s)(?:(--delay=|-d=)(\d+))(?:$|\s)",
         )
         background = None
         for match in re.finditer(flag_patterns[0], tiles):
@@ -162,6 +163,11 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         default_to_letters = False
         for match in re.finditer(flag_patterns[3], tiles):
             default_to_letters = True
+        delay = 200
+        for match in re.finditer(flag_patterns[4], tiles):
+            delay = int(match.group(2))
+            if delay < 1 or delay > 1000:
+                return await ctx.error(f"Delay must be between 1 and 1000 milliseconds.")
         
         # Clean up
         for pattern in flag_patterns:
@@ -173,7 +179,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         expanded_tiles: dict[tuple[int, int, int], list[RawTile]] = {}
         previous_tile: list[RawTile] = []
         # Do the bulk of the parsing here:
-        foooo = time()
         for y, row in enumerate(rows):
             x = 0
             try:
@@ -428,6 +433,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 palette=palette,
                 background=background, 
                 out=buffer,
+                delay=delay,
                 upscale=not raw_output,
                 extra_out=extra_buffer,
                 extra_name=extra_name,
@@ -479,7 +485,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         
         **Variants, Operations & Transformations**
         * `:variant`: Append `:variant` to a tile to change color or sprite of a tile. See the `variants` command for more.
-        * `!operation`: Apply a macro operation to a tile. Examples include `baba!anim2`, `keke!rrrddl`.
+        * `!operation`: Apply a macro operation to a tile. See the `operations` command for more.
+        * `>`: Transform the tile on the left to the tile on the right! Examples: `baba>keke`, `rock>>>flag>dust>>-`
 
         **Useful tips:**
         * `-` : Shortcut for an empty tile. 
@@ -511,6 +518,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
         **Variants**
         * `:variant`: Append `:variant` to a tile to change color or sprite of a tile. See the `variants` command for more.
+        * `!operation`: Apply a macro operation to a tile. See the `operations` command for more.
+        * `>`: Transform the tile on the left to the tile on the right! Examples: `baba>keke`, `rock>>>flag>dust>>-`
 
         **Useful tips:**
         * `-` : Shortcut for an empty tile. 
