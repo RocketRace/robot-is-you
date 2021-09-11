@@ -57,6 +57,13 @@ class OperationMacros:
             return macro
         return deco
 
+    def get_all(self) -> dict[str, list[str]]:
+        '''All the operations!'''
+        out = {}
+        for macro in self.macros:
+            out.setdefault(macro.group, []).extend(list(macro.hints.values()))
+        return out
+
     def expand_into(
         self,
         grid: Grid[RawTile],

@@ -475,9 +475,11 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         * `--background=[...]` (`-B=[...]`): Enables background color. If no argument is given, defaults to black. The argument must be a palette index ("x/y").
         * `--raw` (`-R`): Enables raw mode. The sprites are sent in a ZIP file as well as normally. By default, sprites have no color.
         * `--letter` (`-L`): Enables letter mode. Custom text that has 2 letters in it will be rendered in "letter" mode.
+        * `--delay=<...>` (`-D=<...>`): Alter the delay (in milliseconds) between frames.
         
-        **Variants**
+        **Variants, Operations & Transformations**
         * `:variant`: Append `:variant` to a tile to change color or sprite of a tile. See the `variants` command for more.
+        * `!operation`: Apply a macro operation to a tile. Examples include `baba!anim2`, `keke!rrrddl`.
 
         **Useful tips:**
         * `-` : Shortcut for an empty tile. 
@@ -505,6 +507,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         * `--background=[...]` (`-B=[...]`): Enables background color. If no argument is given, defaults to black. The argument must be a palette index ("x/y").
         * `--raw` (`-R`): Enables raw mode. The sprites are sent in a ZIP file as well as normally. By default, sprites have no color.
         * `--letter` (`-L`): Enables letter mode. Custom text that has 2 letters in it will be rendered in "letter" mode.
+        * `--delay=<...>` (`-D=<...>`): Alter the delay (in milliseconds) between frames.
 
         **Variants**
         * `:variant`: Append `:variant` to a tile to change color or sprite of a tile. See the `variants` command for more.

@@ -371,13 +371,28 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         ).start(ctx)
 
     @commands.cooldown(5, 8, type=commands.BucketType.channel)
+    @commands.command(name="operations")
+    async def list_operations(self, ctx: Context):
+        '''List valid operations. These are valid for every tile.'''
+        embed = discord.Embed(
+            title=f"Valid tile operations",
+            color=self.bot.embed_color
+        )
+        for group, macros in self.bot.operation_macros.get_all().items():
+            embed.add_field(
+                name=group,
+                value="\n".join(f"- {string}" for string in macros),
+                inline=True,
+            )
+        await ctx.send(embed=embed)
+
+    @commands.cooldown(5, 8, type=commands.BucketType.channel)
     @commands.command(name="variants")
     async def list_variants(self, ctx: Context, tile: str):
         '''List valid sprite variants for a given tile.'''
         # Clean the input
         clean_tile = tile.strip().lower()
 
-        
         output = discord.Embed(
             title=f"Valid sprite variants for `{clean_tile}`",
             color=self.bot.embed_color
@@ -390,13 +405,13 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         else:
             output.set_footer(text="Note: This tile doesn't exist in the database, so it's not necessarily valid.")
         
-        raw_tile = RawTile(clean_tile, [])
-        variant_groups = self.bot.variant_handlers.valid_variants(raw_tile, tile_data_cache)
+        raw_tile = RawTile(clean_tile, [], False)
+        variant_groups = self.bot.variant_handlers.valid_variants(raw_tile, {(0, 0, 0): [raw_tile]}, tile_data_cache)
         for group, variants in variant_groups.items():
             output.add_field(
                 name=group,
                 value="\n".join(f"- {string}" for string in variants),
-                inline=True
+                inline=False
             )
         
         await ctx.reply(embed=output)
