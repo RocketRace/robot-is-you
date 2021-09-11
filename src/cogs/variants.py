@@ -37,7 +37,7 @@ class ContextBase:
         Coordinate format: (x, y, t)
         '''
         x, y, t = coordinate
-        height, width = self.grid_size
+        width, height = self.grid_size
         joining_tiles = (self.tile.name, "level")
         if x < 0 or y < 0 or y >= height or x >= width:
             return bool(self.flags.get("tile_borders"))
