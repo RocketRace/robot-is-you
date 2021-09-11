@@ -444,20 +444,21 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             )
         except errors.TileNotFound as e:
             word = e.args[0]
-            if word.name.startswith("tile_") and await self.bot.db.tile(word.name[5:]) is not None:
-                return await ctx.error(f"The tile `{word}` could not be found. Perhaps you meant `{word.name[5:]}`?")
-            if await self.bot.db.tile("text_" + word.name) is not None:
-                return await ctx.error(f"The tile `{word}` could not be found. Perhaps you meant `{'text_' + word.name}`?")
-            return await ctx.error(f"The tile `{word}` could not be found.")
+            name = word.name
+            if word.name.startswith("tile_") and await self.bot.db.tile(name[5:]) is not None:
+                return await ctx.error(f"The tile `{name}` could not be found. Perhaps you meant `{name[5:]}`?")
+            if await self.bot.db.tile("text_" + name) is not None:
+                return await ctx.error(f"The tile `{name}` could not be found. Perhaps you meant `{'text_' + name}`?")
+            return await ctx.error(f"The tile `{name}` could not be found.")
         except errors.BadTileProperty as e:
             word, (w, h) = e.args
-            return await ctx.error(f"The tile `{word}` could not be made into a property, because it's too big (`{w} by {h}`).")
+            return await ctx.error(f"The tile `{word.name}` could not be made into a property, because it's too big (`{w} by {h}`).")
         except errors.EmptyTile as e:
             return await ctx.error("Cannot use blank tiles in that context.")
         except errors.EmptyVariant as e:
             word = e.args[0]
             return await ctx.error(
-                f"You provided an empty variant for `{word}`."
+                f"You provided an empty variant for `{word.name}`."
             )
         except errors.VariantError as e:
             return await self.handle_variant_errors(ctx, e)
