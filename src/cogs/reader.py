@@ -104,7 +104,8 @@ class Grid:
         palette_img = Image.open(f"data/palettes/{self.palette}.png").convert("RGB")
         for y in range(self.height):
             for x in range(self.width):
-                stack = []
+                if x == 0 or y == 0 or x == self.width - 1 or y == self.height - 1:
+                    continue
                 for item in sorted(self.cells[y * self.width + x], key=lambda item: item.layer):
                     item: Item
                     if item.tiling in constants.DIRECTION_TILINGS:
