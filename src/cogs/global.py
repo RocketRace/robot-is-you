@@ -119,6 +119,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         else:
             return await ctx.error(f"The operation `{operation}` failed for `{tile.name}`.")
 
+    def parse_row(self):
+        pass
+
     async def render_tiles(self, ctx: Context, *, objects: str, is_rule: bool):
         '''Performs the bulk work for both `tile` and `rule` commands.'''
         await ctx.trigger_typing()
@@ -421,7 +424,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             return await ctx.error(f"Too high ({height}). You may only render scenes up to {constants.MAX_HEIGHT} tiles tall.")
         if duration > constants.MAX_DURATION:
             return await ctx.error(f"Too many frames ({duration}). You may only render scenes with up to {constants.MAX_DURATION} animation frames.")
-
+        
         try:
             # Handles variants based on `:` affixes
             buffer = BytesIO()
@@ -435,12 +438,13 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 default_to_letters=default_to_letters
             )
             extra_name = extra_names[0] if extra_names is not None else None
+            full_tiles = await self.bot.renderer.render_full_tiles(
+                full_objects,
+                palette=palette,
+                random_animations=True
+            )
             await self.bot.renderer.render(
-                await self.bot.renderer.render_full_tiles(
-                    full_objects,
-                    palette=palette,
-                    random_animations=True
-                ),
+                full_tiles,
                 grid_size=(width, height),
                 duration=duration,
                 palette=palette,

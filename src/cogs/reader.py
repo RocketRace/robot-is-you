@@ -100,10 +100,9 @@ class Grid:
             return Image.fromarray(arr.astype('uint8'))
         
         sprite_cache = {}
-        grid = []
+        grid = {}
         palette_img = Image.open(f"data/palettes/{self.palette}.png").convert("RGB")
         for y in range(self.height):
-            row = []
             for x in range(self.width):
                 stack = []
                 for item in sorted(self.cells[y * self.width + x], key=lambda item: item.layer):
@@ -125,9 +124,7 @@ class Grid:
                         recolor(open_sprite(self.world, item.sprite, variant, 2, cache=sprite_cache), color),
                         recolor(open_sprite(self.world, item.sprite, variant, 3, cache=sprite_cache), color),
                     )
-                    stack.append(ReadyTile(frames))
-                row.append(stack)
-            grid.append(row)
+                    grid.setdefault((x, y, 0), []).append(ReadyTile(frames))
 
         return grid
 
