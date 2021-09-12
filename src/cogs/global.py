@@ -413,8 +413,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
         # Don't proceed if the request is too large.
         # (It shouldn't be that long to begin with because of Discord's 2000 character limit)
-        if len(expanded_tiles) > constants.MAX_TILES and ctx.author.id != self.bot.owner_id:
-            return await ctx.error(f"Too many tiles ({len(expanded_tiles)}). You may only render up to {constants.MAX_TILES} tiles at once, excluding empty tiles.")
+        if width * height * duration > constants.MAX_VOLUME:
+            return await ctx.error(f"Too large of an animation ({width * height * duration}). An animation may have up to {constants.MAX_VOLUME} tiles, including tiles repeated in frames.")
         if width > constants.MAX_WIDTH:
             return await ctx.error(f"Too wide ({width}). You may only render scenes up to {constants.MAX_WIDTH} tiles wide.")
         if height > constants.MAX_HEIGHT:
