@@ -104,7 +104,7 @@ class Grid:
         palette_img = Image.open(f"data/palettes/{self.palette}.png").convert("RGB")
         for y in range(self.height):
             for x in range(self.width):
-                if x == 0 or y == 0 or x == self.width - 1 or y == self.height - 1:
+                if remove_borders and (x == 0 or y == 0 or x == self.width - 1 or y == self.height - 1):
                     continue
                 for item in sorted(self.cells[y * self.width + x], key=lambda item: item.layer):
                     item: Item
@@ -125,7 +125,7 @@ class Grid:
                         recolor(open_sprite(self.world, item.sprite, variant, 2, cache=sprite_cache), color),
                         recolor(open_sprite(self.world, item.sprite, variant, 3, cache=sprite_cache), color),
                     )
-                    grid.setdefault((x, y, 0), []).append(ReadyTile(frames))
+                    grid.setdefault((x - 1, y - 1, 0), []).append(ReadyTile(frames))
 
         return grid
 
@@ -208,7 +208,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         out = f"target/renders/levels/{code}.gif"
         await self.bot.renderer.render(
             objects,
-            grid_size=(grid.width, grid.height),
+            grid_size=(grid.width - 2, grid.height - 2),
             duration=1,
             palette=grid.palette,
             background=(0, 4),
@@ -251,7 +251,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         # Render the level
         await self.bot.renderer.render(
             objects,
-            grid_size=(grid.width, grid.height),
+            grid_size=(grid.width - 2 * remove_borders, grid.height - 2 * remove_borders),
             duration=1,
             palette=grid.palette,
             images=grid.images,
