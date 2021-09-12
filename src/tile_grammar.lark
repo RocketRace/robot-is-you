@@ -13,11 +13,11 @@ process: unit (transform | operation)*
 
 stack: process ("&" process)*          -> plain_stack
 
-line: "text_" stack ("," stack)*             -> text_chain
+line: stack                                  -> plain_line
+    | "text_" stack ("," stack)*             -> text_chain
     | "tile_" stack ("," stack)*             -> tile_chain
     | "(" stack (" "+ stack)* ")" variants   -> any_block
     | "\"" stack (" "+ stack)* "\"" variants -> text_block
     | "[" stack (" "+ stack)* "]" variants   -> tile_block
-    | stack (" "+ stack)*                    -> plain_line
 
 row: line (" "+ line)*

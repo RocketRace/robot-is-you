@@ -32,7 +32,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             j = load(f)
             self.level_tile_override = j
         with open("src/tile_grammar.lark") as f:
-            self.lark = Lark(f.read(), start="row")
+            self.lark = Lark(f.read(), start="row", parser="lalr")
 
     # Check if the bot is loading
     async def cog_check(self, ctx):
