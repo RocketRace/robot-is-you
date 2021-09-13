@@ -714,11 +714,14 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     ) AND (
                         :f_world IS NULL OR world == :f_world
                     )
-                    ORDER BY CASE world 
-                        WHEN :default
-                        THEN NULL
-                        ELSE world
-                    END ASC, number DESC;
+                    ORDER BY COALESCE(
+                        CASE world 
+                            WHEN :default
+                            THEN NULL
+                            ELSE world
+                        END,
+                        INSTR(name, :name)
+                    ) ASC, number DESC;
                     ''',
                     dict(name=query, f_map=f_map, f_world=f_world, default=constants.BABA_WORLD)
                 )
