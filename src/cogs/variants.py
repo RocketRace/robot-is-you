@@ -352,16 +352,8 @@ def setup(bot: Bot):
         if tile_data is not None and tile_data.tiling in constants.DIRECTION_TILINGS:
             return {
                 "variant_number": join_variant(dir, anim),
-                "custom_direction": dir
             }
-        elif ctx.flags.get("ignore_bad_directions"):
-            return {}
-        else:
-            if ctx.flags.get("disallow_custom_directions") and not ctx.tile.is_text:
-                return {}
-            return {
-                "custom_direction": dir
-            }
+        return {}
 
 
     @handlers.handler(
