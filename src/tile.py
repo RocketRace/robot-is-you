@@ -74,6 +74,8 @@ class TileFields(TypedDict, total=False):
     style_flip: bool
     mask_alpha: bool
     cut_alpha: bool
+    face: bool
+    blank: bool
 
 @dataclass
 class FullTile(SkeletonTile):
@@ -90,6 +92,8 @@ class FullTile(SkeletonTile):
     custom_style: Literal["noun", "property", "letter"] | None = None
     mask_alpha: bool = False
     cut_alpha: bool = False
+    face: bool = False
+    blank: bool = False
     
     @classmethod
     def from_tile_fields(cls, tile: RawTile, fields: TileFields) -> FullTile:

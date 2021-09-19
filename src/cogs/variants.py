@@ -678,4 +678,20 @@ def setup(bot: Bot):
     def cut(ctx: HandlerContext) -> TileFields:
         return {"cut_alpha": True}
 
+    @handlers.handler(
+        pattern="face",
+        variant_hints={"face": "`face` (Pick out the details in a sprite)"},
+        variant_group="Filters"
+    )
+    def face(ctx: HandlerContext) -> TileFields:
+        return {"face": True}
+    
+    @handlers.handler(
+        pattern="blank",
+        variant_hints={"blank": "`blank` (Pick out the shape of the sprite)"},
+        variant_group="Filters"
+    )
+    def blank(ctx: HandlerContext) -> TileFields:
+        return {"blank": True}
+
     return handlers

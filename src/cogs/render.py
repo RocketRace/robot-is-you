@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import collections
 import random
 import string
 import zipfile
@@ -163,6 +164,8 @@ class Renderer:
                     style=tile.custom_style or "noun",
                     direction=tile.custom_direction,
                     meta_level=tile.meta_level,
+                    face=tile.face,
+                    blank=tile.blank,
                     wobble=wobble,
                 )
             else:
@@ -183,6 +186,8 @@ class Renderer:
                     style=tile.custom_style,
                     direction=tile.custom_direction,
                     meta_level=tile.meta_level,
+                    face=tile.face,
+                    blank=tile.blank,
                     wobble=wobble,
                 )
             # Color conversion
@@ -224,6 +229,8 @@ class Renderer:
         style: str,
         direction: int | None,
         meta_level: int,
+        face: bool,
+        blank: bool,
         wobble: int,
         seed: int | None = None
     ) -> Image.Image:
@@ -278,6 +285,8 @@ class Renderer:
                 original_direction=None,
                 direction=direction,
                 meta_level=meta_level,
+                face=face,
+                blank=blank,
                 wobble=wobble
             )
 
@@ -447,6 +456,8 @@ class Renderer:
             original_direction=None,
             direction=direction,
             meta_level=meta_level,
+            face=face,
+            blank=blank,
             wobble=wobble
         )
 
@@ -458,6 +469,8 @@ class Renderer:
         style: str | None,
         direction: int | None,
         meta_level: int,
+        face: bool,
+        blank: bool,
         wobble: int
     ) -> Image.Image:
         '''Takes an image, taking tile data from its name, and applies the given options to it.'''
@@ -475,6 +488,8 @@ class Renderer:
                 original_direction=original_direction,
                 direction=direction,
                 meta_level=meta_level,
+                face=face,
+                blank=blank,
                 wobble=wobble,
             )
         except ValueError as e:
@@ -490,10 +505,39 @@ class Renderer:
         original_direction: int | None,
         direction: int | None,
         meta_level: int,
+        face: bool,
+        blank: bool,
         wobble: int
     ):
         '''Takes an image, with or without a plate, and applies the given options to it.'''
-        if meta_level != 0 or original_style != style or (style == "property" and original_direction != direction):
+        if face:
+            pixel_counts = collections.Counter((r, g, b) for r, g, b, a in sprite.getdata() if a)
+            color, _ = pixel_counts.most_common()[-1]
+            lut_r = [0 for _ in range(256)]
+            lut_g = [0 for _ in range(256)]
+            lut_b = [0 for _ in range(256)]
+            lut_a = [0 for _ in range(256)]
+            lut_r[color[0]] = lut_g[color[1]] = lut_b[color[2]] = 255
+            lut_a[255] = 255
+            r, g, b, _ = sprite.split()
+            alpha = Image.merge("RGB", (r.point(lut_g), g.point(lut_g), b.point(lut_b))).convert("L")
+            lut_r[color[0]] = color[0]
+            lut_g[color[1]] = color[1]
+            lut_b[color[2]] = color[2]
+            sprite = Image.merge("RGBA", (r.point(lut_g), g.point(lut_g), b.point(lut_b), alpha))
+
+        if blank:
+            new = Image.new("RGB", sprite.size, (255, 255, 255))
+            new.putalpha(sprite.getchannel("A"))
+            sprite = new
+
+        if (
+            meta_level != 0 or 
+            original_style != style or (
+                style == "property" and 
+                original_direction != direction
+            )
+        ):
             if original_style == "property":
                 # box: position of upper-left coordinate of "inner text" in the larger text tile
                 plate, box = self.bot.db.plate(original_direction, wobble)
