@@ -61,6 +61,10 @@ class Renderer:
         `background` is a palette index. If given, the image background color is set to that color, otherwise transparent. Background images overwrite this. 
         '''
         palette_img = Image.open(f"data/palettes/{palette}.png").convert("RGB")
+        if background is not None:
+            background_color = palette_img.getpixel(background)
+        else:
+            background_color = (0, 0, 0, 0)
         imgs: list[Image.Image] = []
         # This is appropriate padding, no sprites can go beyond it
         padding = constants.DEFAULT_SPRITE_SIZE
@@ -82,8 +86,7 @@ class Renderer:
                         img.paste(overlap, (padding, padding), mask=overlap)
                 # bg color
                 elif background is not None:
-                    palette_color = palette_img.getpixel(background)
-                    img = Image.new("RGBA", (img_width, img_height), color=palette_color)
+                    img = Image.new("RGBA", (img_width, img_height), color=background_color)
                 # neither
                 else: 
                     img = Image.new("RGBA", (img_width, img_height))
@@ -110,11 +113,10 @@ class Renderer:
                     
                     alpha = sprite.getchannel("A")
                     if tile.mask_alpha:
-                        sprite = Image.new("RGB", sprite.size)
+                        sprite = Image.new("RGBA", sprite.size, background_color)
                         alpha = ImageChops.invert(alpha)
                     elif tile.cut_alpha:
-                        sprite = Image.new("RGB", sprite.size)
-                        sprite.putalpha(alpha)
+                        sprite = Image.new("RGBA", sprite.size, background_color)
 
                     imgs[t * frame_count + frame].paste(
                         sprite, 
