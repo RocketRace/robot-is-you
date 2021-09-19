@@ -715,5 +715,40 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             out.append(f"[{row[0]}]: {row[1]}")
         await ctx.send("\n".join(out))
 
+    @commands.command()
+    @commands.is_owner()
+    async def viewzip(self, ctx: Context):
+        m = zipfile.ZipFile(BytesIO(requests.get(ctx.message.attachments[0].url, stream=True).raw.read())).namelist()
+        m.sort()
+        n  = '\n'.join(m)
+        print(n)
+        await ctx.send(f"```\n{n}```")
+
+    @commands.command()
+    @commands.is_owner()
+    async def addsprite(self, ctx: Context, colorx: int, colory: int, tilingtype: int, foldername: str):
+        f'''Adds a .zip to a specified sprite pack.
+        Syntax: {self.bot.prefixes[0]}addsprite <colorx> <colory> <tiling type> <folder name>'''
+        n = zipfile.ZipFile(BytesIO(requests.get(ctx.message.attachments[0].url, stream=True).raw.read()))
+        name = re.match(r'(.+?)(?:\_\d)+',n.namelist()[0]).groups(0)[0]   
+        if os.path.isdir(f'data/sprites/{foldername}') and os.path.isfile(f'data/custom/{foldername}.json'):
+            n.extractall(f'data/sprites/{foldername}')
+            with open(f'data/custom/{foldername}.json', 'r+') as f:
+                spritejson = json.load(f)
+                spritejson.append(
+                    {
+                        "name":name,
+                        "sprite":name,
+                        "color":[
+                            str(colorx),
+                            str(colory)
+                        ],
+                        "tiling":str(tilingtype)
+                    }
+                )
+                f.truncate(0)
+                f.seek(0)
+                json.dump(spritejson,f)
+
 def setup(bot: Bot):
     bot.add_cog(OwnerCog(bot))
