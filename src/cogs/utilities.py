@@ -363,7 +363,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         
         await menus.MenuPages(
             source=HintPageSource(
-                list(hints.items()),
+                [(group, hs) for group, hs in hints.items() if not group.startswith("_")],
                 choice,
                 len(levels)
             ),

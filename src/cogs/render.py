@@ -106,10 +106,23 @@ class Renderer:
                         pad_u = max(pad_u, y_offset)
                     if y == height - 1:
                         pad_d = max(pad_d, y_offset)
+                        alpha = sprite.getchannel("A")
+                    
+                    alpha = sprite.getchannel("A")
+                    if tile.mask_alpha:
+                        sprite = Image.new("RGB", sprite.size)
+                        alpha = ImageChops.invert(alpha)
+                    elif tile.cut_alpha:
+                        sprite = Image.new("RGB", sprite.size)
+                        sprite.putalpha(alpha)
+
                     imgs[t * frame_count + frame].paste(
-                        sprite,
-                        (x * constants.DEFAULT_SPRITE_SIZE + padding - x_offset, y * constants.DEFAULT_SPRITE_SIZE + padding - y_offset),
-                        mask=sprite
+                        sprite, 
+                        (
+                            x * constants.DEFAULT_SPRITE_SIZE + padding - x_offset,
+                            y * constants.DEFAULT_SPRITE_SIZE + padding - y_offset
+                        ), 
+                        mask=alpha
                     )
 
         outs = []
@@ -175,7 +188,7 @@ class Renderer:
             sprite = self.recolor(sprite, rgb)
             out.append(sprite)
         f0, f1, f2 = out
-        return ReadyTile((f0, f1, f2))
+        return ReadyTile((f0, f1, f2), tile.mask_alpha, tile.cut_alpha)
 
     async def render_full_tiles(
         self,

@@ -662,4 +662,20 @@ def setup(bot: Bot):
     def nothing(ctx: HandlerContext) -> TileFields:
         return {}
 
+    @handlers.handler(
+        pattern="mask",
+        variant_hints={"mask": "`mask` (Mask with this sprite outline)"},
+        variant_group="Filters"
+    )
+    def mask(ctx: HandlerContext) -> TileFields:
+        return {"mask_alpha": True}
+
+    @handlers.handler(
+        pattern="cut",
+        variant_hints={"cut": "`cut` (Cut this sprite outline)"},
+        variant_group="Filters"
+    )
+    def cut(ctx: HandlerContext) -> TileFields:
+        return {"cut_alpha": True}
+
     return handlers

@@ -72,6 +72,8 @@ class TileFields(TypedDict, total=False):
     custom_style: Literal["noun", "property", "letter"]
     custom: bool
     style_flip: bool
+    mask_alpha: bool
+    cut_alpha: bool
 
 @dataclass
 class FullTile(SkeletonTile):
@@ -86,6 +88,8 @@ class FullTile(SkeletonTile):
     meta_level: int = 0
     custom_direction: int | None = None
     custom_style: Literal["noun", "property", "letter"] | None = None
+    mask_alpha: bool = False
+    cut_alpha: bool = False
     
     @classmethod
     def from_tile_fields(cls, tile: RawTile, fields: TileFields) -> FullTile:
@@ -99,3 +103,5 @@ class FullTile(SkeletonTile):
 class ReadyTile:
     '''Tile that's about to be rendered, and already has a prerendered sprite.'''
     frames: tuple[Image.Image, Image.Image, Image.Image] | None
+    mask_alpha: bool = False
+    cut_alpha: bool = False
