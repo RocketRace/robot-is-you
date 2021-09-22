@@ -126,8 +126,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         '''Performs the bulk work for both `tile` and `rule` commands.'''
         await ctx.trigger_typing()
         start = time()
-        tiles = objects.lower().strip().replace("\\", "")
+        tiles = objects.lower().strip()
+        tiles = re.sub(r'<(:.+?:)\d+?>', r'\1', tiles)
         tiles = tiles.replace("```\n", "")
+        tiles = tiles.replace("\\", "")
         tiles = tiles.replace("`", "")
 
         # Determines if this should be a spoiler
