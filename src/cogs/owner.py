@@ -63,12 +63,14 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         self.bot.exit_code = 1
         await self.bot.close()
 
-    @commands.command(aliases=["kill", "yeet"])
+    @commands.command(aliases=["kill", "yeet", "defeat"])
     @commands.is_owner()
     async def logout(self, ctx: Context):
         '''Kills the bot process.'''
         if ctx.invoked_with == "yeet":
             await ctx.send("Yeeting bot process...")
+        elif ctx.invoked_with == "defeat":
+            await ctx.send("Processing robot is defeat...")
         else:
             await ctx.send("Killing bot process...")
         await self.bot.close()
