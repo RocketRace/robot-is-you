@@ -482,25 +482,29 @@ def setup(bot: Bot):
         if tile_data is None:
             raise errors.TileDoesntExist(ctx.tile.name, ctx.variant)
         tiling = tile_data.tiling
-
-        if tiling in constants.AUTO_TILINGS:
-            if variant >= 16:
-                raise errors.BadTilingVariant(ctx.tile.name, ctx.variant, tiling)
-        else:
-            dir, anim = split_variant(variant)
-            if dir != 0:
-                if tiling not in constants.DIRECTION_TILINGS or dir not in constants.DIRECTIONS:
-                    raise errors.BadTilingVariant(ctx.tile.name, ctx.variant, tiling)
-            if anim != 0:
-                if anim in constants.SLEEP_VARIANTS.values():
-                    if tiling not in constants.SLEEP_TILINGS:
-                        raise errors.BadTilingVariant(ctx.tile.name, ctx.variant, tiling)
-                else:
-                    if tiling not in constants.ANIMATION_TILINGS or anim not in constants.ANIMATION_VARIANTS.values():
-                        raise errors.BadTilingVariant(ctx.tile.name, ctx.variant, tiling)
-        return {
-            "variant_number": variant
-        }
+        try:
+          if tiling in constants.AUTO_TILINGS:
+              if variant >= 16:
+                  raise Exception
+          else:
+              dir, anim = split_variant(variant)
+              if dir != 0:
+                  if tiling not in constants.DIRECTION_TILINGS or dir not in constants.DIRECTIONS:
+                      raise Exception
+              if anim != 0:
+                  if anim in constants.SLEEP_VARIANTS.values():
+                      if tiling not in constants.SLEEP_TILINGS:
+                          raise Exception
+                  else:
+                      if tiling not in constants.ANIMATION_TILINGS or anim not in constants.ANIMATION_VARIANTS.values():
+                          raise Exception
+          return {
+              "variant_number": variant
+          }
+        except:
+          return {
+                "variant_number": -1
+            }
 
     @handlers.handler(
         pattern=r"|".join(constants.COLOR_NAMES),
