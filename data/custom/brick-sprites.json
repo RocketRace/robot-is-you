@@ -86,5 +86,14 @@
             "1",
             "4"
         ]
+    },
+    {
+        "name": "cheese",
+        "sprite": "cheese",
+        "color": [
+            "3",
+            "4"
+        ],
+        "tiling": "-1"
     }
 ]
