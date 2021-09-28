@@ -482,10 +482,11 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         filename = datetime.utcnow().strftime(r"render_%Y-%m-%d_%H.%M.%S.gif")
         delta = time() - start
         msg = f"*Rendered in {delta:.2f} s*"
-        await ctx.reply(content=msg, file=discord.File(buffer, filename=filename, spoiler=spoiler))
         if extra_buffer is not None and extra_names is not None:
             extra_buffer.seek(0)
-            await ctx.send("*Raw files:*", file=discord.File(extra_buffer, filename=f"{extra_names[0]}_raw.zip"))
+            await ctx.reply(content=f'{msg}\n*Raw files:*', files=[discord.File(extra_buffer, filename=f"{extra_names[0]}_raw.zip"),discord.File(buffer, filename=filename, spoiler=spoiler)])
+        else:
+            await ctx.reply(content=msg, file=discord.File(buffer, filename=filename, spoiler=spoiler))
         
 
     @commands.command(aliases=["text"])
