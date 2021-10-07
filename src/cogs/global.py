@@ -127,19 +127,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         await ctx.trigger_typing()
         start = time()
         tiles = objects.lower().strip()
-
-        # read from file if no message is provided
-        if not tiles:
-            attachments = ctx.message.attachments
-            if len(attachments) != 0:
-                file = attachments[0]
-                if file.size > constants.MAX_INPUT_FILE_SIZE:
-                    await ctx.error(f"The file is too large ({file.size} bytes). Maximum: {constants.MAX_INPUT_FILE_SIZE} bytes")
-                try:
-                    tiles = (await file.read()).decode("utf-8").lower().strip()
-                except UnicodeDecodeError:
-                    await ctx.error("The file contains invalid UTF-8. Make sure it's not corrupt.")
-
         
         # replace emoji with their :text: representation
         builtin_emoji = {
@@ -198,7 +185,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             if delay < 1 or delay > 1000:
                 return await ctx.error(f"Delay must be between 1 and 1000 milliseconds.")
         frame_count = 3
-        for match in re.finditer(flag_patterns[4], tiles):
+        for match in re.finditer(flag_patterns[5], tiles):
             frame_count = int(match.group(2))
             if frame_count < 1 or frame_count > 3:
                 return await ctx.error(f"The frame count must be 1, 2 or 3.")
@@ -206,6 +193,22 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         # Clean up
         for pattern in flag_patterns:
             tiles = re.sub(pattern, " ", tiles)
+
+        # read from file if nothing (beyond flags) is provided
+        zipfile_name = ""
+        if not tiles.strip():
+            attachments = ctx.message.attachments
+            if len(attachments) > 0:
+                file = attachments[0]
+                if file.size > constants.MAX_INPUT_FILE_SIZE:
+                    await ctx.error(f"The file is too large ({file.size} bytes). Maximum: {constants.MAX_INPUT_FILE_SIZE} bytes")
+                try:
+                    tiles = (await file.read()).decode("utf-8").lower().strip()
+                    if file.filename != "message.txt":
+                        zipfile_name = file.filename.split(".")[0]
+                except UnicodeDecodeError:
+                    await ctx.error("The file contains invalid UTF-8. Make sure it's not corrupt.")
+
         
         # Split input into lines
         rows = tiles.splitlines()
@@ -462,7 +465,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 extra_names=extra_names,
                 default_to_letters=default_to_letters
             )
-            extra_name = extra_names[0] if extra_names is not None else None
+            extra_name = (
+                zipfile_name if zipfile_name else (constants.DEFAULT_RENDER_ZIP_NAME
+                if len(extra_names[0]) > 1 else extra_names[0])
+            ) if extra_names is not None else None
             full_tiles = await self.bot.renderer.render_full_tiles(
                 full_objects,
                 palette=palette,
@@ -509,7 +515,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         msg = f"*Rendered in {delta:.2f} s*"
         if extra_buffer is not None and extra_names is not None:
             extra_buffer.seek(0)
-            await ctx.reply(content=f'{msg}\n*Raw files:*', files=[discord.File(extra_buffer, filename=f"{extra_names[0]}_raw.zip"),discord.File(buffer, filename=filename, spoiler=spoiler)])
+            await ctx.reply(content=f'{msg}\n*Raw files:*', files=[discord.File(extra_buffer, filename=f"{extra_name}.zip"),discord.File(buffer, filename=filename, spoiler=spoiler)])
         else:
             await ctx.reply(content=msg, file=discord.File(buffer, filename=filename, spoiler=spoiler))
         

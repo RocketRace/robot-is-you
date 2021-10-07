@@ -302,15 +302,12 @@ def setup(bot: Bot):
     @handlers.finalize
     def finalize(tile: FullTile, **flags) -> None:
         if flags.get("extra_names") is not None:
-            if flags["extra_names"]:
-                flags["extra_names"][0] = "render"
-            else:
-                name = tile.name.replace("/", "")
-                variant = tile.variant_number
-                meta_level = tile.meta_level
-                flags["extra_names"].append(
-                    meta_level * "meta_" + f"{name}_{variant}"
-                )
+            name = tile.name.replace("/", "")
+            variant = tile.variant_number
+            meta_level = tile.meta_level
+            flags["extra_names"].append(
+                meta_level * "meta_" + f"{name}_{variant}"
+            )
         if tile.custom and tile.custom_style is None:
             if len(tile.name[5:]) == 2 and flags.get("default_to_letters"):
                 tile.custom_style = "letter"
