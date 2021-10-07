@@ -127,7 +127,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         await ctx.trigger_typing()
         start = time()
         tiles = objects.lower().strip()
-        tiles = re.sub(r'<(:.+?:)\d+?>', r'\1', tiles)
+        tiles = re.sub(r'<a?(:[a-zA-Z0-9_]{2,32}:)\d{1,21}>', r'\1', tiles)
         tiles = tiles.replace("```\n", "")
         tiles = tiles.replace("\\", "")
         tiles = tiles.replace("`", "")
