@@ -127,10 +127,19 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         await ctx.trigger_typing()
         start = time()
         tiles = objects.lower().strip()
+        
+        # replace emoji with their :text: representation
+        builtin_emoji = {
+            ord("\u24c2"): ":m:",
+            ord("\U0001f199"): ":up:",
+            ord("\U0001f637"): ":mask:",
+            ord("\ufe0f"): None
+        }
+        tiles = tiles.translate(builtin_emoji)
         tiles = re.sub(r'<a?(:[a-zA-Z0-9_]{2,32}:)\d{1,21}>', r'\1', tiles)
-        tiles = tiles.replace("```\n", "")
-        tiles = tiles.replace("\\", "")
-        tiles = tiles.replace("`", "")
+        
+        # ignore all these
+        tiles = tiles.replace("```\n", "").replace("\\", "").replace("`", "")
 
         # Determines if this should be a spoiler
         spoiler = tiles.count("||") >= 2
