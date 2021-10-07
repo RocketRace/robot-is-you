@@ -127,12 +127,26 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         await ctx.trigger_typing()
         start = time()
         tiles = objects.lower().strip()
+
+        # read from file if no message is provided
+        if not tiles:
+            attachments = ctx.message.attachments
+            if len(attachments) != 0:
+                file = attachments[0]
+                if file.size > constants.MAX_INPUT_FILE_SIZE:
+                    await ctx.error(f"The file is too large ({file.size} bytes). Maximum: {constants.MAX_INPUT_FILE_SIZE} bytes")
+                try:
+                    tiles = (await file.read()).decode("utf-8").lower().strip()
+                except UnicodeDecodeError:
+                    await ctx.error("The file contains invalid UTF-8. Make sure it's not corrupt.")
+
         
         # replace emoji with their :text: representation
         builtin_emoji = {
-            ord("\u24c2"): ":m:",
-            ord("\U0001f199"): ":up:",
-            ord("\U0001f637"): ":mask:",
+            ord("\u24dc"): ":m:", # lower case circled m
+            ord("\u24c2"): ":m:", # upper case circled m
+            ord("\U0001f199"): ":up:", # up! emoji
+            ord("\U0001f637"): ":mask:", # mask emoji
             ord("\ufe0f"): None
         }
         tiles = tiles.translate(builtin_emoji)
