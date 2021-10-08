@@ -11,6 +11,8 @@ from . import errors
 if TYPE_CHECKING:
     _T = TypeVar("_T")
     Grid = dict[tuple[int, int, int], list[_T]]
+else:
+    Grid = dict
 
 @dataclass
 class SkeletonTile:
