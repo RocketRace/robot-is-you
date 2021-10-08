@@ -769,5 +769,49 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             json.dump(sprite_data, f, indent=4)
         await ctx.send(f"Added {sprite_name}.")
 
+    @commands.command()
+    @commands.is_owner()
+    async def addpack(self, ctx: Context, short_name: str, long_name: str, version: str, author: str):
+        '''Registers a custom levelpack!'''
+        zip = zipfile.ZipFile(BytesIO(await ctx.message.attachments[0].read()))
+        os.makedirs(f"data/levels/{short_name}", exist_ok=True)
+        os.makedirs(f"data/sprites/{short_name}", exist_ok=True)
+        os.makedirs(f"data/images/{short_name}", exist_ok=True)
+        for file_name in zip.namelist():
+            path = pathlib.Path(file_name)
+            if len(path.parts) == 2:
+                _, name = path.parts
+                if name.endswith(".l") or name.endswith(".ld"):
+                    level = zip.read(file_name)
+                    with open(f"data/levels/{short_name}/{name}", "wb") as f:
+                        f.write(level)
+            elif len(path.parts) == 3:
+                _, folder, *_, name = path.parts
+                if folder.lower() == "palettes":
+                    if name.endswith(".png"):
+                        palette = zip.read(file_name)
+                        with open(f"data/palettes/{name}", "wb") as f:
+                            f.write(palette)
+                elif folder.lower() == "sprites":
+                    if name.endswith(".png"):
+                        sprite = zip.read(file_name)
+                        with open(f"data/sprites/{short_name}/{name}", "wb") as f:
+                            f.write(sprite)
+                elif folder.lower() == "images":
+                    if name.endswith(".png"):
+                        sprite = zip.read(file_name)
+                        with open(f"data/images/{short_name}/{name}", "wb") as f:
+                            f.write(sprite)
+        with open("data/levelpacks.json") as f:
+            packs = json.load(f)
+            packs[short_name] = {
+                "version": version,
+                "name": long_name,
+                "author": author
+            }
+        with open("data/levelpacks.json", "w") as f:
+            json.dump(packs, f)
+        await ctx.send(f"Added `{long_name}` (`{short_name}`) `{version}` by `{author}`.")
+
 def setup(bot: Bot):
     bot.add_cog(OwnerCog(bot))
