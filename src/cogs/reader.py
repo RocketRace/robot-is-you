@@ -457,7 +457,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
         # We've added the basic objects & their directions. 
         # Now we add everything else:
         if data is None:
-            fp = open(grid.fp + "d", errors="replace")
+            fp = open(grid.fp + "d", errors="replace", encoding="utf-8")
         else:
             fp = data
         

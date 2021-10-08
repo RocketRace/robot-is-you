@@ -129,7 +129,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     async def load_initial_tiles(self):
         '''Loads tile data from `data/values.lua` and `.ld` files.'''
         # values.lua contains the data about which color (on the palette) is associated with each tile.
-        with open("data/values.lua", errors="replace") as fp:
+        with open("data/values.lua", encoding="utf-8", errors="replace") as fp:
             data = fp.read()
         
         start = data.find("tileslist =\n")
@@ -193,7 +193,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         for path in pathlib.Path(f"data/levels/{constants.BABA_WORLD}").glob("*.ld"):
 
             parser = configparser.ConfigParser()
-            parser.read(path)
+            parser.read(path, encoding="utf-8")
             changed_ids = parser.get("tiles", "changed", fallback=",").split(",")[:-1]
 
             fields = ("name", "image", "tiling", "colour", "activecolour", "type")
@@ -288,7 +288,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
     async def load_editor_tiles(self):
         '''Loads tile data from `data/editor_objectlist.lua`.'''
 
-        with open("data/editor_objectlist.lua", errors="replace") as fp:
+        with open("data/editor_objectlist.lua", encoding="utf-8", errors="replace") as fp:
             data = fp.read()
         
         start = data.find("editor_objlist = {")
@@ -393,7 +393,7 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
         async with self.bot.db.conn.cursor() as cur:
             for path in pathlib.Path("data/custom").glob("*.json"):
                 source = path.parts[-1].split(".")[0]
-                with open(path) as fp:
+                with open(path, errors="replace", encoding="utf-8") as fp:
                     objects = [prepare(source, obj) for obj in json.load(fp)]
                 
                 await cur.executemany(
