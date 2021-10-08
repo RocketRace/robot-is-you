@@ -2,14 +2,15 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from src.constants import BABA_WORLD
-from typing import Literal, TypeVar, TypedDict
+from typing import TYPE_CHECKING, Literal, TypeVar, TypedDict
 
 from PIL import Image
 
 from . import errors
 
-_T = TypeVar("_T")
-Grid = dict[tuple[int, int, int], list[_T]]
+if TYPE_CHECKING:
+    _T = TypeVar("_T")
+    Grid = dict[tuple[int, int, int], list[_T]]
 
 @dataclass
 class SkeletonTile:
