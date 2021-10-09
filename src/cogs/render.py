@@ -623,7 +623,7 @@ class Renderer:
             for i, img in enumerate(imgs):
                 buffer = BytesIO()
                 img.save(buffer, "PNG")
-                file.writestr(f"{extra_name}_{i+1}.png", buffer.getvalue())
+                file.writestr(f"{extra_name}_{i//3}_{(i%3)+1}.png", buffer.getvalue())
             file.close()
 
 def setup(bot: Bot):
