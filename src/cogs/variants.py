@@ -67,7 +67,7 @@ class VariantHandlers:
         *, 
         pattern: str,
         variant_hints: dict[str, str],
-        variant_group: str = "Other",
+        variant_group: str | None = None,
         order: int | None = None
     ) -> Callable[[HandlerFn], Handler]:
         '''Registers a variant handler.
@@ -77,15 +77,16 @@ class VariantHandlers:
         The handler is invoked when the variant matches `pattern`. If the pattern includes any 
         capturing groups, they are accessible at `HandlerContext.groups`.
 
-        `variant_hints` is a list of (variant, user-friendly representation) pairs.
+        `variant_hints` is a dict of (variant : user-friendly representation) pairs.
         Each variant should be valid for the handler. The representation should typically 
-        be related to the variant provided, as it will be passed to the user. 
+        be related to the variant provided, as it will be passed to the user. An empty
+        dictionary should be passed to signify no hints.
         
         `variant_group` is a key used to group variant handlers together. It should
-        be a user-friendly string.
+        be a user-friendly string. If set to None, the handlers are hidden.
 
         The lower `order` is, the earlier the handler is prioritized (loosely).
-        If `order` is `None` or not given, the handler is given the least priority (loosely).
+        If `order` is `None` (the default), the handler is given the least priority (loosely).
         '''
         def deco(fn: HandlerFn) -> Handler:
             handler = Handler(pattern, fn, variant_hints, variant_group)
@@ -132,28 +133,29 @@ class VariantHandlers:
         '''
         out: dict[str, list[str]] = {}
         for handler in self.handlers:
-            for variant, repr in handler.hints.items():
-                try:
-                    groups = handler.match(variant)
-                    if groups is not None:
-                        mock_ctx = HandlerContext(
-                            bot=self.bot,
-                            fields={},
-                            groups=groups,
-                            variant=variant,
-                            tile=tile,
-                            grid=grid,
-                            position=(0, 0, 0),
-                            extras={},
-                            grid_size=(1,1), 
-                            tile_data_cache=tile_data_cache,
-                            flags=dict(disallow_custom_directions=True)
-                        )
-                        handler.handle(mock_ctx)
-                except errors.VariantError:
-                    pass # Variant not possible
-                else:
-                    out.setdefault(handler.group, []).append(repr)
+            if handler.visible:
+                for variant, repr in handler.hints.items():
+                    try:
+                        groups = handler.match(variant)
+                        if groups is not None:
+                            mock_ctx = HandlerContext(
+                                bot=self.bot,
+                                fields={},
+                                groups=groups,
+                                variant=variant,
+                                tile=tile,
+                                grid=grid,
+                                position=(0, 0, 0),
+                                extras={},
+                                grid_size=(1,1), 
+                                tile_data_cache=tile_data_cache,
+                                flags=dict(disallow_custom_directions=True)
+                            )
+                            handler.handle(mock_ctx)
+                    except errors.VariantError:
+                        pass # Variant not possible
+                    else:
+                        out.setdefault(handler.group, []).append(repr)
         return out
 
     def handle_tile(
@@ -223,12 +225,16 @@ class Handler:
         pattern: str,
         fn: HandlerFn,
         hints: dict[str, str],
-        group: str
+        group: str | None
     ):
         self.pattern = pattern
         self.fn = fn
         self.hints = hints
         self.group = group
+
+    @property
+    def visible(self) -> bool:
+        return self.group is not None
 
     def match(self, variant: str) -> tuple[str, ...] | None:
         '''Can this handler take the variant?
@@ -339,8 +345,7 @@ def setup(bot: Bot):
 
     @handlers.handler(
         pattern=r"|".join(constants.SOFT_DIRECTION_VARIANTS),
-        variant_hints=constants.SOFT_DIRECTION_REPRESENTATION_VARIANTS,
-        variant_group="Soft alternate sprites"
+        variant_hints={},
     )
     def soft_directions(ctx: HandlerContext) -> TileFields:
         dir = constants.SOFT_DIRECTION_VARIANTS[ctx.variant]
@@ -373,8 +378,7 @@ def setup(bot: Bot):
     
     @handlers.handler(
         pattern=r"|".join(constants.SOFT_ANIMATION_VARIANTS),
-        variant_hints=constants.SOFT_ANIMATION_REPRESENTATION_VARIANTS,
-        variant_group="Soft alternate sprites"
+        variant_hints={},
     )
     def soft_animations(ctx: HandlerContext) -> TileFields:
         anim = constants.SOFT_ANIMATION_VARIANTS[ctx.variant]
@@ -408,8 +412,7 @@ def setup(bot: Bot):
 
     @handlers.handler(
         pattern=r"|".join(constants.SOFT_SLEEP_VARIANTS),
-        variant_hints=constants.SOFT_SLEEP_REPRESENTATION_VARIANTS,
-        variant_group="Soft alternate sprites"
+        variant_hints={},
     )
     def soft_sleep(ctx: HandlerContext) -> TileFields:
         anim = constants.SOFT_SLEEP_VARIANTS[ctx.variant]
@@ -447,8 +450,7 @@ def setup(bot: Bot):
 
     @handlers.handler(
         pattern=r"|".join(constants.SOFT_AUTO_VARIANTS),
-        variant_hints=constants.SOFT_AUTO_REPRESENTATION_VARIANTS,
-        variant_group="Soft alternate sprites"
+        variant_hints={},
     )
     def soft_auto(ctx: HandlerContext) -> TileFields:
         tile_data = ctx.tile_data

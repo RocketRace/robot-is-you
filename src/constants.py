@@ -43,13 +43,6 @@ SOFT_DIRECTION_VARIANTS = {
     "ds": 24,
 }
 
-SOFT_DIRECTION_REPRESENTATION_VARIANTS = {
-    "rs": "`rightsoft` / `rs` (Facing right, doesn't error if invalid)",
-    "us": "`upsoft` / `us` (Facing up, doesn't error if invalid)",
-    "ls": "`leftsoft` / `ls` (Facing left, doesn't error if invalid)",
-    "ds": "`downsoft` / `ds` (Facing down, doesn't error if invalid)",
-}
-
 
 ANIMATION_TILINGS = {
     2, 3, 4
@@ -80,13 +73,6 @@ SOFT_ANIMATION_VARIANTS = {
     "a3soft": 3,
 }
 
-SOFT_ANIMATION_REPRESENTATION_VARIANTS = {
-    "a0s": "`a0s` (Animation frame 0, doesn't error if invalid)",
-    "a1s": "`a1s` (Animation frame 1, doesn't error if invalid)",
-    "a2s": "`a2s` (Animation frame 2, doesn't error if invalid)",
-    "a3s": "`a3s` (Animation frame 3, doesn't error if invalid)",
-}
-
 SLEEP_TILINGS = {
     2
 }
@@ -98,10 +84,6 @@ SLEEP_REPRESENTATION_VARIANTS = {
 SLEEP_VARIANTS = {
     "sleep": -1,
     "s": -1,
-}
-
-SOFT_SLEEP_REPRESENTATION_VARIANTS = {
-    "ss": "`sleepsoft` / `ss` (Doesn't error if invalid)"
 }
 
 SOFT_SLEEP_VARIANTS = {
@@ -129,13 +111,6 @@ AUTO_VARIANTS = {
     "tileleft": 4,
     "td": 8,
     "tiledown": 8,
-}
-
-SOFT_AUTO_REPRESENTATION_VARIANTS = {
-    "trs": "`tilerightsoft` / `trs` (Connects right, doesn't error if invalid)",
-    "tus": "`tileupsoft` / `tus` (Connects up, doesn't error if invalid)",
-    "tls": "`tileleftsoft` / `tls` (Connects left, doesn't error if invalid)",
-    "tds": "`tiledownsoft` / `tds` (Connects down, doesn't error if invalid)",
 }
 
 SOFT_AUTO_VARIANTS = {
