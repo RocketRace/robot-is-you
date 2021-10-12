@@ -306,7 +306,7 @@ def setup(bot: Bot):
             variant = tile.variant_number
             meta_level = tile.meta_level
             flags["extra_names"].append(
-                meta_level * "meta_" + f"{name}_{variant}"
+                meta_level * "meta_" + name
             )
         if tile.custom and tile.custom_style is None:
             if len(tile.name[5:]) == 2 and flags.get("default_to_letters"):

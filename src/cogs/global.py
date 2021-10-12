@@ -9,6 +9,8 @@ from os import listdir
 from time import time
 from typing import TYPE_CHECKING, Any
 
+from PIL.ImageChops import constant
+
 import aiohttp
 import discord
 import lark
@@ -152,17 +154,17 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
         # Handle flags *first*, before even splitting
         flag_patterns = (
-            r"(?:^|\s)(?:(--background|-b)(=(\d)/(\d))?)(?:$|\s)",
-            r"(?:^|\s)(?:(--palette=|-p=|palette:)(\w+))(?:$|\s)",
-            r"(?:^|\s)(?:--raw|-r)(?:$|\s)",
+            r"(?:^|\s)(?:--background|-b)(?:=(\d)/(\d))?(?:$|\s)",
+            r"(?:^|\s)(?:--palette=|-p=|palette:)(\w+)(?:$|\s)",
+            r"(?:^|\s)(?:--raw|-r)(?:=([a-zA-Z_0-9]+))?(?:$|\s)",
             r"(?:^|\s)(?:--letter|-l)(?:$|\s)",
             r"(?:^|\s)(?:(--delay=|-d=)(\d+))(?:$|\s)",
             r"(?:^|\s)(?:(--frames=|-f=)(\d))(?:$|\s)",
         )
         background = None
         for match in re.finditer(flag_patterns[0], tiles):
-            if match.group(3) is not None:
-                tx, ty = int(match.group(3)), int(match.group(4))
+            if match.group(1) is not None:
+                tx, ty = int(match.group(1)), int(match.group(2))
                 if not (0 <= tx <= 7 and 0 <= ty <= 5):
                     return await ctx.error("The provided background color is invalid.")
                 background = tx, ty
@@ -170,12 +172,15 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 background = (0, 4)
         palette = "default"
         for match in re.finditer(flag_patterns[1], tiles):
-            palette = match.group(2)
+            palette = match.group(1)
             if palette + ".png" not in listdir("data/palettes"):
                 return await ctx.error(f"Could not find a palette with name \"{palette}\".")
         raw_output = False
+        raw_name = ""
         for match in re.finditer(flag_patterns[2], tiles):
             raw_output = True
+            if match.group(1) is not None:
+                raw_name = match.group(1)
         default_to_letters = False
         for match in re.finditer(flag_patterns[3], tiles):
             default_to_letters = True
@@ -195,7 +200,6 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             tiles = re.sub(pattern, " ", tiles)
 
         # read from file if nothing (beyond flags) is provided
-        zipfile_name = ""
         if not tiles.strip():
             attachments = ctx.message.attachments
             if len(attachments) > 0:
@@ -205,7 +209,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 try:
                     tiles = (await file.read()).decode("utf-8").lower().strip()
                     if file.filename != "message.txt":
-                        zipfile_name = file.filename.split(".")[0]
+                        raw_name = file.filename.split(".")[0]
                 except UnicodeDecodeError:
                     await ctx.error("The file contains invalid UTF-8. Make sure it's not corrupt.")
 
@@ -465,10 +469,11 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 extra_names=extra_names,
                 default_to_letters=default_to_letters
             )
-            extra_name = (
-                zipfile_name if zipfile_name else (constants.DEFAULT_RENDER_ZIP_NAME
-                if len(extra_names[0]) > 1 else extra_names[0])
-            ) if extra_names is not None else None
+            if extra_names is not None and not raw_name:
+                if len(extra_names) == 1:
+                    raw_name = extra_names[0]
+                else:
+                    raw_name = constants.DEFAULT_RENDER_ZIP_NAME
             full_tiles = await self.bot.renderer.render_full_tiles(
                 full_objects,
                 palette=palette,
@@ -485,7 +490,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 frame_count=frame_count,
                 upscale=not raw_output,
                 extra_out=extra_buffer,
-                extra_name=extra_name,
+                extra_name=raw_name,
             )
         except errors.TileNotFound as e:
             word = e.args[0]
@@ -513,9 +518,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         filename = datetime.utcnow().strftime(r"render_%Y-%m-%d_%H.%M.%S.gif")
         delta = time() - start
         msg = f"*Rendered in {delta:.2f} s*"
-        if extra_buffer is not None and extra_names is not None:
+        if extra_buffer is not None and raw_name:
             extra_buffer.seek(0)
-            await ctx.reply(content=f'{msg}\n*Raw files:*', files=[discord.File(extra_buffer, filename=f"{extra_name}.zip"),discord.File(buffer, filename=filename, spoiler=spoiler)])
+            await ctx.reply(content=f'{msg}\n*Raw files:*', files=[discord.File(extra_buffer, filename=f"{raw_name}.zip"),discord.File(buffer, filename=filename, spoiler=spoiler)])
         else:
             await ctx.reply(content=msg, file=discord.File(buffer, filename=filename, spoiler=spoiler))
         
