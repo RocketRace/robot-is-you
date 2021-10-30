@@ -38,6 +38,7 @@ $1,4Martin Kvale
 $1,4Niilo Takalainen
  
 #credits_translation
+$1,4Traditional Chinese$0,3 $0,4-$4,2 Active Gaming Media
 $1,4Čeština$0,3 $4,0-$4,2 Eva Jany
 $1,4中文 (简体 )$0,3 $4,0-$4,2 User670 $4,0&$4,2 旋律星萤
 $1,4Deutsch$0,3 $4,0-$4,2 pepperonisecret & Tobias Gut
@@ -53,6 +54,7 @@ $1,4Polski$0,3 $4,0-$4,2 Jędrzej Haracewiat
 $1,4Português$0,3 $4,0-$4,2 Luca Macedo
 $1,4Português (BR)$0,3 $4,0-$4,2 Vile Lasagna
 $1,4Thai$0,3 $4,0-$4,2 Tanakorn Tantisitikul
+& $4,2Active Gaming Media
 $1,4Turkish$0,3 $4,0-$4,2 Doruk Balcı & Beste Balcı
 $1,4Vietnamese$0,3 $4,0-$4,2 Nguyen Vu Hai Long
  
