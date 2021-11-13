@@ -183,8 +183,8 @@ class Database:
             return None
         return Hints(
             level_id, 
-            hint.pop("_name"), 
-            hint 
+            hint["_name"], 
+            {k:v for k,v in hint.items() if not k.startswith("_")}
         )
         
 
