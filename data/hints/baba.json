@@ -56,7 +56,7 @@
     },
     "212level": {
         "Win": {
-            "Gentle Nudge": "**You** is never going to walk across the Walls.",
+            "Gentle Nudge": "**You** is never going to walk across the *Walls*.",
             "Bigger Nudge": "There are three potential obstacles: the Rock, the Star, and the Skull. Which one has properties you cannot change? Which one do you need to get rid of?"
         },
         "_name": "turns"
@@ -638,15 +638,15 @@
     },
     "54level": {
         "Win": {
-            "Gentle Nudge": "What exactly is happening in a **[X] is [Y] and [Z]** sentence?",
-            "Bigger Nudge": "How familiar are you with algebra? Are there ways you can express statements in this game mathematically?",
-            "Specific Hint": "What is the Distributive Property? How is the solution to this level going to be a distribution of the solution to Forest 10?"
+            "Gentle Nudge": "This level is very similar to Lovely House. But what's different?",
+            "Bigger Nudge": "What exactly happens when you use your solution to Lovely House? Try checking the pause menu.",
+            "Specific Hint": "You will have to form two rules at once."
         },
         "_name": "skull house"
     },
     "9level": {
         "Win": {
-            "Gentle Nudge": "Honestly? Okay, there is literally only one or two feasible rules you can make that I didn't describe above, so try those."
+            "Gentle Nudge": "Honestly? Okay, there is literally only one or two feasible rules you can make, so try those."
         },
         "_name": "empty"
     },

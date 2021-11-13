@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any, Sequence
 import discord
 from discord.ext import commands, menus
 from PIL import Image, ImageFont, ImageDraw
-from src.db import CustomLevelData, LevelData, TileData
+from src.db import CustomLevelData, Hints, LevelData, TileData
 from src.tile import RawTile
 
 from .. import constants
@@ -56,10 +56,10 @@ class SearchPageSource(menus.ListPageSource):
         return out
 
 class HintPageSource(menus.ListPageSource):
-    def __init__(self, data: Sequence[tuple[str, dict[str, str]]], level: LevelData, others: int):
+    def __init__(self, hints: Hints, level: LevelData, others: int):
         self.level = level
         self.others = others
-        super().__init__(data, per_page=1)
+        super().__init__(list(hints.win_conditions.items()), per_page=1)
     
     async def format_page(self, menu: menus.Menu, entries: tuple[str, dict[str, str]]) -> discord.Embed:
         group, hints = entries
@@ -352,18 +352,16 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         _, choice = levels[0]
         choice: LevelData
         
-        hints = self.bot.db.hints(choice.id)
+        hints = await self.bot.db.hints(choice.world, choice.id)
         if hints is None:
-            if len(levels) > 0:
-                return await ctx.error(
-                    f"No hints found for `{choice.display()}`. "
-                    "Please narrow your search if you meant a different level."
-                )
-            return await ctx.error(f"No hints found for `{choice.display()}`.")
+            return await ctx.error(
+                f"No hints found for `{choice.display()}`. "
+                "Please narrow your search if you meant a different level."
+            )
         
         await menus.MenuPages(
             source=HintPageSource(
-                [(group, hs) for group, hs in hints.items() if not group.startswith("_")],
+                hints,
                 choice,
                 len(levels)
             ),

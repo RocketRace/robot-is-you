@@ -16,7 +16,7 @@ from .constants import BABA_WORLD, DIRECTIONS
 class Database:
     '''Everything relating to persistent readable & writable data'''
     conn: asqlite.Connection
-    level_hints: dict[str, dict[str, dict[str, str]]]
+    level_hints: dict[str, dict[str, str | dict[str, str]]]
     async def connect(self, db: str) -> None:
         '''Startup'''
         with open(f"data/hints/{BABA_WORLD}.json") as fp:
@@ -176,9 +176,23 @@ class Database:
             (3, 3)
         )
     
-    def hints(self, level_id: str) -> dict[str, dict[str, str]] | None:
+    async def hints(self, world: str, level_id: str) -> Hints | None:
         '''The hints for a baba level'''
-        return self.level_hints.get(level_id.lower())
+        hint = self.level_hints.get(level_id)
+        if hint is None:
+            return None
+        return Hints(
+            level_id, 
+            hint.pop("_name"), 
+            hint 
+        )
+        
+
+@dataclass
+class Hints:
+    level_id: str
+    name: str
+    win_conditions: dict[str, dict[str, str]]
 
 @dataclass
 class TileData:
