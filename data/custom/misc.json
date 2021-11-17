@@ -411,5 +411,14 @@
          "0",
          "3"
       ]
+   },
+   {
+      "name": "snomba",
+      "sprite": "snomba",
+      "tiling": "2",
+      "color": [
+         "0",
+         "3"
+      ]
    }
 ]
