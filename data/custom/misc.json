@@ -415,7 +415,7 @@
    {
       "name": "snomba",
       "sprite": "snomba",
-      "tiling": "2",
+      "tiling": "0",
       "color": [
          "0",
          "3"
