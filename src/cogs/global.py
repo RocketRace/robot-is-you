@@ -699,7 +699,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     await cur.execute(
                         '''
                         SELECT * FROM levels 
-                        WHERE parent == :parent AND (
+                        WHERE LOWER(parent) == LOWER(:parent) AND (
                             UNLIKELY(map_id == :map_id) OR (
                                 style == 0 AND 
                                 CAST(number AS TEXT) == :map_id
