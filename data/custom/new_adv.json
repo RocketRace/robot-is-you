@@ -1,0 +1,29 @@
+[
+    {
+        "name": "mbaba",
+        "sprite": "mbaba",
+        "tiling": "2",
+        "color": [
+            "0",
+            "3"
+        ]
+    },
+    {
+        "name": "mpipe",
+        "sprite": "mpipe",
+        "tiling": "1",
+        "color": [
+            "5",
+            "3"
+        ]
+    },
+    {
+        "name": "mblock",
+        "sprite": "mblock",
+        "tiling": "-1",
+        "color": [
+            "2",
+            "4"
+        ]
+    },
+]
