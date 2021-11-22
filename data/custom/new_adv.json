@@ -11,7 +11,16 @@
     {
         "name": "mpipe",
         "sprite": "mpipe",
-        "tiling": "1",
+        "tiling": "-1",
+        "color": [
+            "5",
+            "3"
+        ]
+    },
+    {
+        "name": "mpipeb",
+        "sprite": "mpipeb",
+        "tiling": "-1",
         "color": [
             "5",
             "3"
