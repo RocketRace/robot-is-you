@@ -26,4 +26,13 @@
             "4"
         ]
     },
+    {
+        "name": "cube",
+        "sprite": "cube",
+        "tiling": "-1",
+        "color": [
+            "0",
+            "3"
+        ]
+    }
 ]
