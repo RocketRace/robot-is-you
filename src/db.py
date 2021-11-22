@@ -237,26 +237,29 @@ class LevelData:
         '''Level from db row'''
         return LevelData(*row)
 
+    def string_style(self) -> str | None:
+        if self.style is not None and self.number is not None:
+            # Numbers
+            if self.style == 0:
+                return str(self.number)
+            # Letters
+            if self.style == 1:
+                return string.ascii_lowercase[self.number]
+            # Extra dots
+            if self.style == 2:
+                return str(self.number + 1)
+        return None
+
     def display(self) -> str:
         '''The level display string'''
         if self.parent is None or self.parent == "<empty>":
-            return self.name
+            if self.string_style() is None:
+                return self.name
+            return f"level {self.string_style()}: {self.name}"
         if self.map_id is not None and self.map_id != "<empty>":
             return f"{self.parent}-{self.map_id}: {self.name}"
         if self.style is not None and self.number is not None:
-            if self.style == 0:
-                # numbers
-                return f"{self.parent}-{self.number}: {self.name}"
-            if self.style == 1:
-                # letters
-                letter = string.ascii_lowercase[self.number]
-                return f"{self.parent}-{letter}: {self.name}"
-            if self.style == 2:
-                # extra dots
-                return f"{self.parent}-extra {self.number + 1}: {self.name}"
-            else:
-                # this should be impossible 
-                return f"{self.number}: {self.name}"
+            return f"{self.parent}-{self.string_style()}: {self.name}"
         raise RuntimeError("Level is in a bad state")
 
     def unique(self) -> str:

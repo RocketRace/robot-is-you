@@ -619,9 +619,9 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     WHERE 
                         world == :world AND
                         id == :id AND (
-                            :f_map IS NULL OR map_id == :f_map
+                            :f_map IS NULL OR LOWER(parent) == LOWER(:f_map)
                         ) AND (
-                            :f_world IS NULL OR world == :f_world
+                            :f_world IS NULL OR LOWER(world) == LOWER(:f_world)
                         );
                     ''',
                     dict(world=parts[0], id=parts[1], f_map=f_map, f_world=f_world)
@@ -664,17 +664,28 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     '''
                     SELECT * FROM levels
                     WHERE id == :id AND (
-                        :f_map IS NULL OR map_id == :f_map
+                        :f_map IS NULL OR LOWER(parent) == LOWER(:f_map)
                     ) AND (
-                        :f_world IS NULL OR world == :f_world
+                        :f_world IS NULL OR LOWER(world) == LOWER(:f_world)
                     )
                     ORDER BY CASE world 
                         WHEN :default
                         THEN NULL 
+                        WHEN :museum
+                        THEN ""
+                        WHEN :new_adv
+                        THEN ""
                         ELSE world 
                     END ASC;
                     ''',
-                    dict(id=query, f_map=f_map, f_world=f_world, default=constants.BABA_WORLD)
+                    dict(
+                        id=query, 
+                        f_map=f_map, 
+                        f_world=f_world, 
+                        default=constants.BABA_WORLD, 
+                        museum=constants.MUSEUM_WORLD, 
+                        new_adv=constants.NEW_ADVENTURES_WORLD
+                    )
                 )
                 for row in await cur.fetchall():
                     data = LevelData.from_row(row)
@@ -702,16 +713,28 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                                 number == CAST(TRIM(SUBSTR(:map_id, 6)) AS INTEGER) - 1
                             )
                         ) AND (
-                            :f_map IS NULL OR map_id == :f_map
+                            :f_map IS NULL OR LOWER(parent) == LOWER(:f_map)
                         ) AND (
-                            :f_world IS NULL OR world == :f_world
+                            :f_world IS NULL OR LOWER(world) == LOWER(:f_world)
                         ) ORDER BY CASE world 
                             WHEN :default
                             THEN NULL 
+                            WHEN :museum
+                            THEN ""
+                            WHEN :new_adv
+                            THEN ""
                             ELSE world 
                         END ASC;
                         ''',
-                        dict(parent=segments[0], map_id=segments[1], f_map=f_map, f_world=f_world, default=constants.BABA_WORLD)
+                        dict(
+                            parent=segments[0], 
+                            map_id=segments[1], 
+                            f_map=f_map, 
+                            f_world=f_world, 
+                            default=constants.BABA_WORLD,
+                            museum=constants.MUSEUM_WORLD, 
+                            new_adv=constants.NEW_ADVENTURES_WORLD
+                        )
                     )
                     for row in await cur.fetchall():
                         data = LevelData.from_row(row)
@@ -724,17 +747,28 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     '''
                     SELECT * FROM levels
                     WHERE name == :name AND (
-                        :f_map IS NULL OR map_id == :f_map
+                        :f_map IS NULL OR LOWER(parent) == LOWER(:f_map)
                     ) AND (
-                        :f_world IS NULL OR world == :f_world
+                        :f_world IS NULL OR LOWER(world) == LOWER(:f_world)
                     )
                     ORDER BY CASE world 
                         WHEN :default
-                        THEN NULL
-                        ELSE world
-                    END ASC, number DESC;
+                        THEN NULL 
+                        WHEN :museum
+                        THEN ""
+                        WHEN :new_adv
+                        THEN ""
+                        ELSE world 
+                    END ASC;
                     ''',
-                    dict(name=query, f_map=f_map, f_world=f_world, default=constants.BABA_WORLD)
+                    dict(
+                        name=query, 
+                        f_map=f_map, 
+                        f_world=f_world, 
+                        default=constants.BABA_WORLD, 
+                        museum=constants.MUSEUM_WORLD, 
+                        new_adv=constants.NEW_ADVENTURES_WORLD
+                    )
                 )
                 for row in await cur.fetchall():
                     data = LevelData.from_row(row)
@@ -747,20 +781,31 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                     '''
                     SELECT * FROM levels
                     WHERE INSTR(name, :name) AND (
-                        :f_map IS NULL OR map_id == :f_map
+                        :f_map IS NULL OR LOWER(parent) == LOWER(:f_map)
                     ) AND (
-                        :f_world IS NULL OR world == :f_world
+                        :f_world IS NULL OR LOWER(world) == LOWER(:f_world)
                     )
                     ORDER BY COALESCE(
                         CASE world 
                             WHEN :default
-                            THEN NULL
-                            ELSE world
+                            THEN NULL 
+                            WHEN :museum
+                            THEN ""
+                            WHEN :new_adv
+                            THEN ""
+                            ELSE world 
                         END,
                         INSTR(name, :name)
                     ) ASC, number DESC;
                     ''',
-                    dict(name=query, f_map=f_map, f_world=f_world, default=constants.BABA_WORLD)
+                    dict(
+                        name=query, 
+                        f_map=f_map, 
+                        f_world=f_world, 
+                        default=constants.BABA_WORLD, 
+                        museum=constants.MUSEUM_WORLD, 
+                        new_adv=constants.NEW_ADVENTURES_WORLD
+                    )
                 )
                 for row in await cur.fetchall():
                     data = LevelData.from_row(row)
@@ -772,10 +817,10 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
                 await cur.execute(
                     '''
                     SELECT * FROM levels 
-                    WHERE map_id == :map AND parent IS NULL AND (
-                        :f_map IS NULL OR map_id == :f_map
+                    WHERE LOWER(map_id) == LOWER(:map) AND parent IS NULL AND (
+                        :f_map IS NULL OR LOWER(map_id) == LOWER(:f_map)
                     ) AND (
-                        :f_world IS NULL OR world == :f_world
+                        :f_world IS NULL OR LOWER(world) == LOWER(:f_world)
                     )
                     ORDER BY CASE world 
                         WHEN :default

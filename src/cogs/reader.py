@@ -314,7 +314,7 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                 parent=excluded.parent,
                 map_id=excluded.map_id;
             ''',
-            [(l.id, l.world, l.name, l.subtitle, l.number, l.style, l.parent, l.map_id) for l in metadata.values()]
+            [(l.id, l.world, l.name.lower(), l.subtitle, l.number, l.style, l.parent, l.map_id) for l in metadata.values()]
         )
 
     @commands.command(name="loadworld")

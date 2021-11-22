@@ -213,6 +213,8 @@ DEFAULT_RENDER_ZIP_NAME = "render"
 
 BABA_WORLD = "baba"
 EXTENSIONS_WORLD = "baba-extensions"
+MUSEUM_WORLD = "museum"
+NEW_ADVENTURES_WORLD = "new_adv"
 
 MAXIMUM_GUILD_THRESHOLD = 66 # keep it safe
 GAMEOVER_GUILD_THRESHOLD = 76 # if you reach 76 guilds, you're out of luck, verification is forced
