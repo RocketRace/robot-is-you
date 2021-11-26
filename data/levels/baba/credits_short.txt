@@ -21,7 +21,7 @@ $4,2Mattias Dittrich $4,0-$4,2 Michael Todd
 $4,2Mischka Kamener $4,0-$4,2 Mokesmoe
 $4,2Nathan "ncrecc" Recchia $4,0-$4,2 Nick Vaccaro
 $4,2Nicklas Nygren $4,0-$4,2 Niels Bross
-$4,2NotAJumbleOfNumbers $4,0-$4,2 Olivia Palmu
+$4,2JumbleTheCircle $4,0-$4,2 Olivia Palmu
 $4,2Patrick Traynor $4,0-$4,2 Pedro PSI $4,0-$4,2 Randomnine
 $4,2Rico $4,0-$4,2 Robert Pfeiffer $4,0-$4,2 Robert Yang
 $4,2Ryan Gerstein $4,0-$4,2 Sampumon $4,0-$4,2 silverhawke
