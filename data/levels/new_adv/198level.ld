@@ -1,5 +1,5 @@
 [general]
-name=Safety box 2
+name=Where's the box?
 customparent=
 palette=volcano.png
 paletteroot=1
