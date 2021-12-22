@@ -2630,6 +2630,22 @@ particletypes =
 				unit.values[YVEL] = 80 + math.random(0,10) * 0.1
 			end,
 	},
+	world =
+	{
+		amount = 40,
+		animation = 13,
+		colour = {4, 0},
+		extra = 
+			function(unitid)
+				local unit = mmf.newObject(unitid)
+				local scale = 0.2 + math.random(0,400) * 0.01
+				
+				unit.scaleX = scale
+				unit.scaleY = scale
+				
+				unit.values[DIR] = ((math.random(0,1) * 2) - 1) * (2 - scale * 0.5)
+			end,
+	},
 }
 
 namegivingtitles =
