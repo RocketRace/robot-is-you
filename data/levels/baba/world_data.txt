@@ -4,7 +4,7 @@ start=106level
 firstlevel=0level
 themecount=27
 author=Hempuli
-prize_max=230
+prize_max=225
 clear_max=12
 bonus_max=3
 [levels]

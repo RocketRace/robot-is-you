@@ -4476,6 +4476,6 @@ editor_objlist = {
 		colour = {0, 1},
 		colour_active = {0, 3},
 		argtype = {0, 2},
-		redacted = true,
+		advanced = true,
 	},
 }
