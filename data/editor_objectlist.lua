@@ -1781,7 +1781,7 @@ editor_objlist = {
 			"c","csharp","cflat","d","dsharp","dflat","e","esharp","eflat","f","fsharp","fflat","g","gsharp","gflat","a","asharp","aflat","b","bsharp","bflat",
 			"c4","csharp4","cflat4","d4","dsharp4","dflat4","e4","esharp4","eflat4","f4","fsharp4","fflat4","g4","gsharp4","gflat4","a4","asharp4","aflat4","b4","bsharp4","bflat4",
 			"c5","csharp5","cflat5","d5","dsharp5","dflat5","e5","esharp5","eflat5","f5","fsharp5","fflat5","g5","gsharp5","gflat5","a5","asharp5","aflat5","b5","bsharp5","bflat5",
-			"c6","csharp6","cflat6","d6","dsharp6","dflat6","e6","esharp6","eflat6","f6","fsharp6","fflat6","g6","gsharp6","gflat6","a6","aflat6",
+			"c6","csharp6","d6","dsharp6","dflat6","e6","esharp6","eflat6","f6","fsharp6","fflat6","g6","gsharp6","gflat6","a6","aflat6",
 			},
 		--redacted = true,
 	},

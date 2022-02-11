@@ -2668,6 +2668,7 @@ namegivingtitles =
 	[16] = {"namegiving_subtitle","maxlen26"},
 	[17] = {"namegiving_editor_autopick","lower"},
 	[18] = {"namegiving_currobjlist_autoadd","lower"},
+	[19] = {"namegiving_changeunittype",""},
 }
 
 bicons =
@@ -2737,7 +2738,7 @@ lookup_table =
 	-- capital letters a-z
 	65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 59, 34,
 	-- capitalized umlauts etc
-	197, 201, 217, 223, 7838, 284, 348, 346, 379, 171, 187, 124
+	197, 201, 217, 223, 7838, 284, 348, 346, 379, 171, 187, 124, 42,
 }
 
 play_data =

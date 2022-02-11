@@ -1,5 +1,5 @@
 [general]
-name=Written in stone
+name=Words eroded by time
 customparent=
 palette=default.png
 paletteroot=1
@@ -10,7 +10,7 @@ author=Baba
 subtitle=
 rhythm=10
 levelz=20
-levelid=22
+levelid=113
 levels=0
 paths=0
 specials=0
@@ -274,8 +274,10 @@ saved=1
 [levels]
 levelid=
 [tiles]
-changed=object046,object022,object029,object075,object089,object001,object017,object045,object047,object036,object058,object016,object023,object000,object059,object005,object020,object069,
+changed=object046,object022,object029,object075,object089,object059,object017,object045,object005,object036,object058,object016,object047,object000,object001,object023,object020,object069,
 object089_image=text_falldown
+object017_activecolour=0,3
+object000_activecolour=0,3
 object001_unittype=text
 object001_layer=20
 object001_image=text_still
@@ -284,8 +286,6 @@ object001_type=2
 object001_tiling=-1
 object001_name=text_still
 object001_activecolour=2,2
-object017_activecolour=0,3
 object023_activecolour=0,3
-object000_activecolour=0,3
 changed_count=1
-changed_short=046,022,029,075,089,001,017,045,047,036,058,016,023,000,059,005,020,069,
+changed_short=046,022,029,075,089,059,017,045,005,036,058,016,047,000,001,023,020,069,
