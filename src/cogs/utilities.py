@@ -315,6 +315,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         '''Displays palette image.
 
         This is useful for picking colors from the palette.'''
+        palette = palette.replace("/","")
         try:
             img = Image.open(f"data/palettes/{palette}.png").convert("RGB")
         except FileNotFoundError:
