@@ -285,11 +285,11 @@ saved=1
 9Y=-1
 9fixed=0
 [tiles]
-changed=object046,object118,object074,object012,object083,object045,object082,object020,object058,object047,object036,object000,object080,object023,object022,object005,object081,object062,object034,
-object012_activecolour=0,3
-object000_activecolour=0,3
+changed=object046,object118,object080,object034,object012,object045,object082,object062,object023,object005,object036,object058,object074,object047,object083,object000,object081,object020,object022,
 object080_activecolour=0,3
-object023_activecolour=0,3
+object012_activecolour=0,3
 object062_activecolour=0,3
+object023_activecolour=0,3
+object000_activecolour=0,3
 changed_count=1
-changed_short=046,118,074,012,083,045,082,020,058,047,036,000,080,023,022,005,081,062,034,
+changed_short=046,118,080,034,012,045,082,062,023,005,036,058,074,047,083,000,081,020,022,
