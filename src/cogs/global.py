@@ -6,7 +6,7 @@ from datetime import datetime
 from io import BytesIO
 from json import load
 from os import listdir
-from time import time
+from time import perf_counter
 from typing import TYPE_CHECKING, Any
 
 from PIL.ImageChops import constant
@@ -127,7 +127,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     async def render_tiles(self, ctx: Context, *, objects: str, is_rule: bool):
         '''Performs the bulk work for both `tile` and `rule` commands.'''
         await ctx.trigger_typing()
-        start = time()
+        start = perf_counter()
         tiles = objects.lower().strip()
         
         # replace emoji with their :text: representation
@@ -516,8 +516,8 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             return await self.handle_custom_text_errors(ctx, e)
         
         filename = datetime.utcnow().strftime(r"render_%Y-%m-%d_%H.%M.%S.gif")
-        delta = time() - start
-        msg = f"*Rendered in {delta:.2f} s*"
+        delta = perf_counter() - start
+        msg = f"*Rendered in {delta:.3f} s*"
         if extra_buffer is not None and raw_name:
             extra_buffer.seek(0)
             await ctx.reply(content=f'{msg}\n*Raw files:*', files=[discord.File(extra_buffer, filename=f"{raw_name}.zip"),discord.File(buffer, filename=filename, spoiler=spoiler)])
