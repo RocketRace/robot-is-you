@@ -67,6 +67,7 @@ class RawTile(SkeletonTile):
 class TileFields(TypedDict, total=False):
     sprite: tuple[str, str]
     variant_number: int
+    variant_fallback: int
     color_index: tuple[int, int]
     color_rgb: tuple[int, int, int]
     empty: bool
@@ -85,6 +86,7 @@ class FullTile(SkeletonTile):
     '''A tile ready to be rendered'''
     sprite: tuple[str, str] = BABA_WORLD, "error"
     variant_number: int = 0
+    variant_fallback: int = 0
     color_index: tuple[int, int] = (0, 3)
     color_rgb: tuple[int, int, int] | None = None
     custom: bool = False

@@ -169,6 +169,7 @@ class Renderer:
                     wobble=wobble,
                 )
             else:
+                path_fallback = None
                 if tile.name in ("icon",):
                     path = f"data/sprites/{constants.BABA_WORLD}/{tile.name}.png"
                 elif tile.name in ("smiley", "hi") or tile.name.startswith("icon"):
@@ -178,7 +179,14 @@ class Renderer:
                 else:
                     source, sprite_name = tile.sprite
                     path = f"data/sprites/{source}/{sprite_name}_{tile.variant_number}_{wobble + 1}.png"
-                sprite = cached_open(path, cache=sprite_cache, fn=Image.open).convert("RGBA")
+                    path_fallback = f"data/sprites/{source}/{sprite_name}_{tile.variant_fallback}_{wobble + 1}.png"
+                try:
+                    sprite = cached_open(path, cache=sprite_cache, fn=Image.open).convert("RGBA")
+                except FileNotFoundError:
+                    if path_fallback is not None:
+                        sprite = cached_open(path_fallback, cache=sprite_cache, fn=Image.open).convert("RGBA")
+                    else:
+                        raise
                 
                 sprite = await self.apply_options_name(
                     tile.name,

@@ -278,20 +278,35 @@ def setup(bot: Bot):
         tile_data = ctx.tile_data
         color = (0, 3)
         variant = 0
+        variant_fallback = 0
         if tile_data is not None:
             color = tile_data.active_color
             if tile_data.tiling in constants.AUTO_TILINGS:
                 x, y, t = ctx.position
-                variant = (
-                    + 1 * ctx.is_adjacent((x + 1, y, t))
-                    + 2 * ctx.is_adjacent((x, y - 1, t))
-                    + 4 * ctx.is_adjacent((x - 1, y, t))
-                    + 8 * ctx.is_adjacent((x, y + 1, t))
-                )
+                # Only counts adjacent tiles, guaranteed to exist
+                adj_right = ctx.is_adjacent((x + 1, y, t))
+                adj_up = ctx.is_adjacent((x, y - 1, t))
+                adj_left = ctx.is_adjacent((x - 1, y, t))
+                adj_down = ctx.is_adjacent((x, y + 1, t))
+                variant_fallback = constants.TILING_VARIANTS[(
+                    adj_right, adj_up, adj_left, adj_down,
+                    False, False, False, False
+                )]
+                # Variant with diagonal tiles as well, not guaranteed to exist
+                # The renderer falls back to the simple variant if it doesn't
+                adj_rightup = adj_right and adj_up and ctx.is_adjacent((x + 1, y - 1, t))
+                adj_upleft = adj_up and adj_left and ctx.is_adjacent((x - 1, y - 1, t))
+                adj_leftdown = adj_left and adj_down and ctx.is_adjacent((x - 1, y + 1, t))
+                adj_downright = adj_down and adj_right and ctx.is_adjacent((x + 1, y + 1, t))
+                variant = constants.TILING_VARIANTS.get((
+                    adj_right, adj_up, adj_left, adj_down,
+                    adj_rightup, adj_upleft, adj_leftdown, adj_downright
+                ), variant_fallback)
             if ctx.flags.get("raw_output"):
                 color = (0, 3)
             return {
                 "variant_number": variant,
+                "variant_fallback": variant_fallback,
                 "color_index": color,
                 "meta_level": 0,
                 "sprite": (tile_data.source, tile_data.sprite),
