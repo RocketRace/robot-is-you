@@ -161,7 +161,7 @@ for i, token in enumerate(auth.tokens):
         # Never mention roles, @everyone or @here
         allowed_mentions=discord.AllowedMentions(everyone=False, roles=False),
         # Only receive message and reaction events
-        intents=discord.Intents(messages=True, reactions=True, guilds=True),
+        intents=discord.Intents(messages=True, reactions=True, guilds=True, message_content=True),
         # Disable the member cache
         member_cache_flags=discord.MemberCacheFlags.none(),
         # Disable the message cache
