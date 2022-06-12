@@ -813,5 +813,5 @@ class OwnerCog(commands.Cog, name="Admin", command_attrs=dict(hidden=True)):
             json.dump(packs, f)
         await ctx.send(f"Added `{long_name}` (`{short_name}`) `{version}` by `{author}`.")
 
-def setup(bot: Bot):
-    bot.add_cog(OwnerCog(bot))
+async def setup(bot: Bot):
+    await bot.add_cog(OwnerCog(bot))

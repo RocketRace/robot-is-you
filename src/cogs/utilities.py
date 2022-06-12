@@ -323,7 +323,7 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         w, h = img.size
         img = img.resize(
             (img.width * constants.PALETTE_PIXEL_SIZE, img.height * constants.PALETTE_PIXEL_SIZE), 
-            resample=Image.NEAREST
+            resample=Image.Resampling.NEAREST
         )
         font = ImageFont.truetype("data/04b03.ttf", 16)
         draw = ImageDraw.Draw(img)
@@ -415,5 +415,5 @@ class UtilityCommandsCog(commands.Cog, name="Utility Commands"):
         
         await ctx.reply(embed=output)
 
-def setup(bot: Bot):
-    bot.add_cog(UtilityCommandsCog(bot))
+async def setup(bot: Bot):
+    await bot.add_cog(UtilityCommandsCog(bot))

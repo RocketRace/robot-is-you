@@ -13,6 +13,7 @@ from PIL import Image, ImageChops, ImageFilter
 from .. import constants, errors
 from ..tile import FullTile, Grid, ReadyTile
 from ..utils import cached_open
+from ..save_transparent_gif import save_transparent_gif
 
 if TYPE_CHECKING:
     from ...ROBOT import Bot
@@ -132,7 +133,7 @@ class Renderer:
         for img in imgs:
             img = img.crop((padding - pad_l, padding - pad_u, img.width - padding + pad_r, img.height - padding + pad_d))
             if upscale:
-                img = img.resize((2 * img.width, 2 * img.height), resample=Image.NEAREST)
+                img = img.resize((2 * img.width, 2 * img.height), resample=Image.Resampling.NEAREST)
             outs.append(img)
 
         self.save_frames(
@@ -611,19 +612,7 @@ class Renderer:
         If extra_out is provided, the frames are also saved as a zip file there.
         '''
         # Pillow has a longstanding bug with transparency indices in gifs
-        imgs[0].save(
-            out, 
-            format="GIF",
-            interlace=True,
-            save_all=True,
-            append_images=imgs[1:],
-            loop=0,
-            duration=delay,
-            disposal=2, # Frames don't overlap
-            transparency=255,
-            background=255,
-            optimize=False
-        )
+        save_transparent_gif(imgs, delay, out)
         if not isinstance(out, str):
             out.seek(0)
         if extra_name is not None and extra_out is not None:
@@ -634,5 +623,5 @@ class Renderer:
                 file.writestr(f"{extra_name}_{i//3}_{(i%3)+1}.png", buffer.getvalue())
             file.close()
 
-def setup(bot: Bot):
+async def setup(bot: Bot):
     bot.renderer = Renderer(bot)

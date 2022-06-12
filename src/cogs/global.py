@@ -126,7 +126,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
 
     async def render_tiles(self, ctx: Context, *, objects: str, is_rule: bool):
         '''Performs the bulk work for both `tile` and `rule` commands.'''
-        await ctx.trigger_typing()
+        await ctx.typing()
         start = time()
         tiles = objects.lower().strip()
         
@@ -869,7 +869,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
     
     async def perform_level_command(self, ctx: Context, query: str, *, mobile: bool):
         # User feedback
-        await ctx.trigger_typing()
+        await ctx.typing()
 
         custom_level: CustomLevelData | None = None
         
@@ -889,7 +889,7 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
             else:
                 # Expensive operation 
                 await ctx.reply("Searching for custom level... this might take a while", mention_author=False)
-                await ctx.trigger_typing()
+                await ctx.typing()
                 async with aiohttp.request("GET", f"https://baba-is-bookmark.herokuapp.com/api/level/exists?code={fine_query.upper()}") as resp:
                     if resp.status in (200, 304):
                         data = await resp.json()
@@ -973,5 +973,5 @@ class GlobalCog(commands.Cog, name="Baba Is You"):
         # Send the result
         await ctx.reply(formatted, file=gif, allowed_mentions=mentions)
 
-def setup(bot: Bot):
-    bot.add_cog(GlobalCog(bot))
+async def setup(bot: Bot):
+    await bot.add_cog(GlobalCog(bot))

@@ -710,5 +710,5 @@ class Reader(commands.Cog, command_attrs=dict(hidden=True)):
                     # huh?
                     break
 
-def setup(bot: Bot):
-    bot.add_cog(Reader(bot))
+async def setup(bot: Bot):
+    await bot.add_cog(Reader(bot))

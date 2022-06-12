@@ -69,11 +69,14 @@ class Bot(commands.Bot):
         self.instance_id = instance_id
         self.event_queue = event_queue
         self.original_id = original_id
+        self.cog_names = cogs
         
         super().__init__(command_prefix, **kwargs)
-        # has to be after __init__
-        for cog in cogs:
-            self.load_extension(cog, package="ROBOT")
+    
+    async def setup_hook(self) -> None:
+        for cog in self.cog_names:
+            await self.load_extension(cog, package="ROBOT")
+        return await super().setup_hook()
 
     async def request(self, event: synchronization.CallbackEvent):
         '''Send a request to the event manager of the bot instances.'''
@@ -122,9 +125,8 @@ class Bot(commands.Bot):
 
 logging.basicConfig(filename=config.log_file, level=logging.WARNING)
 
-loop = asyncio.get_event_loop()
 bots: list[Bot] = []
-tasks: list[Coroutine[Any, Any, int]] = []
+starters: list[Coroutine[Any, Any, int]] = []
 
 mpsc_queue = asyncio.Queue()
 
@@ -140,10 +142,10 @@ async def shared_event_handler(event_queue: asyncio.Queue[synchronization.Callba
                     for bot in bots:
                         # construct a list to avoid iterating over a dict as it's mutated
                         for ext in list(bot.extensions):
-                            bot.reload_extension(ext)
+                            await bot.reload_extension(ext)
                 else:
                     for bot in bots:
-                        bot.reload_extension(cog)
+                        await bot.reload_extension(cog)
                 await callback()
         except:
             traceback.print_exc()
@@ -180,30 +182,28 @@ for i, token in enumerate(auth.tokens):
         original_id=config.original_id
     )
     bots.append(bot)
-    tasks.append(bot.start_with_exit_code(token))
+    starters.append(bot.start_with_exit_code(token))
 
 
 async def main() -> int:
-    task = asyncio.create_task(shared_event_handler(mpsc_queue))
-    for coro in asyncio.as_completed(tasks):
-        code = await coro
-        break
-    else:
-        raise RuntimeError("There are no bots to run")
-    task.cancel()
-    return code
+    events = asyncio.create_task(shared_event_handler(mpsc_queue))
+    tasks = [asyncio.create_task(starter) for starter in starters]
+    try:
+        for returner in asyncio.as_completed(tasks):
+            return await returner
+        else:
+            raise RuntimeError("There are no bots to run")
+    finally:
+        print("Shutting down bots...")
+        events.cancel()
+        await asyncio.gather(
+            *(bot.close() for bot in bots if not bot.is_closed())
+        )
 
 exit_code = 0
 try:
-    exit_code = loop.run_until_complete(main())
+    x = asyncio.run(main())
 except KeyboardInterrupt:
     exit_code = 1
 finally:
-    print("Shutting down bots...")
-    loop.run_until_complete(
-        asyncio.gather(
-            *(bot.close() for bot in bots if not bot.is_closed())
-        )
-    )
-    loop.close()
     exit(exit_code)

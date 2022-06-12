@@ -1,6 +1,6 @@
-discord.py>=1.7.3
-Pillow>=8.3.0
+Pillow>=9.1.1
 jishaku>=1.18
+git+https://github.com/Rapptz/discord.py
 git+https://github.com/Rapptz/asqlite
 git+https://github.com/Rapptz/discord-ext-menus
 numpy>=1.18

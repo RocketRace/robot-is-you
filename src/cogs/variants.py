@@ -263,7 +263,7 @@ def join_variant(dir: int, anim: int) -> int:
     '''The sleeping animation is slightly inconvenient'''
     return (dir + anim) % 32
 
-def setup(bot: Bot):
+async def setup(bot: Bot):
     '''Get the variant handler instance'''
     handlers = VariantHandlers(bot)
     bot.variant_handlers = handlers

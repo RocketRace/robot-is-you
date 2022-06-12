@@ -22,7 +22,8 @@ class CommandErrorHandler(commands.Cog):
     
     def initialize(self):
         if self.webhook is None:
-            self.webhook = discord.Webhook.from_url(self.bot.webhook_url, adapter=discord.AsyncWebhookAdapter(self.bot.session))
+            # from webhook url
+            self.webhook = discord.Webhook.from_url(self.bot.webhook_url, session=self.bot.session)
 
 
     @commands.Cog.listener()
@@ -165,5 +166,5 @@ class CommandErrorHandler(commands.Cog):
         print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
-def setup(bot: Bot):
-    bot.add_cog(CommandErrorHandler(bot))
+async def setup(bot: Bot):
+    await bot.add_cog(CommandErrorHandler(bot))

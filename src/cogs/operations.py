@@ -110,7 +110,7 @@ class Macro:
         return self.fn(MacroCtx(grid, tile, position, groups, operation))
 
 
-def setup(bot: Bot):
+async def setup(bot: Bot):
     '''Get the operation macro instance'''
     macros = OperationMacros(bot)
     bot.operation_macros = macros
